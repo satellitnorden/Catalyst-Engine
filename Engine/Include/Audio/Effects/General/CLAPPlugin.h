@@ -37,8 +37,6 @@ public:
 			NONE,
 
 			UPDATE_PLUGIN,
-			ADD_TIMER,
-			REMOVE_TIMER,
 			SHOW_GUI,
 			HIDE_GUI
 		};

@@ -163,6 +163,7 @@ const void *get_extension(const clap_host *host, const char *extension_id)
 		{
 			TIMER_SUPPORT_EXTENSION.register_timer = [](const clap_host_t *host, uint32_t period_ms, clap_id *timer_id) -> bool
 			{
+				/*
 				CLAPPlugin *const RESTRICT _host{ static_cast<CLAPPlugin *const RESTRICT>(host->host_data) };
 
 				CLAPPlugin::MainThreadRequest request;
@@ -173,9 +174,13 @@ const void *get_extension(const clap_host *host, const char *extension_id)
 				_host->AddMainThreadRequest(request);
 
 				return true;
+				*/
+				ASSERT(false, "Figure out what to do here!");
+				return false;
 			};
 			TIMER_SUPPORT_EXTENSION.unregister_timer = [](const clap_host_t *host, clap_id timer_id) -> bool
 			{
+				/*
 				CLAPPlugin *const RESTRICT _host{ static_cast<CLAPPlugin *const RESTRICT>(host->host_data) };
 
 				CLAPPlugin::MainThreadRequest request;
@@ -186,6 +191,9 @@ const void *get_extension(const clap_host *host, const char *extension_id)
 				_host->AddMainThreadRequest(request);
 
 				return true;
+				*/
+				ASSERT(false, "Figure out what to do here!");
+				return false;
 			};
 
 			TIMER_SUPPORT_EXTENSION_INITIALIZED = true;
@@ -196,8 +204,34 @@ const void *get_extension(const clap_host *host, const char *extension_id)
 
 	else if (StringUtilities::IsEqual(extension_id, CLAP_EXT_POSIX_FD_SUPPORT))
 	{
-		//Should be fine, no?
-		return nullptr;
+		static clap_host_posix_fd_support_t POSIX_FD_SUPPORT_EXTENSION;
+		static bool POSIX_FD_SUPPORT_EXTENSION_INITIALIZED{ false };
+
+		if (!POSIX_FD_SUPPORT_EXTENSION_INITIALIZED)
+		{
+			POSIX_FD_SUPPORT_EXTENSION.register_fd = [](const clap_host_t *host, int fd, clap_posix_fd_flags_t flags) -> bool
+			{
+
+				ASSERT(false, "Figure out what to do here!");
+				return false;
+			};
+			POSIX_FD_SUPPORT_EXTENSION.modify_fd = [](const clap_host_t *host, int fd, clap_posix_fd_flags_t flags) -> bool
+			{
+
+				ASSERT(false, "Figure out what to do here!");
+				return false;
+			};
+			POSIX_FD_SUPPORT_EXTENSION.unregister_fd = [](const clap_host_t *host, int fd) -> bool
+			{
+
+				ASSERT(false, "Figure out what to do here!");
+				return false;
+			};
+
+			POSIX_FD_SUPPORT_EXTENSION_INITIALIZED = true;
+		}
+
+		return &POSIX_FD_SUPPORT_EXTENSION;
 	}
 
 	else if (StringUtilities::IsEqual(extension_id, CLAP_EXT_RESOURCE_DIRECTORY))
@@ -305,7 +339,7 @@ const void *get_extension(const clap_host *host, const char *extension_id)
 
 		TRACK_INFO_EXTENSION.get = [](const clap_host_t *host, clap_track_info_t *info)
 		{
-			constexpr const char* const RESTRICT TRACK_NAME{ "Catalyst Engine CLAP Audio Track" };
+			constexpr const char *const RESTRICT TRACK_NAME{ "Catalyst Engine CLAP Audio Track" };
 
 			info->flags = CLAP_TRACK_INFO_HAS_TRACK_NAME | CLAP_TRACK_INFO_HAS_TRACK_COLOR | CLAP_TRACK_INFO_HAS_AUDIO_CHANNEL;
 			Memory::Copy(info->name, TRACK_NAME, StringUtilities::StringLength(TRACK_NAME) + 1);
@@ -324,50 +358,134 @@ const void *get_extension(const clap_host *host, const char *extension_id)
 
 	else if (StringUtilities::IsEqual(extension_id, CLAP_EXT_STATE))
 	{
-		//Should be fine, no?
-		return nullptr;
+		static clap_host_state_t STATE_EXTENSION;
+		static bool STATE_EXTENSION_INITIALIZED{ false };
+
+		if (!STATE_EXTENSION_INITIALIZED)
+		{
+			STATE_EXTENSION.mark_dirty = [](const clap_host_t *host) -> void
+			{
+				ASSERT(false, "Figure out what to do here!");
+			};
+
+			STATE_EXTENSION_INITIALIZED = true;
+		}
+
+		return &STATE_EXTENSION;
 	}
 
 	else if (StringUtilities::IsEqual(extension_id, CLAP_EXT_NOTE_NAME))
 	{
-		//Should be fine, no?
-		return nullptr;
+		static clap_host_note_name_t NOTE_NAME_EXTENSION;
+		static bool NOTE_NAME_EXTENSION_INITIALIZED{ false };
+
+		if (!NOTE_NAME_EXTENSION_INITIALIZED)
+		{
+			NOTE_NAME_EXTENSION.changed = [](const clap_host_t *host) -> void
+			{
+				ASSERT(false, "Figure out what to do here!");
+			};
+
+			NOTE_NAME_EXTENSION_INITIALIZED = true;
+		}
+
+		return &NOTE_NAME_EXTENSION;
 	}
 
-	else if (StringUtilities::IsEqual(extension_id, CLAP_EXT_REMOTE_CONTROLS))
+	else if (StringUtilities::IsEqual(extension_id, CLAP_EXT_REMOTE_CONTROLS) || StringUtilities::IsEqual(extension_id, CLAP_EXT_REMOTE_CONTROLS_COMPAT))
 	{
-		//Should be fine, no?
-		return nullptr;
-	}
+		static clap_host_remote_controls_t REMOTE_CONTROLS_EXTENSION;
+		static bool REMOTE_CONTROLS_EXTENSION_INITIALIZED{ false };
 
-	else if (StringUtilities::IsEqual(extension_id, CLAP_EXT_REMOTE_CONTROLS_COMPAT))
-	{
-		//Should be fine, no?
-		return nullptr;
+		if (!REMOTE_CONTROLS_EXTENSION_INITIALIZED)
+		{
+			REMOTE_CONTROLS_EXTENSION.changed = [](const clap_host_t *host) -> void
+			{
+				ASSERT(false, "Figure out what to do here!");
+			};
+			REMOTE_CONTROLS_EXTENSION.suggest_page = [](const clap_host_t *host, clap_id page_id) -> void
+			{
+				ASSERT(false, "Figure out what to do here!");
+			};
+
+			REMOTE_CONTROLS_EXTENSION_INITIALIZED = true;
+		}
+
+		return &REMOTE_CONTROLS_EXTENSION;
 	}
 
 	else if (StringUtilities::IsEqual(extension_id, CLAP_EXT_VOICE_INFO))
 	{
-		//Should be fine, no?
-		return nullptr;
+		static clap_host_voice_info_t VOICE_INFO_EXTENSION;
+		static bool VOICE_INFO_EXTENSION_INITIALIZED{ false };
+
+		if (!VOICE_INFO_EXTENSION_INITIALIZED)
+		{
+			VOICE_INFO_EXTENSION.changed = [](const clap_host_t *host) -> void
+			{
+				ASSERT(false, "Figure out what to do here!");
+			};
+
+			VOICE_INFO_EXTENSION_INITIALIZED = true;
+		}
+
+		return &VOICE_INFO_EXTENSION;
 	}
 
-	else if (StringUtilities::IsEqual(extension_id, CLAP_EXT_CONTEXT_MENU))
+	else if (StringUtilities::IsEqual(extension_id, CLAP_EXT_CONTEXT_MENU) || StringUtilities::IsEqual(extension_id, CLAP_EXT_CONTEXT_MENU_COMPAT))
 	{
-		//Should be fine, no?
-		return nullptr;
-	}
+		static clap_host_context_menu_t CONTEXT_MENU_EXTENSION;
+		static bool CONTEXT_MENU_EXTENSION_INITIALIZED{ false };
 
-	else if (StringUtilities::IsEqual(extension_id, CLAP_EXT_CONTEXT_MENU_COMPAT))
-	{
-		//Should be fine, no?
-		return nullptr;
+		if (!CONTEXT_MENU_EXTENSION_INITIALIZED)
+		{
+			CONTEXT_MENU_EXTENSION.populate = [](const clap_host_t *host, const clap_context_menu_target_t *target, const clap_context_menu_builder_t *builder) -> bool
+			{
+				ASSERT(false, "Figure out what to do here!");
+				return false;
+			};
+			CONTEXT_MENU_EXTENSION.perform = [](const clap_host_t *host, const clap_context_menu_target_t *target, clap_id action_id) -> bool
+			{
+				ASSERT(false, "Figure out what to do here!");
+				return false;
+			};
+			CONTEXT_MENU_EXTENSION.can_popup = [](const clap_host_t *host) -> bool
+			{
+				ASSERT(false, "Figure out what to do here!");
+				return false;
+			};
+			CONTEXT_MENU_EXTENSION.popup = [](const clap_host_t *host, const clap_context_menu_target_t *target, int32_t screen_index, int32_t x, int32_t y) -> bool
+			{
+				ASSERT(false, "Figure out what to do here!");
+				return false;
+			};
+
+			CONTEXT_MENU_EXTENSION_INITIALIZED = true;
+		}
+
+		return &CONTEXT_MENU_EXTENSION;
 	}
 
 	else if (StringUtilities::IsEqual(extension_id, CLAP_EXT_PRESET_LOAD))
 	{
-		//Should be fine, no?
-		return nullptr;
+		static clap_host_preset_load_t PRESET_LOAD_EXTENSION;
+		static bool PRESET_LOAD_EXTENSION_INITIALIZED{ false };
+
+		if (!PRESET_LOAD_EXTENSION_INITIALIZED)
+		{
+			PRESET_LOAD_EXTENSION.on_error = [](const clap_host_t *host, uint32_t location_kind, const char *location, const char *load_key, int32_t os_error, const char *msg) -> void
+			{
+				ASSERT(false, "Figure out what to do here!");
+			};
+			PRESET_LOAD_EXTENSION.loaded = [](const clap_host_t *host, uint32_t location_kind, const char *location, const char *load_key) -> void
+			{
+				ASSERT(false, "Figure out what to do here!");
+			};
+
+			PRESET_LOAD_EXTENSION_INITIALIZED = true;
+		}
+
+		return &PRESET_LOAD_EXTENSION;
 	}
 
 	else
@@ -520,29 +638,39 @@ NO_DISCARD bool CLAPPlugin::Initialize(const char *const RESTRICT plugin_file_pa
 
 #if ENABLE_GUI
 	{
-		const clap_plugin_gui_t *const RESTRICT plugin_gui{ static_cast<const clap_plugin_gui_t* const RESTRICT>(_Plugin->get_extension(_Plugin, CLAP_EXT_GUI)) };
+		const clap_plugin_gui_t *const RESTRICT plugin_gui{ static_cast<const clap_plugin_gui_t *const RESTRICT>(_Plugin->get_extension(_Plugin, CLAP_EXT_GUI)) };
 
 		if (plugin_gui)
 		{
-			if (plugin_gui->is_api_supported(_Plugin, CLAP_WINDOW_API_WIN32, true))
+			if (plugin_gui->is_api_supported(_Plugin, CLAP_WINDOW_API_WIN32, false))
 			{
-				if (plugin_gui->create(_Plugin, CLAP_WINDOW_API_WIN32, true))
+				if (plugin_gui->create(_Plugin, CLAP_WINDOW_API_WIN32, false))
 				{
+					uint32_t width;
+					uint32_t height;
+
+					if (!plugin_gui->get_size(_Plugin, &width, &height))
+					{
+						ASSERT(false, "Couldn't get size!");
+					}
+
 					{
 						clap_window_t clap_window;
 
 						clap_window.api = CLAP_WINDOW_API_WIN32;
 						clap_window.win32 = CatalystPlatformWindows::_Window;
 
-						plugin_gui->set_transient(_Plugin, &clap_window);
+						if (!plugin_gui->set_parent(_Plugin, &clap_window))
+						{
+							ASSERT(false, "Couldn't set parent!");
+						}
 					}
 
+					plugin_gui->suggest_title(_Plugin, "Catalyst Engine CLAP Window");
+
+					if (!plugin_gui->show(_Plugin))
 					{
-						MainThreadRequest request;
-
-						request._Type = CLAPPlugin::MainThreadRequest::Type::SHOW_GUI;
-
-						AddMainThreadRequest(request);
+						ASSERT(false, "Couldn't show!");
 					}
 				}
 			}
