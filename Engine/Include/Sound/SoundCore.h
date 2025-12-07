@@ -3,19 +3,6 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Enumeration covering all sound formats.
-enum class SoundFormat : uint8
-{
-	SIGNED_INTEGER_8_BIT,
-	SIGNED_INTEGER_16_BIT,
-	SIGNED_INTEGER_24_BIT,
-	SIGNED_INTEGER_32_BIT,
-	FLOAT_32_BIT,
-	FLOAT_64_BIT,
-
-	UNKNOWN
-};
-
 //Enumeration covering all note durations.
 enum class NoteDuration : uint8
 {
@@ -257,7 +244,6 @@ using InputStreamCallback = bool(*)
 	void *const RESTRICT input_buffer,
 	const uint32 number_of_samples,
 	const float32 sample_rate,
-	const SoundFormat sound_format,
 	const uint8 number_of_channels,
 	void *const RESTRICT user_data
 );
@@ -293,49 +279,3 @@ enum class AudioDevicePickingMode : uint8
 	*/
 	WAIT_FOR_SELECTION
 };
-
-/*
-*	Returns the number of bits per sample for the given sound format.
-*/
-static NO_DISCARD uint8 GetNumberOfBitsPerSample(const SoundFormat sound_format) NOEXCEPT
-{
-	switch (sound_format)
-	{
-		case SoundFormat::SIGNED_INTEGER_8_BIT:
-		{
-			return 8;
-		}
-
-		case SoundFormat::SIGNED_INTEGER_16_BIT:
-		{
-			return 16;
-		}
-
-		case SoundFormat::SIGNED_INTEGER_24_BIT:
-		{
-			return 24;
-		}
-
-		case SoundFormat::SIGNED_INTEGER_32_BIT:
-		{
-			return 32;
-		}
-
-		case SoundFormat::FLOAT_32_BIT:
-		{
-			return 32;
-		}
-
-		case SoundFormat::FLOAT_64_BIT:
-		{
-			return 64;
-		}
-
-		default:
-		{
-			ASSERT(false, "Invalid case!");
-
-			return 0;
-		}
-	}
-}

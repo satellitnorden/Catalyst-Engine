@@ -19,17 +19,21 @@ class BassDistortion1 final : public AudioEffect
 public:
 	
 	//Constants.
-	constexpr static float32 LOW_BAND_LOW_PASS_MINIMUM_FREQUENCY{ 40.0f };
-	constexpr static float32 LOW_BAND_LOW_PASS_MAXIMUM_FREQUENCY{ 400.0f };
-	constexpr static float32 LOW_BAND_LOW_PASS_DEFAULT_FREQUENCY{ 200.0f };
+	constexpr static float32 LOW_BAND_LOW_PASS_MINIMUM_FREQUENCY{ 50.0f };
+	constexpr static float32 LOW_BAND_LOW_PASS_MAXIMUM_FREQUENCY{ 200.0f };
+	constexpr static float32 LOW_BAND_LOW_PASS_DEFAULT_FREQUENCY{ 100.0f };
 
-	constexpr static float32 MID_BAND_HIGH_PASS_MINIMUM_FREQUENCY{ 400.0f };
-	constexpr static float32 MID_BAND_HIGH_PASS_MAXIMUM_FREQUENCY{ 1'000.0f };
+	constexpr static float32 MID_BAND_HIGH_PASS_MINIMUM_FREQUENCY{ 200.0f };
+	constexpr static float32 MID_BAND_HIGH_PASS_MAXIMUM_FREQUENCY{ 8'000.0f };
 	constexpr static float32 MID_BAND_HIGH_PASS_DEFAULT_FREQUENCY{ 400.0f };
 
-	constexpr static float32 MID_BAND_LOW_PASS_MINIMUM_FREQUENCY{ 1'000.0f };
-	constexpr static float32 MID_BAND_LOW_PASS_MAXIMUM_FREQUENCY{ 4'000.0f };
+	constexpr static float32 MID_BAND_LOW_PASS_MINIMUM_FREQUENCY{ 2'000.0f };
+	constexpr static float32 MID_BAND_LOW_PASS_MAXIMUM_FREQUENCY{ 8'000.0f };
 	constexpr static float32 MID_BAND_LOW_PASS_DEFAULT_FREQUENCY{ 4'000.0f };
+
+	constexpr static float32 HIGH_BAND_HIGH_PASS_MINIMUM_FREQUENCY{ 1'000.0f };
+	constexpr static float32 HIGH_BAND_HIGH_PASS_MAXIMUM_FREQUENCY{ 8'000.0f };
+	constexpr static float32 HIGH_BAND_HIGH_PASS_DEFAULT_FREQUENCY{ 2'000.0f };
 
 	//Denotes whether or not the low band is enabled.
 	bool _LowBandEnabled{ true };
@@ -57,6 +61,18 @@ public:
 
 	//The mid band gain.
 	float32 _MidBandGain{ 1.0f };
+
+	//Denotes whether or not the high band is enabled.
+	bool _HighBandEnabled{ true };
+
+	//The high band high pass frequency.
+	float32 _HighBandHighPassFrequency{ HIGH_BAND_HIGH_PASS_MAXIMUM_FREQUENCY };
+
+	//The high band distortion.
+	float32 _HighBandDistortion{ 0.5f };
+
+	//The high band gain.
+	float32 _HighBandGain{ 1.0f };
 
 	/*
 	*	Default constructor.
@@ -87,7 +103,7 @@ public:
 	) NOEXCEPT override
 	{
 		//If no band is enabled, just copy the inputs into the outputs and move on.
-		if (!_LowBandEnabled && !_MidBandEnabled)
+		if (!_LowBandEnabled && !_MidBandEnabled && !_HighBandEnabled)
 		{
 			for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
 			{
@@ -163,10 +179,11 @@ public:
 		if (_MidBandEnabled)
 		{
 			//Apply the filters.
-			_MidBand._HighPassFilter1.Process(context, _InputBuffer, &_WorkingBuffer, number_of_channels, number_of_samples);
-			_MidBand._HighPassFilter2.Process(context, _WorkingBuffer, &_WorkingBuffer, number_of_channels, number_of_samples);
-			_MidBand._HighPassFilter3.Process(context, _WorkingBuffer, &_WorkingBuffer, number_of_channels, number_of_samples);
-			_MidBand._PeakFilter.Process(context, _WorkingBuffer, &_WorkingBuffer, number_of_channels, number_of_samples);
+			_MidBand._PreHighPassFilter1.Process(context, _InputBuffer, &_WorkingBuffer, number_of_channels, number_of_samples);
+			_MidBand._PreHighPassFilter2.Process(context, _WorkingBuffer, &_WorkingBuffer, number_of_channels, number_of_samples);
+			_MidBand._PreHighPassFilter3.Process(context, _WorkingBuffer, &_WorkingBuffer, number_of_channels, number_of_samples);
+			_MidBand._PrePeakFilter.Process(context, _WorkingBuffer, &_WorkingBuffer, number_of_channels, number_of_samples);
+			_MidBand._PreLowPassFilter.Process(context, _WorkingBuffer, &_WorkingBuffer, number_of_channels, number_of_samples);
 
 			//Apply distortion.
 			{
@@ -208,6 +225,52 @@ public:
 				SIMD::Add(outputs->At(channel_index).Data(), _WorkingBuffer.At(channel_index).Data(), number_of_samples);
 			}
 		}
+
+		//Process the high band.
+		if (_HighBandEnabled)
+		{
+			//Apply the filters.
+			_HighBand._HighPassFilter1.Process(context, _InputBuffer, &_WorkingBuffer, number_of_channels, number_of_samples);
+			_HighBand._HighPassFilter2.Process(context, _WorkingBuffer, &_WorkingBuffer, number_of_channels, number_of_samples);
+			_HighBand._HighPassFilter3.Process(context, _WorkingBuffer, &_WorkingBuffer, number_of_channels, number_of_samples);
+			_HighBand._PeakFilter.Process(context, _WorkingBuffer, &_WorkingBuffer, number_of_channels, number_of_samples);
+
+			//Apply distortion.
+			{
+				const float32 gain{ Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(18.0f, 72.0f, BaseMath::InverseSquare(_HighBandDistortion))) };
+
+				for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
+				{
+					for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
+					{
+						_HighBand._OverSamplers[channel_index].Feed(_WorkingBuffer.At(channel_index).At(sample_index));
+
+						for (float32 &sample : _HighBand._OverSamplers[channel_index].GetSamples())
+						{
+							sample = std::tanh(sample * (sample >= 0.0f ? 0.5f : 2.0f) * gain);
+						}
+
+						_WorkingBuffer.At(channel_index).At(sample_index) = _HighBand._OverSamplers[channel_index].DownSample();
+					}
+				}
+			}
+
+			//Apply the post high pass filter.
+			_HighBand._PostHighPassFilter._Frequency = _HighBandHighPassFrequency;
+			_HighBand._PostHighPassFilter.Process(context, _WorkingBuffer, &_WorkingBuffer, number_of_channels, number_of_samples);
+
+			//Apply the gain.
+			for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
+			{
+				SIMD::MultiplyByScalar(_WorkingBuffer.At(channel_index).Data(), number_of_samples, _HighBandGain);
+			}
+
+			//Add to the output.
+			for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
+			{
+				SIMD::Add(outputs->At(channel_index).Data(), _WorkingBuffer.At(channel_index).Data(), number_of_samples);
+			}
+		}
 	}
 
 private:
@@ -236,17 +299,20 @@ private:
 
 	public:
 
-		//High pass filter 1.
-		HighPassFilter _HighPassFilter1{ 200.0f, 1.0f, 1 };
+		//Pre high pass filter 1.
+		HighPassFilter _PreHighPassFilter1{ 150.0f, 1.0f, 3 };
 
-		//High pass filter 2.
-		HighPassFilter _HighPassFilter2{ 400.0f, 1.0f, 2 };
+		//Pre high pass filter 2.
+		HighPassFilter _PreHighPassFilter2{ 300.0f, 1.0f, 2 };
 
-		//High pass filter 3.
-		HighPassFilter _HighPassFilter3{ 400.0f, 1.0f, 3 };
+		//Pre high pass filter 3.
+		HighPassFilter _PreHighPassFilter3{ 600.0f, 1.0f, 1 };
 
-		//The peak filter.
-		PeakFilter _PeakFilter{ 400.0f, Audio::DecibelsToGain(-12.0f), 1.0f };
+		//The pre peak filter.
+		PeakFilter _PrePeakFilter{ 400.0f, Audio::DecibelsToGain(-18.0f), 1.0f };
+
+		//The pre low pass filter.
+		LowPassFilter _PreLowPassFilter{ 4'000.0f, 1.0f, 1 };
 
 		//The oversamplers.
 		StaticArray<OverSampler<4>, 2> _OverSamplers;
@@ -256,6 +322,34 @@ private:
 
 		//The post low pass filter.
 		LowPassFilter _PostLowPassFilter{ MID_BAND_LOW_PASS_DEFAULT_FREQUENCY, 1.0f, 2 };
+
+	};
+
+	/*
+	*	High band class definition.
+	*/
+	class HighBand final
+	{
+
+	public:
+
+		//High pass filter 1.
+		HighPassFilter _HighPassFilter1{ 200.0f, 1.0f, 3 };
+
+		//High pass filter 2.
+		HighPassFilter _HighPassFilter2{ 400.0f, 1.0f, 2 };
+
+		//High pass filter 3.
+		HighPassFilter _HighPassFilter3{ 800.0f, 1.0f, 1 };
+
+		//The peak filter.
+		PeakFilter _PeakFilter{ 400.0f, Audio::DecibelsToGain(-12.0f), 1.0f };
+
+		//The oversamplers.
+		StaticArray<OverSampler<4>, 2> _OverSamplers;
+
+		//The post high pass filter.
+		HighPassFilter _PostHighPassFilter{ HIGH_BAND_HIGH_PASS_DEFAULT_FREQUENCY, 1.0f, 2 };
 
 	};
 
@@ -270,5 +364,8 @@ private:
 
 	//The mid band.
 	MidBand _MidBand;
+
+	//The high band.
+	HighBand _HighBand;
 
 };
