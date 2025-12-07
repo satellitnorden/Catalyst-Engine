@@ -4,9 +4,6 @@
 //Components.
 #include <Components/Components/WorldTransformComponent.h>
 
-//Systems.
-#include <Systems/SoundSystem.h>
-
 /*
 *	Initializes this component.
 */

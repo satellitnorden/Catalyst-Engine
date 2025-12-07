@@ -57,14 +57,17 @@ namespace Audio
 		TRIPLET
 	};
 
+	//Type aliases.
+	using Identifier = uint64;
+
+	//Denotes an invalid identifier.
+	constexpr Identifier INVALID_IDENTIFIER{ UINT64_MAXIMUM };
+
 	//The default sample rate - Certain code assumes this value and initialize using it, until told otherwise.
 	constexpr float32 DEFAULT_SAMPLE_RATE{ 48'000.0f };
 
 	//The default beats per minute - Certain code assumes this value and initialize using it, until told otherwise.
 	constexpr float32 DEFAULT_BEATS_PER_MINUTE{ 120.0f };
-
-	//Type aliases.
-	using Identifier = uint64;
 
 	/*
 	*	Returns the bits per sample for the given format.

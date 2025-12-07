@@ -38,6 +38,11 @@ public:
 	static void *const RESTRICT CreatePlatformWindow(const char *const RESTRICT name, const uint32 width, const uint32 height, const bool fullscreen) NOEXCEPT;
 
 	/*
+	*	Destroys a platform window.
+	*/
+	static void DestroyPlayformWindow(void *const RESTRICT window) NOEXCEPT;
+
+	/*
 	*	Returns whether or not the window is in focus.
 	*/
 	static bool IsWindowInFocus() NOEXCEPT;

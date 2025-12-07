@@ -12,6 +12,7 @@
 //Audio.
 #include <Audio/Core/Audio.h>
 #include <Audio/Core/AudioProcessContext.h>
+#include <Audio/MIDI/MIDIMessage.h>
 
 //Concurrency.
 #include <Concurrency/Atomic.h>
@@ -21,7 +22,6 @@
 #include <Math/Geometry/AxisAlignedBoundingBox2D.h>
 
 //Sound.
-#include <Sound/MIDIMessage.h>
 #include <Sound/SoundUtilities.h>
 
 //User interface.

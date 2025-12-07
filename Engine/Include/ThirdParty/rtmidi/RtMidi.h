@@ -6,7 +6,7 @@
     MIDI input/output subclasses RtMidiIn and RtMidiOut.
 
     RtMidi GitHub site: https://github.com/thestk/rtmidi
-    RtMidi WWW site: http://www.music.mcgill.ca/~gary/rtmidi/
+    RtMidi WWW site: https://caml.music.mcgill.ca/~gary/rtmidi/
 
     RtMidi: realtime MIDI i/o C++ classes
     Copyright (c) 2003-2023 Gary P. Scavone
@@ -82,6 +82,8 @@
 #include <string>
 #include <vector>
 
+namespace rt {
+namespace midi {
 
 /************************************************************************/
 /*! \class RtMidiError
@@ -674,4 +676,11 @@ inline void RtMidiOut :: sendMessage( const std::vector<unsigned char> *message 
 inline void RtMidiOut :: sendMessage( const unsigned char *message, size_t size ) { static_cast<MidiOutApi *>(rtapi_)->sendMessage( message, size ); }
 inline void RtMidiOut :: setErrorCallback( RtMidiErrorCallback errorCallback, void *userData ) { rtapi_->setErrorCallback(errorCallback, userData); }
 
+} // namespace midi
+} // namespace rt
+
+#endif
+
+#ifndef RTMIDI_USE_NAMESPACE
+using namespace rt::midi;
 #endif

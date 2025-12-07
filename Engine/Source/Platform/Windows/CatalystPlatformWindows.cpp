@@ -359,6 +359,14 @@ void *const RESTRICT CatalystPlatform::CreatePlatformWindow(const char *const RE
 }
 
 /*
+*	Destroys a platform window.
+*/
+void CatalystPlatform::DestroyPlayformWindow(void *const RESTRICT window) NOEXCEPT
+{
+	DestroyWindow(static_cast<HWND>(window));
+}
+
+/*
 *	Returns whether or not the window is in focus.
 */
 bool CatalystPlatform::IsWindowInFocus() NOEXCEPT

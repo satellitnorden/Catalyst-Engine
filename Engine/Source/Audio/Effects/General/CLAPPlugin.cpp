@@ -738,6 +738,13 @@ void CLAPPlugin::Terminate() NOEXCEPT
 		if (_GUI._Extension)
 		{
 			_GUI._Extension->destroy(_Plugin);
+			_GUI._Extension = nullptr;
+		}
+
+		if (_GUI._Window)
+		{
+			CatalystPlatform::DestroyPlayformWindow(_GUI._Window);
+			_GUI._Window = nullptr;
 		}
 
 		//Destroy the plugin.

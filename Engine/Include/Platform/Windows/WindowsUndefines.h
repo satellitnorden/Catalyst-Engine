@@ -23,6 +23,7 @@
 #undef IN
 #undef OUT
 #undef ERROR
+#undef SendMessage
 //Because Windows.h has a function called rectangle, but we have a class called Rectangle...
 #undef Rectangle
 #define Rectangle _Rectangle

@@ -1,4 +1,4 @@
-This version of the "RtMidi" library was downloaded 2023-10-28 from https://github.com/thestk/rtmidi with the following license:
+This version of the "RtMidi" library was downloaded 2025-12-06 from https://github.com/thestk/rtmidi with the following license:
 
 	RtMidi: realtime MIDI i/o C++ classes
 	Copyright (c) 2003-2023 Gary P. Scavone
