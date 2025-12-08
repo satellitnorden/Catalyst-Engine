@@ -48,9 +48,9 @@ public:
 	FORCE_INLINE CleanAmp1() NOEXCEPT
 	{
 		//Set up the output curve.
-		_OutputCurve.SetValue(0, SoundUtilities::DecibelsToGain(-48.0f));
-		_OutputCurve.SetValue(1, SoundUtilities::DecibelsToGain(0.0f));
-		_OutputCurve.SetValue(2, SoundUtilities::DecibelsToGain(12.0f));
+		_OutputCurve.SetValue(0, Audio::DecibelsToGain(-48.0f));
+		_OutputCurve.SetValue(1, Audio::DecibelsToGain(0.0f));
+		_OutputCurve.SetValue(2, Audio::DecibelsToGain(12.0f));
 
 		//Set up the calibration curve.
 		_CalibrationCurve.SetValue(0, 6.495035f); //16.251629dB at 0.00% gain
@@ -186,7 +186,7 @@ public:
 		for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
 		{
 			//Calculate the gain.
-			const float32 gain{ SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 32.0f, BaseMath::InverseSquare(_Gain))) };
+			const float32 gain{ Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 32.0f, BaseMath::InverseSquare(_Gain))) };
 
 			for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
 			{
@@ -249,16 +249,16 @@ private:
 	public:
 
 		//Peak filter 1.
-		PeakFilter _PeakFilter1{ 100.0f, SoundUtilities::DecibelsToGain(-6.0f), 0.70710678118654752440f };
+		PeakFilter _PeakFilter1{ 100.0f, Audio::DecibelsToGain(-6.0f), 0.70710678118654752440f };
 
 		//Peak filter 2.
-		PeakFilter _PeakFilter2{ 300.0f, SoundUtilities::DecibelsToGain(-6.0f), 0.70710678118654752440f };
+		PeakFilter _PeakFilter2{ 300.0f, Audio::DecibelsToGain(-6.0f), 0.70710678118654752440f };
 
 		//Peak filter 3.
-		PeakFilter _PeakFilter3{ 3'000.0f, SoundUtilities::DecibelsToGain(6.0f), 0.70710678118654752440f };
+		PeakFilter _PeakFilter3{ 3'000.0f, Audio::DecibelsToGain(6.0f), 0.70710678118654752440f };
 
 		//Peak filter 4.
-		PeakFilter _PeakFilter4{ 10'000.0f, SoundUtilities::DecibelsToGain(-6.0f), 0.70710678118654752440f };
+		PeakFilter _PeakFilter4{ 10'000.0f, Audio::DecibelsToGain(-6.0f), 0.70710678118654752440f };
 
 	};
 
@@ -271,40 +271,40 @@ private:
 	public:
 
 		//Peak filter 1.
-		PeakFilter _PeakFilter1{ 1'163.2f, SoundUtilities::DecibelsToGain(-14.79f), 0.487f };
+		PeakFilter _PeakFilter1{ 1'163.2f, Audio::DecibelsToGain(-14.79f), 0.487f };
 
 		//Peak filter 2.
-		PeakFilter _PeakFilter2{ 24.331f, SoundUtilities::DecibelsToGain(-6.92f), 1.223f };
+		PeakFilter _PeakFilter2{ 24.331f, Audio::DecibelsToGain(-6.92f), 1.223f };
 
 		//Peak filter 3.
-		PeakFilter _PeakFilter3{ 622.11f, SoundUtilities::DecibelsToGain(-4.67f), 1.621f };
+		PeakFilter _PeakFilter3{ 622.11f, Audio::DecibelsToGain(-4.67f), 1.621f };
 
 		//Peak filter 4.
-		PeakFilter _PeakFilter4{ 3'088.2f, SoundUtilities::DecibelsToGain(-3.39f), 1.768f };
+		PeakFilter _PeakFilter4{ 3'088.2f, Audio::DecibelsToGain(-3.39f), 1.768f };
 
 		//Peak filter 5.
-		PeakFilter _PeakFilter5{ 12'722.0f, SoundUtilities::DecibelsToGain(3.46f), 1.098f };
+		PeakFilter _PeakFilter5{ 12'722.0f, Audio::DecibelsToGain(3.46f), 1.098f };
 
 		//Peak filter 6.
-		PeakFilter _PeakFilter6{ 25.546f, SoundUtilities::DecibelsToGain(-3.23f), 1.693f };
+		PeakFilter _PeakFilter6{ 25.546f, Audio::DecibelsToGain(-3.23f), 1.693f };
 
 		//Peak filter 7.
-		PeakFilter _PeakFilter7{ 66.381f, SoundUtilities::DecibelsToGain(2.27f), 2.293f };
+		PeakFilter _PeakFilter7{ 66.381f, Audio::DecibelsToGain(2.27f), 2.293f };
 
 		//Peak filter 8.
-		PeakFilter _PeakFilter8{ 27.316f, SoundUtilities::DecibelsToGain(-2.14f), 2.102f };
+		PeakFilter _PeakFilter8{ 27.316f, Audio::DecibelsToGain(-2.14f), 2.102f };
 
 		//Peak filter 9.
-		PeakFilter _PeakFilter9{ 3'568.5f, SoundUtilities::DecibelsToGain(-1.20f), 1.250f };
+		PeakFilter _PeakFilter9{ 3'568.5f, Audio::DecibelsToGain(-1.20f), 1.250f };
 
 		//Peak filter 10.
-		PeakFilter _PeakFilter10{ 351.27f, SoundUtilities::DecibelsToGain(-0.89f), 0.599f };
+		PeakFilter _PeakFilter10{ 351.27f, Audio::DecibelsToGain(-0.89f), 0.599f };
 
 		//Peak filter 11.
-		PeakFilter _PeakFilter11{ 1'293.1f, SoundUtilities::DecibelsToGain(0.94f), 4.204f };
+		PeakFilter _PeakFilter11{ 1'293.1f, Audio::DecibelsToGain(0.94f), 4.204f };
 
 		//Peak filter 12.
-		PeakFilter _PeakFilter12{ 66.624f, SoundUtilities::DecibelsToGain(1.09f), 2.500f };
+		PeakFilter _PeakFilter12{ 66.624f, Audio::DecibelsToGain(1.09f), 2.500f };
 
 	};
 
@@ -414,16 +414,16 @@ private:
 			{
 				const float32 bass_scalar{ _Bass * 2.0f };
 
-				_ToneFilters._BassFilter1._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(-20.77f, 0.0f, bass_scalar));
-				_ToneFilters._BassFilter2._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(2.26f, 0.0f, bass_scalar));
+				_ToneFilters._BassFilter1._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(-20.77f, 0.0f, bass_scalar));
+				_ToneFilters._BassFilter2._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(2.26f, 0.0f, bass_scalar));
 			}
 
 			else
 			{
 				const float32 bass_scalar{ (_Bass - 0.5f) * 2.0f };
 
-				_ToneFilters._BassFilter1._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 10.60f, bass_scalar));
-				_ToneFilters._BassFilter2._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, -1.90f, bass_scalar));
+				_ToneFilters._BassFilter1._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 10.60f, bass_scalar));
+				_ToneFilters._BassFilter2._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, -1.90f, bass_scalar));
 			}
 
 			_ToneFilters._BassFilter1._Frequency = BaseMath::LinearlyInterpolate(93.340f, 43.507f, _Bass);
@@ -441,20 +441,20 @@ private:
 			{
 				const float32 mid_scalar{ _Mid * 2.0f };
 
-				_ToneFilters._MidFilter1._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(-2.41f, 0.0f, mid_scalar));
-				_ToneFilters._MidFilter2._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(-0.30f, 0.0f, mid_scalar));
-				_ToneFilters._MidFilter3._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.21f, 0.0f, mid_scalar));
-				_ToneFilters._MidFilter4._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(-0.16f, 0.0f, mid_scalar));
+				_ToneFilters._MidFilter1._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(-2.41f, 0.0f, mid_scalar));
+				_ToneFilters._MidFilter2._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(-0.30f, 0.0f, mid_scalar));
+				_ToneFilters._MidFilter3._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.21f, 0.0f, mid_scalar));
+				_ToneFilters._MidFilter4._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(-0.16f, 0.0f, mid_scalar));
 			}
 
 			else
 			{
 				const float32 mid_scalar{ (_Mid - 0.5f) * 2.0f };
 
-				_ToneFilters._MidFilter1._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 6.78f, mid_scalar));
-				_ToneFilters._MidFilter2._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, -1.48f, mid_scalar));
-				_ToneFilters._MidFilter3._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 2.76f, mid_scalar));
-				_ToneFilters._MidFilter4._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 2.18f, mid_scalar));
+				_ToneFilters._MidFilter1._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 6.78f, mid_scalar));
+				_ToneFilters._MidFilter2._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, -1.48f, mid_scalar));
+				_ToneFilters._MidFilter3._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 2.76f, mid_scalar));
+				_ToneFilters._MidFilter4._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 2.18f, mid_scalar));
 			}
 
 			_ToneFilters._MidFilter1._Frequency = BaseMath::LinearlyInterpolate(889.89f, 1'477.5f, _Mid);
@@ -480,16 +480,16 @@ private:
 			{
 				const float32 treble_scalar{ _Treble * 2.0f };
 
-				_ToneFilters._TrebleFilter1._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(-15.86f, 0.0f, treble_scalar));
-				_ToneFilters._TrebleFilter2._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(2.77f, 0.0f, treble_scalar));
+				_ToneFilters._TrebleFilter1._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(-15.86f, 0.0f, treble_scalar));
+				_ToneFilters._TrebleFilter2._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(2.77f, 0.0f, treble_scalar));
 			}
 
 			else
 			{
 				const float32 treble_scalar{ (_Treble - 0.5f) * 2.0f };
 
-				_ToneFilters._TrebleFilter1._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 15.79f, treble_scalar));
-				_ToneFilters._TrebleFilter2._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, -2.55f, treble_scalar));
+				_ToneFilters._TrebleFilter1._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 15.79f, treble_scalar));
+				_ToneFilters._TrebleFilter2._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, -2.55f, treble_scalar));
 			}
 
 			_ToneFilters._TrebleFilter1._Frequency = BaseMath::LinearlyInterpolate(7'104.7f, 5538.1f, _Treble);
@@ -507,14 +507,14 @@ private:
 			{
 				const float32 depth_scalar{ _Depth * 2.0f };
 
-				_ToneFilters._DepthFilter1._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(-4.81f, 0.0f, depth_scalar));
+				_ToneFilters._DepthFilter1._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(-4.81f, 0.0f, depth_scalar));
 			}
 
 			else
 			{
 				const float32 depth_scalar{ (_Depth - 0.5f) * 2.0f };
 
-				_ToneFilters._DepthFilter1._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 6.85f, depth_scalar));
+				_ToneFilters._DepthFilter1._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 6.85f, depth_scalar));
 			}
 
 			_ToneFilters._DepthFilter1._Frequency = BaseMath::LinearlyInterpolate(34.037f, 77.379f, _Depth);
@@ -528,14 +528,14 @@ private:
 			{
 				const float32 presence_scalar{ _Presence * 2.0f };
 
-				_ToneFilters._PresenceFilter1._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(-0.69f, 0.0f, presence_scalar));
+				_ToneFilters._PresenceFilter1._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(-0.69f, 0.0f, presence_scalar));
 			}
 
 			else
 			{
 				const float32 presence_scalar{ (_Presence - 0.5f) * 2.0f };
 
-				_ToneFilters._PresenceFilter1._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 14.75f, presence_scalar));
+				_ToneFilters._PresenceFilter1._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 14.75f, presence_scalar));
 			}
 
 			_ToneFilters._PresenceFilter1._Frequency = BaseMath::LinearlyInterpolate(1'325.8f, 4'592.3f, _Presence);

@@ -7,6 +7,7 @@
 //Third party.
 #include <ThirdParty/CLAP/ext/draft/resource-directory.h>
 
+#define SHOW_GUI_ON_STARTUP (0)
 
 /*
 *	The 'get_extension' function.
@@ -630,6 +631,7 @@ NO_DISCARD bool CLAPPlugin::Initialize(const char *const RESTRICT plugin_file_pa
 		return false;
 	}
 
+#if SHOW_GUI_ON_STARTUP
 	{
 		_GUI._Extension = static_cast<const clap_plugin_gui_t *const RESTRICT>(_Plugin->get_extension(_Plugin, CLAP_EXT_GUI));
 
@@ -669,6 +671,7 @@ NO_DISCARD bool CLAPPlugin::Initialize(const char *const RESTRICT plugin_file_pa
 			}
 		}
 	}
+#endif
 
 	//Activate the plugin.
 	if (!_Plugin->activate(_Plugin, static_cast<float64>(_SampleRate), 1, 4096))

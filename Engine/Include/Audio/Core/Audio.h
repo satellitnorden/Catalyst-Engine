@@ -481,4 +481,12 @@ namespace Audio
 		return A * A_gain + B * B_gain;
 	}
 
+	/*
+	*	Converts quality (Q) to bandwidth.
+	*/
+	FORCE_INLINE NO_DISCARD float32 QualityToBandwidth(const float32 Q) NOEXCEPT
+	{
+		return std::log(std::sqrt((std::pow((2.0f + (1.0f / std::pow(Q, 2.0f))), 2.0f) / 4.0f) - 1.0f) + (1.0f / (2.0f * std::pow(Q, 2.0f))) + 1.0f) / std::log(2.0f);
+	}
+
 }

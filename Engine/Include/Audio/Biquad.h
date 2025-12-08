@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/StaticArray.h>
 
+//Audio.
+#include <Audio/Core/Audio.h>
+
 //Math.
 #include <Math/Core/BaseMath.h>
 
@@ -65,7 +68,7 @@ public:
 	FORCE_INLINE void InitializeLowShelf(const float32 frequency, const float32 gain, const float32 sample_rate) NOEXCEPT
 	{
 		//This formula expects a different dB -> linear gain mapping, so calculate that.
-		const float32 _gain{ std::pow(10.0f, SoundUtilities::GainToDecibels(gain) / 40.0f) };
+		const float32 _gain{ std::pow(10.0f, Audio::GainToDecibels(gain) / 40.0f) };
 
 		const float32 W0{ 2.0f * 3.1415926535897932384626433832795028841971f * (frequency / sample_rate) };
 		const float32 cosine{ std::cos(W0) };
@@ -97,8 +100,8 @@ public:
 	FORCE_INLINE void InitializePeak(const float32 frequency, const float32 gain, const float32 quality, const float32 sample_rate) NOEXCEPT
 	{
 		//This formula expects a bandwidth parameter and a different dB -> linear gain mapping, so calculate that.
-		const float32 bandwidth{ SoundUtilities::QualityToBandwidth(quality) };
-		const float32 _gain{ std::pow(10.0f, SoundUtilities::GainToDecibels(gain) / 40.0f) };
+		const float32 bandwidth{ Audio::QualityToBandwidth(quality) };
+		const float32 _gain{ std::pow(10.0f, Audio::GainToDecibels(gain) / 40.0f) };
 
 		const float32 W0{ 2.0f * 3.1415926535897932384626433832795028841971f * (frequency / sample_rate) };
 		const float32 cosine{ std::cos(W0) };
@@ -129,7 +132,7 @@ public:
 	FORCE_INLINE void InitializeHighShelf(const float32 frequency, const float32 gain, const float32 sample_rate) NOEXCEPT
 	{
 		//This formula expects a different dB -> linear gain mapping, so calculate that.
-		const float32 _gain{ std::pow(10.0f, SoundUtilities::GainToDecibels(gain) / 40.0f) };
+		const float32 _gain{ std::pow(10.0f, Audio::GainToDecibels(gain) / 40.0f) };
 
 		const float32 W0{ 2.0f * 3.1415926535897932384626433832795028841971f * (frequency / sample_rate) };
 		const float32 cosine{ std::cos(W0) };

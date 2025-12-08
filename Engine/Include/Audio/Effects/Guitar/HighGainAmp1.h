@@ -197,7 +197,7 @@ public:
 		for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
 		{
 			//Calculate the gain.
-			const float32 gain{ SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(48.0f, 96.0f, BaseMath::InverseSquare(_Gain))) };
+			const float32 gain{ Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(48.0f, 96.0f, BaseMath::InverseSquare(_Gain))) };
 
 			for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
 			{
@@ -458,16 +458,16 @@ private:
 			{
 				const float32 bass_scalar{ _Bass * 2.0f };
 
-				_ToneFilters._BassFilter1._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(-8.82f, 0.0f, bass_scalar));
-				_ToneFilters._BassFilter2._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(1.30f, 0.0f, bass_scalar));
+				_ToneFilters._BassFilter1._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(-8.82f, 0.0f, bass_scalar));
+				_ToneFilters._BassFilter2._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(1.30f, 0.0f, bass_scalar));
 			}
 
 			else
 			{
 				const float32 bass_scalar{ (_Bass - 0.5f) * 2.0f };
 
-				_ToneFilters._BassFilter1._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 7.83f, bass_scalar));
-				_ToneFilters._BassFilter2._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, -0.96f, bass_scalar));
+				_ToneFilters._BassFilter1._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 7.83f, bass_scalar));
+				_ToneFilters._BassFilter2._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, -0.96f, bass_scalar));
 			}
 
 			_ToneFilters._BassFilter1._Frequency = BaseMath::LinearlyInterpolate(20.011f, 15.639f, _Bass);
@@ -485,18 +485,18 @@ private:
 			{
 				const float32 mid_scalar{ _Mid * 2.0f };
 
-				_ToneFilters._MidFilter1._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(-3.30f, 0.0f, mid_scalar));
-				_ToneFilters._MidFilter2._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(-3.16f, 0.0f, mid_scalar));
-				_ToneFilters._MidFilter3._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.94f, 0.0f, mid_scalar));
+				_ToneFilters._MidFilter1._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(-3.30f, 0.0f, mid_scalar));
+				_ToneFilters._MidFilter2._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(-3.16f, 0.0f, mid_scalar));
+				_ToneFilters._MidFilter3._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.94f, 0.0f, mid_scalar));
 			}
 
 			else
 			{
 				const float32 mid_scalar{ (_Mid - 0.5f) * 2.0f };
 
-				_ToneFilters._MidFilter1._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 1.84f, mid_scalar));
-				_ToneFilters._MidFilter2._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 1.22f, mid_scalar));
-				_ToneFilters._MidFilter3._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, -0.24f, mid_scalar));
+				_ToneFilters._MidFilter1._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 1.84f, mid_scalar));
+				_ToneFilters._MidFilter2._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 1.22f, mid_scalar));
+				_ToneFilters._MidFilter3._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, -0.24f, mid_scalar));
 			}
 
 			_ToneFilters._MidFilter1._Frequency = BaseMath::LinearlyInterpolate(11'157.0f, 2'243.2f, _Mid);
@@ -518,20 +518,20 @@ private:
 			{
 				const float32 treble_scalar{ _Treble * 2.0f };
 
-				_ToneFilters._TrebleFilter11._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(-7.50f, 0.0f, treble_scalar));
+				_ToneFilters._TrebleFilter11._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(-7.50f, 0.0f, treble_scalar));
 				_ToneFilters._TrebleFilter11.Process(context, *outputs, outputs, number_of_channels, number_of_samples);
 
-				_ToneFilters._TrebleFilter2._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(1.01f, 0.0f, treble_scalar));
+				_ToneFilters._TrebleFilter2._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(1.01f, 0.0f, treble_scalar));
 			}
 
 			else
 			{
 				const float32 treble_scalar{ (_Treble - 0.5f) * 2.0f };
 
-				_ToneFilters._TrebleFilter12._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 4.23f, treble_scalar));
+				_ToneFilters._TrebleFilter12._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 4.23f, treble_scalar));
 				_ToneFilters._TrebleFilter12.Process(context, *outputs, outputs, number_of_channels, number_of_samples);
 
-				_ToneFilters._TrebleFilter2._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, -0.83f, treble_scalar));
+				_ToneFilters._TrebleFilter2._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, -0.83f, treble_scalar));
 			}
 
 			_ToneFilters._TrebleFilter2._Frequency = BaseMath::LinearlyInterpolate(19.870f, 19.870f, _Treble);
@@ -545,14 +545,14 @@ private:
 			{
 				const float32 depth_scalar{ _Depth * 2.0f };
 
-				_ToneFilters._DepthFilter1._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(-4.81f, 0.0f, depth_scalar));
+				_ToneFilters._DepthFilter1._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(-4.81f, 0.0f, depth_scalar));
 			}
 
 			else
 			{
 				const float32 depth_scalar{ (_Depth - 0.5f) * 2.0f };
 
-				_ToneFilters._DepthFilter1._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 6.85f, depth_scalar));
+				_ToneFilters._DepthFilter1._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 6.85f, depth_scalar));
 			}
 
 			_ToneFilters._DepthFilter1._Frequency = BaseMath::LinearlyInterpolate(34.037f, 77.379f, _Depth);
@@ -566,14 +566,14 @@ private:
 			{
 				const float32 presence_scalar{ _Presence * 2.0f };
 
-				_ToneFilters._PresenceFilter1._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(-0.69f, 0.0f, presence_scalar));
+				_ToneFilters._PresenceFilter1._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(-0.69f, 0.0f, presence_scalar));
 			}
 
 			else
 			{
 				const float32 presence_scalar{ (_Presence - 0.5f) * 2.0f };
 
-				_ToneFilters._PresenceFilter1._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 14.75f, presence_scalar));
+				_ToneFilters._PresenceFilter1._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, 14.75f, presence_scalar));
 			}
 
 			_ToneFilters._PresenceFilter1._Frequency = BaseMath::LinearlyInterpolate(1'325.8f, 4'592.3f, _Presence);

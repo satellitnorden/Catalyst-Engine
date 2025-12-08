@@ -16,30 +16,6 @@ namespace SoundUtilities
 {
 
 	/*
-	*	Converts gain to decibels.
-	*/
-	FORCE_INLINE NO_DISCARD float32 GainToDecibels(const float32 gain) NOEXCEPT
-	{
-		return 20.0f * std::log10(gain);
-	}
-
-	/*
-	*	Converts decibels to gain.
-	*/
-	FORCE_INLINE NO_DISCARD float32 DecibelsToGain(const float32 decibels) NOEXCEPT
-	{
-		return std::pow(10.0f, decibels * 0.05f);
-	}
-
-	/*
-	*	Converts quality (Q) to bandwidth.
-	*/
-	FORCE_INLINE NO_DISCARD float32 QualityToBandwidth(const float32 Q) NOEXCEPT
-	{
-		return std::log(std::sqrt((std::pow((2.0f + (1.0f / std::pow(Q, 2.0f))), 2.0f) / 4.0f) - 1.0f) + (1.0f / (2.0f * std::pow(Q, 2.0f))) + 1.0f) / std::log(2.0f);
-	}
-
-	/*
 	*	Calculates the realy note duration in seconds in regards to the beats per minute.
 	*/
 	template <typename TYPE>
@@ -293,24 +269,6 @@ namespace SoundUtilities
 				return static_cast<TYPE>(0);
 			}
 		}
-	}
-
-	/*
-	*	Performs a crossfade between two sources, and returns the weights for each source.
-	*/
-	FORCE_INLINE void Crossfade(const float32 alpha, float32 *const RESTRICT A, float32 *const RESTRICT B) NOEXCEPT
-	{
-		//Define constants.
-		constexpr float32 CONSTANT{ 1.4186f };
-
-		//Do the calculation.
-		const float32 one_minus_alpha{ 1.0f - alpha };
-		const float32 _A{ alpha * one_minus_alpha };
-		const float32 _B{ _A * (1.0f + (CONSTANT * _A)) };
-		const float32 _C{ _B + alpha };
-		const float32 _D{ _B + one_minus_alpha };
-		*A = _C * _C;
-		*B = _D * _D;
 	}
 
 	/*

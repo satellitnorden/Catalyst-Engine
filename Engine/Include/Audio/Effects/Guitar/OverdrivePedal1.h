@@ -38,9 +38,9 @@ public:
 	FORCE_INLINE OverdrivePedal1() NOEXCEPT
 	{
 		//Set up the level curve.
-		_LevelCurve.SetValue(0, SoundUtilities::DecibelsToGain(-48.0f));
-		_LevelCurve.SetValue(1, SoundUtilities::DecibelsToGain(0.0f));
-		_LevelCurve.SetValue(2, SoundUtilities::DecibelsToGain(12.0f));
+		_LevelCurve.SetValue(0, Audio::DecibelsToGain(-48.0f));
+		_LevelCurve.SetValue(1, Audio::DecibelsToGain(0.0f));
+		_LevelCurve.SetValue(2, Audio::DecibelsToGain(12.0f));
 
 		//Set up the calibration curve.
 		_CalibrationCurve.SetValue(0, 0.310773f); //-10.151124dB at 0.00% drive
@@ -164,7 +164,7 @@ public:
 		//Apply the drive.
 		{
 			//Calculate the gain.
-			const float32 gain{ SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(30.0f, 60.0f, BaseMath::InverseSquare(_Drive))) };
+			const float32 gain{ Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(30.0f, 60.0f, BaseMath::InverseSquare(_Drive))) };
 
 			for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
 			{
@@ -201,13 +201,13 @@ public:
 			if (_Tone < 0.5f)
 			{
 				const float32 tone_scalar{ _Tone * 2.0f };
-				_ToneFilters._PeakFilter._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(ToneFilters::START_GAIN, 0.0f, tone_scalar));
+				_ToneFilters._PeakFilter._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(ToneFilters::START_GAIN, 0.0f, tone_scalar));
 			}
 			
 			else
 			{
 				const float32 tone_scalar{ (_Tone - 0.5f) * 2.0f };
-				_ToneFilters._PeakFilter._Gain = SoundUtilities::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, ToneFilters::END_GAIN, tone_scalar));
+				_ToneFilters._PeakFilter._Gain = Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(0.0f, ToneFilters::END_GAIN, tone_scalar));
 			}
 
 			_ToneFilters._PeakFilter._Frequency = BaseMath::LinearlyInterpolate(ToneFilters::START_FREQUENCY, ToneFilters::END_FREQUENCY, _Tone);
