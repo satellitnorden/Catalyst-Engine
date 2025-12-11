@@ -106,7 +106,7 @@ void ImGuiRenderPass::PreRecord(CommandBuffer *const RESTRICT frame_command_buff
 #if defined(CATALYST_EDITOR)
 	frame_command_buffer->BlitImage
 	(
-		&_ImGuiGraphicsPipeline,
+		&_ImGuiPipeline,
 		RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE_LOW_DYNAMIC_RANGE_1),
 		RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::EDITOR_VIEWPORT)
 	);

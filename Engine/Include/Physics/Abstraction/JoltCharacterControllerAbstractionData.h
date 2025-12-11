@@ -5,8 +5,8 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Third party.
-#include <Jolt/Jolt.h>
-#include <Jolt/Physics/Character/Character.h>
+#include <Jolt/Jolt/Jolt.h>
+#include <Jolt/Jolt/Physics/Character/Character.h>
 
 class JoltCharacterControllerAbstractionData final
 {

@@ -22,8 +22,8 @@
 
 
 //------------------------------------------------------------------------------
-# include <ThirdParty/ImGui/imgui.h>
-# include <ThirdParty/ImGui/imgui_internal.h>
+# include <ImGui/imgui.h>
+# include <ImGui/imgui_internal.h>
 # include "imgui_extra_math.h"
 # include "imgui_bezier_math.h"
 # include "imgui_canvas.h"

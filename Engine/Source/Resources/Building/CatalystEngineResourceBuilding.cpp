@@ -37,7 +37,6 @@
 
 #define BUILD_ENGINE_ALL (0)
 
-#define BUILD_ENGINE_BASE (0)
 #define BUILD_ENGINE_CLOUD_TEXTURE (0)
 #define BUILD_ENGINE_BLUE_NOISE_TEXTURES (0)
 #define BUILD_ENGINE_DEFAULT_TEXTURE_3D (0)
@@ -58,47 +57,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 
 	//Keep track of all tasks so that they can be deallocated.
 	DynamicArray<Task *RESTRICT> tasks;
-
-#if BUILD_ENGINE_BASE || BUILD_ENGINE_ALL
-	{
-		tasks.Emplace(new (MemorySystem::Instance->TypeAllocate<Task>()) Task());
-		Task &task{ *tasks.Back() };
-
-		task._Function = [](void* const RESTRICT)
-		{
-			//Gather the data.
-			DynamicArray<byte> data;
-
-			BinaryFile<BinaryFileMode::IN> data_file{ "..\\..\\..\\..\\Catalyst-Engine\\Tools\\Specular Bias Lookup Texture Generator\\Visual Studio Solution\\Specular Bias Lookup Texture Generator\\Specular Bias Lookup Texture Generator\\SpecularBiasLookupTextureData" };
-
-			if (data_file)
-			{
-				data.Upsize<false>(data_file.Size());
-				data_file.Read(data.Data(), data_file.Size());
-
-				data_file.Close();
-			}
-
-			else
-			{
-				ASSERT(false, "Couldn't open the specular bias lookup texture data file!");
-			}
-
-			//Build the raw data.
-			RawDataBuildParameters parameters;
-
-			parameters._Output = "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Resources\\Intermediate\\Base\\Specular_Bias_Lookup_Texture_Raw_Data";
-			parameters._ResourceIdentifier = "Specular_Bias_Lookup_Texture_Raw_Data";
-			parameters._Data = &data;
-
-			ResourceSystem::Instance->GetResourceBuildingSystem()->BuildRawData(parameters);
-		};
-		task._Arguments = nullptr;
-		task._ExecutableOnSameThread = false;
-
-		TaskSystem::Instance->ExecuteTask(&task);
-	}
-#endif
 
 #if BUILD_ENGINE_ALL || BUILD_ENGINE_CLOUD_TEXTURE
 	BuildCloudTexture();
@@ -973,7 +931,6 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 	}
 
 	if (BUILD_ENGINE_ALL
-		|| BUILD_ENGINE_BASE
 		|| BUILD_ENGINE_BLUE_NOISE_TEXTURES
 		|| BUILD_ENGINE_DEFAULT_TEXTURE_3D
 		|| BUILD_ENGINE_MATERIALS 

@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LocalDebuggerCommandArguments>generate_solution</LocalDebuggerCommandArguments>
+    <RemoteDebuggerCommandArguments>generate_solution</RemoteDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory>C:\GitHub\DrumAttack\Solutions</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>WIN64</LocalDebuggerCommandArguments>
-    <RemoteDebuggerCommandArguments>WIN64</RemoteDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerCommandArguments>WIN64</LocalDebuggerCommandArguments>
-    <RemoteDebuggerCommandArguments>WIN64</RemoteDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>generate_solution</LocalDebuggerCommandArguments>
+    <RemoteDebuggerCommandArguments>generate_solution</RemoteDebuggerCommandArguments>
   </PropertyGroup>
 </Project>

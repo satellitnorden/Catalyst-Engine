@@ -8,8 +8,8 @@
 #include <Math/General/Vector.h>
 
 //Third party.
-#include <ThirdParty/bc7enc/bc7enc.h>
-#include <ThirdParty/bc7enc/bc7decomp.h>
+#include <bc7enc/bc7enc.h>
+#include <bc7enc/bc7decomp.h>
 
 class TextureCompressionInitializer final
 {

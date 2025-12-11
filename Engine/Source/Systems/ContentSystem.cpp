@@ -38,7 +38,7 @@
 
 //Third party.
 #if !defined(CATALYST_CONFIGURATION_FINAL)
-	#include <ThirdParty/ImGui/imgui.h>
+	#include <ImGui/imgui.h>
 #endif
 
 //STL.

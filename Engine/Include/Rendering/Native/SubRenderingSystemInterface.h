@@ -14,7 +14,7 @@
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 //Third party.
-#include <ThirdParty/ImGui/imgui.h>
+#include <ImGui/imgui.h>
 #endif
 
 class SubRenderingSystemInterface

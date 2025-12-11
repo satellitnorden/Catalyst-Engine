@@ -6,7 +6,7 @@
 #include <Systems/InputSystem.h>
 
 //Third party.
-#include <ThirdParty/ImGui/imgui.h>
+#include <ImGui/imgui.h>
 #include <ThirdParty/imguinodeeditor/imgui_node_editor.h>
 
 //STL.

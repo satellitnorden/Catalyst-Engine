@@ -9,7 +9,7 @@
 #include <Systems/CatalystEngineSystem.h>
 
 //Third party.
-#include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
+#include <Jolt/Jolt/Physics/Collision/Shape/CapsuleShape.h>
 
 /*
 *	Returns the world position.

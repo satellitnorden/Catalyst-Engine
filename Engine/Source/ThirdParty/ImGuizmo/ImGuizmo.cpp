@@ -27,8 +27,8 @@
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
-#include <ThirdParty/ImGui/imgui.h>
-#include <ThirdParty/ImGui/imgui_internal.h>
+#include <ImGui/imgui.h>
+#include <ImGui/imgui_internal.h>
 #include <ThirdParty/ImGuizmo/ImGuizmo.h>
 
 #if defined(_MSC_VER) || defined(__MINGW32__)

@@ -11,7 +11,7 @@
 #include <Systems/RenderingSystem.h>
 
 //Third party.
-#include <ThirdParty/ImGui/imgui.h>
+#include <ImGui/imgui.h>
 #if defined(CATALYST_EDITOR)
 #include <ThirdParty/ImGuizmo/ImGuizmo.h>
 #endif

@@ -8,7 +8,7 @@
 #include <Systems/RenderingSystem.h>
 
 //Third party.
-#include <ThirdParty/ImGui/imgui.h>
+#include <ImGui/imgui.h>
 
 //STL.
 #include <string>

@@ -18,8 +18,8 @@
 
 //Third party.
 #if !defined(CATALYST_CONFIGURATION_FINAL)
-#include <ThirdParty/ImGui/imgui.h>
-#include <ThirdParty/ImGui/imgui_impl_vulkan.h>
+#include <ImGui/imgui.h>
+#include <ImGui/imgui_impl_vulkan.h>
 #endif
 
 /*

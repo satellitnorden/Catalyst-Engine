@@ -15,7 +15,7 @@
 #include <Systems/System.h>
 
 //Third party.
-#include <ThirdParty/ImGui/imgui.h>
+#include <ImGui/imgui.h>
 
 //Type aliases.
 using TopBarMenuCallback = void(*)();

@@ -42,8 +42,8 @@
 #include <World/Level/LevelStatistics.h>
 
 //Third party.
-#include <ThirdParty/ImGui/imgui.h>
-#include <ThirdParty/ImGui/imgui_internal.h>
+#include <ImGui/imgui.h>
+#include <ImGui/imgui_internal.h>
 #include <ThirdParty/ImGuizmo/ImGuizmo.h>
 
 //STL.

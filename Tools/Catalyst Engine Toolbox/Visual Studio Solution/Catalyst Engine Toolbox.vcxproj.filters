@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Main">
+      <UniqueIdentifier>{17ce34de-f979-4255-95c3-e3cccb6c7753}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{224e2dab-a457-4c20-81e6-5c8075dfa96f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ProjectSettings">
+      <UniqueIdentifier>{951641f3-509a-4bb7-9a1f-53f4722723f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty">
+      <UniqueIdentifier>{1bacefd5-17a5-4073-849e-52ecb29e8e25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GenerateSolution">
+      <UniqueIdentifier>{c1d7d831-92be-4986-8cb8-2a249f5be8b4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Code\Main\Main.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\ProjectSettings\ProjectSettings.cpp">
+      <Filter>ProjectSettings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\GenerateSolution\GenerateSolution.cpp">
+      <Filter>GenerateSolution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\GenerateSolution\GenerateVisualStudioSolution.cpp">
+      <Filter>GenerateSolution</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Code\Core\Core.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\ProjectSettings\ProjectSettings.h">
+      <Filter>ProjectSettings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\ThirdParty\json.hpp">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\GenerateSolution\GenerateSolution.h">
+      <Filter>GenerateSolution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\GenerateSolution\GenerateVisualStudioSolution.h">
+      <Filter>GenerateSolution</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -48,8 +48,8 @@
 # define __IMGUI_EX_CANVAS_H__
 # pragma once
 
-# include <ThirdParty/ImGui/imgui.h>
-# include <ThirdParty/ImGui/imgui_internal.h> // ImRect, ImFloor
+# include <ImGui/imgui.h>
+# include <ImGui/imgui_internal.h> // ImRect, ImFloor
 
 #ifndef IMGUIEX_CANVAS_API
 #define IMGUIEX_CANVAS_API
