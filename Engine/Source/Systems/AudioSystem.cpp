@@ -671,9 +671,6 @@ void AudioSystem::ProcessMixBufferRequest(const Request &request) NOEXCEPT
 				sample += playing_audio._Player.Sample(channel_index);
 			}
 
-			//Constrain the sample.
-			sample = BaseMath::Clamp<float32>(sample, -1.0f, 1.0f);
-
 			//Write the sample!
 			mix_buffer._Outputs[channel_index][sample_index] += sample;
 		}
@@ -712,6 +709,15 @@ void AudioSystem::ProcessMixBufferRequest(const Request &request) NOEXCEPT
 				number_of_channels,
 				number_of_samples
 			);
+		}
+	}
+
+	//Clip all outputs to avoid overruns.
+	for (DynamicArray<float32> &channel : mix_buffer._Outputs)
+	{
+		for (float32 &sample : channel)
+		{
+			sample = BaseMath::Clamp<float32>(sample, -1.0f + FLOAT32_EPSILON, 1.0f - FLOAT32_EPSILON);
 		}
 	}
 
