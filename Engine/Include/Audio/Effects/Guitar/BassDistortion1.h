@@ -63,7 +63,7 @@ public:
 	float32 _MidBandDistortion{ 0.5f };
 
 	//The mid band gain.
-	float32 _MidBandGain{ 1.0f };
+	float32 _MidBandGain{ Audio::DecibelsToGain(-3.0f) };
 
 	//Denotes whether or not the high band is enabled.
 	bool _HighBandEnabled{ true };
@@ -75,7 +75,10 @@ public:
 	float32 _HighBandDistortion{ 0.5f };
 
 	//The high band gain.
-	float32 _HighBandGain{ 1.0f };
+	float32 _HighBandGain{ Audio::DecibelsToGain(-6.0f) };
+
+	//Debug. (:
+	float32 _Debug{ 0.0f };
 
 	/*
 	*	Default constructor.
@@ -83,309 +86,309 @@ public:
 	FORCE_INLINE BassDistortion1() NOEXCEPT
 	{
 		//Set up the output curves.
-		_LowBandOutputCurve.SetValue(0, 13.337019f); //22.501175dB
+		_LowBandOutputCurve.SetValue(0, 13.337015f); //22.501173dB
 		_LowBandOutputCurve.SetValue(1, 13.274120f); //22.460115dB
-		_LowBandOutputCurve.SetValue(2, 13.212552f); //22.419733dB
-		_LowBandOutputCurve.SetValue(3, 13.152333f); //22.380056dB
+		_LowBandOutputCurve.SetValue(2, 13.212544f); //22.419729dB
+		_LowBandOutputCurve.SetValue(3, 13.152327f); //22.380051dB
 		_LowBandOutputCurve.SetValue(4, 13.093461f); //22.341089dB
-		_LowBandOutputCurve.SetValue(5, 13.035908f); //22.302824dB
-		_LowBandOutputCurve.SetValue(6, 12.979665f); //22.265268dB
+		_LowBandOutputCurve.SetValue(5, 13.035904f); //22.302822dB
+		_LowBandOutputCurve.SetValue(6, 12.979662f); //22.265266dB
 		_LowBandOutputCurve.SetValue(7, 12.924708f); //22.228415dB
-		_LowBandOutputCurve.SetValue(8, 12.871065f); //22.192289dB
+		_LowBandOutputCurve.SetValue(8, 12.871069f); //22.192291dB
 		_LowBandOutputCurve.SetValue(9, 12.818679f); //22.156866dB
-		_LowBandOutputCurve.SetValue(10, 12.767537f); //22.122141dB
+		_LowBandOutputCurve.SetValue(10, 12.767533f); //22.122139dB
 		_LowBandOutputCurve.SetValue(11, 12.717639f); //22.088129dB
-		_LowBandOutputCurve.SetValue(12, 12.668992f); //22.054842dB
+		_LowBandOutputCurve.SetValue(12, 12.668996f); //22.054844dB
 		_LowBandOutputCurve.SetValue(13, 12.621537f); //22.022243dB
-		_LowBandOutputCurve.SetValue(14, 12.575281f); //21.990355dB
-		_LowBandOutputCurve.SetValue(15, 12.530182f); //21.959146dB
-		_LowBandOutputCurve.SetValue(16, 12.486259f); //21.928646dB
-		_LowBandOutputCurve.SetValue(17, 12.443456f); //21.898819dB
-		_LowBandOutputCurve.SetValue(18, 12.401764f); //21.869669dB
-		_LowBandOutputCurve.SetValue(19, 12.361215f); //21.841223dB
+		_LowBandOutputCurve.SetValue(14, 12.575285f); //21.990356dB
+		_LowBandOutputCurve.SetValue(15, 12.530186f); //21.959148dB
+		_LowBandOutputCurve.SetValue(16, 12.486265f); //21.928650dB
+		_LowBandOutputCurve.SetValue(17, 12.443456f); //21.898821dB
+		_LowBandOutputCurve.SetValue(18, 12.401767f); //21.869671dB
+		_LowBandOutputCurve.SetValue(19, 12.361218f); //21.841225dB
 		_LowBandOutputCurve.SetValue(20, 12.321729f); //21.813433dB
-		_LowBandOutputCurve.SetValue(21, 12.283314f); //21.786310dB
+		_LowBandOutputCurve.SetValue(21, 12.283310f); //21.786308dB
 		_LowBandOutputCurve.SetValue(22, 12.245942f); //21.759844dB
 		_LowBandOutputCurve.SetValue(23, 12.209605f); //21.734032dB
-		_LowBandOutputCurve.SetValue(24, 12.174273f); //21.708860dB
-		_LowBandOutputCurve.SetValue(25, 12.139938f); //21.684328dB
-		_LowBandOutputCurve.SetValue(26, 12.106575f); //21.660425dB
+		_LowBandOutputCurve.SetValue(24, 12.174269f); //21.708858dB
+		_LowBandOutputCurve.SetValue(25, 12.139938f); //21.684330dB
+		_LowBandOutputCurve.SetValue(26, 12.106578f); //21.660427dB
 		_LowBandOutputCurve.SetValue(27, 12.074171f); //21.637146dB
 		_LowBandOutputCurve.SetValue(28, 12.042730f); //21.614498dB
-		_LowBandOutputCurve.SetValue(29, 12.012205f); //21.592455dB
+		_LowBandOutputCurve.SetValue(29, 12.012202f); //21.592453dB
 		_LowBandOutputCurve.SetValue(30, 11.982571f); //21.570999dB
 		_LowBandOutputCurve.SetValue(31, 11.953861f); //21.550163dB
-		_LowBandOutputCurve.SetValue(32, 11.926023f); //21.529913dB
-		_LowBandOutputCurve.SetValue(33, 11.899031f); //21.510231dB
+		_LowBandOutputCurve.SetValue(32, 11.926017f); //21.529907dB
+		_LowBandOutputCurve.SetValue(33, 11.899027f); //21.510229dB
 		_LowBandOutputCurve.SetValue(34, 11.872910f); //21.491142dB
 		_LowBandOutputCurve.SetValue(35, 11.847621f); //21.472624dB
-		_LowBandOutputCurve.SetValue(36, 11.823172f); //21.454679dB
-		_LowBandOutputCurve.SetValue(37, 11.799518f); //21.437284dB
-		_LowBandOutputCurve.SetValue(38, 11.776667f); //21.420446dB
-		_LowBandOutputCurve.SetValue(39, 11.754600f); //21.404156dB
-		_LowBandOutputCurve.SetValue(40, 11.733315f); //21.388414dB
-		_LowBandOutputCurve.SetValue(41, 11.712784f); //21.373201dB
-		_LowBandOutputCurve.SetValue(42, 11.693022f); //21.358534dB
-		_LowBandOutputCurve.SetValue(43, 11.673991f); //21.344387dB
-		_LowBandOutputCurve.SetValue(44, 11.655715f); //21.330778dB
+		_LowBandOutputCurve.SetValue(36, 11.823169f); //21.454678dB
+		_LowBandOutputCurve.SetValue(37, 11.799520f); //21.437286dB
+		_LowBandOutputCurve.SetValue(38, 11.776667f); //21.420448dB
+		_LowBandOutputCurve.SetValue(39, 11.754602f); //21.404160dB
+		_LowBandOutputCurve.SetValue(40, 11.733315f); //21.388412dB
+		_LowBandOutputCurve.SetValue(41, 11.712784f); //21.373203dB
+		_LowBandOutputCurve.SetValue(42, 11.693019f); //21.358532dB
+		_LowBandOutputCurve.SetValue(43, 11.673998f); //21.344391dB
+		_LowBandOutputCurve.SetValue(44, 11.655712f); //21.330776dB
 		_LowBandOutputCurve.SetValue(45, 11.638148f); //21.317677dB
 		_LowBandOutputCurve.SetValue(46, 11.621334f); //21.305120dB
 		_LowBandOutputCurve.SetValue(47, 11.605217f); //21.293064dB
-		_LowBandOutputCurve.SetValue(48, 11.589797f); //21.281515dB
-		_LowBandOutputCurve.SetValue(49, 11.575070f); //21.270472dB
-		_LowBandOutputCurve.SetValue(50, 11.561046f); //21.259941dB
-		_LowBandOutputCurve.SetValue(51, 11.547684f); //21.249897dB
-		_LowBandOutputCurve.SetValue(52, 11.535006f); //21.240355dB
+		_LowBandOutputCurve.SetValue(48, 11.589797f); //21.281517dB
+		_LowBandOutputCurve.SetValue(49, 11.575070f); //21.270473dB
+		_LowBandOutputCurve.SetValue(50, 11.561042f); //21.259939dB
+		_LowBandOutputCurve.SetValue(51, 11.547677f); //21.249893dB
+		_LowBandOutputCurve.SetValue(52, 11.535008f); //21.240358dB
 		_LowBandOutputCurve.SetValue(53, 11.523002f); //21.231312dB
-		_LowBandOutputCurve.SetValue(54, 11.511672f); //21.222767dB
+		_LowBandOutputCurve.SetValue(54, 11.511675f); //21.222771dB
 		_LowBandOutputCurve.SetValue(55, 11.500983f); //21.214699dB
 		_LowBandOutputCurve.SetValue(56, 11.490952f); //21.207121dB
-		_LowBandOutputCurve.SetValue(57, 11.481569f); //21.200024dB
-		_LowBandOutputCurve.SetValue(58, 11.472817f); //21.193401dB
-		_LowBandOutputCurve.SetValue(59, 11.464727f); //21.187273dB
-		_LowBandOutputCurve.SetValue(60, 11.457274f); //21.181625dB
+		_LowBandOutputCurve.SetValue(57, 11.481572f); //21.200027dB
+		_LowBandOutputCurve.SetValue(58, 11.472815f); //21.193399dB
+		_LowBandOutputCurve.SetValue(59, 11.464724f); //21.187271dB
+		_LowBandOutputCurve.SetValue(60, 11.457272f); //21.181623dB
 		_LowBandOutputCurve.SetValue(61, 11.450424f); //21.176432dB
-		_LowBandOutputCurve.SetValue(62, 11.444212f); //21.171717dB
+		_LowBandOutputCurve.SetValue(62, 11.444215f); //21.171719dB
 		_LowBandOutputCurve.SetValue(63, 11.438619f); //21.167471dB
 		_LowBandOutputCurve.SetValue(64, 11.433634f); //21.163685dB
-		_LowBandOutputCurve.SetValue(65, 11.429284f); //21.160379dB
-		_LowBandOutputCurve.SetValue(66, 11.425508f); //21.157511dB
-		_LowBandOutputCurve.SetValue(67, 11.422354f); //21.155111dB
+		_LowBandOutputCurve.SetValue(65, 11.429284f); //21.160381dB
+		_LowBandOutputCurve.SetValue(66, 11.425508f); //21.157509dB
+		_LowBandOutputCurve.SetValue(67, 11.422357f); //21.155113dB
 		_LowBandOutputCurve.SetValue(68, 11.419789f); //21.153162dB
-		_LowBandOutputCurve.SetValue(69, 11.417808f); //21.151653dB
-		_LowBandOutputCurve.SetValue(70, 11.416404f); //21.150585dB
-		_LowBandOutputCurve.SetValue(71, 11.415592f); //21.149969dB
-		_LowBandOutputCurve.SetValue(72, 11.415336f); //21.149773dB
-		_LowBandOutputCurve.SetValue(73, 11.415636f); //21.150002dB
-		_LowBandOutputCurve.SetValue(74, 11.416530f); //21.150681dB
+		_LowBandOutputCurve.SetValue(69, 11.417811f); //21.151657dB
+		_LowBandOutputCurve.SetValue(70, 11.416408f); //21.150589dB
+		_LowBandOutputCurve.SetValue(71, 11.415596f); //21.149971dB
+		_LowBandOutputCurve.SetValue(72, 11.415339f); //21.149776dB
+		_LowBandOutputCurve.SetValue(73, 11.415633f); //21.150000dB
+		_LowBandOutputCurve.SetValue(74, 11.416530f); //21.150682dB
 		_LowBandOutputCurve.SetValue(75, 11.417958f); //21.151768dB
 		_LowBandOutputCurve.SetValue(76, 11.419946f); //21.153280dB
 		_LowBandOutputCurve.SetValue(77, 11.422457f); //21.155190dB
 		_LowBandOutputCurve.SetValue(78, 11.425508f); //21.157511dB
-		_LowBandOutputCurve.SetValue(79, 11.429087f); //21.160231dB
+		_LowBandOutputCurve.SetValue(79, 11.429084f); //21.160229dB
 		_LowBandOutputCurve.SetValue(80, 11.433182f); //21.163342dB
-		_LowBandOutputCurve.SetValue(81, 11.437771f); //21.166826dB
-		_LowBandOutputCurve.SetValue(82, 11.442870f); //21.170698dB
-		_LowBandOutputCurve.SetValue(83, 11.448460f); //21.174940dB
-		_LowBandOutputCurve.SetValue(84, 11.454533f); //21.179546dB
+		_LowBandOutputCurve.SetValue(81, 11.437771f); //21.166828dB
+		_LowBandOutputCurve.SetValue(82, 11.442867f); //21.170696dB
+		_LowBandOutputCurve.SetValue(83, 11.448462f); //21.174942dB
+		_LowBandOutputCurve.SetValue(84, 11.454529f); //21.179544dB
 		_LowBandOutputCurve.SetValue(85, 11.461071f); //21.184504dB
-		_LowBandOutputCurve.SetValue(86, 11.468070f); //21.189806dB
+		_LowBandOutputCurve.SetValue(86, 11.468066f); //21.189804dB
 		_LowBandOutputCurve.SetValue(87, 11.475520f); //21.195448dB
-		_LowBandOutputCurve.SetValue(88, 11.483432f); //21.201433dB
-		_LowBandOutputCurve.SetValue(89, 11.491751f); //21.207724dB
+		_LowBandOutputCurve.SetValue(88, 11.483436f); //21.201435dB
+		_LowBandOutputCurve.SetValue(89, 11.491747f); //21.207722dB
 		_LowBandOutputCurve.SetValue(90, 11.500504f); //21.214336dB
-		_LowBandOutputCurve.SetValue(91, 11.509646f); //21.221239dB
-		_LowBandOutputCurve.SetValue(92, 11.519214f); //21.228456dB
+		_LowBandOutputCurve.SetValue(91, 11.509644f); //21.221237dB
+		_LowBandOutputCurve.SetValue(92, 11.519210f); //21.228455dB
 		_LowBandOutputCurve.SetValue(93, 11.529143f); //21.235941dB
-		_LowBandOutputCurve.SetValue(94, 11.539445f); //21.243698dB
+		_LowBandOutputCurve.SetValue(94, 11.539452f); //21.243702dB
 		_LowBandOutputCurve.SetValue(95, 11.550157f); //21.251757dB
-		_LowBandOutputCurve.SetValue(96, 11.561185f); //21.260046dB
+		_LowBandOutputCurve.SetValue(96, 11.561188f); //21.260048dB
 		_LowBandOutputCurve.SetValue(97, 11.572574f); //21.268599dB
-		_LowBandOutputCurve.SetValue(98, 11.584275f); //21.277376dB
+		_LowBandOutputCurve.SetValue(98, 11.584270f); //21.277372dB
 		_LowBandOutputCurve.SetValue(99, 11.596301f); //21.286388dB
-		_LowBandOutputCurve.SetValue(100, 11.608639f); //21.295626dB
-		_MidBandOutputCurve.SetValue(0, 47.634190f); //33.558376dB
-		_MidBandOutputCurve.SetValue(1, 44.974319f); //33.059292dB
-		_MidBandOutputCurve.SetValue(2, 42.577656f); //32.583633dB
-		_MidBandOutputCurve.SetValue(3, 40.429081f); //32.133877dB
-		_MidBandOutputCurve.SetValue(4, 38.510078f); //31.711487dB
-		_MidBandOutputCurve.SetValue(5, 36.799873f); //31.316925dB
-		_MidBandOutputCurve.SetValue(6, 35.276558f); //30.949724dB
-		_MidBandOutputCurve.SetValue(7, 33.917961f); //30.608595dB
-		_MidBandOutputCurve.SetValue(8, 32.702015f); //30.291491dB
-		_MidBandOutputCurve.SetValue(9, 31.607529f); //29.995810dB
-		_MidBandOutputCurve.SetValue(10, 30.615437f); //29.718809dB
-		_MidBandOutputCurve.SetValue(11, 29.710024f); //29.458059dB
-		_MidBandOutputCurve.SetValue(12, 28.879919f); //29.211920dB
-		_MidBandOutputCurve.SetValue(13, 28.118013f); //28.979692dB
-		_MidBandOutputCurve.SetValue(14, 27.420624f); //28.761545dB
-		_MidBandOutputCurve.SetValue(15, 26.786226f); //28.558229dB
-		_MidBandOutputCurve.SetValue(16, 26.213909f); //28.370634dB
-		_MidBandOutputCurve.SetValue(17, 25.702475f); //28.199499dB
-		_MidBandOutputCurve.SetValue(18, 25.249716f); //28.045130dB
-		_MidBandOutputCurve.SetValue(19, 24.852461f); //27.907387dB
-		_MidBandOutputCurve.SetValue(20, 24.506828f); //27.785742dB
-		_MidBandOutputCurve.SetValue(21, 24.208813f); //27.679468dB
-		_MidBandOutputCurve.SetValue(22, 23.954548f); //27.587759dB
-		_MidBandOutputCurve.SetValue(23, 23.740602f); //27.509834dB
-		_MidBandOutputCurve.SetValue(24, 23.564039f); //27.444994dB
-		_MidBandOutputCurve.SetValue(25, 23.422272f); //27.392580dB
-		_MidBandOutputCurve.SetValue(26, 23.313046f); //27.351980dB
-		_MidBandOutputCurve.SetValue(27, 23.234238f); //27.322569dB
-		_MidBandOutputCurve.SetValue(28, 23.183897f); //27.303728dB
-		_MidBandOutputCurve.SetValue(29, 23.160231f); //27.294857dB
-		_MidBandOutputCurve.SetValue(30, 23.161528f); //27.295343dB
-		_MidBandOutputCurve.SetValue(31, 23.186234f); //27.304604dB
-		_MidBandOutputCurve.SetValue(32, 23.232975f); //27.322096dB
-		_MidBandOutputCurve.SetValue(33, 23.300404f); //27.347269dB
-		_MidBandOutputCurve.SetValue(34, 23.387260f); //27.379587dB
-		_MidBandOutputCurve.SetValue(35, 23.492294f); //27.418509dB
-		_MidBandOutputCurve.SetValue(36, 23.614239f); //27.463478dB
-		_MidBandOutputCurve.SetValue(37, 23.751795f); //27.513927dB
-		_MidBandOutputCurve.SetValue(38, 23.903637f); //27.569279dB
-		_MidBandOutputCurve.SetValue(39, 24.068392f); //27.628941dB
-		_MidBandOutputCurve.SetValue(40, 24.244688f); //27.692331dB
-		_MidBandOutputCurve.SetValue(41, 24.431093f); //27.758858dB
-		_MidBandOutputCurve.SetValue(42, 24.626184f); //27.827942dB
-		_MidBandOutputCurve.SetValue(43, 24.828564f); //27.899031dB
-		_MidBandOutputCurve.SetValue(44, 25.036831f); //27.971586dB
-		_MidBandOutputCurve.SetValue(45, 25.249653f); //28.045107dB
-		_MidBandOutputCurve.SetValue(46, 25.465767f); //28.119135dB
-		_MidBandOutputCurve.SetValue(47, 25.683962f); //28.193239dB
-		_MidBandOutputCurve.SetValue(48, 25.903158f); //28.267054dB
-		_MidBandOutputCurve.SetValue(49, 26.122313f); //28.340231dB
-		_MidBandOutputCurve.SetValue(50, 26.340515f); //28.412485dB
-		_MidBandOutputCurve.SetValue(51, 26.556910f); //28.483549dB
-		_MidBandOutputCurve.SetValue(52, 26.770803f); //28.553228dB
-		_MidBandOutputCurve.SetValue(53, 26.981474f); //28.621313dB
-		_MidBandOutputCurve.SetValue(54, 27.188406f); //28.687674dB
-		_MidBandOutputCurve.SetValue(55, 27.391090f); //28.752186dB
-		_MidBandOutputCurve.SetValue(56, 27.589119f); //28.814756dB
-		_MidBandOutputCurve.SetValue(57, 27.782167f); //28.875322dB
-		_MidBandOutputCurve.SetValue(58, 27.969969f); //28.933840dB
-		_MidBandOutputCurve.SetValue(59, 28.152317f); //28.990282dB
-		_MidBandOutputCurve.SetValue(60, 28.329058f); //29.044641dB
-		_MidBandOutputCurve.SetValue(61, 28.500107f); //29.096930dB
-		_MidBandOutputCurve.SetValue(62, 28.665407f); //29.147161dB
-		_MidBandOutputCurve.SetValue(63, 28.824940f); //29.195368dB
-		_MidBandOutputCurve.SetValue(64, 28.978718f); //29.241583dB
-		_MidBandOutputCurve.SetValue(65, 29.126768f); //29.285845dB
-		_MidBandOutputCurve.SetValue(66, 29.269178f); //29.328209dB
-		_MidBandOutputCurve.SetValue(67, 29.406012f); //29.368721dB
-		_MidBandOutputCurve.SetValue(68, 29.537355f); //29.407431dB
-		_MidBandOutputCurve.SetValue(69, 29.663292f); //29.444387dB
-		_MidBandOutputCurve.SetValue(70, 29.783970f); //29.479650dB
-		_MidBandOutputCurve.SetValue(71, 29.899466f); //29.513268dB
-		_MidBandOutputCurve.SetValue(72, 30.009907f); //29.545292dB
-		_MidBandOutputCurve.SetValue(73, 30.115391f); //29.575769dB
-		_MidBandOutputCurve.SetValue(74, 30.216036f); //29.604750dB
-		_MidBandOutputCurve.SetValue(75, 30.311975f); //29.632284dB
-		_MidBandOutputCurve.SetValue(76, 30.403303f); //29.658415dB
-		_MidBandOutputCurve.SetValue(77, 30.490110f); //29.683180dB
-		_MidBandOutputCurve.SetValue(78, 30.572515f); //29.706623dB
-		_MidBandOutputCurve.SetValue(79, 30.650610f); //29.728781dB
-		_MidBandOutputCurve.SetValue(80, 30.724491f); //29.749693dB
-		_MidBandOutputCurve.SetValue(81, 30.794239f); //29.769388dB
-		_MidBandOutputCurve.SetValue(82, 30.859936f); //29.787901dB
-		_MidBandOutputCurve.SetValue(83, 30.921690f); //29.805264dB
-		_MidBandOutputCurve.SetValue(84, 30.979519f); //29.821493dB
-		_MidBandOutputCurve.SetValue(85, 31.033531f); //29.836622dB
-		_MidBandOutputCurve.SetValue(86, 31.083778f); //29.850676dB
-		_MidBandOutputCurve.SetValue(87, 31.130322f); //29.863672dB
-		_MidBandOutputCurve.SetValue(88, 31.173204f); //29.875628dB
-		_MidBandOutputCurve.SetValue(89, 31.212479f); //29.886564dB
-		_MidBandOutputCurve.SetValue(90, 31.248199f); //29.896500dB
-		_MidBandOutputCurve.SetValue(91, 31.280399f); //29.905445dB
-		_MidBandOutputCurve.SetValue(92, 31.309114f); //29.913416dB
-		_MidBandOutputCurve.SetValue(93, 31.334366f); //29.920418dB
-		_MidBandOutputCurve.SetValue(94, 31.356203f); //29.926470dB
-		_MidBandOutputCurve.SetValue(95, 31.374653f); //29.931578dB
-		_MidBandOutputCurve.SetValue(96, 31.389711f); //29.935745dB
-		_MidBandOutputCurve.SetValue(97, 31.401405f); //29.938980dB
-		_MidBandOutputCurve.SetValue(98, 31.409740f); //29.941286dB
-		_MidBandOutputCurve.SetValue(99, 31.414751f); //29.942671dB
-		_MidBandOutputCurve.SetValue(100, 31.416414f); //29.943132dB
-		_HighBandOutputCurve.SetValue(0, 73.872993f); //37.369713dB
-		_HighBandOutputCurve.SetValue(1, 70.822823f); //37.003464dB
-		_HighBandOutputCurve.SetValue(2, 68.234055f); //36.680023dB
-		_HighBandOutputCurve.SetValue(3, 65.980751f); //36.388344dB
-		_HighBandOutputCurve.SetValue(4, 63.971569f); //36.119740dB
-		_HighBandOutputCurve.SetValue(5, 62.156864f); //35.869781dB
-		_HighBandOutputCurve.SetValue(6, 60.519276f); //35.637875dB
-		_HighBandOutputCurve.SetValue(7, 59.056576f); //35.425365dB
-		_HighBandOutputCurve.SetValue(8, 57.765202f); //35.233326dB
-		_HighBandOutputCurve.SetValue(9, 56.630226f); //35.060966dB
-		_HighBandOutputCurve.SetValue(10, 55.623898f); //34.905228dB
-		_HighBandOutputCurve.SetValue(11, 54.710957f); //34.761486dB
-		_HighBandOutputCurve.SetValue(12, 53.856632f); //34.624783dB
-		_HighBandOutputCurve.SetValue(13, 53.034180f); //34.491116dB
-		_HighBandOutputCurve.SetValue(14, 52.228386f); //34.358131dB
-		_HighBandOutputCurve.SetValue(15, 51.435947f); //34.225334dB
-		_HighBandOutputCurve.SetValue(16, 50.662182f); //34.093678dB
-		_HighBandOutputCurve.SetValue(17, 49.917030f); //33.964973dB
-		_HighBandOutputCurve.SetValue(18, 49.210682f); //33.841187dB
-		_HighBandOutputCurve.SetValue(19, 48.550900f); //33.723946dB
-		_HighBandOutputCurve.SetValue(20, 47.941330f); //33.614201dB
-		_HighBandOutputCurve.SetValue(21, 47.381714f); //33.512215dB
-		_HighBandOutputCurve.SetValue(22, 46.868793f); //33.417675dB
-		_HighBandOutputCurve.SetValue(23, 46.397438f); //33.329880dB
-		_HighBandOutputCurve.SetValue(24, 45.961864f); //33.247952dB
-		_HighBandOutputCurve.SetValue(25, 45.556492f); //33.171005dB
-		_HighBandOutputCurve.SetValue(26, 45.176601f); //33.098270dB
-		_HighBandOutputCurve.SetValue(27, 44.818352f); //33.029118dB
-		_HighBandOutputCurve.SetValue(28, 44.479057f); //32.963112dB
-		_HighBandOutputCurve.SetValue(29, 44.156994f); //32.899990dB
-		_HighBandOutputCurve.SetValue(30, 43.851166f); //32.839622dB
-		_HighBandOutputCurve.SetValue(31, 43.561344f); //32.782024dB
-		_HighBandOutputCurve.SetValue(32, 43.287613f); //32.727272dB
-		_HighBandOutputCurve.SetValue(33, 43.030457f); //32.675518dB
-		_HighBandOutputCurve.SetValue(34, 42.790401f); //32.626926dB
-		_HighBandOutputCurve.SetValue(35, 42.568027f); //32.581669dB
-		_HighBandOutputCurve.SetValue(36, 42.363853f); //32.539909dB
-		_HighBandOutputCurve.SetValue(37, 42.178230f); //32.501766dB
-		_HighBandOutputCurve.SetValue(38, 42.011265f); //32.467316dB
-		_HighBandOutputCurve.SetValue(39, 41.862873f); //32.436581dB
-		_HighBandOutputCurve.SetValue(40, 41.732723f); //32.409534dB
-		_HighBandOutputCurve.SetValue(41, 41.620281f); //32.386101dB
-		_HighBandOutputCurve.SetValue(42, 41.524963f); //32.366184dB
-		_HighBandOutputCurve.SetValue(43, 41.445957f); //32.349644dB
-		_HighBandOutputCurve.SetValue(44, 41.382481f); //32.336330dB
-		_HighBandOutputCurve.SetValue(45, 41.333733f); //32.326092dB
-		_HighBandOutputCurve.SetValue(46, 41.298904f); //32.318771dB
-		_HighBandOutputCurve.SetValue(47, 41.277203f); //32.314205dB
-		_HighBandOutputCurve.SetValue(48, 41.267925f); //32.312252dB
-		_HighBandOutputCurve.SetValue(49, 41.270248f); //32.312740dB
-		_HighBandOutputCurve.SetValue(50, 41.283482f); //32.315525dB
-		_HighBandOutputCurve.SetValue(51, 41.306889f); //32.320450dB
-		_HighBandOutputCurve.SetValue(52, 41.339760f); //32.327358dB
-		_HighBandOutputCurve.SetValue(53, 41.381321f); //32.336086dB
-		_HighBandOutputCurve.SetValue(54, 41.430855f); //32.346478dB
-		_HighBandOutputCurve.SetValue(55, 41.487572f); //32.358360dB
-		_HighBandOutputCurve.SetValue(56, 41.550777f); //32.371582dB
-		_HighBandOutputCurve.SetValue(57, 41.619720f); //32.385983dB
-		_HighBandOutputCurve.SetValue(58, 41.693668f); //32.401402dB
-		_HighBandOutputCurve.SetValue(59, 41.771954f); //32.417694dB
-		_HighBandOutputCurve.SetValue(60, 41.853867f); //32.434711dB
-		_HighBandOutputCurve.SetValue(61, 41.938782f); //32.452316dB
-		_HighBandOutputCurve.SetValue(62, 42.026085f); //32.470379dB
-		_HighBandOutputCurve.SetValue(63, 42.115200f); //32.488777dB
-		_HighBandOutputCurve.SetValue(64, 42.205559f); //32.507393dB
-		_HighBandOutputCurve.SetValue(65, 42.296703f); //32.526131dB
-		_HighBandOutputCurve.SetValue(66, 42.388126f); //32.544884dB
-		_HighBandOutputCurve.SetValue(67, 42.479424f); //32.563572dB
-		_HighBandOutputCurve.SetValue(68, 42.570187f); //32.582111dB
-		_HighBandOutputCurve.SetValue(69, 42.660061f); //32.600430dB
-		_HighBandOutputCurve.SetValue(70, 42.748734f); //32.618465dB
-		_HighBandOutputCurve.SetValue(71, 42.835926f); //32.636162dB
-		_HighBandOutputCurve.SetValue(72, 42.921341f); //32.653465dB
-		_HighBandOutputCurve.SetValue(73, 43.004799f); //32.670338dB
-		_HighBandOutputCurve.SetValue(74, 43.086063f); //32.686737dB
-		_HighBandOutputCurve.SetValue(75, 43.165009f); //32.702637dB
-		_HighBandOutputCurve.SetValue(76, 43.241440f); //32.718002dB
-		_HighBandOutputCurve.SetValue(77, 43.315247f); //32.732815dB
-		_HighBandOutputCurve.SetValue(78, 43.386295f); //32.747051dB
-		_HighBandOutputCurve.SetValue(79, 43.454529f); //32.760700dB
-		_HighBandOutputCurve.SetValue(80, 43.519825f); //32.773743dB
-		_HighBandOutputCurve.SetValue(81, 43.582142f); //32.786171dB
-		_HighBandOutputCurve.SetValue(82, 43.641422f); //32.797977dB
-		_HighBandOutputCurve.SetValue(83, 43.697617f); //32.809155dB
-		_HighBandOutputCurve.SetValue(84, 43.750675f); //32.819695dB
-		_HighBandOutputCurve.SetValue(85, 43.800602f); //32.829601dB
-		_HighBandOutputCurve.SetValue(86, 43.847347f); //32.838867dB
-		_HighBandOutputCurve.SetValue(87, 43.890915f); //32.847492dB
-		_HighBandOutputCurve.SetValue(88, 43.931244f); //32.855469dB
-		_HighBandOutputCurve.SetValue(89, 43.968376f); //32.862808dB
-		_HighBandOutputCurve.SetValue(90, 44.002254f); //32.869499dB
-		_HighBandOutputCurve.SetValue(91, 44.032955f); //32.875557dB
-		_HighBandOutputCurve.SetValue(92, 44.060390f); //32.880966dB
-		_HighBandOutputCurve.SetValue(93, 44.084583f); //32.885735dB
-		_HighBandOutputCurve.SetValue(94, 44.105572f); //32.889870dB
-		_HighBandOutputCurve.SetValue(95, 44.123287f); //32.893356dB
-		_HighBandOutputCurve.SetValue(96, 44.137825f); //32.896217dB
-		_HighBandOutputCurve.SetValue(97, 44.149128f); //32.898441dB
-		_HighBandOutputCurve.SetValue(98, 44.157177f); //32.900024dB
-		_HighBandOutputCurve.SetValue(99, 44.162025f); //32.900978dB
-		_HighBandOutputCurve.SetValue(100, 44.163651f); //32.901299dB
+		_LowBandOutputCurve.SetValue(100, 11.608636f); //21.295624dB
+		_MidBandOutputCurve.SetValue(0, 26.674217f); //28.521833dB
+		_MidBandOutputCurve.SetValue(1, 25.227797f); //28.037586dB
+		_MidBandOutputCurve.SetValue(2, 23.936722f); //27.581293dB
+		_MidBandOutputCurve.SetValue(3, 22.791502f); //27.155458dB
+		_MidBandOutputCurve.SetValue(4, 21.781345f); //26.761694dB
+		_MidBandOutputCurve.SetValue(5, 20.894226f); //26.400526dB
+		_MidBandOutputCurve.SetValue(6, 20.117035f); //26.071278dB
+		_MidBandOutputCurve.SetValue(7, 19.436197f); //25.772226dB
+		_MidBandOutputCurve.SetValue(8, 18.838259f); //25.500814dB
+		_MidBandOutputCurve.SetValue(9, 18.310474f); //25.253992dB
+		_MidBandOutputCurve.SetValue(10, 17.841524f); //25.028639dB
+		_MidBandOutputCurve.SetValue(11, 17.422216f); //24.822067dB
+		_MidBandOutputCurve.SetValue(12, 17.045971f); //24.632435dB
+		_MidBandOutputCurve.SetValue(13, 16.708794f); //24.458900dB
+		_MidBandOutputCurve.SetValue(14, 16.408722f); //24.301495dB
+		_MidBandOutputCurve.SetValue(15, 16.145184f); //24.160860dB
+		_MidBandOutputCurve.SetValue(16, 15.918120f); //24.037836dB
+		_MidBandOutputCurve.SetValue(17, 15.727569f); //23.933231dB
+		_MidBandOutputCurve.SetValue(18, 15.572989f); //23.847439dB
+		_MidBandOutputCurve.SetValue(19, 15.453092f); //23.780308dB
+		_MidBandOutputCurve.SetValue(20, 15.365757f); //23.731079dB
+		_MidBandOutputCurve.SetValue(21, 15.308565f); //23.698690dB
+		_MidBandOutputCurve.SetValue(22, 15.279150f); //23.681984dB
+		_MidBandOutputCurve.SetValue(23, 15.275502f); //23.679909dB
+		_MidBandOutputCurve.SetValue(24, 15.296103f); //23.691616dB
+		_MidBandOutputCurve.SetValue(25, 15.339764f); //23.716373dB
+		_MidBandOutputCurve.SetValue(26, 15.405708f); //23.753633dB
+		_MidBandOutputCurve.SetValue(27, 15.493249f); //23.802849dB
+		_MidBandOutputCurve.SetValue(28, 15.601843f); //23.863518dB
+		_MidBandOutputCurve.SetValue(29, 15.730850f); //23.935043dB
+		_MidBandOutputCurve.SetValue(30, 15.879437f); //24.016703dB
+		_MidBandOutputCurve.SetValue(31, 16.046728f); //24.107731dB
+		_MidBandOutputCurve.SetValue(32, 16.231878f); //24.207375dB
+		_MidBandOutputCurve.SetValue(33, 16.433992f); //24.314861dB
+		_MidBandOutputCurve.SetValue(34, 16.652134f); //24.429398dB
+		_MidBandOutputCurve.SetValue(35, 16.885347f); //24.550200dB
+		_MidBandOutputCurve.SetValue(36, 17.132639f); //24.676485dB
+		_MidBandOutputCurve.SetValue(37, 17.392927f); //24.807453dB
+		_MidBandOutputCurve.SetValue(38, 17.665060f); //24.942303dB
+		_MidBandOutputCurve.SetValue(39, 17.947832f); //25.080240dB
+		_MidBandOutputCurve.SetValue(40, 18.240114f); //25.220551dB
+		_MidBandOutputCurve.SetValue(41, 18.540751f); //25.362547dB
+		_MidBandOutputCurve.SetValue(42, 18.848675f); //25.505615dB
+		_MidBandOutputCurve.SetValue(43, 19.162766f); //25.649162dB
+		_MidBandOutputCurve.SetValue(44, 19.481865f); //25.792610dB
+		_MidBandOutputCurve.SetValue(45, 19.804848f); //25.935431dB
+		_MidBandOutputCurve.SetValue(46, 20.130589f); //26.077129dB
+		_MidBandOutputCurve.SetValue(47, 20.458054f); //26.217287dB
+		_MidBandOutputCurve.SetValue(48, 20.786276f); //26.355534dB
+		_MidBandOutputCurve.SetValue(49, 21.114307f); //26.491537dB
+		_MidBandOutputCurve.SetValue(50, 21.441273f); //26.625011dB
+		_MidBandOutputCurve.SetValue(51, 21.766308f); //26.755695dB
+		_MidBandOutputCurve.SetValue(52, 22.088625f); //26.883373dB
+		_MidBandOutputCurve.SetValue(53, 22.407402f); //27.007830dB
+		_MidBandOutputCurve.SetValue(54, 22.722004f); //27.128933dB
+		_MidBandOutputCurve.SetValue(55, 23.031765f); //27.246544dB
+		_MidBandOutputCurve.SetValue(56, 23.336151f); //27.360584dB
+		_MidBandOutputCurve.SetValue(57, 23.634686f); //27.470997dB
+		_MidBandOutputCurve.SetValue(58, 23.926960f); //27.577751dB
+		_MidBandOutputCurve.SetValue(59, 24.212566f); //27.680817dB
+		_MidBandOutputCurve.SetValue(60, 24.491173f); //27.780191dB
+		_MidBandOutputCurve.SetValue(61, 24.762468f); //27.875879dB
+		_MidBandOutputCurve.SetValue(62, 25.026175f); //27.967890dB
+		_MidBandOutputCurve.SetValue(63, 25.282082f); //28.056255dB
+		_MidBandOutputCurve.SetValue(64, 25.529953f); //28.141001dB
+		_MidBandOutputCurve.SetValue(65, 25.769655f); //28.222172dB
+		_MidBandOutputCurve.SetValue(66, 26.001129f); //28.299843dB
+		_MidBandOutputCurve.SetValue(67, 26.224308f); //28.374081dB
+		_MidBandOutputCurve.SetValue(68, 26.439224f); //28.444975dB
+		_MidBandOutputCurve.SetValue(69, 26.645903f); //28.512609dB
+		_MidBandOutputCurve.SetValue(70, 26.844469f); //28.577095dB
+		_MidBandOutputCurve.SetValue(71, 27.035000f); //28.638527dB
+		_MidBandOutputCurve.SetValue(72, 27.217617f); //28.697002dB
+		_MidBandOutputCurve.SetValue(73, 27.392443f); //28.752615dB
+		_MidBandOutputCurve.SetValue(74, 27.559631f); //28.805468dB
+		_MidBandOutputCurve.SetValue(75, 27.719324f); //28.855652dB
+		_MidBandOutputCurve.SetValue(76, 27.871634f); //28.903248dB
+		_MidBandOutputCurve.SetValue(77, 28.016680f); //28.948334dB
+		_MidBandOutputCurve.SetValue(78, 28.154621f); //28.990993dB
+		_MidBandOutputCurve.SetValue(79, 28.285553f); //29.031292dB
+		_MidBandOutputCurve.SetValue(80, 28.409599f); //29.069302dB
+		_MidBandOutputCurve.SetValue(81, 28.526875f); //29.105083dB
+		_MidBandOutputCurve.SetValue(82, 28.637480f); //29.138697dB
+		_MidBandOutputCurve.SetValue(83, 28.741533f); //29.170198dB
+		_MidBandOutputCurve.SetValue(84, 28.839106f); //29.199636dB
+		_MidBandOutputCurve.SetValue(85, 28.930317f); //29.227064dB
+		_MidBandOutputCurve.SetValue(86, 29.015219f); //29.252518dB
+		_MidBandOutputCurve.SetValue(87, 29.093943f); //29.276051dB
+		_MidBandOutputCurve.SetValue(88, 29.166498f); //29.297686dB
+		_MidBandOutputCurve.SetValue(89, 29.233015f); //29.317471dB
+		_MidBandOutputCurve.SetValue(90, 29.293522f); //29.335432dB
+		_MidBandOutputCurve.SetValue(91, 29.348082f); //29.351595dB
+		_MidBandOutputCurve.SetValue(92, 29.396788f); //29.365997dB
+		_MidBandOutputCurve.SetValue(93, 29.439617f); //29.378643dB
+		_MidBandOutputCurve.SetValue(94, 29.476683f); //29.389572dB
+		_MidBandOutputCurve.SetValue(95, 29.507978f); //29.398788dB
+		_MidBandOutputCurve.SetValue(96, 29.533545f); //29.406311dB
+		_MidBandOutputCurve.SetValue(97, 29.553389f); //29.412146dB
+		_MidBandOutputCurve.SetValue(98, 29.567547f); //29.416306dB
+		_MidBandOutputCurve.SetValue(99, 29.576054f); //29.418804dB
+		_MidBandOutputCurve.SetValue(100, 29.578871f); //29.419632dB
+		_HighBandOutputCurve.SetValue(0, 51.876534f); //34.299419dB
+		_HighBandOutputCurve.SetValue(1, 49.611599f); //33.911663dB
+		_HighBandOutputCurve.SetValue(2, 47.712234f); //33.572594dB
+		_HighBandOutputCurve.SetValue(3, 46.071705f); //33.268684dB
+		_HighBandOutputCurve.SetValue(4, 44.619328f); //32.990459dB
+		_HighBandOutputCurve.SetValue(5, 43.317303f); //32.733227dB
+		_HighBandOutputCurve.SetValue(6, 42.151356f); //32.496231dB
+		_HighBandOutputCurve.SetValue(7, 41.118603f); //32.280766dB
+		_HighBandOutputCurve.SetValue(8, 40.215954f); //32.087967dB
+		_HighBandOutputCurve.SetValue(9, 39.434490f); //31.917524dB
+		_HighBandOutputCurve.SetValue(10, 38.758575f); //31.767357dB
+		_HighBandOutputCurve.SetValue(11, 38.162739f); //31.632790dB
+		_HighBandOutputCurve.SetValue(12, 37.611515f); //31.506416dB
+		_HighBandOutputCurve.SetValue(13, 37.073498f); //31.381271dB
+		_HighBandOutputCurve.SetValue(14, 36.534096f); //31.253967dB
+		_HighBandOutputCurve.SetValue(15, 35.994579f); //31.124741dB
+		_HighBandOutputCurve.SetValue(16, 35.463528f); //30.995638dB
+		_HighBandOutputCurve.SetValue(17, 34.950974f); //30.869186dB
+		_HighBandOutputCurve.SetValue(18, 34.465599f); //30.747717dB
+		_HighBandOutputCurve.SetValue(19, 34.013775f); //30.633097dB
+		_HighBandOutputCurve.SetValue(20, 33.598858f); //30.526489dB
+		_HighBandOutputCurve.SetValue(21, 33.221348f); //30.428345dB
+		_HighBandOutputCurve.SetValue(22, 32.879250f); //30.338438dB
+		_HighBandOutputCurve.SetValue(23, 32.568684f); //30.256004dB
+		_HighBandOutputCurve.SetValue(24, 32.285149f); //30.180056dB
+		_HighBandOutputCurve.SetValue(25, 32.024822f); //30.109734dB
+		_HighBandOutputCurve.SetValue(26, 31.785311f); //30.044529dB
+		_HighBandOutputCurve.SetValue(27, 31.564924f); //29.984095dB
+		_HighBandOutputCurve.SetValue(28, 31.361937f); //29.928057dB
+		_HighBandOutputCurve.SetValue(29, 31.174086f); //29.875874dB
+		_HighBandOutputCurve.SetValue(30, 30.999689f); //29.827147dB
+		_HighBandOutputCurve.SetValue(31, 30.838631f); //29.781902dB
+		_HighBandOutputCurve.SetValue(32, 30.691608f); //29.740393dB
+		_HighBandOutputCurve.SetValue(33, 30.559319f); //29.702873dB
+		_HighBandOutputCurve.SetValue(34, 30.442009f); //29.669466dB
+		_HighBandOutputCurve.SetValue(35, 30.339911f); //29.640285dB
+		_HighBandOutputCurve.SetValue(36, 30.253241f); //29.615438dB
+		_HighBandOutputCurve.SetValue(37, 30.182016f); //29.594965dB
+		_HighBandOutputCurve.SetValue(38, 30.125990f); //29.578827dB
+		_HighBandOutputCurve.SetValue(39, 30.084681f); //29.566908dB
+		_HighBandOutputCurve.SetValue(40, 30.057531f); //29.559067dB
+		_HighBandOutputCurve.SetValue(41, 30.044086f); //29.555180dB
+		_HighBandOutputCurve.SetValue(42, 30.044104f); //29.555185dB
+		_HighBandOutputCurve.SetValue(43, 30.057062f); //29.558929dB
+		_HighBandOutputCurve.SetValue(44, 30.082327f); //29.566229dB
+		_HighBandOutputCurve.SetValue(45, 30.118986f); //29.576807dB
+		_HighBandOutputCurve.SetValue(46, 30.166073f); //29.590374dB
+		_HighBandOutputCurve.SetValue(47, 30.222788f); //29.606689dB
+		_HighBandOutputCurve.SetValue(48, 30.288687f); //29.625608dB
+		_HighBandOutputCurve.SetValue(49, 30.363272f); //29.646971dB
+		_HighBandOutputCurve.SetValue(50, 30.446379f); //29.670713dB
+		_HighBandOutputCurve.SetValue(51, 30.537659f); //29.696714dB
+		_HighBandOutputCurve.SetValue(52, 30.636782f); //29.724861dB
+		_HighBandOutputCurve.SetValue(53, 30.743092f); //29.754951dB
+		_HighBandOutputCurve.SetValue(54, 30.855886f); //29.786760dB
+		_HighBandOutputCurve.SetValue(55, 30.974222f); //29.820007dB
+		_HighBandOutputCurve.SetValue(56, 31.097151f); //29.854412dB
+		_HighBandOutputCurve.SetValue(57, 31.223644f); //29.889671dB
+		_HighBandOutputCurve.SetValue(58, 31.352726f); //29.925507dB
+		_HighBandOutputCurve.SetValue(59, 31.483595f); //29.961685dB
+		_HighBandOutputCurve.SetValue(60, 31.615547f); //29.998013dB
+		_HighBandOutputCurve.SetValue(61, 31.748009f); //30.034328dB
+		_HighBandOutputCurve.SetValue(62, 31.880562f); //30.070518dB
+		_HighBandOutputCurve.SetValue(63, 32.012844f); //30.106485dB
+		_HighBandOutputCurve.SetValue(64, 32.144508f); //30.142136dB
+		_HighBandOutputCurve.SetValue(65, 32.275253f); //30.177393dB
+		_HighBandOutputCurve.SetValue(66, 32.404766f); //30.212177dB
+		_HighBandOutputCurve.SetValue(67, 32.532795f); //30.246428dB
+		_HighBandOutputCurve.SetValue(68, 32.659019f); //30.280064dB
+		_HighBandOutputCurve.SetValue(69, 32.783192f); //30.313025dB
+		_HighBandOutputCurve.SetValue(70, 32.905060f); //30.345253dB
+		_HighBandOutputCurve.SetValue(71, 33.024410f); //30.376701dB
+		_HighBandOutputCurve.SetValue(72, 33.140972f); //30.407305dB
+		_HighBandOutputCurve.SetValue(73, 33.254593f); //30.437033dB
+		_HighBandOutputCurve.SetValue(74, 33.365063f); //30.465839dB
+		_HighBandOutputCurve.SetValue(75, 33.472260f); //30.493700dB
+		_HighBandOutputCurve.SetValue(76, 33.575993f); //30.520576dB
+		_HighBandOutputCurve.SetValue(77, 33.676140f); //30.546446dB
+		_HighBandOutputCurve.SetValue(78, 33.772560f); //30.571280dB
+		_HighBandOutputCurve.SetValue(79, 33.865192f); //30.595072dB
+		_HighBandOutputCurve.SetValue(80, 33.953896f); //30.617792dB
+		_HighBandOutputCurve.SetValue(81, 34.038609f); //30.639437dB
+		_HighBandOutputCurve.SetValue(82, 34.119263f); //30.659992dB
+		_HighBandOutputCurve.SetValue(83, 34.195789f); //30.679453dB
+		_HighBandOutputCurve.SetValue(84, 34.268112f); //30.697803dB
+		_HighBandOutputCurve.SetValue(85, 34.336243f); //30.715055dB
+		_HighBandOutputCurve.SetValue(86, 34.400089f); //30.731192dB
+		_HighBandOutputCurve.SetValue(87, 34.459667f); //30.746222dB
+		_HighBandOutputCurve.SetValue(88, 34.514854f); //30.760120dB
+		_HighBandOutputCurve.SetValue(89, 34.565750f); //30.772919dB
+		_HighBandOutputCurve.SetValue(90, 34.612244f); //30.784595dB
+		_HighBandOutputCurve.SetValue(91, 34.654377f); //30.795162dB
+		_HighBandOutputCurve.SetValue(92, 34.692104f); //30.804613dB
+		_HighBandOutputCurve.SetValue(93, 34.725391f); //30.812943dB
+		_HighBandOutputCurve.SetValue(94, 34.754284f); //30.820168dB
+		_HighBandOutputCurve.SetValue(95, 34.778713f); //30.826271dB
+		_HighBandOutputCurve.SetValue(96, 34.798748f); //30.831272dB
+		_HighBandOutputCurve.SetValue(97, 34.814331f); //30.835161dB
+		_HighBandOutputCurve.SetValue(98, 34.825447f); //30.837933dB
+		_HighBandOutputCurve.SetValue(99, 34.832138f); //30.839603dB
+		_HighBandOutputCurve.SetValue(100, 34.834366f); //30.840158dB
 	}
 
 	/*
@@ -453,7 +456,7 @@ public:
 			*	Since we're low-passing pretty aggressively here, we can get away with just doing a simple saturation.
 			*/
 			{
-				const float32 gain{ Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(8.0f, 32.0f, _LowBandCompression)) };
+				const float32 gain{ Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(16.0f, 32.0f, _LowBandCompression)) };
 
 				for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
 				{
@@ -497,7 +500,7 @@ public:
 
 			//Apply distortion.
 			{
-				const float32 gain{ Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(16.0f, 96.0f, BaseMath::InverseSquare(_MidBandDistortion))) };
+				const float32 gain{ Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(50.0f, 100.0f, BaseMath::InverseSquare(_MidBandDistortion))) };
 
 				for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
 				{
@@ -507,7 +510,14 @@ public:
 
 						for (float32 &sample : _MidBand._OverSamplers[channel_index].GetSamples())
 						{
-							sample = std::tanh(sample * (sample >= 0.0f ? 2.0f : 0.5f) * gain);
+							const float32 input_sample{ sample * gain };
+							const float32 distortion_1{ std::atan(input_sample * (sample >= 0.0f ? 2.0f : 0.5f)) };
+							const float32 distortion_2{ std::tanh(input_sample * (sample >= 0.0f ? 0.5f : 2.0f)) };
+							float32 interpolator{ BaseMath::Absolute<float32>(std::tanh(input_sample * 0.1f * (sample >= 0.0f ? 2.0f : 0.5f))) };
+
+							for (uint8 power_of_iterator{ 0 }; power_of_iterator < 8; ++power_of_iterator) interpolator *= interpolator;
+
+							sample = BaseMath::LinearlyInterpolate(distortion_1, distortion_2, interpolator);
 						}
 
 						_WorkingBuffer.At(channel_index).At(sample_index) = _MidBand._OverSamplers[channel_index].DownSample();
@@ -551,7 +561,7 @@ public:
 
 			//Apply distortion.
 			{
-				const float32 gain{ Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(16.0f, 96.0f, BaseMath::InverseSquare(_HighBandDistortion))) };
+				const float32 gain{ Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(50.0f, 100.0f, BaseMath::InverseSquare(_HighBandDistortion))) };
 
 				for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
 				{
@@ -561,7 +571,14 @@ public:
 
 						for (float32 &sample : _HighBand._OverSamplers[channel_index].GetSamples())
 						{
-							sample = std::tanh(sample * (sample >= 0.0f ? 0.5f : 2.0f) * gain);
+							const float32 input_sample{ sample * gain };
+							const float32 distortion_1{ std::atan(input_sample * (sample >= 0.0f ? 0.25f : 4.0f)) };
+							const float32 distortion_2{ std::tanh(input_sample * (sample >= 0.0f ? 0.25f : 4.0f)) };
+							float32 interpolator{ BaseMath::Absolute<float32>(std::tanh(input_sample * 0.1f * (sample >= 0.0f ? 0.25f : 4.0f))) };
+
+							for (uint8 power_of_iterator{ 0 }; power_of_iterator < 8; ++power_of_iterator) interpolator *= interpolator;
+
+							sample = BaseMath::LinearlyInterpolate(distortion_1, distortion_2, interpolator);
 						}
 
 						_WorkingBuffer.At(channel_index).At(sample_index) = _HighBand._OverSamplers[channel_index].DownSample();
@@ -593,7 +610,10 @@ public:
 		}
 
 		//Apply the post filters.
-		_PostFilters._PeakFilter.Process(context, (*outputs), outputs, number_of_channels, number_of_samples);
+		_PostFilters._PeakFilter1.Process(context, (*outputs), outputs, number_of_channels, number_of_samples);
+		_PostFilters._PeakFilter2.Process(context, (*outputs), outputs, number_of_channels, number_of_samples);
+		_PostFilters._PeakFilter3.Process(context, (*outputs), outputs, number_of_channels, number_of_samples);
+		_PostFilters._PeakFilter4.Process(context, (*outputs), outputs, number_of_channels, number_of_samples);
 		_PostFilters._HighShelfFilter.Process(context, (*outputs), outputs, number_of_channels, number_of_samples);
 	}
 
@@ -688,11 +708,20 @@ private:
 
 	public:
 
-		//The peak filter.
-		PeakFilter _PeakFilter{ 400.0f, Audio::DecibelsToGain(-3.0f), 1.0f };
+		//Peak filter 1.
+		PeakFilter _PeakFilter1{ 250.0f, Audio::DecibelsToGain(-3.0f), 1.5f };
+
+		//Peak filter 2.
+		PeakFilter _PeakFilter2{ 400.0f, Audio::DecibelsToGain(-6.0f), 1.0f };
+
+		//Peak filter 3.
+		PeakFilter _PeakFilter3{ 800.0f, Audio::DecibelsToGain(-1.5f), 1.0f };
+
+		//Peak filter 4.
+		PeakFilter _PeakFilter4{ 4'500.0f, Audio::DecibelsToGain(-1.5f), 1.5f };
 
 		//The high shelf filter.
-		HighShelfFilter _HighShelfFilter{ 10'000.0f, Audio::DecibelsToGain(1.5f) };
+		HighShelfFilter _HighShelfFilter{ 10'000.0f, Audio::DecibelsToGain(3.0f) };
 
 	};
 
