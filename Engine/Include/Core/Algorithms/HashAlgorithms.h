@@ -400,21 +400,32 @@ namespace HashAlgorithms
 
 	/*
 	*	Given arbitrary data and a length of the data, specified in bytes, returns a 64-bit hashed value.
-	*	Uses the Jenkins hashing algorithm.
+	*	Uses the murmur hash algorithm.
 	*/
-	FORCE_INLINE static constexpr uint64 MurmurHash64(const void *const RESTRICT input, const uint64 length, const uint64 seed = 0) NOEXCEPT
+	FORCE_INLINE static constexpr uint64 MurmurHash64(const char *const RESTRICT input, const uint64 length, const uint64 seed = 0) NOEXCEPT
 	{
 		constexpr uint64 M{ 0xc6a4a7935bd1e995 };
 		constexpr int32 R{ 47 };
 
 		uint64_t hash{ seed ^ (length * M) };
 
-		const uint64_t *data{ (const uint64_t*)input };
-		const uint64_t *end{ data + (length / 8) };
+		const char* data{ input };
+		const char* end{ data + (length & ~0b111ull) };
 
 		while (data != end)
 		{
-			uint64_t k{ *(data++) };
+			uint64_t k
+			{
+				0ull
+				| static_cast<uint64>(data[0]) << 0
+				| static_cast<uint64>(data[1]) << 8
+				| static_cast<uint64>(data[2]) << 16
+				| static_cast<uint64>(data[3]) << 24
+				| static_cast<uint64>(data[4]) << 32
+				| static_cast<uint64>(data[5]) << 40
+				| static_cast<uint64>(data[6]) << 48
+				| static_cast<uint64>(data[7]) << 56
+			};
 
 			k *= M;
 			k ^= k >> R;
@@ -422,20 +433,20 @@ namespace HashAlgorithms
 
 			hash ^= k;
 			hash *= M;
+
+			data += 8;
 		}
 
-		const unsigned char *data_2{ (const unsigned char*)data };
-
-		switch (length & 7)
+		switch (length & 0b111ull)
 		{
-			case 7: hash ^= uint64_t(data_2[6]) << 48;
-			case 6: hash ^= uint64_t(data_2[5]) << 40;
-			case 5: hash ^= uint64_t(data_2[4]) << 32;
-			case 4: hash ^= uint64_t(data_2[3]) << 24;
-			case 3: hash ^= uint64_t(data_2[2]) << 16;
-			case 2: hash ^= uint64_t(data_2[1]) << 8;
-			case 1: hash ^= uint64_t(data_2[0]);
-				hash *= M;
+			case 7: hash ^= uint64_t(data[6]) << 48; [[fallthrough]];
+			case 6: hash ^= uint64_t(data[5]) << 40; [[fallthrough]];
+			case 5: hash ^= uint64_t(data[4]) << 32; [[fallthrough]];
+			case 4: hash ^= uint64_t(data[3]) << 24; [[fallthrough]];
+			case 3: hash ^= uint64_t(data[2]) << 16; [[fallthrough]];
+			case 2: hash ^= uint64_t(data[1]) << 8; [[fallthrough]];
+			case 1: hash ^= uint64_t(data[0]);
+			hash *= M;
 		};
 
 		hash ^= hash >> R;
@@ -443,6 +454,14 @@ namespace HashAlgorithms
 		hash ^= hash >> R;
 
 		return hash;
+	}
+
+	/*
+	*	Utility version of the 'MurmurHash64' that casts the input to the proper type. This can unfortunately not be constexpr.
+	*/
+	FORCE_INLINE static uint64 MurmurHash64(const void *const RESTRICT input, const uint64 length, const uint64 seed = 0) NOEXCEPT
+	{
+		return MurmurHash64(static_cast<const char *const RESTRICT>(input), length, seed);
 	}
 
 }
