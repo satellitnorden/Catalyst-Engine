@@ -1,8 +1,23 @@
 //Header file.
 #include <UI/Core/Scene.h>
 
+//Systems.
+#include <Systems/ContentSystem.h>
+
 namespace UI
 {
+
+	/*
+	*	Default constructor.
+	*/
+	Scene::Scene() NOEXCEPT
+	{
+		//Set the default font.
+		_Font = ContentSystem::Instance->GetAsset<FontAsset>(HashString("Default"));
+
+		//Set the default text scale.
+		_TextScale = 32.0f;
+	}
 
 	/*
 	*	Starts a container with the given identifier.
@@ -10,6 +25,9 @@ namespace UI
 	void Scene::StartContainer(const UI::Identifier identifier, const UI::Anchor anchor, const UI::Container::Layout layout, const AxisAlignedBoundingBox2D &axis_aligned_bounding_box) NOEXCEPT
 	{
 		ASSERT(!_Container._Active, "Trying to start a container while another is active!");
+
+		//Set the parent.
+		_Container._Parent = this;
 
 		//Copy settings.
 		_Container._Identifier = identifier;

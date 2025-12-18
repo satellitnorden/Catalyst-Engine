@@ -26,12 +26,33 @@ namespace UI
 		/*
 		*	Sets the text.
 		*/
-		TextWidget *const RESTRICT SetText(const char *const RESTRICT text) NOEXCEPT;
+		FORCE_INLINE TextWidget *const RESTRICT SetText(const char* const RESTRICT text) NOEXCEPT
+		{
+			_Text = text;
+			return this;
+		}
+
+		/*
+		*	Sets the text scale.
+		*/
+		FORCE_INLINE TextWidget *const RESTRICT SetTextScale(const float32 value) NOEXCEPT
+		{
+			_TextScale = value;
+			return this;
+		}
+
+		/*
+		*	Renders this widget.
+		*/
+		void Render(const UI::RenderContext &context) NOEXCEPT override;
 
 	private:
 
 		//The text.
 		DynamicString _Text;
+
+		//The text scale.
+		float32 _TextScale;
 
 	};
 

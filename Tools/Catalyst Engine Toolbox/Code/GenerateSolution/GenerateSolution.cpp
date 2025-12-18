@@ -235,7 +235,13 @@ void ScanDirectory(GenerateVisualStudioSolution::Parameters::Directory *director
 			if (extension == ".h"
 				|| extension == ".inl"
 				|| extension == ".cpp"
-				|| extension == ".c")
+				|| extension == ".c"
+				|| extension == ".common_shader"
+				|| extension == ".global_render_data"
+				|| extension == ".render_pipeline"
+				|| extension == ".shader_function_library"
+				|| extension == ".storage_buffer_definition"
+				|| extension == ".uniform_buffer_definition")
 			{
 				GenerateVisualStudioSolution::Parameters::File &new_file{ directory->_Files.emplace_back() };
 
@@ -490,6 +496,12 @@ void GenerateSolution::Run(const ProjectSettings &project_settings)
 
 	{
 		GenerateVisualStudioSolution::Parameters::Directory &directory{ parameters._Directories.emplace_back() };
+		directory._Name = "Catalyst Engine Rendering";
+		ScanDirectory(&directory, "..\\..\\Catalyst-Engine\\Engine\\Rendering");
+	}
+
+	{
+		GenerateVisualStudioSolution::Parameters::Directory &directory{ parameters._Directories.emplace_back() };
 		directory._Name = project_settings._ProjectName + std::string(" Include");
 		ScanDirectory(&directory, "..\\Code\\Include");
 	}
@@ -498,6 +510,12 @@ void GenerateSolution::Run(const ProjectSettings &project_settings)
 		GenerateVisualStudioSolution::Parameters::Directory &directory{ parameters._Directories.emplace_back() };
 		directory._Name = project_settings._ProjectName + std::string(" Source");
 		ScanDirectory(&directory, "..\\Code\\Source");
+	}
+
+	{
+		GenerateVisualStudioSolution::Parameters::Directory& directory{ parameters._Directories.emplace_back() };
+		directory._Name = project_settings._ProjectName + std::string(" Rendering");
+		ScanDirectory(&directory, "..\\Rendering");
 	}
 
 	//Generate!

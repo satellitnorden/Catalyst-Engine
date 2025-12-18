@@ -20,11 +20,32 @@ namespace UI
 	public:
 
 		/*
+		*	Default constructor.
+		*/
+		Scene() NOEXCEPT;
+
+		/*
 		*	Default destructor.
 		*/
 		FORCE_INLINE ~Scene() NOEXCEPT
 		{
 
+		}
+
+		/*
+		*	Returns the font for this scene.
+		*/
+		FORCE_INLINE NO_DISCARD const AssetPointer<FontAsset> GetFont() const NOEXCEPT
+		{
+			return _Font;
+		}
+
+		/*
+		*	Returns the text scale for this scene.
+		*/
+		FORCE_INLINE NO_DISCARD float32 GetTextScale() const NOEXCEPT
+		{
+			return _TextScale;
 		}
 
 		/*
@@ -40,8 +61,35 @@ namespace UI
 		*	Builds this scene.
 		*/
 		FORCE_INLINE virtual void Build(const UI::BuildContext &context) NOEXCEPT = 0;
+		
+		/*
+		*	Renders this scene.
+		*/
+		FORCE_INLINE void Render(const UI::RenderContext &context) NOEXCEPT
+		{
+			for (UI::Widget *const RESTRICT widget : _Widgets)
+			{
+				widget->Render(context);
+			}
+		}
 
 	protected:
+
+		/*
+		*	Sets the font for this scene.
+		*/
+		FORCE_INLINE void SetFont(const AssetPointer<FontAsset> value) NOEXCEPT
+		{
+			_Font = value;
+		}
+
+		/*
+		*	Sets the text scale for this scene.
+		*/
+		FORCE_INLINE void SetTextScale(const float32 value) NOEXCEPT
+		{
+			_TextScale = value;
+		}
 
 		/*
 		*	Starts a container with the given identifier.
@@ -90,6 +138,12 @@ namespace UI
 
 		//The container.
 		UI::Container _Container;
+
+		//The font.
+		AssetPointer<FontAsset> _Font;
+
+		//The text scale.
+		float32 _TextScale;
 
 	};
 

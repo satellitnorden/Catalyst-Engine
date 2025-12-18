@@ -25,6 +25,22 @@ namespace UI
 		BOTTOM_LEFT
 	};
 
+	//Enumeration cover all horizontal alignments.
+	enum class HorizontalAlignment : uint8
+	{
+		LEFT,
+		CENTER,
+		RIGHT
+	};
+
+	//Enumeration cover all vertical alignments.
+	enum class VerticalAlignment : uint8
+	{
+		TOP,
+		CENTER,
+		BOTTOM
+	};
+
 	//Constants.
 	namespace Constants
 	{

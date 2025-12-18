@@ -1,0 +1,23 @@
+//Constants.
+#define RENDER_COMMAND_MODE_NONE (0)
+
+#define RENDER_COMMAND_MODE_COLOR (1)
+#define RENDER_COMMAND_MODE_TEXTURE (2)
+
+#define RENDER_COMMAND_MODE_TEXT (3)
+
+//UI render command struct definition.
+struct RenderCommand
+{
+	vec4 _Positions[4];
+	vec2 _TextureCoordinates[4];
+	uint _Mode;
+	uint _ColorOrTexture;
+	uint _ColorOpacity;
+	float _Parameter1;
+};
+
+StorageBuffer(UI)
+{
+	RenderCommand[] RENDER_COMMANDS;
+};

@@ -1,6 +1,9 @@
 //Header file.
 #include <UI/Widgets/TextWidget.h>
 
+//UI.
+#include <UI/Core/Scene.h>
+
 namespace UI
 {
 
@@ -11,19 +14,27 @@ namespace UI
 		:
 		UI::Widget(parent)
 	{
-
+		//Grab the text scale from the scene.
+		_TextScale = _Parent->_Parent->GetTextScale();
 	}
 
 	/*
-	*	Sets the text.
+	*	Renders this widget.
 	*/
-	TextWidget *const RESTRICT TextWidget::SetText(const char *const RESTRICT text) NOEXCEPT
+	void TextWidget::Render(const UI::RenderContext &context) NOEXCEPT
 	{
-		//Set the text.
-		_Text = text;
-
-		//Return a pointer to this widget so the user can chain calls together. (:
-		return this;
+		//Render the text.
+		RenderText
+		(
+			context,
+			_AxisAlignedBoundingBox,
+			_Parent->_Parent->GetFont(),
+			_Text.Data(),
+			_Text.Length(),
+			_TextScale,
+			UI::HorizontalAlignment::CENTER,
+			UI::VerticalAlignment::CENTER
+		);
 	}
 
 }

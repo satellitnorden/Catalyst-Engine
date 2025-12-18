@@ -9,6 +9,7 @@
 #include <Concurrency/AtomicQueue.h>
 
 //UI.
+#include <UI/Core/RenderCommand.h>
 #include <UI/Core/Scene.h>
 #include <UI/Core/WidgetAllocator.h>
 
@@ -25,7 +26,8 @@ public:
 	(
 		UISystem,
 		SYSTEM_DEFINED_REQUIREMENT(USE_NEW_UI_SYSTEM)
-		SYSTEM_UPDATE(RANGE(USER_INTERFACE, RUN_ON_MAIN_THREAD))
+		SYSTEM_INITIALIZE()
+		SYSTEM_UPDATE(RANGE(USER_INTERFACE, RUN_ON_MAIN_THREAD), RANGE(PRE_RENDER, RENDER))
 	);
 
 	/*
@@ -67,6 +69,19 @@ private:
 
 	//The scenes.
 	DynamicArray<UI::Scene *RESTRICT> _Scenes;
+
+	//The render commands.
+	DynamicArray<UI::RenderCommand> _RenderCommands;
+
+	/*
+	*	Updates during the USER_INTERFACE phase.
+	*/
+	void UpdateUserInterface() NOEXCEPT;
+
+	/*
+	*	Updates during the PRE_RENDER phase.
+	*/
+	void UpdatePreRender() NOEXCEPT;
 
 };
 #endif

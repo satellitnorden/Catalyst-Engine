@@ -28,6 +28,9 @@ namespace UI
 			VERTICAL
 		};
 
+		//The parent.
+		class Scene *RESTRICT _Parent;
+
 		//The identifier.
 		UI::Identifier _Identifier;
 
