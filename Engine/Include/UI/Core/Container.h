@@ -24,8 +24,10 @@ namespace UI
 		//Enumeration covering all layouts.
 		enum class Layout : uint8
 		{
-			HORIZONTAL,
-			VERTICAL
+			LEFT_TO_RIGHT,
+			RIGHT_TO_LEFT,
+			TOP_TO_BOTTOM,
+			BOTTOM_TO_TOP
 		};
 
 		//The parent.
@@ -45,6 +47,9 @@ namespace UI
 
 		//The widget size.
 		float32 _WidgetSize;
+
+		//The widget padding.
+		float32 _WidgetPadding;
 
 		//The cursor.
 		float32 _Cursor;

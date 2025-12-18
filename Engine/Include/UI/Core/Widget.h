@@ -59,7 +59,16 @@ namespace UI
 		AxisAlignedBoundingBox2D _AxisAlignedBoundingBox;
 
 		/*
-		*	Renders text in the given axis aligned bounding box.
+		*	Renders a box with the given parameters.
+		*/
+		void RenderBox
+		(
+			const UI::RenderContext &context,
+			const AxisAlignedBoundingBox2D &axis_aligned_bounding_box
+		) NOEXCEPT;
+
+		/*
+		*	Renders text with the given parameters.
 		*/
 		void RenderText
 		(

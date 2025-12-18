@@ -307,6 +307,11 @@ void main()
     vec4 color;
     switch (RENDER_COMMANDS[InInstanceIndex]._Mode)
     {
+        case RENDER_COMMAND_MODE_COLOR:
+        {
+            color = UnpackColor(RENDER_COMMANDS[InInstanceIndex]._ColorOrTexture);
+            break;
+        }
         case RENDER_COMMAND_MODE_TEXT:
         {
             float text_sdf = texture(sampler2D(TEXTURES[RENDER_COMMANDS[InInstanceIndex]._ColorOrTexture], SAMPLER), InTextureCoordinate).x;

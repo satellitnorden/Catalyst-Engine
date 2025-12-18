@@ -55,6 +55,17 @@ namespace UI
 					break;
 				}
 
+				case UI::Anchor::BOTTOM_LEFT:
+				{
+					_Container._AxisAlignedBoundingBox._Minimum._X = 0.0f;
+					_Container._AxisAlignedBoundingBox._Minimum._Y = 0.0f;
+
+					_Container._AxisAlignedBoundingBox._Maximum._X = size._X;
+					_Container._AxisAlignedBoundingBox._Maximum._Y = size._Y;
+
+					break;
+				}
+
 				default:
 				{
 					ASSERT(false, "Invalid case!");
@@ -65,21 +76,52 @@ namespace UI
 		}
 
 		//Set up the (default) widget size.
-		if (layout == UI::Container::Layout::HORIZONTAL)
+		switch (layout)
 		{
-			_Container._WidgetSize = UI::Constants::REFERENCE_RESOLUTION._X * 0.1f;
+			case UI::Container::Layout::LEFT_TO_RIGHT:
+			case UI::Container::Layout::RIGHT_TO_LEFT:
+			{
+				_Container._WidgetSize = UI::Constants::REFERENCE_RESOLUTION._X * 0.1f;
+
+				break;
+			}
+
+			case UI::Container::Layout::TOP_TO_BOTTOM:
+			case UI::Container::Layout::BOTTOM_TO_TOP:
+			{
+				_Container._WidgetSize = UI::Constants::REFERENCE_RESOLUTION._Y * 0.1f;
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
 		}
 
-		else
-		{
-			_Container._WidgetSize = UI::Constants::REFERENCE_RESOLUTION._Y * 0.1f;
-		}
+		//Set up the (default) widget padding.
+		_Container._WidgetPadding = 8.0f;
 
 		//Reset the cursor.
 		_Container._Cursor = 0.0f;
 
 		//The container is now active!
 		_Container._Active = true;
+	}
+
+	/*
+	*	Sets the container layout.
+	*	Note that this will reset the cursor.
+	*/
+	void Scene::SetContainerLayout(const UI::Container::Layout layout) NOEXCEPT
+	{
+		ASSERT(_Container._Active, "Trying to set widget size with no active container!");
+
+		_Container._Layout = layout;
+		_Container._Cursor = 0.0f;
 	}
 
 	/*
@@ -93,6 +135,16 @@ namespace UI
 		ASSERT(_Container._Active, "Trying to set widget size with no active container!");
 
 		_Container._WidgetSize = size;
+	}
+
+	/*
+	*	Sets the container widget padding.
+	*/
+	void Scene::SetContainerWidgetPadding(const float32 padding) NOEXCEPT
+	{
+		ASSERT(_Container._Active, "Trying to set widget size with no active container!");
+
+		_Container._WidgetPadding = padding;
 	}
 
 	/*

@@ -37,7 +37,7 @@ namespace UI
 		//Calculate the axis aligned bounding box from the container.
 		switch (_Parent->_Layout)
 		{
-			case UI::Container::Layout::HORIZONTAL:
+			case UI::Container::Layout::LEFT_TO_RIGHT:
 			{
 				_AxisAlignedBoundingBox._Minimum = Vector2<float32>
 				(
@@ -53,7 +53,7 @@ namespace UI
 				break;
 			}
 
-			case UI::Container::Layout::VERTICAL:
+			case UI::Container::Layout::TOP_TO_BOTTOM:
 			{
 				_AxisAlignedBoundingBox._Minimum = Vector2<float32>
 				(
@@ -69,6 +69,22 @@ namespace UI
 				break;
 			}
 
+			case UI::Container::Layout::BOTTOM_TO_TOP:
+			{
+				_AxisAlignedBoundingBox._Minimum = Vector2<float32>
+				(
+					_Parent->_AxisAlignedBoundingBox._Minimum._X,
+					_Parent->_AxisAlignedBoundingBox._Minimum._Y + _Parent->_Cursor
+				);
+				_AxisAlignedBoundingBox._Maximum = Vector2<float32>
+				(
+					_Parent->_AxisAlignedBoundingBox._Maximum._X,
+					_Parent->_AxisAlignedBoundingBox._Minimum._Y + _Parent->_Cursor + _Parent->_WidgetSize
+				);
+
+				break;
+			}
+
 			default:
 			{
 				ASSERT(false, "Invalid case!");
@@ -77,12 +93,56 @@ namespace UI
 			}
 		}
 
+		//Apply padding.
+		_AxisAlignedBoundingBox._Minimum += _Parent->_WidgetPadding;
+		_AxisAlignedBoundingBox._Maximum -= _Parent->_WidgetPadding;
+
 		//Advance the container's cursor.
 		_Parent->_Cursor += _Parent->_WidgetSize;
 	}
 
+
+
 	/*
-	*	Renders text in the given axis aligned bounding box.
+	*	Renders a box with the given parameters.
+	*/
+	void Widget::RenderBox
+	(
+		const UI::RenderContext &context,
+		const AxisAlignedBoundingBox2D &axis_aligned_bounding_box
+	) NOEXCEPT
+	{
+		//Add the command.
+		context._RenderCommands->Emplace();
+		UI::RenderCommand &command{ context._RenderCommands->Back() };
+
+		//Set the positions.
+		command._Positions[0] = Vector4<float32>(axis_aligned_bounding_box._Minimum._X, axis_aligned_bounding_box._Minimum._Y, 0.0f, 1.0f);
+		command._Positions[1] = Vector4<float32>(axis_aligned_bounding_box._Minimum._X, axis_aligned_bounding_box._Maximum._Y, 0.0f, 1.0f);
+		command._Positions[2] = Vector4<float32>(axis_aligned_bounding_box._Maximum._X, axis_aligned_bounding_box._Maximum._Y, 0.0f, 1.0f);
+		command._Positions[3] = Vector4<float32>(axis_aligned_bounding_box._Maximum._X, axis_aligned_bounding_box._Minimum._Y, 0.0f, 1.0f);
+
+		//Set the texture coordinates..
+		command._TextureCoordinates[0] = Vector2<float32>(0.0f, 0.0f);
+		command._TextureCoordinates[1] = Vector2<float32>(0.0f, 1.0f);
+		command._TextureCoordinates[2] = Vector2<float32>(1.0f, 1.0f);
+		command._TextureCoordinates[3] = Vector2<float32>(1.0f, 0.0f);
+
+		//Set the mode.
+		command._Mode = UI::RenderCommand::Mode::COLOR;
+
+		//Set the color.
+		command._ColorOrTexture = *Color(Vector4<float32>(0.5f, 0.5f, 0.5f, 0.5f)).Data();
+
+		//Set the color/opacity.
+		command._ColorOpacity = *Color(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f)).Data();
+
+		//Set the parameters.
+		command._Parameter1_uint32 = 0;
+	}
+
+	/*
+	*	Renders text with the given parameters.
 	*/
 	void Widget::RenderText
 	(

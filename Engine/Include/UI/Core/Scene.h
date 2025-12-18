@@ -97,12 +97,23 @@ namespace UI
 		void StartContainer(const UI::Identifier identifier, const UI::Anchor anchor, const UI::Container::Layout layout, const AxisAlignedBoundingBox2D &axis_aligned_bounding_box) NOEXCEPT;
 
 		/*
+		*	Sets the container layout.
+		*	Note that this will reset the cursor.
+		*/
+		void SetContainerLayout(const UI::Container::Layout layout) NOEXCEPT;
+
+		/*
 		*	Sets the container widget size.
 		*	This is just a single value, because widgets by default take up all of one dimension, depending on layout;
 		*	If the layout is horizontal, widgets will have [widget_size, container_size._Y] size,
 		*	and if the layout is vertical, widgets will have [container_size._X, widget_size] size.
 		*/
 		void SetContainerWidgetSize(const float32 size) NOEXCEPT;
+
+		/*
+		*	Sets the container widget padding.
+		*/
+		void SetContainerWidgetPadding(const float32 padding) NOEXCEPT;
 
 		/*
 		*	Adds a widget of the given class.
