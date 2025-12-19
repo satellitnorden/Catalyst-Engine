@@ -51,16 +51,20 @@ namespace UI
 		/*
 		*	Prepares this scene for building.
 		*/
-		FORCE_INLINE void PrepareBuild() NOEXCEPT
-		{
-			//Clear the widgets.
-			_Widgets.Clear();
-		}
+		void PrepareBuild() NOEXCEPT;
 
 		/*
 		*	Builds this scene.
 		*/
 		FORCE_INLINE virtual void Build(const UI::BuildContext &context) NOEXCEPT = 0;
+
+		/*
+		*	Returns the widgets for this scene.
+		*/
+		FORCE_INLINE NO_DISCARD const DynamicArray<UI::Widget *RESTRICT> &GetWidgets() const NOEXCEPT
+		{
+			return _Widgets;
+		}
 		
 		/*
 		*	Renders this scene.
@@ -69,6 +73,11 @@ namespace UI
 		{
 			for (UI::Widget *const RESTRICT widget : _Widgets)
 			{
+				if (!widget->IsEnabled())
+				{
+					continue;
+				}
+
 				widget->Render(context);
 			}
 		}
@@ -94,7 +103,14 @@ namespace UI
 		/*
 		*	Starts a container with the given identifier.
 		*/
-		void StartContainer(const UI::Identifier identifier, const UI::Anchor anchor, const UI::Container::Layout layout, const AxisAlignedBoundingBox2D &axis_aligned_bounding_box) NOEXCEPT;
+		void StartContainer
+		(
+			const UI::BuildContext &context,
+			const UI::Identifier identifier,
+			const UI::Anchor anchor,
+			const UI::Container::Layout layout,
+			const AxisAlignedBoundingBox2D &axis_aligned_bounding_box
+		) NOEXCEPT;
 
 		/*
 		*	Sets the container layout.
@@ -122,13 +138,20 @@ namespace UI
 		FORCE_INLINE TYPE *const RESTRICT AddWidget(const UI::BuildContext &context, const UI::Identifier identifier) NOEXCEPT
 		{
 			//Sanity check.
-			ASSERT(_Container._Active, "Can't add widgets without an active container!");
+			ASSERT(_ActiveContainer, "Can't add widgets without an active container!");
 
-			//Calculate the combined identifier.
-			const UI::Identifier combined_identifier{ _Container._Identifier, identifier };
+			//Calculate the combined identifier, with a mix of the scene identifier, the container identifier and the widget identifier.
+			const UI::Identifier combined_identifier{ _Identifier, UI::Identifier(_ActiveContainer->_Identifier, identifier) };
 
 			//Allocate the widget!
-			TYPE *const RESTRICT widget{ context._WidgetAllocator->Allocate<TYPE>(combined_identifier, &_Container) };
+			TYPE *const RESTRICT widget{ context._WidgetAllocator->Allocate<TYPE>(combined_identifier) };
+
+			//Set the parent.
+			widget->SetParent(_ActiveContainer);
+			widget->OnParentAvailable();
+
+			//Position the widget.
+			widget->Position();
 
 			//Add the widget to the widgets array.
 			_Widgets.Emplace(widget);
@@ -140,15 +163,21 @@ namespace UI
 		/*
 		*	Ends the active container.
 		*/
-		void EndContainer() NOEXCEPT;
+		void EndContainer(const UI::BuildContext &context) NOEXCEPT;
 
 	private:
 
+		//The identifier.
+		UI::Identifier _Identifier;
+
+		//The containers.
+		DynamicArray<UI::Container> _Containers;
+
+		//The current container.
+		UI::Container *RESTRICT _ActiveContainer{ nullptr };
+
 		//The widgets.
 		DynamicArray<UI::Widget *RESTRICT> _Widgets;
-
-		//The container.
-		UI::Container _Container;
 
 		//The font.
 		AssetPointer<FontAsset> _Font;

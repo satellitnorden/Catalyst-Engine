@@ -28,11 +28,9 @@ namespace UI
 	};
 
 	/*
-	*	Default constructor.
+	*	Positions this widget. Usually called right after creation.
 	*/
-	Widget::Widget(UI::Container *const RESTRICT parent) NOEXCEPT
-		:
-		_Parent(parent)
+	void Widget::Position() NOEXCEPT
 	{
 		//Calculate the axis aligned bounding box from the container.
 		switch (_Parent->_Layout)
@@ -41,12 +39,12 @@ namespace UI
 			{
 				_AxisAlignedBoundingBox._Minimum = Vector2<float32>
 				(
-					_Parent->_Cursor,
+					(_Parent->_Cursor + _Parent->_ScrollOffset),
 					_Parent->_AxisAlignedBoundingBox._Minimum._Y
 				);
 				_AxisAlignedBoundingBox._Maximum = Vector2<float32>
 				(
-					_Parent->_Cursor + _Parent->_WidgetSize,
+					(_Parent->_Cursor + _Parent->_ScrollOffset) + _Parent->_WidgetSize,
 					_Parent->_AxisAlignedBoundingBox._Maximum._Y
 				);
 
@@ -58,12 +56,12 @@ namespace UI
 				_AxisAlignedBoundingBox._Minimum = Vector2<float32>
 				(
 					_Parent->_AxisAlignedBoundingBox._Minimum._X,
-					_Parent->_AxisAlignedBoundingBox._Maximum._Y - _Parent->_Cursor - _Parent->_WidgetSize
+					_Parent->_AxisAlignedBoundingBox._Maximum._Y - (_Parent->_Cursor + _Parent->_ScrollOffset) - _Parent->_WidgetSize
 				);
 				_AxisAlignedBoundingBox._Maximum = Vector2<float32>
 				(
 					_Parent->_AxisAlignedBoundingBox._Maximum._X,
-					_Parent->_AxisAlignedBoundingBox._Maximum._Y - _Parent->_Cursor
+					_Parent->_AxisAlignedBoundingBox._Maximum._Y - (_Parent->_Cursor + _Parent->_ScrollOffset)
 				);
 
 				break;
@@ -74,12 +72,12 @@ namespace UI
 				_AxisAlignedBoundingBox._Minimum = Vector2<float32>
 				(
 					_Parent->_AxisAlignedBoundingBox._Minimum._X,
-					_Parent->_AxisAlignedBoundingBox._Minimum._Y + _Parent->_Cursor
+					_Parent->_AxisAlignedBoundingBox._Minimum._Y + (_Parent->_Cursor + _Parent->_ScrollOffset)
 				);
 				_AxisAlignedBoundingBox._Maximum = Vector2<float32>
 				(
 					_Parent->_AxisAlignedBoundingBox._Maximum._X,
-					_Parent->_AxisAlignedBoundingBox._Minimum._Y + _Parent->_Cursor + _Parent->_WidgetSize
+					_Parent->_AxisAlignedBoundingBox._Minimum._Y + (_Parent->_Cursor + _Parent->_ScrollOffset) + _Parent->_WidgetSize
 				);
 
 				break;
@@ -101,15 +99,15 @@ namespace UI
 		_Parent->_Cursor += _Parent->_WidgetSize;
 	}
 
-
-
 	/*
 	*	Renders a box with the given parameters.
 	*/
 	void Widget::RenderBox
 	(
 		const UI::RenderContext &context,
-		const AxisAlignedBoundingBox2D &axis_aligned_bounding_box
+		const AxisAlignedBoundingBox2D &axis_aligned_bounding_box,
+		const Vector4<float32> &color,
+		const float32 radius
 	) NOEXCEPT
 	{
 		//Add the command.
@@ -132,13 +130,13 @@ namespace UI
 		command._Mode = UI::RenderCommand::Mode::COLOR;
 
 		//Set the color.
-		command._ColorOrTexture = *Color(Vector4<float32>(0.5f, 0.5f, 0.5f, 0.5f)).Data();
+		command._ColorOrTexture = *Color(color).Data();
 
 		//Set the color/opacity.
 		command._ColorOpacity = *Color(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f)).Data();
 
 		//Set the parameters.
-		command._Parameter1_uint32 = 0;
+		command._Parameter1_float32 = radius;
 	}
 
 	/*

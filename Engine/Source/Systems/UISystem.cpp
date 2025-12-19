@@ -3,6 +3,8 @@
 #include <Systems/UISystem.h>
 
 //Systems.
+#include <Systems/CatalystEngineSystem.h>
+#include <Systems/InputSystem.h>
 #include <Systems/RenderingSystem.h>
 
 /*
@@ -92,6 +94,119 @@ void UISystem::Update(const UpdatePhase phase) NOEXCEPT
 }
 
 /*
+*	Updates widgets.
+*/
+void UISystem::UpdateWidgets() NOEXCEPT
+{
+	//Cache the mouse data.
+	const MouseState *const RESTRICT mouse_state{ InputSystem::Instance->GetMouseState(InputLayer::USER_INTERFACE) };
+	const Vector2<float32> mouse_position{ Vector2<float32>(mouse_state->_CurrentX, mouse_state->_CurrentY) * UI::Constants::REFERENCE_RESOLUTION };
+	const ButtonState mouse_button_state{ mouse_state->_Left };
+	const int8 mouse_scroll_wheel_step{ mouse_state->_ScrollWheelStep };
+
+	//Remember if we have already consumed input.
+	bool have_consumed_click_input{ false };
+	bool have_consumed_scroll_input{ false };
+
+	//Iterate through all scenes.
+	if (!_Scenes.Empty())
+	{
+		for (int64 scene_index{static_cast<int64>(_Scenes.Size() - 1)}; scene_index >= 0; --scene_index)
+		{
+			const UI::Scene *const RESTRICT scene{ _Scenes[scene_index] };
+
+			//Iterate through all of this scene's widgets.
+			const DynamicArray<UI::Widget *RESTRICT> &widgets{ scene->GetWidgets() };
+
+			if (!widgets.Empty())
+			{
+				for (int64 widget_index{ static_cast<int64>(widgets.Size() - 1) }; widget_index >= 0; --widget_index)
+				{
+					UI::Widget *const RESTRICT widget{ widgets[widget_index] };
+
+					if (!widget->IsEnabled())
+					{
+						continue;
+					}
+
+					//Update clickable interfaces.
+					if (UI::ClickableInterface *const RESTRICT clickable_interface{ widget->GetClickableInterface() })
+					{
+						if (have_consumed_click_input)
+						{
+							clickable_interface->SetState(widget, UI::ClickableInterface::State::IDLE);
+						}
+
+						else
+						{
+							if (clickable_interface->_IsInside(widget, mouse_position))
+							{
+								if (mouse_button_state == ButtonState::PRESSED)
+								{
+									if (clickable_interface->GetState() == UI::ClickableInterface::State::HOVERED)
+									{
+										clickable_interface->SetState(widget, UI::ClickableInterface::State::PRESSED);
+									}
+
+									else
+									{
+										clickable_interface->SetState(widget, UI::ClickableInterface::State::HOVERED);
+									}
+								}
+
+								else if (mouse_button_state == ButtonState::PRESSED_HELD)
+								{
+									//The clickable can only go from hovered to pressed if it was first hovered, and then actually pressed.
+									if (clickable_interface->GetState() != UI::ClickableInterface::State::PRESSED)
+									{
+										clickable_interface->SetState(widget, UI::ClickableInterface::State::HOVERED);
+									}
+								}
+
+								else
+								{
+									clickable_interface->SetState(widget, UI::ClickableInterface::State::HOVERED);
+								}
+
+								have_consumed_click_input = true;
+							}
+
+							else
+							{
+								clickable_interface->SetState(widget, UI::ClickableInterface::State::IDLE);
+							}
+						}
+					}
+
+					//Update scrollable interfaces.
+					if (!have_consumed_scroll_input && mouse_scroll_wheel_step != 0)
+					{
+						if (UI::ScrollableInterface *const RESTRICT scrollable_interface{ widget->GetScrollableInterface() })
+						{
+							if (scrollable_interface->_IsInside(widget, mouse_position))
+							{ 
+								if (mouse_scroll_wheel_step < 0)
+								{
+									scrollable_interface->OnScrollDown();
+								}
+
+								else if (mouse_scroll_wheel_step > 0)
+								{
+									scrollable_interface->OnScrollUp();
+								}
+
+								have_consumed_scroll_input = true;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+}
+
+/*
 *	Updates during the USER_INTERFACE phase.
 */
 void UISystem::UpdateUserInterface() NOEXCEPT
@@ -145,6 +260,9 @@ void UISystem::UpdateUserInterface() NOEXCEPT
 
 	//Clean the widget allocator.
 	_WidgetAllocator.Clean();
+
+	//Update the widgets.
+	UpdateWidgets();
 }
 
 /*
@@ -158,6 +276,7 @@ void UISystem::UpdatePreRender() NOEXCEPT
 	//Set up the context.
 	UI::RenderContext context;
 
+	context._DeltaTime = CatalystEngineSystem::Instance->GetDeltaTime();
 	context._RenderCommands = &_RenderCommands;
 
 	//Render all scenes!

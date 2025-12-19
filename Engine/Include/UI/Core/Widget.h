@@ -12,7 +12,9 @@
 
 //UI.
 #include <UI/Core/Identifier.h>
+#include <UI/Core/ClickableInterface.h>
 #include <UI/Core/Container.h>
+#include <UI/Core/ScrollableInterface.h>
 #include <UI/Core/RenderContext.h>
 
 namespace UI
@@ -27,16 +29,81 @@ namespace UI
 	public:
 
 		/*
-		*	Default constructor.
-		*/
-		Widget(UI::Container *const RESTRICT parent) NOEXCEPT;
-
-		/*
 		*	Default destructor.
 		*/
 		FORCE_INLINE virtual ~Widget() NOEXCEPT
 		{
 
+		}
+
+		/*
+		*	Sets the parent.
+		*/
+		FORCE_INLINE void SetParent(UI::Container *const RESTRICT value) NOEXCEPT
+		{
+			_Parent = value;
+		}
+
+		/*
+		*	Callback for when the parent is available.
+		*/
+		FORCE_INLINE virtual void OnParentAvailable() NOEXCEPT
+		{
+
+		}
+
+		/*
+		*	Positions this widget. Usually called right after creation.
+		*/
+		virtual void Position() NOEXCEPT;
+
+		/*
+		*	Returns whether or not this widget is enabled.
+		*/
+		FORCE_INLINE NO_DISCARD bool IsEnabled() const NOEXCEPT
+		{
+			return _Enabled;
+		}
+
+		/*
+		*	Sets whether or not this widget is enabled.
+		*/
+		FORCE_INLINE void SetEnabled(const bool value) NOEXCEPT
+		{
+			_Enabled = value;
+		}
+
+		/*
+		*	Returns the axis aligned bounding box.
+		*/
+		FORCE_INLINE NO_DISCARD const AxisAlignedBoundingBox2D &GetAxisAlignedBoundingBox() const NOEXCEPT
+		{
+			return _AxisAlignedBoundingBox;
+		}
+
+		/*
+		*	Sets the axis aligned bounding box.
+		*/
+		FORCE_INLINE Widget *const RESTRICT SetAxisAlignedBoundingBox(const AxisAlignedBoundingBox2D &value) NOEXCEPT
+		{
+			_AxisAlignedBoundingBox = value;
+			return this;
+		}
+
+		/*
+		*	Returns the clickable interface (if this widget is clickable.
+		*/
+		FORCE_INLINE virtual NO_DISCARD UI::ClickableInterface *const RESTRICT GetClickableInterface() NOEXCEPT
+		{
+			return nullptr;
+		}
+
+		/*
+		*	Returns the scrollable interface (if this widget is scrollable).
+		*/
+		FORCE_INLINE virtual NO_DISCARD UI::ScrollableInterface *const RESTRICT GetScrollableInterface() NOEXCEPT
+		{
+			return nullptr;
 		}
 
 		/*
@@ -64,7 +131,9 @@ namespace UI
 		void RenderBox
 		(
 			const UI::RenderContext &context,
-			const AxisAlignedBoundingBox2D &axis_aligned_bounding_box
+			const AxisAlignedBoundingBox2D &axis_aligned_bounding_box,
+			const Vector4<float32> &color,
+			const float32 radius = 0.0f
 		) NOEXCEPT;
 
 		/*
@@ -81,6 +150,11 @@ namespace UI
 			const UI::HorizontalAlignment horizontal_alignment = UI::HorizontalAlignment::CENTER,
 			const UI::VerticalAlignment vertical_alignment = UI::VerticalAlignment::CENTER
 		) NOEXCEPT;
+
+	private:
+
+		//Denotes whether or not this widget is enabled.
+		bool _Enabled{ true };
 
 	};
 

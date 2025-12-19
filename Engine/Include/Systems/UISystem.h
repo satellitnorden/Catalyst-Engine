@@ -74,6 +74,11 @@ private:
 	DynamicArray<UI::RenderCommand> _RenderCommands;
 
 	/*
+	*	Updates widgets.
+	*/
+	void UpdateWidgets() NOEXCEPT;
+
+	/*
 	*	Updates during the USER_INTERFACE phase.
 	*/
 	void UpdateUserInterface() NOEXCEPT;

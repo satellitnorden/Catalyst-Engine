@@ -19,9 +19,9 @@ namespace UI
 	public:
 
 		/*
-		*	Default constructor.
+		*	Callback for when the parent is available.
 		*/
-		TextWidget(UI::Container *const RESTRICT parent) NOEXCEPT;
+		void OnParentAvailable() NOEXCEPT override;
 
 		/*
 		*	Sets the text.

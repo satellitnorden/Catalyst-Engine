@@ -50,7 +50,7 @@ namespace UI
 
 		/*
 		*	Parameter 1.
-		*	None for image.
+		*	Radius (rounded corners) for image.
 		*	None for texture.
 		*	Smoothing factor for text.
 		*/

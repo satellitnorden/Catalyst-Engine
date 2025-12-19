@@ -8,11 +8,9 @@ namespace UI
 {
 
 	/*
-	*	Default constructor.
+	*	Callback for when the parent is available.
 	*/
-	TextWidget::TextWidget(UI::Container *const RESTRICT parent) NOEXCEPT
-		:
-		UI::Widget(parent)
+	void TextWidget::OnParentAvailable() NOEXCEPT
 	{
 		//Grab the text scale from the scene.
 		_TextScale = _Parent->_Parent->GetTextScale();

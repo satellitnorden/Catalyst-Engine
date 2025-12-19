@@ -1,6 +1,9 @@
 //Declare storage buffer includes.
 IncludeStorageBuffer(UI);
 
+//Declare shader function library includes.
+IncludeShaderFunctionLibrary(UI);
+
 //Declare output render targets.
 OutputRenderTarget(SceneLowDynamicRange1);
 
@@ -38,6 +41,7 @@ Sampler(SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap 
 Vertex
 {
     //Declare output parameters.
+    OutputParameter(vec2, OutPixelPosition);
     OutputParameter(vec2, OutTextureCoordinate);
     OutputParameter(uint, OutInstanceIndex);
 
@@ -46,6 +50,7 @@ Vertex
     vec2 texture_coordinate = RENDER_COMMANDS[INSTANCE_INDEX]._TextureCoordinates[VERTEX_INDEX];
 
     //Pass data to the fragment shader.
+    OutPixelPosition = ClipToPixel(position.xy);
     OutTextureCoordinate = texture_coordinate;
     OutInstanceIndex = INSTANCE_INDEX;
 
@@ -57,6 +62,7 @@ Vertex
 Fragment
 {
     //Declare input parameters.
+    InputParameter(vec2, InPixelPosition);
     InputParameter(vec2, InTextureCoordinate);
     InputParameter(uint, InInstanceIndex);
 
@@ -68,6 +74,21 @@ Fragment
         case RENDER_COMMAND_MODE_COLOR:
         {
             color = UnpackColor(RENDER_COMMANDS[InInstanceIndex]._ColorOrTexture);
+
+            //Calculate the signed distance to apply rounded corners.
+            float signed_distance = RoundedRectangleSignedDistance
+            (
+                ClipToPixel(RENDER_COMMANDS[InInstanceIndex]._Positions[0].xy),
+                ClipToPixel(RENDER_COMMANDS[InInstanceIndex]._Positions[2].xy),
+                RENDER_COMMANDS[InInstanceIndex]._Parameter1,
+                InPixelPosition
+            );
+
+            //Calculate anti aliasing from the signed distance.
+            float anti_aliasing = fwidth(signed_distance);
+
+            //Modify the opacity depending on the signed distance.
+            color.a *= 1.0f - smoothstep(0.0f, anti_aliasing, signed_distance);
 
             break;
         }

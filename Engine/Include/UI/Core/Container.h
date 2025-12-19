@@ -30,6 +30,9 @@ namespace UI
 			BOTTOM_TO_TOP
 		};
 
+		//Denotes if this container is alive.
+		bool _Alive;
+
 		//The parent.
 		class Scene *RESTRICT _Parent;
 
@@ -51,11 +54,23 @@ namespace UI
 		//The widget padding.
 		float32 _WidgetPadding;
 
+		//The start widget index.
+		uint64 _StartWidgetIndex;
+
+		//The end widget index.
+		uint64 _EndWidgetIndex;
+
 		//The cursor.
 		float32 _Cursor;
 
-		//Denotes whether or not this container is active.
-		bool _Active{ false };
+		//The scroll offset.
+		float32 _ScrollOffset;
+
+		//The maximum scroll offset.
+		float32 _MaximumScrollOffset;
+
+		//Denotes whether or not this container wants scroll.
+		bool _WantsScroll;
 
 	};
 

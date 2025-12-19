@@ -297,8 +297,39 @@ layout (std430, set = 1, binding = 0) buffer UI
 
 layout (set = 1, binding = 1) uniform sampler SAMPLER;
 
-layout (location = 0) in vec2 InTextureCoordinate;
-layout (location = 1) flat in uint InInstanceIndex;
+//Constants.
+#define REFERENCE_RESOLUTION (vec2(1920.0f, 1080.0f))
+
+/*
+*	Converts clip coordinates to pixel coordinates.
+*/
+vec2 ClipToPixel(vec2 coordinates)
+{
+	coordinates = coordinates * 0.5f + 0.5f;
+	coordinates.y = 1.0f - coordinates.y;
+
+	return coordinates * REFERENCE_RESOLUTION;
+}
+
+/*
+*	Returns the signed distance from a rounded rectangle.
+*	Will be negative if inside, zero on the edge and positive outside.
+*	Expects pixel coordinate space, so does not account for aspect ratio.
+*/
+float RoundedRectangleSignedDistance(vec2 minimum, vec2 maximum, float radius, vec2 point)
+{
+	vec2 center = mix(minimum, maximum, 0.5f);
+	vec2 half_size = (maximum - minimum) * 0.5f;
+
+	vec2 local_point = point - center;
+
+	vec2 Q = abs(local_point) - half_size + vec2(radius);
+	return length(max(Q, 0.0f)) + min(max(Q.x, Q.y), 0.0f) - radius;
+}
+
+layout (location = 0) in vec2 InPixelPosition;
+layout (location = 1) in vec2 InTextureCoordinate;
+layout (location = 2) flat in uint InInstanceIndex;
 
 layout (location = 0) out vec4 SceneLowDynamicRange1;
 
@@ -310,6 +341,15 @@ void main()
         case RENDER_COMMAND_MODE_COLOR:
         {
             color = UnpackColor(RENDER_COMMANDS[InInstanceIndex]._ColorOrTexture);
+            float signed_distance = RoundedRectangleSignedDistance
+            (
+                ClipToPixel(RENDER_COMMANDS[InInstanceIndex]._Positions[0].xy),
+                ClipToPixel(RENDER_COMMANDS[InInstanceIndex]._Positions[2].xy),
+                RENDER_COMMANDS[InInstanceIndex]._Parameter1,
+                InPixelPosition
+            );
+            float anti_aliasing = fwidth(signed_distance);
+            color.a *= 1.0f - smoothstep(0.0f, anti_aliasing, signed_distance);
             break;
         }
         case RENDER_COMMAND_MODE_TEXT:

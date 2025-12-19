@@ -297,13 +297,45 @@ layout (std430, set = 1, binding = 0) buffer UI
 
 layout (set = 1, binding = 1) uniform sampler SAMPLER;
 
-layout (location = 0) out vec2 OutTextureCoordinate;
-layout (location = 1) out uint OutInstanceIndex;
+//Constants.
+#define REFERENCE_RESOLUTION (vec2(1920.0f, 1080.0f))
+
+/*
+*	Converts clip coordinates to pixel coordinates.
+*/
+vec2 ClipToPixel(vec2 coordinates)
+{
+	coordinates = coordinates * 0.5f + 0.5f;
+	coordinates.y = 1.0f - coordinates.y;
+
+	return coordinates * REFERENCE_RESOLUTION;
+}
+
+/*
+*	Returns the signed distance from a rounded rectangle.
+*	Will be negative if inside, zero on the edge and positive outside.
+*	Expects pixel coordinate space, so does not account for aspect ratio.
+*/
+float RoundedRectangleSignedDistance(vec2 minimum, vec2 maximum, float radius, vec2 point)
+{
+	vec2 center = mix(minimum, maximum, 0.5f);
+	vec2 half_size = (maximum - minimum) * 0.5f;
+
+	vec2 local_point = point - center;
+
+	vec2 Q = abs(local_point) - half_size + vec2(radius);
+	return length(max(Q, 0.0f)) + min(max(Q.x, Q.y), 0.0f) - radius;
+}
+
+layout (location = 0) out vec2 OutPixelPosition;
+layout (location = 1) out vec2 OutTextureCoordinate;
+layout (location = 2) out uint OutInstanceIndex;
 
 void main()
 {
     vec4 position = RENDER_COMMANDS[gl_InstanceIndex]._Positions[gl_VertexIndex];
     vec2 texture_coordinate = RENDER_COMMANDS[gl_InstanceIndex]._TextureCoordinates[gl_VertexIndex];
+    OutPixelPosition = ClipToPixel(position.xy);
     OutTextureCoordinate = texture_coordinate;
     OutInstanceIndex = gl_InstanceIndex;
 	gl_Position = position;

@@ -18,6 +18,9 @@ namespace UI
 
 	public:
 
+		//The delta time.
+		float32 _DeltaTime;
+
 		//The render commands.
 		DynamicArray<RenderCommand> *RESTRICT _RenderCommands;
 

@@ -25,7 +25,7 @@ namespace UI
 		*	Allocates a widget (or returns an active one if it exists.
 		*/
 		template <typename TYPE>
-		FORCE_INLINE TYPE *const Allocate(const UI::Identifier identifier, UI::Container *const RESTRICT parent) NOEXCEPT
+		FORCE_INLINE TYPE *const Allocate(const UI::Identifier identifier) NOEXCEPT
 		{
 			WidgetAllocation *const RESTRICT allocation{ _Allocations.Find(identifier) };
 
@@ -41,7 +41,7 @@ namespace UI
 				WidgetAllocation new_allocation;
 
 				new_allocation._Alive = true;
-				new_allocation._Data = new TYPE(parent);
+				new_allocation._Data = new TYPE();
 
 				_Allocations.Add(identifier, new_allocation);
 

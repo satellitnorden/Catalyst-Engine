@@ -28,6 +28,16 @@ namespace UI
 		}
 
 		/*
+		*	Constructor taking the value.
+		*/
+		FORCE_INLINE constexpr Identifier(const uint64 value) NOEXCEPT
+			:
+			_Value(value)
+		{
+
+		}
+
+		/*
 		*	Constructor from a string.
 		*/
 		FORCE_INLINE constexpr Identifier(const char *const RESTRICT string) NOEXCEPT

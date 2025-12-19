@@ -39,9 +39,6 @@ namespace UI
 			*new_minimum = original_minimum;
 			*new_maximum = original_maximum;
 
-			//Calculate the aspect ratio reciprocal.
-			const float32 aspect_ratio_reciprocal{ 1.0f / RenderingSystem::Instance->GetFullAspectRatio() };
-
 			//Use the character 'A' as a baseline height.
 			const float32 baseline_height{ font->_CharacterDescriptions['A']._Size._Y * scale };
 
@@ -67,7 +64,7 @@ namespace UI
 				}
 
 				//Advance the maximum on the X axis..
-				text_maximum._X += font->_CharacterDescriptions[character]._Advance * scale * aspect_ratio_reciprocal;
+				text_maximum._X += font->_CharacterDescriptions[character]._Advance * scale;
 			}
 
 			//Calculate the text horizontal/vertical extent.
