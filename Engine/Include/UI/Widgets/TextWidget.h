@@ -42,6 +42,26 @@ namespace UI
 		}
 
 		/*
+		*	Sets the color.
+		*/
+		FORCE_INLINE TextWidget *const RESTRICT SetColor(const Vector3<float32> &color) NOEXCEPT
+		{
+			_ColorOpacity._R = color._R;
+			_ColorOpacity._G = color._G;
+			_ColorOpacity._B = color._B;
+			return this;
+		}
+
+		/*
+		*	Sets the opacity.
+		*/
+		FORCE_INLINE TextWidget *const RESTRICT SetOpacity(const float32 opacity) NOEXCEPT
+		{
+			_ColorOpacity._A = opacity;
+			return this;
+		}
+
+		/*
 		*	Renders this widget.
 		*/
 		void Render(const UI::RenderContext &context) NOEXCEPT override;
@@ -53,6 +73,9 @@ namespace UI
 
 		//The text scale.
 		float32 _TextScale;
+
+		//The color/opacity.
+		Vector4<float32> _ColorOpacity{ 1.0f, 1.0f, 1.0f, 1.0f };
 
 	};
 

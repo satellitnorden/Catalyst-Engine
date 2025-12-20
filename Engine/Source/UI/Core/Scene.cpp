@@ -130,6 +130,17 @@ namespace UI
 			//Set up the bounding box differently depending on the anchor.
 			switch (anchor)
 			{
+				case UI::Anchor::CENTER:
+				{
+					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._X = UI::Constants::REFERENCE_RESOLUTION._X * 0.5f - half_size._X;
+					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._Y = UI::Constants::REFERENCE_RESOLUTION._Y * 0.5f - half_size._Y;
+
+					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._X = UI::Constants::REFERENCE_RESOLUTION._X * 0.5f + half_size._X;
+					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._Y = UI::Constants::REFERENCE_RESOLUTION._Y * 0.5f + half_size._Y;
+
+					break;
+				}
+
 				case UI::Anchor::TOP:
 				{
 					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._X = center._X - half_size._X;

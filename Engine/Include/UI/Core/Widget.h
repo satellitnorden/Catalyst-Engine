@@ -148,7 +148,8 @@ namespace UI
 			const uint64 text_length,
 			const float32 scale,
 			const UI::HorizontalAlignment horizontal_alignment = UI::HorizontalAlignment::CENTER,
-			const UI::VerticalAlignment vertical_alignment = UI::VerticalAlignment::CENTER
+			const UI::VerticalAlignment vertical_alignment = UI::VerticalAlignment::CENTER,
+			const Vector4<float32> &color = Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f)
 		) NOEXCEPT;
 
 	private:

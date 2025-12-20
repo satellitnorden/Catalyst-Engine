@@ -151,7 +151,8 @@ namespace UI
 		const uint64 text_length,
 		const float32 scale,
 		const UI::HorizontalAlignment horizontal_alignment,
-		const UI::VerticalAlignment vertical_alignment
+		const UI::VerticalAlignment vertical_alignment,
+		const Vector4<float32> &color
 	) NOEXCEPT
 	{
 		//Calculate the aligned minimum/maximum.
@@ -267,7 +268,7 @@ namespace UI
 			command._ColorOrTexture = font->_MasterTextureIndex;
 
 			//Set the color/opacity.
-			command._ColorOpacity = *Color(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f)).Data();
+			command._ColorOpacity = *Color(color).Data();
 
 			//Set the smoothing factor.
 			command._Parameter1_float32 = TEXT_SMOOTHING_FACTOR_CURVE.Sample(_scale / UI::Constants::REFERENCE_RESOLUTION._Y);

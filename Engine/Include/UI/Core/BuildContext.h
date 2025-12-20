@@ -17,6 +17,9 @@ namespace UI
 
 	public:
 
+		//The delta time.
+		float32 _DeltaTime;
+
 		//The widget allocator.
 		WidgetAllocator *RESTRICT _WidgetAllocator;
 

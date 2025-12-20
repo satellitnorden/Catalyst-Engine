@@ -250,6 +250,7 @@ void UISystem::UpdateUserInterface() NOEXCEPT
 	//Set up the build context.
 	UI::BuildContext context;
 
+	context._DeltaTime = CatalystEngineSystem::Instance->GetDeltaTime();
 	context._WidgetAllocator = &_WidgetAllocator;
 
 	//Build all scenes.
