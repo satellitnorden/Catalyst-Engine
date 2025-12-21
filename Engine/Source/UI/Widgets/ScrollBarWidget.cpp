@@ -60,7 +60,7 @@ namespace UI
 	void ScrollBarWidget::Render(const UI::RenderContext &context) NOEXCEPT
 	{
 		//Render the background box.
-		RenderBox(context, _AxisAlignedBoundingBox, ScrollBarWidgetConstants::BACKGROUND_COLOR, SIZE * 0.5f);
+		RenderBox(context, _AxisAlignedBoundingBox, ScrollBarWidgetConstants::BACKGROUND_COLOR, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), SIZE * 0.5f);
 
 		//Add the handle box.
 		{
@@ -69,7 +69,7 @@ namespace UI
 			axis_aligned_bounding_box._Minimum._Y = BaseMath::LinearlyInterpolate(_AxisAlignedBoundingBox._Minimum._Y, _AxisAlignedBoundingBox._Maximum._Y, _Start);
 			axis_aligned_bounding_box._Maximum._Y = BaseMath::LinearlyInterpolate(_AxisAlignedBoundingBox._Minimum._Y, _AxisAlignedBoundingBox._Maximum._Y, _End);
 
-			RenderBox(context, axis_aligned_bounding_box, ScrollBarWidgetConstants::HANDLE_COLOR, SIZE * 0.5f);
+			RenderBox(context, axis_aligned_bounding_box, ScrollBarWidgetConstants::HANDLE_COLOR, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), SIZE * 0.5f);
 		}
 	}
 

@@ -139,7 +139,7 @@ namespace UI
 		const float32 current_animator_value{ _Animator.Update(context._DeltaTime) };
 
 		//Render the base box.
-		RenderBox(context, _AxisAlignedBoundingBox, BaseMath::LinearlyInterpolate(_SourceColor, _DestinationColor, current_animator_value), ButtonWidgetConstants::RADIUS);
+		RenderBox(context, _AxisAlignedBoundingBox, BaseMath::LinearlyInterpolate(_SourceColor, _DestinationColor, current_animator_value), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), ButtonWidgetConstants::RADIUS);
 
 		//Draw the overlay box.
 		if (current_animator_value < 1.0f)
@@ -175,7 +175,7 @@ namespace UI
 
 			color._A *= (1.0f - current_animator_value);
 
-			RenderBox(context, axis_aligned_bounding_box, color, ButtonWidgetConstants::RADIUS);
+			RenderBox(context, axis_aligned_bounding_box, color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), ButtonWidgetConstants::RADIUS);
 		}
 
 		//Render the text.

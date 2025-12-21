@@ -11,6 +11,7 @@
 #include <Math/General/Curve.h>
 
 //UI.
+#include <UI/Core/ColorOrTexture.h>
 #include <UI/Core/Identifier.h>
 #include <UI/Core/ClickableInterface.h>
 #include <UI/Core/Container.h>
@@ -132,7 +133,8 @@ namespace UI
 		(
 			const UI::RenderContext &context,
 			const AxisAlignedBoundingBox2D &axis_aligned_bounding_box,
-			const Vector4<float32> &color,
+			const ColorOrTexture &color_or_texture,
+			const Vector4<float32> &color_opacity = Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f),
 			const float32 radius = 0.0f
 		) NOEXCEPT;
 

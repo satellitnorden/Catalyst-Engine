@@ -106,7 +106,8 @@ namespace UI
 	(
 		const UI::RenderContext &context,
 		const AxisAlignedBoundingBox2D &axis_aligned_bounding_box,
-		const Vector4<float32> &color,
+		const ColorOrTexture &color_or_texture,
+		const Vector4<float32> &color_opacity,
 		const float32 radius
 	) NOEXCEPT
 	{
@@ -126,14 +127,27 @@ namespace UI
 		command._TextureCoordinates[2] = Vector2<float32>(1.0f, 1.0f);
 		command._TextureCoordinates[3] = Vector2<float32>(1.0f, 0.0f);
 
-		//Set the mode.
-		command._Mode = UI::RenderCommand::Mode::COLOR;
+		//Flip the texture coordinates.
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			command._TextureCoordinates[i]._Y = 1.0f - command._TextureCoordinates[i]._Y;
+		}
 
-		//Set the color.
-		command._ColorOrTexture = *Color(color).Data();
+		//Set the mode & color or texture.
+		if (color_or_texture.IsColor())
+		{
+			command._Mode = UI::RenderCommand::Mode::COLOR;
+			command._ColorOrTexture = *Color(color_or_texture.GetColor()).Data();
+		}
+		
+		else
+		{
+			command._Mode = UI::RenderCommand::Mode::TEXTURE;
+			command._ColorOrTexture = color_or_texture.GetTextureIndex();
+		}
 
 		//Set the color/opacity.
-		command._ColorOpacity = *Color(Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f)).Data();
+		command._ColorOpacity = *Color(color_opacity).Data();
 
 		//Set the parameters.
 		command._Parameter1_float32 = radius;

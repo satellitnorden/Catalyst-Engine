@@ -93,6 +93,28 @@ Fragment
             break;
         }
 
+        case RENDER_COMMAND_MODE_TEXTURE:
+        {
+            color = texture(sampler2D(TEXTURES[RENDER_COMMANDS[InInstanceIndex]._ColorOrTexture], SAMPLER), InTextureCoordinate);
+
+            //Calculate the signed distance to apply rounded corners.
+            float signed_distance = RoundedRectangleSignedDistance
+            (
+                ClipToPixel(RENDER_COMMANDS[InInstanceIndex]._Positions[0].xy),
+                ClipToPixel(RENDER_COMMANDS[InInstanceIndex]._Positions[2].xy),
+                RENDER_COMMANDS[InInstanceIndex]._Parameter1,
+                InPixelPosition
+            );
+
+            //Calculate anti aliasing from the signed distance.
+            float anti_aliasing = fwidth(signed_distance);
+
+            //Modify the opacity depending on the signed distance.
+            color.a *= 1.0f - smoothstep(0.0f, anti_aliasing, signed_distance);
+
+            break;
+        }
+
         case RENDER_COMMAND_MODE_TEXT:
         {
             float text_sdf = texture(sampler2D(TEXTURES[RENDER_COMMANDS[InInstanceIndex]._ColorOrTexture], SAMPLER), InTextureCoordinate).x;

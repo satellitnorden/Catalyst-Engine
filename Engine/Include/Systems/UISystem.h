@@ -42,10 +42,11 @@ public:
 	*	Adds a UI scene of the given type.
 	*/
 	template <typename TYPE>
-	FORCE_INLINE void AddScene() NOEXCEPT
+	FORCE_INLINE TYPE *const RESTRICT AddScene() NOEXCEPT
 	{
-		UI::Scene *const RESTRICT scene{ new TYPE() };
+		TYPE *const RESTRICT scene{ new TYPE() };
 		_AddSceneRequests.Push(scene);
+		return scene;
 	}
 
 	/*

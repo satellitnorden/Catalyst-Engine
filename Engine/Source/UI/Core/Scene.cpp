@@ -371,8 +371,16 @@ namespace UI
 
 			case UI::Container::Layout::TOP_TO_BOTTOM:
 			{
-				const Vector2<float32> cursor_position{ AxisAlignedBoundingBox2D::CalculateCenter(_ActiveContainer->_AxisAlignedBoundingBox)._X, _ActiveContainer->_AxisAlignedBoundingBox._Maximum._Y - PreviousFloat32(_ActiveContainer->_Cursor) };
-				is_cursor_inside = _ActiveContainer->_AxisAlignedBoundingBox.IsInside(cursor_position);
+				if (_ActiveContainer->_Cursor > 0.0f)
+				{
+					const Vector2<float32> cursor_position{ AxisAlignedBoundingBox2D::CalculateCenter(_ActiveContainer->_AxisAlignedBoundingBox)._X, NextFloat32(_ActiveContainer->_AxisAlignedBoundingBox._Maximum._Y - _ActiveContainer->_Cursor) };
+					is_cursor_inside = _ActiveContainer->_AxisAlignedBoundingBox.IsInside(cursor_position);
+				}
+				
+				else
+				{
+					is_cursor_inside = true;
+				}
 
 				break;
 			}

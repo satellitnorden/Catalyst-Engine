@@ -19,7 +19,7 @@ namespace UI
 	void BackgroundWidget::Render(const UI::RenderContext &context) NOEXCEPT
 	{
 		//Render the box.
-		RenderBox(context, _AxisAlignedBoundingBox, _Color);
+		RenderBox(context, _AxisAlignedBoundingBox, _ColorOrTexture, _ColorOpacity);
 	}
 
 }
