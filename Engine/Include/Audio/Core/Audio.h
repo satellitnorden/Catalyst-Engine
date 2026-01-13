@@ -489,4 +489,12 @@ namespace Audio
 		return std::log(std::sqrt((std::pow((2.0f + (1.0f / std::pow(Q, 2.0f))), 2.0f) / 4.0f) - 1.0f) + (1.0f / (2.0f * std::pow(Q, 2.0f))) + 1.0f) / std::log(2.0f);
 	}
 
+	/*
+	*	Converts voltage (RMS) to dBu.
+	*/
+	FORCE_INLINE NO_DISCARD float32 VoltageTodBu(const float32 voltage) NOEXCEPT
+	{
+		return 20.0f * std::log10(voltage / 0.7746f);
+	}
+
 }
