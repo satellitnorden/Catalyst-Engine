@@ -115,8 +115,20 @@ std::unique_ptr<nam::DSP> nam::lstm::Factory(const nlohmann::json& config, std::
   return std::make_unique<nam::lstm::LSTM>(num_layers, input_size, hidden_size, weights, expectedSampleRate);
 }
 
-// Register the factory
+// Registers the factory.
+void nam::lstm::RegisterFactory()
+{
+    static bool ONCE = false;
+
+    if (!ONCE)
+    {
+        nam::factory::FactoryRegistry::instance().registerFactory("LSTM", nam::lstm::Factory);
+
+        ONCE = true;
+    }
+}
+
 namespace
 {
-static nam::factory::Helper _register_LSTM("LSTM", nam::lstm::Factory);
+    //static nam::factory::Helper _register_LSTM("LSTM", nam::lstm::Factory);
 }

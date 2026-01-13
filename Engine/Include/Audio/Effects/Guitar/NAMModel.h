@@ -11,7 +11,9 @@
 
 //Third party.
 #include <NAM/extensions/parametric_lstm.h>
+#include <NAM/extensions/parametric_wavenet.h>
 #include <NAM/get_dsp.h>
+#include <NAM/lstm.h>
 
 /*
 *	An effect wrapping a NAM (Neural Amp Modeler) model.
@@ -24,17 +26,24 @@ public:
 	/*
 	*	Initializes this NAM model.
 	*/
-	FORCE_INLINE void Initialize(const char *const RESTRICT file_path) NOEXCEPT
+	FORCE_INLINE void Initialize
+	(
+		const char *const RESTRICT file_path,
+		const uint32 input_size,
+		const float32 gain_compensation
+	) NOEXCEPT
 	{
 		//The initialization order may be a bit whack here, so make sure that architectures are registered.
 		nam::parametric_lstm::RegisterFactory();
+		nam::parametric_wavenet::RegisterFactory();
+		nam::lstm::RegisterFactory();
 
 		//Retrieve the DSP's.
 		for (std::unique_ptr<nam::DSP> &dsp : _DSPs)
 		{
 			nam::dspData dsp_data;
 			dsp = nam::get_dsp(std::filesystem::path(std::string(file_path)), dsp_data);
-			_InputSize = dsp_data.config["input_size"].get<uint32>();
+			_InputSize = input_size;
 		}
 
 		//Now that we know the input size, set up the parameters.
@@ -42,6 +51,9 @@ public:
 		{
 			_Parameters.Upsize<true>(_InputSize - 1);
 		}
+
+		//Set the gain compensation.
+		_GainCompensation = gain_compensation;
 	}
 
 	/*
@@ -49,7 +61,10 @@ public:
 	*/
 	FORCE_INLINE void SetParameter(const uint64 index, const float32 value) NOEXCEPT
 	{
-		_Parameters[index].SetTarget(value);
+		if (index < _Parameters.Size())
+		{
+			_Parameters[index].SetTarget(value);
+		}
 	}
 	
 	/*
@@ -105,6 +120,12 @@ public:
 
 		//Apply the high pass filter.
 		_HighPassFilter.Process(context, *outputs, outputs, number_of_channels, number_of_samples);
+
+		//Apply gain compensation.
+		for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
+		{
+			SIMD::MultiplyByScalar(outputs->At(channel_index).Data(), number_of_samples, _GainCompensation);
+		}
 	}
 
 private:
@@ -126,5 +147,8 @@ private:
 	*	This is implemented as a post-processing step to remove the DC offset that may be inherent in some models.
 	*/
 	HighPassFilter _HighPassFilter{ 5.0f, 1.0f, 2 };
+
+	//The gain compensation.
+	float32 _GainCompensation;
 
 };
