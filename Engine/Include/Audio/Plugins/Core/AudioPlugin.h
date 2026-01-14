@@ -237,6 +237,7 @@ public:
 			KNOB,
 			CHECKBOX,
 			SELECTOR,
+			SLIDER,
 			SWITCH,
 			OVERLAY_KNOB
 		};
@@ -352,6 +353,19 @@ public:
 			//The knob bounds.
 			AxisAlignedBoundingBox2D _KnobBoundingBox;
 		} _OverlayKnobData;
+
+		struct
+		{
+			//The idle bitmap file path.
+			const char *RESTRICT _IdleBitmapFilePath;
+
+			//The hovered bitmap file path.
+			const char *RESTRICT _HoveredBitmapFilePath;
+
+			//The pressed bitmap file path.
+			const char *RESTRICT _PressedBitmapFilePath;
+
+		} _SliderData;
 
 		struct
 		{

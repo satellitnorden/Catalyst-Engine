@@ -137,8 +137,8 @@ public:
 		const float32 ratio_reciprocal{ 1.0f / ratio };
 
 		//Calculate the attack and release times.
-		const float32 attack_time{ ExponentialInterpolation(20e-6f, 800e-6f, 1.0f - (_Attack / 7.0f)) };
-		const float32 release_time{ ExponentialInterpolation(50e-3f, 1100e-3f, 1.0f - (_Release / 7.0f)) };
+		const float32 attack_time{ ExponentialInterpolation(0.02f / 1'000.0f, 0.8f / 1'000.0f, 1.0f - (_Attack / 7.0f)) };
+		const float32 release_time{ ExponentialInterpolation(50.0f / 1'000.0f, 1'100.0f / 1'000.0f, 1.0f - (_Release / 7.0f)) };
 
 		//Calculate the attack and release coefficients.
 		const float32 attack_coefficient{ std::exp(-std::log(9.0f) / (attack_time * _SampleRate)) };
