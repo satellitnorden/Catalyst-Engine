@@ -441,5 +441,5 @@ std::unique_ptr<nam::DSP> nam::parametric_wavenet::Factory(const nlohmann::json&
 // Register the factory
 namespace
 {
-static nam::factory::Helper _register_WaveNet("WaveNet", nam::parametric_wavenet::Factory);
+    //static nam::factory::Helper _register_WaveNet("ParametricWaveNet", nam::parametric_wavenet::Factory);
 }

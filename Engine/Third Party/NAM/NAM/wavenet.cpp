@@ -418,8 +418,21 @@ std::unique_ptr<nam::DSP> nam::wavenet::Factory(const nlohmann::json& config, st
     layer_array_params, head_scale, with_head, weights, expectedSampleRate);
 }
 
+// Registers the factory.
+void nam::wavenet::RegisterFactory()
+{
+    static bool ONCE = false;
+
+    if (!ONCE)
+    {
+        nam::factory::FactoryRegistry::instance().registerFactory("WaveNet", nam::wavenet::Factory);
+
+        ONCE = true;
+    }
+}
+
 // Register the factory
 namespace
 {
-static nam::factory::Helper _register_WaveNet("WaveNet", nam::wavenet::Factory);
+    //static nam::factory::Helper _register_WaveNet("WaveNet", nam::wavenet::Factory);
 }

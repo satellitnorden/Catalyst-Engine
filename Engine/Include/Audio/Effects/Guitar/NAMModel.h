@@ -14,6 +14,7 @@
 #include <NAM/extensions/parametric_wavenet.h>
 #include <NAM/get_dsp.h>
 #include <NAM/lstm.h>
+#include <NAM/wavenet.h>
 
 /*
 *	An effect wrapping a NAM (Neural Amp Modeler) model.
@@ -37,6 +38,7 @@ public:
 		nam::parametric_lstm::RegisterFactory();
 		nam::parametric_wavenet::RegisterFactory();
 		nam::lstm::RegisterFactory();
+		nam::wavenet::RegisterFactory();
 
 		//Retrieve the DSP's.
 		for (std::unique_ptr<nam::DSP> &dsp : _DSPs)

@@ -221,6 +221,9 @@ private:
   int PrewarmSamples() override { return mPrewarmSamples; };
 };
 
+// Registers the factory.
+void RegisterFactory();
+
 // Factory to instantiate from nlohmann json
 std::unique_ptr<DSP> Factory(const nlohmann::json& config, std::vector<float>& weights,
                              const double expectedSampleRate);
