@@ -28,14 +28,18 @@ public:
 	float32 _Hold{ 10.0f / 1'000.0f };
 
 	//The release.
-	float32 _Release{ 100.0f / 1'000.0f };
+	float32 _Release{ 40.0f / 1'000.0f };
 
 	/*
 	*	Default constructor.
 	*/
 	FORCE_INLINE NoiseGate() NOEXCEPT
 	{
+		//Define constants.
+		constexpr float32 ENVELOPE_TIME{ 5.0f / 1'000.0f };
 
+		//Calculate the envelope coefficient.
+		_EnvelopeCoefficient = std::exp(-1.0f / (ENVELOPE_TIME * _SampleRate));
 	}
 
 	/*
@@ -50,19 +54,24 @@ public:
 		const uint32 number_of_samples
 	) NOEXCEPT override
 	{
+		//Define constants.
+		constexpr float32 HYSTERESIS_MULTIPLIER{ 0.5f };
+
+		//Define the gate floor.
+		const float32 gate_floor{ Audio::DecibelsToGain(-80.0f) };
+
+		//Calculate the hold samples.
+		const uint32 hold_samples{ Audio::TimeToSamples(_Hold, _SampleRate) };
+
+		//Calculate the attack and release coefficients.
+		const float32 attack_coefficient{ std::exp(-1.0f / (_Attack * _SampleRate)) };
+		const float32 release_coefficient{ std::exp(-1.0f / (_Release * _SampleRate)) };
+
 		//Iterate over the channels.
 		for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
 		{
 			//Cache the state.
 			State &state{ _States[channel_index] };
-
-			//Calculate properties that are note sample dependant.
-			const uint32 attack_time_samples{ CalculateNumberOfSamples(_Attack, _SampleRate) };
-			const float32 increase_per_sample{ 1.0f / static_cast<float32>(attack_time_samples) };
-
-			const uint32 hold_time_samples{ CalculateNumberOfSamples(_Hold, _SampleRate) };
-			const uint32 release_time_samples{ CalculateNumberOfSamples(_Release, _SampleRate) };
-			const float32 decrease_per_sample{ 1.0f / static_cast<float32>(release_time_samples) };
 
 			//Process all samples.
 			for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
@@ -70,23 +79,32 @@ public:
 				//Calculate the absolute input sample.
 				const float32 absolute_input_sample{ BaseMath::Absolute(inputs.At(channel_index).At(sample_index)) };
 
-				//Calculate if the noise gate should be open.
-				const bool should_be_open{ absolute_input_sample >= _Threshold };
+				//Update the envelope.
+				state._Envelope = state._Envelope * _EnvelopeCoefficient + absolute_input_sample * (1.0f - _EnvelopeCoefficient);
 
-				//If the noise gate should be open, increase the multiplier towards 1.0f over '_AttackTime'.
+				//Update whether or not the gate is open or not.
+				state._IsOpen = state._IsOpen ? state._Envelope >= (_Threshold * HYSTERESIS_MULTIPLIER) : state._Envelope >= _Threshold;
+
+				//Update the number of hold samples.
+				if (state._IsOpen)
 				{
-					state._CurrentMultiplier = BaseMath::Minimum<float32>(state._CurrentMultiplier + (increase_per_sample * static_cast<float32>(should_be_open)), 1.0f);
-
-					state._HoldSamples *= static_cast<uint32>(!should_be_open);
+					state._NumberOfHoldSamples = 0;
 				}
 
-				//If the noise gate should be closed, decrease the multiplier towards 0.0f over '_ReleaseTime' after '_HoldTime'.
+				else
 				{
-					const float32 hold_multiplier{ static_cast<float32>(state._HoldSamples >= hold_time_samples) };
+					++state._NumberOfHoldSamples;
+				}
 
-					state._CurrentMultiplier = BaseMath::Maximum<float32>(state._CurrentMultiplier - (decrease_per_sample * static_cast<float32>(!should_be_open) * hold_multiplier), 0.0f);
+				//Update the current multiplier.
+				if (state._IsOpen)
+				{
+					state._CurrentMultiplier = state._CurrentMultiplier * attack_coefficient + 1.0f * (1.0f - attack_coefficient);
+				}
 
-					state._HoldSamples += 1 * static_cast<uint32>(!should_be_open);
+				else if (state._NumberOfHoldSamples >= hold_samples)
+				{
+					state._CurrentMultiplier = state._CurrentMultiplier * release_coefficient + gate_floor * (1.0f - release_coefficient);
 				}
 
 				//Apply the multiplier!
@@ -105,13 +123,22 @@ private:
 
 	public:
 
+		//Denotes whether the gate is open or not.
+		bool _IsOpen{ false };
+
+		//The envelope.
+		float32 _Envelope{ 0.0f };
+
+		//The number of hold samples.
+		uint32 _NumberOfHoldSamples{ 0 };
+
 		//The current multiplier.
 		float32 _CurrentMultiplier{ 1.0f };
 
-		//The hold samples.
-		uint32 _HoldSamples{ 0 };
-
 	};
+
+	//The envelope coefficient.
+	float32 _EnvelopeCoefficient{ 0.0f };
 
 	//The states
 	StaticArray<State, 2> _States;
