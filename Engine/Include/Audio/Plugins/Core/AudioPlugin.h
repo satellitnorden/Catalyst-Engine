@@ -229,6 +229,7 @@ public:
 		enum class Type : uint8
 		{
 			BITMAP,
+			BITMAP_KNOB,
 			BUTTON,
 			DROP_DOWN,
 			FADER,
@@ -304,7 +305,19 @@ public:
 
 			//The opacity.
 			float32 _Opacity{ 1.0f };
+
+			//Whether or not to do additive blend.
+			bool _Additive{ false };
 		} _BitmapData;
+
+		struct
+		{
+			//The file path.
+			const char *RESTRICT _FilePath;
+
+			//The number of frames.
+			uint32 _NumberOfFrames;
+		} _BitmapKnobData;
 
 		struct
 		{
