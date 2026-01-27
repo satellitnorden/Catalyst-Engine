@@ -51,28 +51,27 @@ private:
 class LSTM : public DSP
 {
 public:
-  LSTM(const int num_layers, const int input_size, const int hidden_size, std::vector<float>& weights,
-       const double expected_sample_rate = -1.0);
+  LSTM(const int in_channels, const int out_channels, const int num_layers, const int input_size, const int hidden_size,
+       std::vector<float>& weights, const double expected_sample_rate = -1.0);
   ~LSTM() = default;
+  void process(NAM_SAMPLE** input, NAM_SAMPLE** output, const int num_frames) override;
 
 protected:
   // Hacky, but a half-second seems to work for most models.
   int PrewarmSamples() override;
 
-  Eigen::VectorXf _head_weight;
-  float _head_bias;
-  void process(NAM_SAMPLE* input, NAM_SAMPLE* output, const int num_frames) override;
+  Eigen::MatrixXf _head_weight; // (out_channels x hidden_size)
+  Eigen::VectorXf _head_bias; // (out_channels)
   std::vector<LSTMCell> _layers;
 
-  float _process_sample(const float x);
+  void _process_sample();
 
   // Input to the LSTM.
-  // Since this is assumed to not be a parametric model, its shape should be (1,)
+  // Since this is assumed to not be a parametric model, its shape should be (in_channels,)
   Eigen::VectorXf _input;
+  // Output from _process_sample - multi-channel output vector (size out_channels)
+  Eigen::VectorXf _output;
 };
-
-// Registers the factory.
-void RegisterFactory();
 
 // Factory to instantiate from nlohmann json
 std::unique_ptr<DSP> Factory(const nlohmann::json& config, std::vector<float>& weights,
