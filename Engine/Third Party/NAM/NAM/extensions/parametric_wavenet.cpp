@@ -3,18 +3,19 @@
 #include <math.h>
 #include <sstream>
 
-#include "Eigen/Dense"
+#include "../Eigen/Dense"
 
-#include "get_dsp.h"
-#include "registry.h"
-#include "wavenet.h"
+#include "../get_dsp.h"
+#include "../registry.h"
+#include "parametric_wavenet.h"
 
 // Layer ======================================================================
 
-void nam::wavenet::_Layer::SetMaxBufferSize(const int maxBufferSize)
+void nam::parametric_wavenet::_Layer::SetMaxBufferSize(const int maxBufferSize)
 {
   _conv.SetMaxBufferSize(maxBufferSize);
-  _input_mixin.SetMaxBufferSize(maxBufferSize);
+  _film_gamma.SetMaxBufferSize(maxBufferSize);
+  _film_beta.SetMaxBufferSize(maxBufferSize);
   const long z_channels = this->_conv.get_out_channels(); // This is 2*bottleneck when gated, bottleneck when not
   _z.resize(z_channels, maxBufferSize);
   _1x1.SetMaxBufferSize(maxBufferSize);
@@ -55,10 +56,11 @@ void nam::wavenet::_Layer::SetMaxBufferSize(const int maxBufferSize)
     this->_head1x1_post_film->SetMaxBufferSize(maxBufferSize);
 }
 
-void nam::wavenet::_Layer::set_weights_(std::vector<float>::iterator& weights)
+void nam::parametric_wavenet::_Layer::set_weights_(std::vector<float>::iterator& weights)
 {
   this->_conv.set_weights_(weights);
-  this->_input_mixin.set_weights_(weights);
+  this->_film_gamma.set_weights_(weights);
+  this->_film_beta.set_weights_(weights);
   this->_1x1.set_weights_(weights);
   if (this->_head1x1)
   {
@@ -85,7 +87,7 @@ void nam::wavenet::_Layer::set_weights_(std::vector<float>::iterator& weights)
     this->_head1x1_post_film->set_weights_(weights);
 }
 
-void nam::wavenet::_Layer::Process(const Eigen::MatrixXf& input, const Eigen::MatrixXf& condition, const int num_frames)
+void nam::parametric_wavenet::_Layer::Process(const Eigen::MatrixXf& input, const Eigen::MatrixXf& condition, const int num_frames)
 {
   const long bottleneck = this->_bottleneck; // Use the actual bottleneck value, not the doubled output channels
 
@@ -106,23 +108,11 @@ void nam::wavenet::_Layer::Process(const Eigen::MatrixXf& input, const Eigen::Ma
     this->_conv_post_film->Process_(conv_output, condition, num_frames);
   }
 
-  if (this->_input_mixin_pre_film)
-  {
-    // Use Process() instead of Process_() since condition is const
-    this->_input_mixin_pre_film->Process(condition, condition, num_frames);
-    this->_input_mixin.process_(this->_input_mixin_pre_film->GetOutput(), num_frames);
-  }
-  else
-  {
-    this->_input_mixin.process_(condition, num_frames);
-  }
-  if (this->_input_mixin_post_film)
-  {
-    Eigen::MatrixXf& input_mixin_output = this->_input_mixin.GetOutput();
-    this->_input_mixin_post_film->Process_(input_mixin_output, condition, num_frames);
-  }
-  this->_z.leftCols(num_frames).noalias() =
-    _conv.GetOutput().leftCols(num_frames) + _input_mixin.GetOutput().leftCols(num_frames);
+  this->_film_gamma.process_(condition, num_frames);
+  this->_film_beta.process_(condition, num_frames);
+
+  //this->_z.leftCols(num_frames).noalias() = (_film_gamma.GetOutput().leftCols(num_frames).array() * _conv.GetOutput().leftCols(num_frames).array() + _film_beta.GetOutput().leftCols(num_frames).array()).matrix();
+  this->_z.leftCols(num_frames).array() = _film_gamma.GetOutput().leftCols(num_frames).array() * _conv.GetOutput().leftCols(num_frames).array() + _film_beta.GetOutput().leftCols(num_frames).array();
   if (this->_activation_pre_film)
   {
     this->_activation_pre_film->Process_(this->_z, condition, num_frames);
@@ -216,7 +206,7 @@ void nam::wavenet::_Layer::Process(const Eigen::MatrixXf& input, const Eigen::Ma
 
 // LayerArray =================================================================
 
-nam::wavenet::_LayerArray::_LayerArray(
+nam::parametric_wavenet::_LayerArray::_LayerArray(
   const int input_size, const int condition_size, const int head_size, const int channels, const int bottleneck,
   const int kernel_size, const std::vector<int>& dilations, const activations::ActivationConfig& activation_config,
   const GatingMode gating_mode, const bool head_bias, const int groups_input, const int groups_1x1,
@@ -238,7 +228,7 @@ nam::wavenet::_LayerArray::_LayerArray(
                                    _1x1_post_film_params, head1x1_post_film_params));
 }
 
-void nam::wavenet::_LayerArray::SetMaxBufferSize(const int maxBufferSize)
+void nam::parametric_wavenet::_LayerArray::SetMaxBufferSize(const int maxBufferSize)
 {
   _rechannel.SetMaxBufferSize(maxBufferSize);
   _head_rechannel.SetMaxBufferSize(maxBufferSize);
@@ -253,7 +243,7 @@ void nam::wavenet::_LayerArray::SetMaxBufferSize(const int maxBufferSize)
 }
 
 
-long nam::wavenet::_LayerArray::get_receptive_field() const
+long nam::parametric_wavenet::_LayerArray::get_receptive_field() const
 {
   long result = 0;
   for (size_t i = 0; i < this->_layers.size(); i++)
@@ -262,7 +252,7 @@ long nam::wavenet::_LayerArray::get_receptive_field() const
 }
 
 
-void nam::wavenet::_LayerArray::Process(const Eigen::MatrixXf& layer_inputs, const Eigen::MatrixXf& condition,
+void nam::parametric_wavenet::_LayerArray::Process(const Eigen::MatrixXf& layer_inputs, const Eigen::MatrixXf& condition,
                                         const int num_frames)
 {
   // Zero head inputs accumulator (first layer array)
@@ -270,7 +260,7 @@ void nam::wavenet::_LayerArray::Process(const Eigen::MatrixXf& layer_inputs, con
   ProcessInner(layer_inputs, condition, num_frames);
 }
 
-void nam::wavenet::_LayerArray::Process(const Eigen::MatrixXf& layer_inputs, const Eigen::MatrixXf& condition,
+void nam::parametric_wavenet::_LayerArray::Process(const Eigen::MatrixXf& layer_inputs, const Eigen::MatrixXf& condition,
                                         const Eigen::MatrixXf& head_inputs, const int num_frames)
 {
   // Copy head inputs from previous layer array
@@ -278,7 +268,7 @@ void nam::wavenet::_LayerArray::Process(const Eigen::MatrixXf& layer_inputs, con
   ProcessInner(layer_inputs, condition, num_frames);
 }
 
-void nam::wavenet::_LayerArray::ProcessInner(const Eigen::MatrixXf& layer_inputs, const Eigen::MatrixXf& condition,
+void nam::parametric_wavenet::_LayerArray::ProcessInner(const Eigen::MatrixXf& layer_inputs, const Eigen::MatrixXf& condition,
                                              const int num_frames)
 {
   // Process rechannel and get output
@@ -316,18 +306,18 @@ void nam::wavenet::_LayerArray::ProcessInner(const Eigen::MatrixXf& layer_inputs
 }
 
 
-Eigen::MatrixXf& nam::wavenet::_LayerArray::GetHeadOutputs()
+Eigen::MatrixXf& nam::parametric_wavenet::_LayerArray::GetHeadOutputs()
 {
   return this->_head_rechannel.GetOutput();
 }
 
-const Eigen::MatrixXf& nam::wavenet::_LayerArray::GetHeadOutputs() const
+const Eigen::MatrixXf& nam::parametric_wavenet::_LayerArray::GetHeadOutputs() const
 {
   return this->_head_rechannel.GetOutput();
 }
 
 
-void nam::wavenet::_LayerArray::set_weights_(std::vector<float>::iterator& weights)
+void nam::parametric_wavenet::_LayerArray::set_weights_(std::vector<float>::iterator& weights)
 {
   this->_rechannel.set_weights_(weights);
   for (size_t i = 0; i < this->_layers.size(); i++)
@@ -335,15 +325,15 @@ void nam::wavenet::_LayerArray::set_weights_(std::vector<float>::iterator& weigh
   this->_head_rechannel.set_weights_(weights);
 }
 
-long nam::wavenet::_LayerArray::_get_channels() const
+long nam::parametric_wavenet::_LayerArray::_get_channels() const
 {
   return this->_layers.size() > 0 ? this->_layers[0].get_channels() : 0;
 }
 
 // WaveNet ====================================================================
 
-nam::wavenet::WaveNet::WaveNet(const int in_channels,
-                               const std::vector<nam::wavenet::LayerArrayParams>& layer_array_params,
+nam::parametric_wavenet::WaveNet::WaveNet(const int in_channels,
+                               const std::vector<nam::parametric_wavenet::LayerArrayParams>& layer_array_params,
                                const float head_scale, const bool with_head, std::vector<float> weights,
                                std::unique_ptr<DSP> condition_dsp, const double expected_sample_rate)
 : DSP(in_channels,
@@ -385,7 +375,7 @@ nam::wavenet::WaveNet::WaveNet(const int in_channels,
         throw std::runtime_error(ss.str().c_str());
       }
     }
-    this->_layer_arrays.push_back(nam::wavenet::_LayerArray(
+    this->_layer_arrays.push_back(nam::parametric_wavenet::_LayerArray(
       layer_array_params[i].input_size, layer_array_params[i].condition_size, layer_array_params[i].head_size,
       layer_array_params[i].channels, layer_array_params[i].bottleneck, layer_array_params[i].kernel_size,
       layer_array_params[i].dilations, layer_array_params[i].activation_config, layer_array_params[i].gating_mode,
@@ -407,21 +397,10 @@ nam::wavenet::WaveNet::WaveNet(const int in_channels,
   }
   this->set_weights_(weights);
 
-  // Finally, figure out how much pre-warming is needed for this model.
-  if (_condition_size == 1)
-  {
-      mPrewarmSamples = this->_condition_dsp != nullptr ? this->_condition_dsp->PrewarmSamples() : 1;
-      for (size_t i = 0; i < this->_layer_arrays.size(); i++)
-          mPrewarmSamples += this->_layer_arrays[i].get_receptive_field();
-  }
-
-  else
-  {
-      mPrewarmSamples = 0;
-  }
+  mPrewarmSamples = 0;
 }
 
-void nam::wavenet::WaveNet::set_weights_(std::vector<float>& weights)
+void nam::parametric_wavenet::WaveNet::set_weights_(std::vector<float>& weights)
 {
   std::vector<float>::iterator it = weights.begin();
   // Note: condition_dsp already has its own weights from construction,
@@ -443,7 +422,7 @@ void nam::wavenet::WaveNet::set_weights_(std::vector<float>& weights)
   }
 }
 
-void nam::wavenet::WaveNet::SetMaxBufferSize(const int maxBufferSize)
+void nam::parametric_wavenet::WaveNet::SetMaxBufferSize(const int maxBufferSize)
 {
   DSP::SetMaxBufferSize(maxBufferSize);
   this->_condition_input.resize(NumInputChannels(), maxBufferSize);
@@ -454,7 +433,6 @@ void nam::wavenet::WaveNet::SetMaxBufferSize(const int maxBufferSize)
   }
   else
   {
-    this->_condition_dsp->SetMaxBufferSize(maxBufferSize);
     const int condition_output_channels = this->_condition_dsp->NumOutputChannels();
     this->_condition_output.resize(condition_output_channels, maxBufferSize);
 
@@ -482,7 +460,7 @@ void nam::wavenet::WaveNet::SetMaxBufferSize(const int maxBufferSize)
     this->_layer_arrays[i].SetMaxBufferSize(maxBufferSize);
 }
 
-void nam::wavenet::WaveNet::_process_condition(NAM_SAMPLE** input, const int num_frames)
+void nam::parametric_wavenet::WaveNet::_process_condition(NAM_SAMPLE** input, const int num_frames)
 {
     if (_condition_size > 1)
     {
@@ -526,7 +504,7 @@ void nam::wavenet::WaveNet::_process_condition(NAM_SAMPLE** input, const int num
   }
 }
 
-void nam::wavenet::WaveNet::_set_condition_array(NAM_SAMPLE** input, const int num_frames)
+void nam::parametric_wavenet::WaveNet::_set_condition_array(NAM_SAMPLE** input, const int num_frames)
 {
   const int in_channels = NumInputChannels();
   // Fill condition array with input channels
@@ -539,7 +517,7 @@ void nam::wavenet::WaveNet::_set_condition_array(NAM_SAMPLE** input, const int n
   }
 }
 
-void nam::wavenet::WaveNet::process(NAM_SAMPLE** input, NAM_SAMPLE** output, const int num_frames)
+void nam::parametric_wavenet::WaveNet::process(NAM_SAMPLE** input, NAM_SAMPLE** output, const int num_frames)
 {
   assert(num_frames <= mMaxBufferSize);
   const int out_channels = NumOutputChannels();
@@ -585,7 +563,7 @@ void nam::wavenet::WaveNet::process(NAM_SAMPLE** input, NAM_SAMPLE** output, con
 }
 
 // Factory to instantiate from nlohmann json
-std::unique_ptr<nam::DSP> nam::wavenet::Factory(const nlohmann::json& config, std::vector<float>& weights,
+std::unique_ptr<nam::DSP> nam::parametric_wavenet::Factory(const nlohmann::json& config, std::vector<float>& weights,
                                                 const double expectedSampleRate)
 {
   std::unique_ptr<nam::DSP> condition_dsp = nullptr;
@@ -601,7 +579,7 @@ std::unique_ptr<nam::DSP> nam::wavenet::Factory(const nlohmann::json& config, st
       throw std::runtime_error(ss.str().c_str());
     }
   }
-  std::vector<nam::wavenet::LayerArrayParams> layer_array_params;
+  std::vector<nam::parametric_wavenet::LayerArrayParams> layer_array_params;
   for (size_t i = 0; i < config["layers"].size(); i++)
   {
     nlohmann::json layer_config = config["layers"][i];
@@ -670,32 +648,32 @@ std::unique_ptr<nam::DSP> nam::wavenet::Factory(const nlohmann::json& config, st
     bool head1x1_active = layer_config.value("head1x1_active", false);
     int head1x1_out_channels = layer_config.value("head1x1_out_channels", channels);
     int head1x1_groups = layer_config.value("head1x1_groups", 1);
-    nam::wavenet::Head1x1Params head1x1_params(head1x1_active, head1x1_out_channels, head1x1_groups);
+    nam::parametric_wavenet::Head1x1Params head1x1_params(head1x1_active, head1x1_out_channels, head1x1_groups);
 
     // Helper function to parse FiLM parameters
-    auto parse_film_params = [&layer_config](const std::string& key) -> nam::wavenet::_FiLMParams {
+    auto parse_film_params = [&layer_config](const std::string& key) -> nam::parametric_wavenet::_FiLMParams {
       if (layer_config.find(key) == layer_config.end() || layer_config[key] == false)
       {
-        return nam::wavenet::_FiLMParams(false, false);
+        return nam::parametric_wavenet::_FiLMParams(false, false);
       }
       const nlohmann::json& film_config = layer_config[key];
       bool active = film_config.value("active", true);
       bool shift = film_config.value("shift", true);
-      return nam::wavenet::_FiLMParams(active, shift);
+      return nam::parametric_wavenet::_FiLMParams(active, shift);
     };
 
     // Parse FiLM parameters
-    nam::wavenet::_FiLMParams conv_pre_film_params = parse_film_params("conv_pre_film");
-    nam::wavenet::_FiLMParams conv_post_film_params = parse_film_params("conv_post_film");
-    nam::wavenet::_FiLMParams input_mixin_pre_film_params = parse_film_params("input_mixin_pre_film");
-    nam::wavenet::_FiLMParams input_mixin_post_film_params = parse_film_params("input_mixin_post_film");
-    nam::wavenet::_FiLMParams activation_pre_film_params = parse_film_params("activation_pre_film");
-    nam::wavenet::_FiLMParams activation_post_film_params = parse_film_params("activation_post_film");
-    nam::wavenet::_FiLMParams gating_activation_post_film_params = parse_film_params("gating_activation_post_film");
-    nam::wavenet::_FiLMParams _1x1_post_film_params = parse_film_params("1x1_post_film");
-    nam::wavenet::_FiLMParams head1x1_post_film_params = parse_film_params("head1x1_post_film");
+    nam::parametric_wavenet::_FiLMParams conv_pre_film_params = parse_film_params("conv_pre_film");
+    nam::parametric_wavenet::_FiLMParams conv_post_film_params = parse_film_params("conv_post_film");
+    nam::parametric_wavenet::_FiLMParams input_mixin_pre_film_params = parse_film_params("input_mixin_pre_film");
+    nam::parametric_wavenet::_FiLMParams input_mixin_post_film_params = parse_film_params("input_mixin_post_film");
+    nam::parametric_wavenet::_FiLMParams activation_pre_film_params = parse_film_params("activation_pre_film");
+    nam::parametric_wavenet::_FiLMParams activation_post_film_params = parse_film_params("activation_post_film");
+    nam::parametric_wavenet::_FiLMParams gating_activation_post_film_params = parse_film_params("gating_activation_post_film");
+    nam::parametric_wavenet::_FiLMParams _1x1_post_film_params = parse_film_params("1x1_post_film");
+    nam::parametric_wavenet::_FiLMParams head1x1_post_film_params = parse_film_params("head1x1_post_film");
 
-    layer_array_params.push_back(nam::wavenet::LayerArrayParams(
+    layer_array_params.push_back(nam::parametric_wavenet::LayerArrayParams(
       input_size, condition_size, head_size, channels, bottleneck, kernel_size, dilations, activation_config,
       gating_mode, head_bias, groups, groups_1x1, head1x1_params, secondary_activation, conv_pre_film_params,
       conv_post_film_params, input_mixin_pre_film_params, input_mixin_post_film_params, activation_pre_film_params,
@@ -712,17 +690,17 @@ std::unique_ptr<nam::DSP> nam::wavenet::Factory(const nlohmann::json& config, st
   const int in_channels = config.value("in_channels", 1);
 
   // out_channels is determined from last layer array's head_size
-  return std::make_unique<nam::wavenet::WaveNet>(
+  return std::make_unique<nam::parametric_wavenet::WaveNet>(
     in_channels, layer_array_params, head_scale, with_head, weights, std::move(condition_dsp), expectedSampleRate);
 }
 
-void nam::wavenet::RegisterFactory()
+void nam::parametric_wavenet::RegisterFactory()
 {
     static bool ONCE{ false };
 
     if (!ONCE)
     {
-        nam::factory::FactoryRegistry::instance().registerFactory("WaveNet", nam::wavenet::Factory);
+        nam::factory::FactoryRegistry::instance().registerFactory("ParametricWaveNet", nam::parametric_wavenet::Factory);
 
         ONCE = true;
     }

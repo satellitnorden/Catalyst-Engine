@@ -41,8 +41,8 @@ public:
 	FORCE_INLINE void InitializeHighPass(const float32 frequency, const float32 quality, const float32 sample_rate) NOEXCEPT
 	{
 		const float32 omega_C{ 2.0f * BaseMathConstants::PI * frequency / sample_rate };
-		const float32 alpha{ BaseMath::Sine(omega_C) / (2.0f * quality) };
-		const float32 cosine_omega_C{ BaseMath::Cosine(omega_C) };
+		const float32 alpha{ std::sin(omega_C) / (2.0f * quality) };
+		const float32 cosine_omega_C{ std::cos(omega_C) };
 
 		const float32 A0{ 1.0f + alpha };
 		const float32 A1{ -2.0f * cosine_omega_C };
@@ -164,8 +164,8 @@ public:
 	FORCE_INLINE void InitializeLowPass(const float32 frequency, const float32 quality, const float32 sample_rate) NOEXCEPT
 	{
 		const float32 omega_C{ 2.0f * BaseMathConstants::PI * frequency / sample_rate };
-		const float32 alpha{ BaseMath::Sine(omega_C) / (2.0f * quality) };
-		const float32 cosine_omega_C{ BaseMath::Cosine(omega_C) };
+		const float32 alpha{ std::sin(omega_C) / (2.0f * quality) };
+		const float32 cosine_omega_C{ std::cos(omega_C) };
 
 		const float32 A0{ 1.0f + alpha };
 		const float32 A1{ -2.0f * cosine_omega_C };

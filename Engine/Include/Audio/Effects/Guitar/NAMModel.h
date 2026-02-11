@@ -7,7 +7,7 @@
 //Audio.
 #include <Audio/Effects/Core/AudioEffect.h>
 #include <Audio/Effects/General/HighPassFilter.h>
-#include <Audio/SmoothParameter.h>
+#include <Audio/Effects/General/LowPassFilter.h>
 
 //File.
 #include <File/Core/File.h>
@@ -15,6 +15,7 @@
 //Third party.
 #include <ThirdParty/AudioFile/AudioFile.h>
 #include <NAM/get_dsp.h>
+#include <NAM/extensions/parametric_wavenet.h>
 #include <NAM/wavenet.h>
 
 /*
@@ -172,6 +173,7 @@ public:
 		}
 
 		//The initialization order may be a bit whack here, so make sure that architectures are registered.
+		nam::parametric_wavenet::RegisterFactory();
 		nam::wavenet::RegisterFactory();
 
 		//Compare WaveNet implementations. (:
@@ -188,11 +190,14 @@ public:
 		//Now that we know the input size, set up the parameters and parameter buffers..
 		if (_InputSize > 1)
 		{
-			_Parameters.Upsize<true>(_InputSize - 1);
+			_Parameters.Upsize<false>(_InputSize - 1);
+			Memory::Set(_Parameters.Data(), 0, _Parameters.Size() * sizeof(float32));
 
 			for (uint8 channel_index{ 0 }; channel_index < 2; ++channel_index)
 			{
 				_ParameterBuffers[channel_index].Upsize<true>(_InputSize - 1);
+				_ParameterLowPassFilters[channel_index]._Frequency = 1.0f;
+				_ParameterLowPassFilters[channel_index]._Order = 1;
 			}
 		}
 
@@ -221,24 +226,7 @@ public:
 
 		if (index < _Parameters.Size())
 		{
-			_Parameters[index].SetTarget(value);
-		}
-	}
-
-	/*
-	*	Sets the parameter value immediately at the given index.
-	*/
-	FORCE_INLINE void SetParameterImmediate(const uint64 index, const float32 value) NOEXCEPT
-	{
-		if (!_Valid)
-		{
-			return;
-		}
-
-		if (index < _Parameters.Size())
-		{
-			_Parameters[index].SetCurrent(value);
-			_Parameters[index].SetTarget(value);
+			_Parameters[index] = value;
 		}
 	}
 	
@@ -289,14 +277,17 @@ public:
 			{
 				for (uint64 parameter_index{ 0 }; parameter_index < _Parameters.Size(); ++parameter_index)
 				{
-					_ParameterBuffers[channel_index][parameter_index][sample_index] = _Parameters[parameter_index].GetCurrent();
+					_ParameterBuffers[channel_index][parameter_index][sample_index] = _Parameters[parameter_index];
 				}
 			}
+		}
 
-			//Update the parameters.
-			for (SmoothParameter &parameter : _Parameters)
+		//Apply the parameters low pass filter.
+		if (!_Parameters.Empty())
+		{
+			for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
 			{
-				parameter.UpdateCurrent();
+				_ParameterLowPassFilters[channel_index].Process(context, _ParameterBuffers[channel_index], &_ParameterBuffers[channel_index], static_cast<uint32>(_Parameters.Size()), number_of_samples);
 			}
 		}
 
@@ -336,7 +327,7 @@ private:
 	StaticArray<std::unique_ptr<nam::DSP>, 2> _DSPs;
 
 	//The parameters.
-	DynamicArray<SmoothParameter> _Parameters;
+	DynamicArray<float32> _Parameters;
 
 	//The input size.
 	uint32 _InputSize;
@@ -346,6 +337,9 @@ private:
 
 	//The parameter buffers.
 	StaticArray<DynamicArray<DynamicArray<float32>>, 2> _ParameterBuffers;
+
+	//The parameter low pass filter.
+	StaticArray<LowPassFilter, 2> _ParameterLowPassFilters;
 
 	//The input pointers.
 	StaticArray<DynamicArray<float32 *RESTRICT>, 2> _InputPointers;
