@@ -61,7 +61,7 @@ public:
 	) NOEXCEPT override
 	{
 		//Define constants.
-		constexpr float32 THRESHOLD{ -24.0f };
+		constexpr float32 DETECTOR_ENVELOPE_TIME{ 1.0f / 1'000.0f };
 		constexpr float32 AVERAGE_GAIN_REDUCTION_TIME{ 10.0f / 1'000.0f };
 
 		//Abort if compression is off.
@@ -82,59 +82,11 @@ public:
 			SIMD::MultiplyByScalar(outputs->At(channel_index).Data(), number_of_samples, _Input);
 		}
 
+		//Calculate the detector envelope coefficient.
+		const float32 detector_envelope_coefficient{ std::exp(-1.0f / (DETECTOR_ENVELOPE_TIME * _SampleRate)) };
+
 		//Calculate the average gain reduction coefficient.
 		const float32 average_gain_reduction_coefficient{ std::exp(-1.0f / (AVERAGE_GAIN_REDUCTION_TIME * _SampleRate)) };
-
-		//Calculate the ratio.
-		float32 ratio{ 1.0f };
-
-		switch (_Ratio)
-		{
-			case Ratio::FOUR_TO_ONE:
-			{
-				ratio = 4.0f;
-
-				break;
-			}
-
-			case Ratio::EIGHT_TO_ONE:
-			{
-				ratio = 8.0f;
-
-				break;
-			}
-
-			case Ratio::TWELVE_TO_ONE:
-			{
-				ratio = 12.0f;
-
-				break;
-			}
-
-			case Ratio::TWENTY_TO_ONE:
-			{
-				ratio = 20.0f;
-
-				break;
-			}
-
-			case Ratio::ALL_IN:
-			{
-				ratio = 1'000.0f;
-
-				break;
-			}
-
-			default:
-			{
-				ASSERT(false, "Invalid case!");
-
-				break;
-			}
-		}
-
-		//Calculate the ratio reciprocal.
-		const float32 ratio_reciprocal{ 1.0f / ratio };
 
 		//Calculate the attack and release times.
 		const float32 attack_time{ ExponentialInterpolation(0.02f / 1'000.0f, 0.8f / 1'000.0f, 1.0f - (_Attack / 7.0f)) };
@@ -147,57 +99,47 @@ public:
 		//Process all samples.
 		for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
 		{
-			//Retrieve the maximum input sample.
-			float32 maximum_input_sample{ FLOAT32_EPSILON };
+			//Write the outputs using the previous gain, and update the detector input.
+			_DetectorInput = FLOAT32_EPSILON;
 
 			for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
 			{
-				maximum_input_sample = BaseMath::Maximum<float32>(maximum_input_sample, BaseMath::Absolute<float32>(outputs->At(channel_index).At(sample_index)) * Audio::DecibelsToGain(_PreviousGain));
+				outputs->At(channel_index).At(sample_index) = outputs->At(channel_index).At(sample_index) * _PreviousGain;
+				_DetectorInput = BaseMath::Maximum<float32>(_DetectorInput, BaseMath::Absolute<float32>(outputs->At(channel_index).At(sample_index)));
 			}
 
-			//Calculate the input gain.
-			const float32 input_gain{ Audio::GainToDecibels(maximum_input_sample) };
+			//Update the detector envelope.
+			_DetectorEnvelope = BaseMath::LinearlyInterpolate
+			(
+				((1.0f - detector_envelope_coefficient) * _DetectorInput) + (detector_envelope_coefficient * _DetectorEnvelope),
+				_DetectorInput,
+				static_cast<float32>(_DetectorInput > _DetectorEnvelope)
+			);
 
 			//Calculate the desired gain.
-			float32 desired_gain;
-
-			if (input_gain > THRESHOLD)
-			{
-				desired_gain = THRESHOLD + ((input_gain - THRESHOLD) * ratio_reciprocal);
-			}
-
-			else
-			{
-				desired_gain = input_gain;
-			}
-
-			//Calculate the gain change.
-			const float32 gain_change{ desired_gain - input_gain };
+			const float32 desired_gain{ DesiredGain(_DetectorEnvelope, _Ratio) };
 
 			//Calculate the final gain.
 			float32 final_gain;
 
-			if (gain_change < _PreviousGain)
+			if (desired_gain < _PreviousGain)
 			{
-				final_gain = ((1.0f - attack_coefficient) * gain_change) + (attack_coefficient * _PreviousGain);
+				final_gain = ((1.0f - attack_coefficient) * desired_gain) + (attack_coefficient * _PreviousGain);
 			}
 
 			else
 			{
-				final_gain = ((1.0f - release_coefficient) * gain_change) + (release_coefficient * _PreviousGain);
+				final_gain = ((1.0f - release_coefficient) * desired_gain) + (release_coefficient * _PreviousGain);
 			}
 
-			//Write the outputs.
-			for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
-			{
-				outputs->At(channel_index).At(sample_index) = outputs->At(channel_index).At(sample_index) * Audio::DecibelsToGain(final_gain);
-			}
+			//Clamp for safety. (:
+			final_gain = BaseMath::Clamp<float32>(final_gain, FLOAT32_EPSILON, 1.0f);
 
 			//Update the previous gain.
 			_PreviousGain = final_gain;
 
 			//Update the average gain reduction.
-			_AverageGainReduction = ((1.0f - average_gain_reduction_coefficient) * final_gain) + (average_gain_reduction_coefficient * _AverageGainReduction);
+			_AverageGainReduction = ((1.0f - average_gain_reduction_coefficient) * Audio::GainToDecibels(final_gain)) + (average_gain_reduction_coefficient * _AverageGainReduction);
 		}
 
 		//Apply the output.
@@ -217,8 +159,14 @@ public:
 
 private:
 
+	//The detector input.
+	float32 _DetectorInput{ FLOAT32_EPSILON };
+
+	//The detector envelope.
+	float32 _DetectorEnvelope{ FLOAT32_EPSILON };
+
 	//The previous gain.
-	float32 _PreviousGain{ 0.0f };
+	float32 _PreviousGain{ 1.0f };
 
 	//The average gain reduction.
 	float32 _AverageGainReduction{ 0.0f };
@@ -229,6 +177,72 @@ private:
 	FORCE_INLINE NO_DISCARD float32 ExponentialInterpolation(const float32 A, const float32 B, const float32 power) NOEXCEPT
 	{
 		return A * std::pow(B / A, power);
+	}
+
+	/*
+	*	Calculates the desired gain.
+	*/
+	FORCE_INLINE NO_DISCARD float32 DesiredGain(const float32 detector_envelope, const Ratio ratio) NOEXCEPT
+	{
+		//Calculate the alpha/beta.
+		float32 alpha;
+		float32 beta;
+
+		switch (ratio)
+		{
+			case Ratio::FOUR_TO_ONE:
+			{
+				alpha = 4.0f;
+				beta = 1.0f;
+
+				break;
+			}
+
+			case Ratio::EIGHT_TO_ONE:
+			{
+				alpha = 8.0f;
+				beta = 1.2f;
+
+				break;
+			}
+
+			case Ratio::TWELVE_TO_ONE:
+			{
+				alpha = 12.0f;
+				beta = 1.4f;
+
+				break;
+			}
+
+			case Ratio::TWENTY_TO_ONE:
+			{
+				alpha = 20.0f;
+				beta = 1.6f;
+
+				break;
+			}
+
+			case Ratio::ALL_IN:
+			{
+				alpha = 40.0f;
+				beta = 2.0f;
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
+		}
+
+		//Calculate the all in "chaos".
+		const float32 chaos{ detector_envelope * 0.02f * static_cast<float32>(ratio == Ratio::ALL_IN) };
+
+		//Apply the curve!
+		return 1.0f / (1.0f + alpha * std::pow(detector_envelope + chaos, beta));
 	}
 
 };
