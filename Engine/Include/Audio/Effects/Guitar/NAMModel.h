@@ -294,18 +294,34 @@ public:
 		//Process each channel.
 		for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
 		{
-			for (uint32 input_index{ 0 }; input_index < _InputSize; ++input_index)
+			//Define constants.
+			constexpr uint32 BATCH_SIZE{ 4'096 };
+
+			//Calculate the number of batches.
+			const uint32 number_of_batches{ BaseMath::Maximum<uint32>(number_of_samples / BATCH_SIZE, 1) };
+
+			//Process each batch.
+			for (uint32 batch_index{ 0 }; batch_index < number_of_batches; ++batch_index)
 			{
-				_InputPointers[channel_index][input_index] = input_index == 0 ? _InputBuffers[channel_index].Data() : _ParameterBuffers[channel_index][input_index - 1].Data();
+				//Calculate the batch sample offset.
+				const uint32 batch_sample_offset{ batch_index * BATCH_SIZE };
+
+				//Calculate the number of samples for this batch.
+				const uint32 number_of_samples_in_batch{ BaseMath::Minimum<uint32>(number_of_samples - batch_sample_offset, BATCH_SIZE) };
+
+				for (uint32 input_index{ 0 }; input_index < _InputSize; ++input_index)
+				{
+					_InputPointers[channel_index][input_index] = input_index == 0 ? &_InputBuffers[channel_index][batch_sample_offset] : &_ParameterBuffers[channel_index][input_index - 1][batch_sample_offset];
+				}
+
+				float32 *output_pointers[]
+				{
+					&outputs->At(channel_index).At(batch_sample_offset)
+				};
+
+				//Process the DSP!
+				_DSPs[channel_index]->process(_InputPointers[channel_index].Data(), output_pointers, number_of_samples_in_batch);
 			}
-
-			float32 *output_pointers[]
-			{
-				outputs->At(channel_index).Data()
-			};
-
-			//Process the DSP!
-			_DSPs[channel_index]->process(_InputPointers[channel_index].Data(), output_pointers, number_of_samples);
 		}
 
 		//Apply the high pass filter.
