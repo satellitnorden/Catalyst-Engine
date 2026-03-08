@@ -28,7 +28,7 @@ public:
 	float32 _Hold{ 10.0f / 1'000.0f };
 
 	//The release.
-	float32 _Release{ 40.0f / 1'000.0f };
+	float32 _Release{ 10.0f / 1'000.0f };
 
 	/*
 	*	Default constructor.
