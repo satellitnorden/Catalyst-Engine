@@ -30,6 +30,11 @@ namespace UI
 		void OnParentAvailable() NOEXCEPT override;
 
 		/*
+		*	Callback for when this widget is disabled.
+		*/
+		void OnDisabled() NOEXCEPT override;
+
+		/*
 		*	Returns the clickable interface (if this widget is clickable.
 		*/
 		FORCE_INLINE NO_DISCARD UI::ClickableInterface *const RESTRICT GetClickableInterface() NOEXCEPT override
@@ -89,6 +94,11 @@ namespace UI
 
 		//The text scale.
 		float32 _TextScale;
+
+		/*
+		*	Resets the animation.
+		*/
+		void ResetAnimation() NOEXCEPT;
 
 		/*
 		*	Returns the button color.

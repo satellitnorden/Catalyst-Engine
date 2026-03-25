@@ -113,12 +113,8 @@ namespace UI
 			}
 		};
 
-		//Set the animator's current value to 1.
-		_Animator.SetCurrent(1.0f);
-
-		//Set the source/destination color.
-		_SourceColor = ButtonWidgetConstants::IDLE_COLOR;
-		_DestinationColor = ButtonWidgetConstants::IDLE_COLOR;
+		//Reset the animation.
+		ResetAnimation();
 	}
 
 	/*
@@ -128,6 +124,15 @@ namespace UI
 	{
 		//Grab the text scale from the scene.
 		_TextScale = _Parent->_Parent->GetTextScale();
+	}
+
+	/*
+	*	Callback for when this widget is disabled.
+	*/
+	void ButtonWidget::OnDisabled() NOEXCEPT
+	{
+		//Reset the animation.
+		ResetAnimation();
 	}
 
 	/*
@@ -193,6 +198,19 @@ namespace UI
 				UI::VerticalAlignment::CENTER
 			);
 		}
+	}
+
+	/*
+	*	Resets the animation.
+	*/
+	void ButtonWidget::ResetAnimation() NOEXCEPT
+	{
+		//Set the animator's current value to 1.
+		_Animator.SetCurrent(1.0f);
+
+		//Set the source/destination color.
+		_SourceColor = ButtonWidgetConstants::IDLE_COLOR;
+		_DestinationColor = ButtonWidgetConstants::IDLE_COLOR;
 	}
 
 	/*

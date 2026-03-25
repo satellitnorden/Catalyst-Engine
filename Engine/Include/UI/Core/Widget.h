@@ -71,7 +71,39 @@ namespace UI
 		*/
 		FORCE_INLINE void SetEnabled(const bool value) NOEXCEPT
 		{
-			_Enabled = value;
+			if (_Enabled != value)
+			{
+				//Set the value.
+				_Enabled = value;
+
+				//If we're being disabled, make sure the clickable interface is idle.
+				if (!_Enabled)
+				{
+					if (UI::ClickableInterface *const RESTRICT clickable_interface{ GetClickableInterface() })
+					{
+						clickable_interface->SetState(this, UI::ClickableInterface::State::IDLE);
+					}
+				}
+
+				//Call the callback.
+				_Enabled ? OnEnabled() : OnDisabled();
+			}
+		}
+
+		/*
+		*	Callback for when this widget is enabled.
+		*/
+		FORCE_INLINE virtual void OnEnabled() NOEXCEPT
+		{
+
+		}
+
+		/*
+		*	Callback for when this widget is disabled.
+		*/
+		FORCE_INLINE virtual void OnDisabled() NOEXCEPT
+		{
+
 		}
 
 		/*
