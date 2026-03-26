@@ -19,7 +19,7 @@ namespace UI
 	public:
 
 		//Type aliases.
-		using Callback = void(*)(void *const RESTRICT /*user_data*/);
+		using Callback = void(*)(class Widget *const RESTRICT widget, void *const RESTRICT /*user_data*/);
 
 		//Enumeration covering all states.
 		enum class State : uint8
@@ -63,9 +63,19 @@ namespace UI
 					_OnStateChanged(widget, previous_state, new_state);
 				}
 
+				if (previous_state == State::IDLE && _OnStartHoveredCallback)
+				{
+					_OnStartHoveredCallback(widget, _UserData);
+				}
+
+				if (previous_state == State::HOVERED && _OnEndHoveredCallback)
+				{
+					_OnEndHoveredCallback(widget, _UserData);
+				}
+
 				if (previous_state == State::PRESSED && _OnEndPressCallback)
 				{
-					_OnEndPressCallback(_UserData);
+					_OnEndPressCallback(widget, _UserData);
 				}
 
 				_State = state;
@@ -78,6 +88,24 @@ namespace UI
 		FORCE_INLINE ClickableInterface *const RESTRICT SetUserData(void* const RESTRICT user_data) NOEXCEPT
 		{
 			_UserData = user_data;
+			return this;
+		}
+
+		/*
+		*	Sets the on start hovered callback.
+		*/
+		FORCE_INLINE ClickableInterface *const RESTRICT SetOnStartHoveredCallback(const Callback callback) NOEXCEPT
+		{
+			_OnStartHoveredCallback = callback;
+			return this;
+		}
+
+		/*
+		*	Sets the on end hovered callback.
+		*/
+		FORCE_INLINE ClickableInterface *const RESTRICT SetOnEndHoveredCallback(const Callback callback) NOEXCEPT
+		{
+			_OnEndHoveredCallback = callback;
 			return this;
 		}
 
@@ -97,6 +125,12 @@ namespace UI
 
 		//The user data.
 		void *RESTRICT _UserData{ nullptr };
+
+		//The on start hovered callback.
+		Callback _OnStartHoveredCallback{ nullptr };
+
+		//The on end hovered callback.
+		Callback _OnEndHoveredCallback{ nullptr };
 
 		//The on start press callback.
 		Callback _OnEndPressCallback{ nullptr };

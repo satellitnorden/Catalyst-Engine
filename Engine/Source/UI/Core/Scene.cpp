@@ -152,6 +152,17 @@ namespace UI
 					break;
 				}
 
+				case UI::Anchor::RIGHT:
+				{
+					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._X = UI::Constants::REFERENCE_RESOLUTION._X - size._X;
+					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._Y = UI::Constants::REFERENCE_RESOLUTION._Y * 0.5f - half_size._Y;
+
+					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._X = UI::Constants::REFERENCE_RESOLUTION._X;
+					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._Y = UI::Constants::REFERENCE_RESOLUTION._Y * 0.5f + half_size._Y;
+
+					break;
+				}
+
 				case UI::Anchor::LEFT:
 				{
 					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._X = 0.0f;
@@ -189,7 +200,7 @@ namespace UI
 			case UI::Container::Layout::LEFT_TO_RIGHT:
 			case UI::Container::Layout::RIGHT_TO_LEFT:
 			{
-				_ActiveContainer->_WidgetSize = UI::Constants::REFERENCE_RESOLUTION._X * 0.1f;
+				_ActiveContainer->_WidgetSize = UI::Constants::REFERENCE_RESOLUTION._X / 12.0f;
 
 				break;
 			}
@@ -197,7 +208,7 @@ namespace UI
 			case UI::Container::Layout::TOP_TO_BOTTOM:
 			case UI::Container::Layout::BOTTOM_TO_TOP:
 			{
-				_ActiveContainer->_WidgetSize = UI::Constants::REFERENCE_RESOLUTION._Y * 0.1f;
+				_ActiveContainer->_WidgetSize = UI::Constants::REFERENCE_RESOLUTION._Y / 12.0f;
 
 				break;
 			}

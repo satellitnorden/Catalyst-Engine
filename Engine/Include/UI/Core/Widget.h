@@ -38,6 +38,14 @@ namespace UI
 		}
 
 		/*
+		*	Returns the parent.
+		*/
+		FORCE_INLINE UI::Container *const RESTRICT GetParent() const NOEXCEPT
+		{
+			return _Parent;
+		}
+
+		/*
 		*	Sets the parent.
 		*/
 		FORCE_INLINE void SetParent(UI::Container *const RESTRICT value) NOEXCEPT
