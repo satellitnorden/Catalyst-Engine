@@ -53,7 +53,7 @@ public:
 	/*
 	*	Given a vector, clamp it between the minimum and the maximum values
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float Clamp(const Vector2& vector, const float minimum, const float maximum) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float Clamp(const Vector2 &vector, const float minimum, const float maximum) NOEXCEPT
 	{
 		return Vector2(BaseMath::Clamp<TYPE>(vector._X, minimum, maximum), BaseMath::Clamp<TYPE>(vector._Y, minimum, maximum));
 	}

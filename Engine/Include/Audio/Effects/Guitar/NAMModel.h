@@ -151,7 +151,7 @@ public:
 	/*
 	*	Returns if this NAM model is valid.
 	*/
-	FORCE_INLINE NO_DISCARD bool Valid() NOEXCEPT
+	FORCE_INLINE NO_DISCARD bool Valid() const NOEXCEPT
 	{
 		return _Valid;
 	}

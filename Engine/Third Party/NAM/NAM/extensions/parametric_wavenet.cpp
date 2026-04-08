@@ -462,46 +462,13 @@ void nam::parametric_wavenet::WaveNet::SetMaxBufferSize(const int maxBufferSize)
 
 void nam::parametric_wavenet::WaveNet::_process_condition(NAM_SAMPLE** input, const int num_frames)
 {
-    if (_condition_size > 1)
+    for (int ch = 0; ch < _condition_size; ch++)
     {
-        for (int ch = 0; ch < _condition_size; ch++)
+        for (int j = 0; j < num_frames; j++)
         {
-            for (int j = 0; j < num_frames; j++)
-            {
-                this->_condition_output(ch, j) = input[ch + 1][j];
-            }
+            this->_condition_output(ch, j) = input[ch + 1][j];
         }
-
-        return;
     }
-  if (this->_condition_dsp == nullptr)
-  {
-    this->_condition_output.leftCols(num_frames) = this->_condition_input.leftCols(num_frames);
-  }
-  else
-  {
-    // Copy input data from Eigen matrix to pre-allocated contiguous buffers
-    // Since Eigen matrices are column-major, rows are not contiguous
-    // TODO maybe use row-major here?
-    const int condition_dim = this->_get_condition_dim();
-    for (int ch = 0; ch < condition_dim; ch++)
-    {
-      for (int j = 0; j < num_frames; j++)
-        this->_condition_dsp_input_buffers[ch][j] = (NAM_SAMPLE)this->_condition_input(ch, j);
-    }
-
-    // Process through condition DSP using pre-allocated buffers
-    this->_condition_dsp->process(
-      this->_condition_dsp_input_ptrs.data(), this->_condition_dsp_output_ptrs.data(), num_frames);
-
-    // Copy output data back to Eigen matrix
-    const int condition_output_channels = this->_condition_dsp->NumOutputChannels();
-    for (int ch = 0; ch < condition_output_channels; ch++)
-    {
-      for (int j = 0; j < num_frames; j++)
-        this->_condition_output(ch, j) = (float)this->_condition_dsp_output_buffers[ch][j];
-    }
-  }
 }
 
 void nam::parametric_wavenet::WaveNet::_set_condition_array(NAM_SAMPLE** input, const int num_frames)

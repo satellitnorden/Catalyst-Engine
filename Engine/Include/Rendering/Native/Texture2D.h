@@ -6,6 +6,7 @@
 
 //Math.
 #include <Math/Core/BaseMath.h>
+#include <Math/Core/CatalystGeometryMath.h>
 #include <Math/General/Vector.h>
 
 //Rendering.
@@ -174,12 +175,12 @@ public:
 	/*
 	*	Returns the texture data, const.
 	*/
-	RESTRICTED const TYPE* Data() const NOEXCEPT { return _Data.Data(); }
+	RESTRICTED const TYPE *Data() const NOEXCEPT { return _Data.Data(); }
 
 	/*
 	*	Returns the texture data, non-const.
 	*/
-	RESTRICTED TYPE* Data() NOEXCEPT { return _Data.Data(); }
+	RESTRICTED TYPE *Data() NOEXCEPT { return _Data.Data(); }
 
 	/*
 	*	Returns the texture value at the specified indices, const.
@@ -195,6 +196,20 @@ public:
 	TYPE &At(const uint32 X, const uint32 Y) NOEXCEPT
 	{
 		return _Data[X + (Y * _Width)];
+	}
+
+	/*
+	*	Fills this texture with the given value.
+	*/
+	FORCE_INLINE void Fill(const TYPE &value) NOEXCEPT
+	{
+		for (uint32 Y{ 0 }; Y < _Height; ++Y)
+		{
+			for (uint32 X{ 0 }; X < _Width; ++X)
+			{
+				At(X, Y) = value;
+			}
+		}
 	}
 
 	/*
@@ -277,6 +292,156 @@ public:
 	FORCE_INLINE NO_DISCARD uint32 GetHeight() const NOEXCEPT
 	{
 		return _Height;
+	}
+
+	/*
+	*	Draws a circle into the texture.
+	*/
+	FORCE_INLINE void DrawCircle
+	(
+		const Vector2<float32> center,
+		const float32 inner_radius,
+		const float32 outer_radius,
+		const Vector3<float32> &color
+	) NOEXCEPT
+	{
+		//Calculate the minimum/maximum coordinates.
+		const Vector2<int32> minimum
+		{
+			BaseMath::Clamp<int32>(BaseMath::Floor<int32>(center._X - inner_radius - outer_radius), 0, _Width - 1),
+			BaseMath::Clamp<int32>(BaseMath::Floor<int32>(center._Y - inner_radius - outer_radius), 0, _Width - 1),
+		};
+		const Vector2<int32> maximum
+		{
+			BaseMath::Clamp<int32>(BaseMath::Ceiling<int32>(center._X + inner_radius + outer_radius), 0, _Width - 1),
+			BaseMath::Clamp<int32>(BaseMath::Ceiling<int32>(center._Y + inner_radius + outer_radius), 0, _Width - 1),
+		};
+
+		//Iterate over the texels.
+		for (uint32 Y{ static_cast<uint32>(minimum._Y) }; Y <= static_cast<uint32>(maximum._Y); ++Y)
+		{
+			for (uint32 X{ static_cast<uint32>(minimum._X) }; X <= static_cast<uint32>(maximum._X); ++X)
+			{
+				//Calculate the texel position.
+				const Vector2<float32> texel_position{ static_cast<float32>(X) + 0.5f, static_cast<float32>(Y) + 0.5f };
+
+				//Calculate the distance.
+				const float32 distance{ Vector2<float32>::Length(center - texel_position) };
+
+				const float32 opacity{ 1.0f - BaseMath::SmoothStep<1>(BaseMath::Clamp((distance - inner_radius) / outer_radius, 0.0f, 1.0f)) };
+
+				//Figure out if we should draw here.
+				if (opacity > 0.0f)
+				{
+					Vector4<float32> &texel{ At(X, Y) };
+					texel = BaseMath::LinearlyInterpolate(texel, Vector4<float32>(color, 1.0f), opacity);
+				}
+			}
+		}
+	}
+
+	/*
+	*	Draws a hollow circle into the texture.
+	*/
+	FORCE_INLINE void DrawHollowCircle
+	(
+		const Vector2<float32> center,
+		const float32 radius,
+		const float32 inner_thickness,
+		const float32 outer_thickness,
+		const Vector3<float32> &color
+	) NOEXCEPT
+	{
+		//Calculate the minimum/maximum coordinates.
+		const Vector2<int32> minimum
+		{
+			BaseMath::Clamp<int32>(BaseMath::Floor<int32>(center._X - radius - inner_thickness - outer_thickness), 0, _Width - 1),
+			BaseMath::Clamp<int32>(BaseMath::Floor<int32>(center._Y - radius - inner_thickness - outer_thickness), 0, _Width - 1),
+		};
+		const Vector2<int32> maximum
+		{
+			BaseMath::Clamp<int32>(BaseMath::Ceiling<int32>(center._X + radius + inner_thickness + outer_thickness), 0, _Width - 1),
+			BaseMath::Clamp<int32>(BaseMath::Ceiling<int32>(center._Y + radius + inner_thickness + outer_thickness), 0, _Width - 1),
+		};
+
+		//Iterate over the texels.
+		for (uint32 Y{ static_cast<uint32>(minimum._Y) }; Y <= static_cast<uint32>(maximum._Y); ++Y)
+		{
+			for (uint32 X{ static_cast<uint32>(minimum._X) }; X <= static_cast<uint32>(maximum._X); ++X)
+			{
+				//Calculate the texel position.
+				const Vector2<float32> texel_position{ static_cast<float32>(X) + 0.5f, static_cast<float32>(Y) + 0.5f };
+
+				//Calculate the distance.
+				const float32 distance{ BaseMath::Absolute(Vector2<float32>::Length(center - texel_position) - radius) };
+
+				const float32 opacity{ 1.0f - BaseMath::SmoothStep<1>(BaseMath::Clamp((distance - inner_thickness) / outer_thickness, 0.0f, 1.0f)) };
+
+				//Figure out if we should draw here.
+				if (opacity > 0.0f)
+				{
+					Vector4<float32> &texel{ At(X, Y) };
+					texel = BaseMath::LinearlyInterpolate(texel, Vector4<float32>(color, 1.0f), opacity);
+				}
+			}
+		}
+	}
+
+	/*
+	*	Draws a line into the texture.
+	*/
+	FORCE_INLINE void DrawLine
+	(
+		const Vector2<float32> start,
+		const Vector2<float32> end,
+		const float32 inner_thickness,
+		const float32 outer_thickness,
+		const Vector3<float32> &color
+	) NOEXCEPT
+	{
+		//Calculate the minimum/maximum coordinates.
+		const Vector2<int32> minimum
+		{
+			BaseMath::Maximum<int32>(BaseMath::Minimum<int32>(static_cast<int32>(start._X) - static_cast<int32>(inner_thickness + outer_thickness), static_cast<int32>(end._X) - static_cast<int32>(inner_thickness + outer_thickness)), 0),
+			BaseMath::Maximum<int32>(BaseMath::Minimum<int32>(static_cast<int32>(start._Y) - static_cast<int32>(inner_thickness + outer_thickness), static_cast<int32>(end._Y) - static_cast<int32>(inner_thickness + outer_thickness)), 0),
+		};
+		const Vector2<int32> maximum
+		{
+			BaseMath::Minimum<int32>(BaseMath::Maximum<int32>(static_cast<int32>(start._X) + static_cast<int32>(inner_thickness + outer_thickness), static_cast<int32>(end._X) + static_cast<int32>(inner_thickness + outer_thickness)), static_cast<int32>(_Width) - 1),
+			BaseMath::Minimum<int32>(BaseMath::Maximum<int32>(static_cast<int32>(start._Y) + static_cast<int32>(inner_thickness + outer_thickness), static_cast<int32>(end._Y) + static_cast<int32>(inner_thickness + outer_thickness)), static_cast<int32>(_Height) - 1),
+		};
+
+		//Iterate over the texels.
+		for (uint32 Y{ static_cast<uint32>(minimum._Y) }; Y <= static_cast<uint32>(maximum._Y); ++Y)
+		{
+			for (uint32 X{ static_cast<uint32>(minimum._X) }; X <= static_cast<uint32>(maximum._X); ++X)
+			{
+				//Calculate the texel position.
+				const Vector2<float32> texel_position{ static_cast<float32>(X) + 0.5f, static_cast<float32>(Y) + 0.5f };
+
+				//Calculate the distance to the line segment.
+				float32 distance_to_line;
+
+				{
+					LineSegment2D line_segment;
+
+					line_segment._Start = start;
+					line_segment._End = end;
+
+					const Vector2<float32> closest_point{ CatalystGeometryMath::ClosestPointOnLineSegment(line_segment, texel_position) };
+					distance_to_line = Vector2<float32>::Length(closest_point - texel_position);
+				}
+
+				const float32 opacity{ 1.0f - BaseMath::SmoothStep<1>(BaseMath::Clamp((distance_to_line - inner_thickness) / outer_thickness, 0.0f, 1.0f)) };
+
+				//Figure out if we should draw here.
+				if (opacity > 0.0f)
+				{
+					Vector4<float32> &texel{ At(X, Y) };
+					texel = BaseMath::LinearlyInterpolate(texel, Vector4<float32>(color, 1.0f), opacity);
+				}
+			}
+		}
 	}
 
 private:
