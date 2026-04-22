@@ -118,6 +118,22 @@ namespace UI
 			return this;
 		}
 
+		/*
+		*	Returns the mouse position.
+		*/
+		FORCE_INLINE NO_DISCARD Vector2<float32> GetMousePosition() const NOEXCEPT
+		{
+			return _MousePosition;
+		}
+
+		/*
+		*	Sets the mouse position.
+		*/
+		FORCE_INLINE void SetMousePosition(const Vector2<float32> value) NOEXCEPT
+		{
+			_MousePosition = value;
+		}
+
 	private:
 
 		//The state.
@@ -134,6 +150,9 @@ namespace UI
 
 		//The on start press callback.
 		Callback _OnEndPressCallback{ nullptr };
+
+		//The mouse position.
+		Vector2<float32> _MousePosition{ 0.0f, 0.0f };
 
 	};
 

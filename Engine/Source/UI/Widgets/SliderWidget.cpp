@@ -1,14 +1,17 @@
 //Header file.
-#include <UI/Widgets/ButtonWidget.h>
+#include <UI/Widgets/SliderWidget.h>
 
 //UI.
 #include <UI/Core/Scene.h>
 
+//STD.
+#include <cstdio>
+
 namespace UI
 {
 
-	//Button widget constants.
-	namespace ButtonWidgetConstants
+	//Slider widget constants.
+	namespace SliderWidgetConstants
 	{
 		constexpr Vector4<float32> IDLE_COLOR{ 0.125f, 0.125f, 0.125f, 0.25f };
 		constexpr Vector4<float32> HOVERED_COLOR{ 0.25f, 0.25f, 0.25f, 0.5f };
@@ -20,32 +23,32 @@ namespace UI
 	/*
 	*	Default constructor.
 	*/
-	ButtonWidget::ButtonWidget() NOEXCEPT
+	SliderWidget::SliderWidget() NOEXCEPT
 	{
 		//Set up the '_OnStateChangedCallback' on the clickable interface.
 		_ClickableInterface._OnStateChanged = [](UI::Widget *const RESTRICT widget, const UI::ClickableInterface::State previous_state, const UI::ClickableInterface::State new_state)
 		{
-			ButtonWidget *const RESTRICT _this{ static_cast<ButtonWidget *const RESTRICT>(widget) };
+			SliderWidget *const RESTRICT _this{ static_cast<SliderWidget *const RESTRICT>(widget) };
 
 			switch (previous_state)
 			{
 				case UI::ClickableInterface::State::IDLE:
 				{
-					_this->_SourceColor = ButtonWidgetConstants::IDLE_COLOR;
+					_this->_SourceColor = SliderWidgetConstants::IDLE_COLOR;
 
 					break;
 				}
 
 				case UI::ClickableInterface::State::HOVERED:
 				{
-					_this->_SourceColor = ButtonWidgetConstants::HOVERED_COLOR;
+					_this->_SourceColor = SliderWidgetConstants::HOVERED_COLOR;
 
 					break;
 				}
 
 				case UI::ClickableInterface::State::PRESSED:
 				{
-					_this->_SourceColor = ButtonWidgetConstants::PRESSED_COLOR;
+					_this->_SourceColor = SliderWidgetConstants::PRESSED_COLOR;
 
 					break;
 				}
@@ -65,7 +68,7 @@ namespace UI
 					_this->_Animator.SetCurrent(0.0f);
 					_this->_Animator.SetSpeed(2.0f);
 
-					_this->_DestinationColor = ButtonWidgetConstants::IDLE_COLOR;
+					_this->_DestinationColor = SliderWidgetConstants::IDLE_COLOR;
 
 					_this->_AnimationDirection = AnimationDirection::LEFT;
 
@@ -77,7 +80,7 @@ namespace UI
 					_this->_Animator.SetCurrent(0.0f);
 					_this->_Animator.SetSpeed(2.0f);
 
-					_this->_DestinationColor = ButtonWidgetConstants::HOVERED_COLOR;
+					_this->_DestinationColor = SliderWidgetConstants::HOVERED_COLOR;
 
 					if (previous_state == UI::ClickableInterface::State::IDLE)
 					{
@@ -97,7 +100,7 @@ namespace UI
 					_this->_Animator.SetCurrent(0.0f);
 					_this->_Animator.SetSpeed(16.0f);
 
-					_this->_DestinationColor = ButtonWidgetConstants::PRESSED_COLOR;
+					_this->_DestinationColor = SliderWidgetConstants::PRESSED_COLOR;
 
 					_this->_AnimationDirection = AnimationDirection::RIGHT;
 
@@ -120,7 +123,7 @@ namespace UI
 	/*
 	*	Callback for when the parent is available.
 	*/
-	void ButtonWidget::OnParentAvailable() NOEXCEPT
+	void SliderWidget::OnParentAvailable() NOEXCEPT
 	{
 		//Grab the text scale from the scene.
 		_TextScale = _Parent->_Parent->GetTextScale();
@@ -129,7 +132,7 @@ namespace UI
 	/*
 	*	Callback for when this widget is disabled.
 	*/
-	void ButtonWidget::OnDisabled() NOEXCEPT
+	void SliderWidget::OnDisabled() NOEXCEPT
 	{
 		//Reset the animation.
 		ResetAnimation();
@@ -138,13 +141,32 @@ namespace UI
 	/*
 	*	Renders this widget.
 	*/
-	void ButtonWidget::Render(const UI::RenderContext &context) NOEXCEPT
+	void SliderWidget::Render(const UI::RenderContext &context) NOEXCEPT
 	{
+		//Update the value.
+		if (_ClickableInterface.GetState() == UI::ClickableInterface::State::PRESSED)
+		{
+			const float32 alpha{ (_ClickableInterface.GetMousePosition()._X - _AxisAlignedBoundingBox._Minimum._X) / (_AxisAlignedBoundingBox._Maximum._X - _AxisAlignedBoundingBox._Minimum._X) };
+			*_Value = BaseMath::Round<int32>(BaseMath::LinearlyInterpolate(static_cast<float32>(_Minimum), static_cast<float32>(_Maximum), alpha));
+		}
+
 		//Retrieve the current animator value.
 		const float32 current_animator_value{ _Animator.Update(context._DeltaTime) };
 
 		//Render the base box.
-		RenderBox(context, _AxisAlignedBoundingBox, BaseMath::LinearlyInterpolate(_SourceColor, _DestinationColor, current_animator_value), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), ButtonWidgetConstants::RADIUS);
+		RenderBox(context, _AxisAlignedBoundingBox, BaseMath::LinearlyInterpolate(_SourceColor, _DestinationColor, current_animator_value), Vector4<float32>(1.0f, 1.0f, 1.0f, 0.5f), SliderWidgetConstants::RADIUS);
+
+		//Calculate the indicator box.
+		AxisAlignedBoundingBox2D indicator_axis_aligned_bounding_box;
+
+		{
+			indicator_axis_aligned_bounding_box = _AxisAlignedBoundingBox;
+			const float32 alpha{ static_cast<float32>(*_Value - _Minimum) / static_cast<float32>(_Maximum - _Minimum) };
+			indicator_axis_aligned_bounding_box._Maximum._X = BaseMath::LinearlyInterpolate(_AxisAlignedBoundingBox._Minimum._X, _AxisAlignedBoundingBox._Maximum._X, alpha);
+		}
+
+		//Render the indicator box.
+		RenderBox(context, indicator_axis_aligned_bounding_box, BaseMath::LinearlyInterpolate(_SourceColor, _DestinationColor, current_animator_value) * 1.75f, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), SliderWidgetConstants::RADIUS);
 
 		//Draw the overlay box.
 		if (current_animator_value < 1.0f)
@@ -180,19 +202,21 @@ namespace UI
 
 			color._A *= (1.0f - current_animator_value);
 
-			RenderBox(context, axis_aligned_bounding_box, color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), ButtonWidgetConstants::RADIUS);
+			RenderBox(context, axis_aligned_bounding_box, color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), SliderWidgetConstants::RADIUS);
 		}
 
 		//Render the text.
-		if (_Text.Length() > 0)
 		{
+			char buffer[64];
+			sprintf_s(buffer, "%s%i%s", _Prefix ? _Prefix.Data() : "", *_Value, _Postfix ? _Postfix.Data() : "");
+
 			RenderText
 			(
 				context,
 				_AxisAlignedBoundingBox,
 				_Parent->_Parent->GetFont(),
-				_Text.Data(),
-				_Text.Length(),
+				buffer,
+				StringUtilities::StringLength(buffer),
 				_TextScale,
 				UI::HorizontalAlignment::CENTER,
 				UI::VerticalAlignment::CENTER
@@ -203,14 +227,14 @@ namespace UI
 	/*
 	*	Resets the animation.
 	*/
-	void ButtonWidget::ResetAnimation() NOEXCEPT
+	void SliderWidget::ResetAnimation() NOEXCEPT
 	{
 		//Set the animator's current value to 1.
 		_Animator.SetCurrent(1.0f);
 
 		//Set the source/destination color.
-		_SourceColor = ButtonWidgetConstants::IDLE_COLOR;
-		_DestinationColor = ButtonWidgetConstants::IDLE_COLOR;
+		_SourceColor = SliderWidgetConstants::IDLE_COLOR;
+		_DestinationColor = SliderWidgetConstants::IDLE_COLOR;
 	}
 
 }

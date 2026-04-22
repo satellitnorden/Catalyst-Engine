@@ -12,9 +12,9 @@ namespace UI
 {
 
 	/*
-	*	Button widget.
+	*	Slider widget.
 	*/
-	class ButtonWidget final : public UI::Widget
+	class SliderWidget final : public UI::Widget
 	{
 
 	public:
@@ -22,7 +22,7 @@ namespace UI
 		/*
 		*	Default constructor.
 		*/
-		ButtonWidget() NOEXCEPT;
+		SliderWidget() NOEXCEPT;
 
 		/*
 		*	Callback for when the parent is available.
@@ -43,18 +43,54 @@ namespace UI
 		}
 
 		/*
-		*	Sets the text.
+		*	Sets the value.
 		*/
-		FORCE_INLINE ButtonWidget *const RESTRICT SetText(const char *const RESTRICT text) NOEXCEPT
+		FORCE_INLINE SliderWidget *const RESTRICT SetValue(int32 *const RESTRICT value) NOEXCEPT
 		{
-			_Text = text;
+			_Value = value;
+			return this;
+		}
+
+		/*
+		*	Sets the minimum.
+		*/
+		FORCE_INLINE SliderWidget *const RESTRICT SetMinimum(const int32 minimum) NOEXCEPT
+		{
+			_Minimum = minimum;
+			return this;
+		}
+
+		/*
+		*	Sets the maximum.
+		*/
+		FORCE_INLINE SliderWidget *const RESTRICT SetMaximum(const int32 maximum) NOEXCEPT
+		{
+			_Maximum = maximum;
+			return this;
+		}
+
+		/*
+		*	Sets the prefix.
+		*/
+		FORCE_INLINE SliderWidget *const RESTRICT SetPrefix(const char *const RESTRICT prefix) NOEXCEPT
+		{
+			_Prefix = prefix;
+			return this;
+		}
+
+		/*
+		*	Sets the postfix.
+		*/
+		FORCE_INLINE SliderWidget *const RESTRICT SetPostfix(const char *const RESTRICT postfix) NOEXCEPT
+		{
+			_Postfix = postfix;
 			return this;
 		}
 
 		/*
 		*	Sets the text scale.
 		*/
-		FORCE_INLINE ButtonWidget *const RESTRICT SetTextScale(const float32 value) NOEXCEPT
+		FORCE_INLINE SliderWidget *const RESTRICT SetTextScale(const float32 value) NOEXCEPT
 		{
 			_TextScale = value;
 			return this;
@@ -74,6 +110,15 @@ namespace UI
 			LEFT
 		};
 
+		//The value.
+		int32 *RESTRICT _Value{ nullptr };
+
+		//The minimum.
+		int32 _Minimum{ INT32_MINIMUM };
+
+		//The maximum.
+		int32 _Maximum{ INT32_MAXIMUM };
+
 		//The clickable interface.
 		UI::ClickableInterface _ClickableInterface;
 
@@ -89,8 +134,11 @@ namespace UI
 		//The animation direction.
 		AnimationDirection _AnimationDirection{ AnimationDirection::RIGHT };
 
-		//The text.
-		DynamicString _Text;
+		//The prefix.
+		DynamicString _Prefix;
+
+		//The postfix.
+		DynamicString _Postfix;
 
 		//The text scale.
 		float32 _TextScale;

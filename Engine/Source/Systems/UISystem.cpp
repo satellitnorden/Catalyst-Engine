@@ -124,6 +124,11 @@ void UISystem::UpdateWidgets() NOEXCEPT
 				{
 					UI::Widget *const RESTRICT widget{ widgets[widget_index] };
 
+					if (widget->GetClickableInterface())
+					{
+						widget->GetClickableInterface()->SetMousePosition(mouse_position);
+					}
+
 					if (!widget->IsEnabled())
 					{
 						continue;

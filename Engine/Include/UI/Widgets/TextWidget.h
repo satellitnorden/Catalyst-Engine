@@ -62,6 +62,22 @@ namespace UI
 		}
 
 		/*
+		*	Sets the horizontal alignment.
+		*/
+		FORCE_INLINE void SetHorizontalAlignment(const UI::HorizontalAlignment horizontal_alignment) NOEXCEPT
+		{
+			_HorizontalAlignment = horizontal_alignment;
+		}
+
+		/*
+		*	Sets the vertical alignment.
+		*/
+		FORCE_INLINE void SetVerticalAlignment(const UI::VerticalAlignment vertical_alignment) NOEXCEPT
+		{
+			_VerticalAlignment = vertical_alignment;
+		}
+
+		/*
 		*	Renders this widget.
 		*/
 		void Render(const UI::RenderContext &context) NOEXCEPT override;
@@ -76,6 +92,12 @@ namespace UI
 
 		//The color/opacity.
 		Vector4<float32> _ColorOpacity{ 1.0f, 1.0f, 1.0f, 1.0f };
+
+		//The horizontal alignment.
+		UI::HorizontalAlignment _HorizontalAlignment{ UI::HorizontalAlignment::CENTER };
+
+		//The vertical alignment.
+		UI::VerticalAlignment _VerticalAlignment{ UI::VerticalAlignment::CENTER };
 
 	};
 

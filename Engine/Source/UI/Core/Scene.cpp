@@ -105,6 +105,15 @@ namespace UI
 		{
 			for (UI::Container &old_container : _Containers)
 			{
+				/*
+				*	If this container is not alive, then it hasn't added any widgets this frame,
+				*	and either it will be revived and add it's own widgets or get removed the next frame.
+				*/
+				if (!old_container._Alive)
+				{
+					continue;
+				}
+
 				for (uint64 widget_index{ old_container._StartWidgetIndex }; widget_index < old_container._EndWidgetIndex; ++widget_index)
 				{
 					_Widgets[widget_index]->SetParent(&old_container);
@@ -170,6 +179,28 @@ namespace UI
 
 					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._X = size._X;
 					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._Y = UI::Constants::REFERENCE_RESOLUTION._Y * 0.5f + half_size._Y;
+
+					break;
+				}
+
+				case UI::Anchor::TOP_LEFT:
+				{
+					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._X = 0.0f;
+					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._Y = UI::Constants::REFERENCE_RESOLUTION._Y - size._Y;
+
+					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._X = size._X;
+					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._Y = UI::Constants::REFERENCE_RESOLUTION._Y;
+
+					break;
+				}
+
+				case UI::Anchor::TOP_RIGHT:
+				{
+					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._X = UI::Constants::REFERENCE_RESOLUTION._X - size._X;
+					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._Y = UI::Constants::REFERENCE_RESOLUTION._Y - size._Y;
+
+					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._X = UI::Constants::REFERENCE_RESOLUTION._X;
+					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._Y = UI::Constants::REFERENCE_RESOLUTION._Y;
 
 					break;
 				}

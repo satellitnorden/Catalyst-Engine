@@ -30,8 +30,8 @@ namespace UI
 			_Text.Data(),
 			_Text.Length(),
 			_TextScale,
-			UI::HorizontalAlignment::CENTER,
-			UI::VerticalAlignment::CENTER,
+			_HorizontalAlignment,
+			_VerticalAlignment,
 			_ColorOpacity
 		);
 	}

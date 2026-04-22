@@ -1,5 +1,5 @@
 //Header file.
-#include <UI/Widgets/ButtonWidget.h>
+#include <UI/Widgets/CheckboxWidget.h>
 
 //UI.
 #include <UI/Core/Scene.h>
@@ -7,8 +7,8 @@
 namespace UI
 {
 
-	//Button widget constants.
-	namespace ButtonWidgetConstants
+	//Checkbox widget constants.
+	namespace CheckboxWidgetConstants
 	{
 		constexpr Vector4<float32> IDLE_COLOR{ 0.125f, 0.125f, 0.125f, 0.25f };
 		constexpr Vector4<float32> HOVERED_COLOR{ 0.25f, 0.25f, 0.25f, 0.5f };
@@ -20,32 +20,32 @@ namespace UI
 	/*
 	*	Default constructor.
 	*/
-	ButtonWidget::ButtonWidget() NOEXCEPT
+	CheckboxWidget::CheckboxWidget() NOEXCEPT
 	{
 		//Set up the '_OnStateChangedCallback' on the clickable interface.
 		_ClickableInterface._OnStateChanged = [](UI::Widget *const RESTRICT widget, const UI::ClickableInterface::State previous_state, const UI::ClickableInterface::State new_state)
 		{
-			ButtonWidget *const RESTRICT _this{ static_cast<ButtonWidget *const RESTRICT>(widget) };
+			CheckboxWidget *const RESTRICT _this{ static_cast<CheckboxWidget *const RESTRICT>(widget) };
 
 			switch (previous_state)
 			{
 				case UI::ClickableInterface::State::IDLE:
 				{
-					_this->_SourceColor = ButtonWidgetConstants::IDLE_COLOR;
+					_this->_SourceColor = CheckboxWidgetConstants::IDLE_COLOR;
 
 					break;
 				}
 
 				case UI::ClickableInterface::State::HOVERED:
 				{
-					_this->_SourceColor = ButtonWidgetConstants::HOVERED_COLOR;
+					_this->_SourceColor = CheckboxWidgetConstants::HOVERED_COLOR;
 
 					break;
 				}
 
 				case UI::ClickableInterface::State::PRESSED:
 				{
-					_this->_SourceColor = ButtonWidgetConstants::PRESSED_COLOR;
+					_this->_SourceColor = CheckboxWidgetConstants::PRESSED_COLOR;
 
 					break;
 				}
@@ -65,7 +65,7 @@ namespace UI
 					_this->_Animator.SetCurrent(0.0f);
 					_this->_Animator.SetSpeed(2.0f);
 
-					_this->_DestinationColor = ButtonWidgetConstants::IDLE_COLOR;
+					_this->_DestinationColor = CheckboxWidgetConstants::IDLE_COLOR;
 
 					_this->_AnimationDirection = AnimationDirection::LEFT;
 
@@ -77,7 +77,7 @@ namespace UI
 					_this->_Animator.SetCurrent(0.0f);
 					_this->_Animator.SetSpeed(2.0f);
 
-					_this->_DestinationColor = ButtonWidgetConstants::HOVERED_COLOR;
+					_this->_DestinationColor = CheckboxWidgetConstants::HOVERED_COLOR;
 
 					if (previous_state == UI::ClickableInterface::State::IDLE)
 					{
@@ -94,10 +94,12 @@ namespace UI
 
 				case UI::ClickableInterface::State::PRESSED:
 				{
+					(*_this->_Value) = !(*_this->_Value);
+
 					_this->_Animator.SetCurrent(0.0f);
 					_this->_Animator.SetSpeed(16.0f);
 
-					_this->_DestinationColor = ButtonWidgetConstants::PRESSED_COLOR;
+					_this->_DestinationColor = CheckboxWidgetConstants::PRESSED_COLOR;
 
 					_this->_AnimationDirection = AnimationDirection::RIGHT;
 
@@ -120,7 +122,7 @@ namespace UI
 	/*
 	*	Callback for when the parent is available.
 	*/
-	void ButtonWidget::OnParentAvailable() NOEXCEPT
+	void CheckboxWidget::OnParentAvailable() NOEXCEPT
 	{
 		//Grab the text scale from the scene.
 		_TextScale = _Parent->_Parent->GetTextScale();
@@ -129,7 +131,7 @@ namespace UI
 	/*
 	*	Callback for when this widget is disabled.
 	*/
-	void ButtonWidget::OnDisabled() NOEXCEPT
+	void CheckboxWidget::OnDisabled() NOEXCEPT
 	{
 		//Reset the animation.
 		ResetAnimation();
@@ -138,18 +140,27 @@ namespace UI
 	/*
 	*	Renders this widget.
 	*/
-	void ButtonWidget::Render(const UI::RenderContext &context) NOEXCEPT
+	void CheckboxWidget::Render(const UI::RenderContext &context) NOEXCEPT
 	{
+		//Calculate the button and text axis aligned bounding boxes.
+		AxisAlignedBoundingBox2D button_axis_aligned_bounding_box{ _AxisAlignedBoundingBox };
+		AxisAlignedBoundingBox2D text_axis_aligned_bounding_box{ _AxisAlignedBoundingBox };
+
+		{
+			button_axis_aligned_bounding_box._Maximum._X = _AxisAlignedBoundingBox._Minimum._X + (_AxisAlignedBoundingBox._Maximum._Y - _AxisAlignedBoundingBox._Minimum._Y);
+			text_axis_aligned_bounding_box._Minimum._X = button_axis_aligned_bounding_box._Maximum._X;
+		}
+
 		//Retrieve the current animator value.
 		const float32 current_animator_value{ _Animator.Update(context._DeltaTime) };
 
 		//Render the base box.
-		RenderBox(context, _AxisAlignedBoundingBox, BaseMath::LinearlyInterpolate(_SourceColor, _DestinationColor, current_animator_value), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), ButtonWidgetConstants::RADIUS);
+		RenderBox(context, button_axis_aligned_bounding_box, BaseMath::LinearlyInterpolate(_SourceColor, _DestinationColor, current_animator_value) * (*_Value ? 1.75f : 1.0f), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), CheckboxWidgetConstants::RADIUS);
 
 		//Draw the overlay box.
 		if (current_animator_value < 1.0f)
 		{
-			AxisAlignedBoundingBox2D axis_aligned_bounding_box{ _AxisAlignedBoundingBox };
+			AxisAlignedBoundingBox2D axis_aligned_bounding_box{ button_axis_aligned_bounding_box };
 			Vector4<float32> color;
 
 			switch (_AnimationDirection)
@@ -180,7 +191,7 @@ namespace UI
 
 			color._A *= (1.0f - current_animator_value);
 
-			RenderBox(context, axis_aligned_bounding_box, color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), ButtonWidgetConstants::RADIUS);
+			RenderBox(context, axis_aligned_bounding_box, color * (*_Value ? 1.75f : 1.0f), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), CheckboxWidgetConstants::RADIUS);
 		}
 
 		//Render the text.
@@ -189,7 +200,7 @@ namespace UI
 			RenderText
 			(
 				context,
-				_AxisAlignedBoundingBox,
+				text_axis_aligned_bounding_box,
 				_Parent->_Parent->GetFont(),
 				_Text.Data(),
 				_Text.Length(),
@@ -203,14 +214,14 @@ namespace UI
 	/*
 	*	Resets the animation.
 	*/
-	void ButtonWidget::ResetAnimation() NOEXCEPT
+	void CheckboxWidget::ResetAnimation() NOEXCEPT
 	{
 		//Set the animator's current value to 1.
 		_Animator.SetCurrent(1.0f);
 
 		//Set the source/destination color.
-		_SourceColor = ButtonWidgetConstants::IDLE_COLOR;
-		_DestinationColor = ButtonWidgetConstants::IDLE_COLOR;
+		_SourceColor = CheckboxWidgetConstants::IDLE_COLOR;
+		_DestinationColor = CheckboxWidgetConstants::IDLE_COLOR;
 	}
 
 }

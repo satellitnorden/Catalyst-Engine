@@ -12,9 +12,9 @@ namespace UI
 {
 
 	/*
-	*	Button widget.
+	*	Checkbox widget.
 	*/
-	class ButtonWidget final : public UI::Widget
+	class CheckboxWidget final : public UI::Widget
 	{
 
 	public:
@@ -22,7 +22,7 @@ namespace UI
 		/*
 		*	Default constructor.
 		*/
-		ButtonWidget() NOEXCEPT;
+		CheckboxWidget() NOEXCEPT;
 
 		/*
 		*	Callback for when the parent is available.
@@ -43,9 +43,18 @@ namespace UI
 		}
 
 		/*
+		*	Sets the value.
+		*/
+		FORCE_INLINE CheckboxWidget *const RESTRICT SetValue(bool *const RESTRICT value) NOEXCEPT
+		{
+			_Value = value;
+			return this;
+		}
+
+		/*
 		*	Sets the text.
 		*/
-		FORCE_INLINE ButtonWidget *const RESTRICT SetText(const char *const RESTRICT text) NOEXCEPT
+		FORCE_INLINE CheckboxWidget *const RESTRICT SetText(const char *const RESTRICT text) NOEXCEPT
 		{
 			_Text = text;
 			return this;
@@ -54,7 +63,7 @@ namespace UI
 		/*
 		*	Sets the text scale.
 		*/
-		FORCE_INLINE ButtonWidget *const RESTRICT SetTextScale(const float32 value) NOEXCEPT
+		FORCE_INLINE CheckboxWidget *const RESTRICT SetTextScale(const float32 value) NOEXCEPT
 		{
 			_TextScale = value;
 			return this;
@@ -73,6 +82,9 @@ namespace UI
 			RIGHT,
 			LEFT
 		};
+
+		//The value.
+		bool *RESTRICT _Value{ nullptr };
 
 		//The clickable interface.
 		UI::ClickableInterface _ClickableInterface;

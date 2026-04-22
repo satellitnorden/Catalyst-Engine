@@ -27,7 +27,7 @@ namespace UI
 		/*
 		*	Default destructor.
 		*/
-		FORCE_INLINE ~Scene() NOEXCEPT
+		FORCE_INLINE virtual ~Scene() NOEXCEPT
 		{
 
 		}
