@@ -23,7 +23,7 @@ namespace UI
 	ButtonWidget::ButtonWidget() NOEXCEPT
 	{
 		//Set up the '_OnStateChangedCallback' on the clickable interface.
-		_ClickableInterface._OnStateChanged = [](UI::Widget *const RESTRICT widget, const UI::ClickableInterface::State previous_state, const UI::ClickableInterface::State new_state)
+		_ClickableInterface._OnStateChanged = [](UI::Widget *const RESTRICT widget, UI::ClickableInterface *const RESTRICT clickable_interface, const UI::ClickableInterface::State previous_state, const UI::ClickableInterface::State new_state)
 		{
 			ButtonWidget *const RESTRICT _this{ static_cast<ButtonWidget *const RESTRICT>(widget) };
 
@@ -69,6 +69,14 @@ namespace UI
 
 					_this->_AnimationDirection = AnimationDirection::LEFT;
 
+					if (previous_state == UI::ClickableInterface::State::HOVERED)
+					{
+						if (_this->_OnEndHoverCallback)
+						{
+							_this->_OnEndHoverCallback(_this->GetParent()->_Parent, _this, _this->_OnEndHoverCallbackUserData);
+						}
+					}
+
 					break;
 				}
 
@@ -89,6 +97,14 @@ namespace UI
 						_this->_AnimationDirection = AnimationDirection::LEFT;
 					}
 
+					if (previous_state == UI::ClickableInterface::State::IDLE)
+					{
+						if (_this->_OnStartHoverCallback)
+						{
+							_this->_OnStartHoverCallback(_this->GetParent()->_Parent, _this, _this->_OnStartHoverCallbackUserData);
+						}
+					}
+
 					break;
 				}
 
@@ -100,6 +116,11 @@ namespace UI
 					_this->_DestinationColor = ButtonWidgetConstants::PRESSED_COLOR;
 
 					_this->_AnimationDirection = AnimationDirection::RIGHT;
+
+					if (_this->_OnPressedCallback)
+					{
+						_this->_OnPressedCallback(_this->GetParent()->_Parent, _this, _this->_OnPressedCallbackUserData);
+					}
 
 					break;
 				}

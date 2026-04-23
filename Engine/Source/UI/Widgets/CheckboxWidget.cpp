@@ -23,7 +23,7 @@ namespace UI
 	CheckboxWidget::CheckboxWidget() NOEXCEPT
 	{
 		//Set up the '_OnStateChangedCallback' on the clickable interface.
-		_ClickableInterface._OnStateChanged = [](UI::Widget *const RESTRICT widget, const UI::ClickableInterface::State previous_state, const UI::ClickableInterface::State new_state)
+		_ClickableInterface._OnStateChanged = [](UI::Widget *const RESTRICT widget, UI::ClickableInterface *const RESTRICT clickable_interface, const UI::ClickableInterface::State previous_state, const UI::ClickableInterface::State new_state)
 		{
 			CheckboxWidget *const RESTRICT _this{ static_cast<CheckboxWidget *const RESTRICT>(widget) };
 
@@ -94,7 +94,12 @@ namespace UI
 
 				case UI::ClickableInterface::State::PRESSED:
 				{
-					(*_this->_Value) = !(*_this->_Value);
+					_this->_Value = !_this->_Value;
+
+					if (_this->_OnValueChangedCallback)
+					{
+						_this->_OnValueChangedCallback(widget->GetParent()->_Parent, _this->_Value);
+					}
 
 					_this->_Animator.SetCurrent(0.0f);
 					_this->_Animator.SetSpeed(16.0f);
@@ -155,7 +160,7 @@ namespace UI
 		const float32 current_animator_value{ _Animator.Update(context._DeltaTime) };
 
 		//Render the base box.
-		RenderBox(context, button_axis_aligned_bounding_box, BaseMath::LinearlyInterpolate(_SourceColor, _DestinationColor, current_animator_value) * (*_Value ? 1.75f : 1.0f), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), CheckboxWidgetConstants::RADIUS);
+		RenderBox(context, button_axis_aligned_bounding_box, BaseMath::LinearlyInterpolate(_SourceColor, _DestinationColor, current_animator_value) * (_Value ? 1.75f : 1.0f), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), CheckboxWidgetConstants::RADIUS);
 
 		//Draw the overlay box.
 		if (current_animator_value < 1.0f)
@@ -191,7 +196,7 @@ namespace UI
 
 			color._A *= (1.0f - current_animator_value);
 
-			RenderBox(context, axis_aligned_bounding_box, color * (*_Value ? 1.75f : 1.0f), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), CheckboxWidgetConstants::RADIUS);
+			RenderBox(context, axis_aligned_bounding_box, color * (_Value ? 1.75f : 1.0f), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), CheckboxWidgetConstants::RADIUS);
 		}
 
 		//Render the text.

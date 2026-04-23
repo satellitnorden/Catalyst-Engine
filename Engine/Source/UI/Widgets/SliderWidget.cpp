@@ -26,7 +26,7 @@ namespace UI
 	SliderWidget::SliderWidget() NOEXCEPT
 	{
 		//Set up the '_OnStateChangedCallback' on the clickable interface.
-		_ClickableInterface._OnStateChanged = [](UI::Widget *const RESTRICT widget, const UI::ClickableInterface::State previous_state, const UI::ClickableInterface::State new_state)
+		_ClickableInterface._OnStateChanged = [](UI::Widget *const RESTRICT widget, UI::ClickableInterface *const RESTRICT clickable_interface, const UI::ClickableInterface::State previous_state, const UI::ClickableInterface::State new_state)
 		{
 			SliderWidget *const RESTRICT _this{ static_cast<SliderWidget *const RESTRICT>(widget) };
 
@@ -147,7 +147,12 @@ namespace UI
 		if (_ClickableInterface.GetState() == UI::ClickableInterface::State::PRESSED)
 		{
 			const float32 alpha{ (_ClickableInterface.GetMousePosition()._X - _AxisAlignedBoundingBox._Minimum._X) / (_AxisAlignedBoundingBox._Maximum._X - _AxisAlignedBoundingBox._Minimum._X) };
-			*_Value = BaseMath::Round<int32>(BaseMath::LinearlyInterpolate(static_cast<float32>(_Minimum), static_cast<float32>(_Maximum), alpha));
+			_Value = BaseMath::Round<int32>(BaseMath::LinearlyInterpolate(static_cast<float32>(_Minimum), static_cast<float32>(_Maximum), alpha));
+
+			if (_OnValueChangedCallback)
+			{
+				_OnValueChangedCallback(GetParent()->_Parent, _Value);
+			}
 		}
 
 		//Retrieve the current animator value.
@@ -161,7 +166,7 @@ namespace UI
 
 		{
 			indicator_axis_aligned_bounding_box = _AxisAlignedBoundingBox;
-			const float32 alpha{ static_cast<float32>(*_Value - _Minimum) / static_cast<float32>(_Maximum - _Minimum) };
+			const float32 alpha{ static_cast<float32>(_Value - _Minimum) / static_cast<float32>(_Maximum - _Minimum) };
 			indicator_axis_aligned_bounding_box._Maximum._X = BaseMath::LinearlyInterpolate(_AxisAlignedBoundingBox._Minimum._X, _AxisAlignedBoundingBox._Maximum._X, alpha);
 		}
 
@@ -208,7 +213,7 @@ namespace UI
 		//Render the text.
 		{
 			char buffer[64];
-			sprintf_s(buffer, "%s%i%s", _Prefix ? _Prefix.Data() : "", *_Value, _Postfix ? _Postfix.Data() : "");
+			sprintf_s(buffer, "%s%i%s", _Prefix ? _Prefix.Data() : "", _Value, _Postfix ? _Postfix.Data() : "");
 
 			RenderText
 			(

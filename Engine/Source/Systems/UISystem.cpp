@@ -124,9 +124,9 @@ void UISystem::UpdateWidgets() NOEXCEPT
 				{
 					UI::Widget *const RESTRICT widget{ widgets[widget_index] };
 
-					if (widget->GetClickableInterface())
+					for (UI::ClickableInterface *clickable_interface : widget->GetClickableInterfaces())
 					{
-						widget->GetClickableInterface()->SetMousePosition(mouse_position);
+						clickable_interface->SetMousePosition(mouse_position);
 					}
 
 					if (!widget->IsEnabled())
@@ -135,7 +135,7 @@ void UISystem::UpdateWidgets() NOEXCEPT
 					}
 
 					//Update clickable interfaces.
-					if (UI::ClickableInterface *const RESTRICT clickable_interface{ widget->GetClickableInterface() })
+					for (UI::ClickableInterface *const RESTRICT clickable_interface : widget->GetClickableInterfaces())
 					{
 						if (have_consumed_click_input)
 						{
@@ -144,7 +144,7 @@ void UISystem::UpdateWidgets() NOEXCEPT
 
 						else
 						{
-							if (clickable_interface->_IsInside(widget, mouse_position))
+							if (clickable_interface->_IsInside(widget, clickable_interface, mouse_position))
 							{
 								if (mouse_button_state == ButtonState::PRESSED)
 								{

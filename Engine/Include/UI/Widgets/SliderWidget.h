@@ -19,6 +19,9 @@ namespace UI
 
 	public:
 
+		//Type aliases.
+		using OnValueChangedCallback = void(*)(UI::Scene *const RESTRICT scene, const int32 new_value);
+
 		/*
 		*	Default constructor.
 		*/
@@ -37,15 +40,17 @@ namespace UI
 		/*
 		*	Returns the clickable interface (if this widget is clickable.
 		*/
-		FORCE_INLINE NO_DISCARD UI::ClickableInterface *const RESTRICT GetClickableInterface() NOEXCEPT override
+		FORCE_INLINE NO_DISCARD ArrayProxy<UI::ClickableInterface *const RESTRICT> GetClickableInterfaces() NOEXCEPT override
 		{
-			return &_ClickableInterface;
+			static thread_local UI::ClickableInterface *RESTRICT CLICKABLE_INTERFACE_POINTER;
+			CLICKABLE_INTERFACE_POINTER = &_ClickableInterface;
+			return ArrayProxy<UI::ClickableInterface *const RESTRICT>(CLICKABLE_INTERFACE_POINTER);
 		}
 
 		/*
 		*	Sets the value.
 		*/
-		FORCE_INLINE SliderWidget *const RESTRICT SetValue(int32 *const RESTRICT value) NOEXCEPT
+		FORCE_INLINE SliderWidget *const RESTRICT SetValue(const int32 value) NOEXCEPT
 		{
 			_Value = value;
 			return this;
@@ -97,6 +102,15 @@ namespace UI
 		}
 
 		/*
+		*	Sets the on value changed callback.
+		*/
+		FORCE_INLINE SliderWidget *const RESTRICT SetOnValueChangedCallback(const OnValueChangedCallback callback) NOEXCEPT
+		{
+			_OnValueChangedCallback = callback;
+			return this;
+		}
+
+		/*
 		*	Renders this widget.
 		*/
 		void Render(const UI::RenderContext &context) NOEXCEPT override;
@@ -111,7 +125,7 @@ namespace UI
 		};
 
 		//The value.
-		int32 *RESTRICT _Value{ nullptr };
+		int32 _Value{ 0 };
 
 		//The minimum.
 		int32 _Minimum{ INT32_MINIMUM };
@@ -142,6 +156,9 @@ namespace UI
 
 		//The text scale.
 		float32 _TextScale;
+
+		//The on value changed callback.
+		OnValueChangedCallback _OnValueChangedCallback{ nullptr };
 
 		/*
 		*	Resets the animation.

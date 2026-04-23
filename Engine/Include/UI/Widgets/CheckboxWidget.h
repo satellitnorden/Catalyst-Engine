@@ -19,6 +19,9 @@ namespace UI
 
 	public:
 
+		//Type aliases.
+		using OnValueChangedCallback = void(*)(UI::Scene *const RESTRICT scene, const bool new_value);
+
 		/*
 		*	Default constructor.
 		*/
@@ -37,15 +40,17 @@ namespace UI
 		/*
 		*	Returns the clickable interface (if this widget is clickable.
 		*/
-		FORCE_INLINE NO_DISCARD UI::ClickableInterface *const RESTRICT GetClickableInterface() NOEXCEPT override
+		FORCE_INLINE NO_DISCARD ArrayProxy<UI::ClickableInterface *const RESTRICT> GetClickableInterfaces() NOEXCEPT override
 		{
-			return &_ClickableInterface;
+			static thread_local UI::ClickableInterface *RESTRICT CLICKABLE_INTERFACE_POINTER;
+			CLICKABLE_INTERFACE_POINTER = &_ClickableInterface;
+			return ArrayProxy<UI::ClickableInterface *const RESTRICT>(CLICKABLE_INTERFACE_POINTER);
 		}
 
 		/*
 		*	Sets the value.
 		*/
-		FORCE_INLINE CheckboxWidget *const RESTRICT SetValue(bool *const RESTRICT value) NOEXCEPT
+		FORCE_INLINE CheckboxWidget *const RESTRICT SetValue(const bool value) NOEXCEPT
 		{
 			_Value = value;
 			return this;
@@ -70,6 +75,15 @@ namespace UI
 		}
 
 		/*
+		*	Sets the on value changed callback.
+		*/
+		FORCE_INLINE CheckboxWidget *const RESTRICT SetOnValueChangedCallback(const OnValueChangedCallback callback) NOEXCEPT
+		{
+			_OnValueChangedCallback = callback;
+			return this;
+		}
+
+		/*
 		*	Renders this widget.
 		*/
 		void Render(const UI::RenderContext &context) NOEXCEPT override;
@@ -84,7 +98,7 @@ namespace UI
 		};
 
 		//The value.
-		bool *RESTRICT _Value{ nullptr };
+		bool _Value{ false };
 
 		//The clickable interface.
 		UI::ClickableInterface _ClickableInterface;
@@ -106,6 +120,9 @@ namespace UI
 
 		//The text scale.
 		float32 _TextScale;
+
+		//The on value changed callback.
+		OnValueChangedCallback _OnValueChangedCallback{ nullptr };
 
 		/*
 		*	Resets the animation.

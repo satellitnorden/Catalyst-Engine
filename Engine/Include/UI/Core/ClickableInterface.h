@@ -30,10 +30,10 @@ namespace UI
 		};
 
 		//Should return if the given position is inside the given widget.
-		bool (*_IsInside)(const class Widget *const RESTRICT widget, const Vector2<float32> position);
+		bool (*_IsInside)(const class Widget *const RESTRICT widget, ClickableInterface *const RESTRICT clickable_interface, const Vector2<float32> position);
 
 		//Callback for when the state changes.
-		void (*_OnStateChanged)(class Widget *const RESTRICT widget, const State previous_state, const State new_state) { nullptr };
+		void (*_OnStateChanged)(class Widget *const RESTRICT widget, ClickableInterface *const RESTRICT clickable_interface, const State previous_state, const State new_state) { nullptr };
 
 		/*
 		*	Default constructor.
@@ -60,7 +60,7 @@ namespace UI
 
 				if (_OnStateChanged)
 				{
-					_OnStateChanged(widget, previous_state, new_state);
+					_OnStateChanged(widget, this, previous_state, new_state);
 				}
 
 				if (previous_state == State::IDLE && _OnStartHoveredCallback)
@@ -80,6 +80,14 @@ namespace UI
 
 				_State = state;
 			}
+		}
+
+		/*
+		*	Returns the user data.
+		*/
+		FORCE_INLINE NO_DISCARD void *const RESTRICT GetUserData() const NOEXCEPT
+		{
+			return _UserData;
 		}
 
 		/*

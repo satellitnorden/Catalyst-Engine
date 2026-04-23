@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/ArrayProxy.h>
 
 //Content.
 #include <Content/Core/AssetPointer.h>
@@ -87,7 +88,7 @@ namespace UI
 				//If we're being disabled, make sure the clickable interface is idle.
 				if (!_Enabled)
 				{
-					if (UI::ClickableInterface *const RESTRICT clickable_interface{ GetClickableInterface() })
+					for (UI::ClickableInterface *const RESTRICT clickable_interface : GetClickableInterfaces())
 					{
 						clickable_interface->SetState(this, UI::ClickableInterface::State::IDLE);
 					}
@@ -134,9 +135,9 @@ namespace UI
 		/*
 		*	Returns the clickable interface (if this widget is clickable.
 		*/
-		FORCE_INLINE virtual NO_DISCARD UI::ClickableInterface *const RESTRICT GetClickableInterface() NOEXCEPT
+		FORCE_INLINE virtual NO_DISCARD ArrayProxy<UI::ClickableInterface *const RESTRICT> GetClickableInterfaces() NOEXCEPT
 		{
-			return nullptr;
+			return ArrayProxy<UI::ClickableInterface *const RESTRICT>();
 		}
 
 		/*

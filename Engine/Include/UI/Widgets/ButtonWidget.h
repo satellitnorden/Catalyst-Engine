@@ -19,6 +19,11 @@ namespace UI
 
 	public:
 
+		//Type aliases.
+		using OnPressedCallback = void(*)(UI::Scene *const RESTRICT scene, UI::Widget *const RESTRICT widget, void *const RESTRICT user_data);
+		using OnStartHoverCallback = void(*)(UI::Scene *const RESTRICT scene, UI::Widget *const RESTRICT widget, void *const RESTRICT user_data);
+		using OnEndHoverCallback = void(*)(UI::Scene *const RESTRICT scene, UI::Widget *const RESTRICT widget, void *const RESTRICT user_data);
+
 		/*
 		*	Default constructor.
 		*/
@@ -37,9 +42,19 @@ namespace UI
 		/*
 		*	Returns the clickable interface (if this widget is clickable.
 		*/
-		FORCE_INLINE NO_DISCARD UI::ClickableInterface *const RESTRICT GetClickableInterface() NOEXCEPT override
+		FORCE_INLINE NO_DISCARD ArrayProxy<UI::ClickableInterface *const RESTRICT> GetClickableInterfaces() NOEXCEPT override
 		{
-			return &_ClickableInterface;
+			static thread_local UI::ClickableInterface *RESTRICT CLICKABLE_INTERFACE_POINTER;
+			CLICKABLE_INTERFACE_POINTER = &_ClickableInterface;
+			return ArrayProxy<UI::ClickableInterface *const RESTRICT>(CLICKABLE_INTERFACE_POINTER);
+		}
+
+		/*
+		*	Returns the text.
+		*/
+		FORCE_INLINE NO_DISCARD const DynamicString &GetText() const NOEXCEPT
+		{
+			return _Text;
 		}
 
 		/*
@@ -57,6 +72,60 @@ namespace UI
 		FORCE_INLINE ButtonWidget *const RESTRICT SetTextScale(const float32 value) NOEXCEPT
 		{
 			_TextScale = value;
+			return this;
+		}
+
+		/*
+		*	Sets the on start hover callback.
+		*/
+		FORCE_INLINE ButtonWidget *const RESTRICT SetOnStartHoverCallback(const OnStartHoverCallback callback) NOEXCEPT
+		{
+			_OnStartHoverCallback = callback;
+			return this;
+		}
+
+		/*
+		*	Sets the on start hover callback user data.
+		*/
+		FORCE_INLINE ButtonWidget *const RESTRICT SetOnStartHoverCallbackUserData(void *const RESTRICT user_data) NOEXCEPT
+		{
+			_OnStartHoverCallbackUserData = user_data;
+			return this;
+		}
+
+		/*
+		*	Sets the on end hover callback.
+		*/
+		FORCE_INLINE ButtonWidget *const RESTRICT SetOnEndHoverCallback(const OnStartHoverCallback callback) NOEXCEPT
+		{
+			_OnEndHoverCallback = callback;
+			return this;
+		}
+
+		/*
+		*	Sets the on end hover callback user data.
+		*/
+		FORCE_INLINE ButtonWidget *const RESTRICT SetOnEndHoverCallbackUserData(void *const RESTRICT user_data) NOEXCEPT
+		{
+			_OnEndHoverCallbackUserData = user_data;
+			return this;
+		}
+
+		/*
+		*	Sets the on pressed callback.
+		*/
+		FORCE_INLINE ButtonWidget *const RESTRICT SetOnPressedCallback(const OnPressedCallback callback) NOEXCEPT
+		{
+			_OnPressedCallback = callback;
+			return this;
+		}
+
+		/*
+		*	Sets the on pressed callback user data.
+		*/
+		FORCE_INLINE ButtonWidget *const RESTRICT SetOnPressedCallbackUserData(void *const RESTRICT user_data) NOEXCEPT
+		{
+			_OnPressedCallbackUserData = user_data;
 			return this;
 		}
 
@@ -94,6 +163,24 @@ namespace UI
 
 		//The text scale.
 		float32 _TextScale;
+
+		//The on start hover callback.
+		OnStartHoverCallback _OnStartHoverCallback{ nullptr };
+
+		//The on start hover callback user data.
+		void *RESTRICT _OnStartHoverCallbackUserData{ nullptr };
+
+		//The on end hover callback.
+		OnEndHoverCallback _OnEndHoverCallback{ nullptr };
+
+		//The on end hover callback user data.
+		void *RESTRICT _OnEndHoverCallbackUserData{ nullptr };
+
+		//The on pressed callback.
+		OnPressedCallback _OnPressedCallback{ nullptr };
+
+		//The on pressed callback user data.
+		void *RESTRICT _OnPressedCallbackUserData{ nullptr };
 
 		/*
 		*	Resets the animation.

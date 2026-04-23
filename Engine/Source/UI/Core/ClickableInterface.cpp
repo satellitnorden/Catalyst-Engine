@@ -16,7 +16,7 @@ namespace UI
 		_State = State::IDLE;
 
 		//Set the '_IsInside' function.
-		_IsInside = [](const UI::Widget *const RESTRICT widget, const Vector2<float32> position)
+		_IsInside = [](const UI::Widget *const RESTRICT widget, ClickableInterface *const RESTRICT clickable_interface, const Vector2<float32> position)
 		{
 			return widget->GetAxisAlignedBoundingBox().IsInside(position);
 		};
