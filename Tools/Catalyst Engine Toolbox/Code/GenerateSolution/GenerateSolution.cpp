@@ -539,31 +539,31 @@ void GenerateSolution::Run(const ProjectSettings &project_settings)
 	}
 
 	//Copy assimp-vc143-mt.dll.
-	std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", DIRECTORY "\\Debug", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-	std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", DIRECTORY "\\Debug Editor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-	std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", DIRECTORY "\\Profile", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-	std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", DIRECTORY "\\Profile Editor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", DIRECTORY "\\Debug", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", DIRECTORY "\\Debug Editor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", DIRECTORY "\\Profile", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", DIRECTORY "\\Profile Editor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 
 	if (project_settings._AddStaticBuilds)
 	{
-		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", DIRECTORY "\\Debug Static", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", DIRECTORY "\\Profile Static", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", DIRECTORY "\\Debug Static", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", DIRECTORY "\\Profile Static", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 	}
 
 	//Copy onnxruntime.dll.
 	if (project_settings._IncludeONNXRuntimeLibrary)
 	{
-		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", DIRECTORY "\\Debug", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", DIRECTORY "\\Debug Editor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", DIRECTORY "\\Profile", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", DIRECTORY "\\Profile Editor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", DIRECTORY "\\Final", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", DIRECTORY "\\Debug", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", DIRECTORY "\\Debug Editor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", DIRECTORY "\\Profile", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", DIRECTORY "\\Profile Editor", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", DIRECTORY "\\Final", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 	
 		if (project_settings._AddStaticBuilds)
 		{
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", DIRECTORY "\\Debug Static", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", DIRECTORY "\\Profile Static", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("C:\\Github\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", DIRECTORY "\\Final Static", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", DIRECTORY "\\Debug Static", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", DIRECTORY "\\Profile Static", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", DIRECTORY "\\Final Static", std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 		}
 	}
 }
