@@ -89,5 +89,10 @@ private:
 	*/
 	void UpdatePreRender() NOEXCEPT;
 
+	/*
+	*	Returns if any widget is blocking the given position for the given widget.
+	*/
+	NO_DISCARD bool AnyWidgetBlockingPosition(const Vector2<float32> position, const UI::Widget *const RESTRICT widget) NOEXCEPT;
+
 };
 #endif

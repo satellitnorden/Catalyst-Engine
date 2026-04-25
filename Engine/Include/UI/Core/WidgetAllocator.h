@@ -50,6 +50,25 @@ namespace UI
 		}
 
 		/*
+		*	Finds a widget (or returns nullptr if none exists).
+		*/
+		template <typename TYPE>
+		FORCE_INLINE TYPE *const Find(const UI::Identifier identifier) NOEXCEPT
+		{
+			WidgetAllocation *const RESTRICT allocation{ _Allocations.Find(identifier) };
+
+			if (allocation)
+			{
+				return static_cast<TYPE *const RESTRICT>(allocation->_Data);
+			}
+
+			else
+			{
+				return nullptr;
+			}
+		}
+
+		/*
 		*	Prepares this widget allocator for the coming frame.
 		*/
 		FORCE_INLINE void Prepare() NOEXCEPT

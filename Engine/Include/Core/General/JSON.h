@@ -140,6 +140,11 @@ public:
 	JSON Emplace(const char *const RESTRICT name) NOEXCEPT;
 
 	/*
+	*	Emplaces a new object under this JSON object.
+	*/
+	JSON Emplace(const uint32 value) NOEXCEPT;
+
+	/*
 	*	Returns the size of this JSON object.
 	*/
 	NO_DISCARD uint64 Size() const NOEXCEPT;

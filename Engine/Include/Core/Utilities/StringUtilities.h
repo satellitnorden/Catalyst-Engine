@@ -102,6 +102,14 @@ public:
 	}
 
 	/*
+	*	Converts the given character to uppercase.
+	*/
+	FORCE_INLINE static constexpr char ToUpper(const char character) NOEXCEPT
+	{
+		return character - (32 * static_cast<char>(character >= 'a' && character <= 'z'));
+	}
+
+	/*
 	*	Converts a string to all uppercase.
 	*/
 	FORCE_INLINE static constexpr void ToUpper(char *const RESTRICT string) NOEXCEPT
@@ -116,7 +124,34 @@ public:
 	{
 		for (uint64 i{ 0 }; i < length; ++i)
 		{
-			string[i] -= 32 * static_cast<char>(string[i] >= 'a' && string[i] <= 'z');
+			string[i] = ToUpper(string[i]);
+		}
+	}
+
+	/*
+	*	Converts the given character to lowercase.
+	*/
+	FORCE_INLINE static constexpr char ToLower(const char character) NOEXCEPT
+	{
+		return character + (32 * static_cast<char>(character >= 'A' && character <= 'Z'));
+	}
+
+	/*
+	*	Converts a string to all lowercase.
+	*/
+	FORCE_INLINE static constexpr void ToLower(char *const RESTRICT string) NOEXCEPT
+	{
+		ToLower(string, StringLength(string));
+	}
+
+	/*
+	*	Converts a string to all lowercase.
+	*/
+	FORCE_INLINE static constexpr void ToLower(char *const RESTRICT string, const uint64 length) NOEXCEPT
+	{
+		for (uint64 i{ 0 }; i < length; ++i)
+		{
+			string[i] = ToLower(string[i]);
 		}
 	}
 

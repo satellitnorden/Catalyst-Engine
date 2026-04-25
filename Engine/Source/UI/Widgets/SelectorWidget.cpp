@@ -10,16 +10,6 @@
 namespace UI
 {
 
-	//Selector widget constants.
-	namespace SelectorWidgetConstants
-	{
-		constexpr Vector4<float32> IDLE_COLOR{ 0.125f, 0.125f, 0.125f, 0.25f };
-		constexpr Vector4<float32> HOVERED_COLOR{ 0.25f, 0.25f, 0.25f, 0.5f };
-		constexpr Vector4<float32> PRESSED_COLOR{ 0.5f, 0.5f, 0.5f, 1.0f };
-
-		constexpr float32 RADIUS{ 8.0f };
-	}
-
 	/*
 	*	Default constructor.
 	*/
@@ -34,6 +24,9 @@ namespace UI
 	*/
 	void SelectorWidget::OnParentAvailable() NOEXCEPT
 	{
+		//Grab the style from the scene.
+		_Style = _Parent->_Parent->GetStyle();
+
 		//Grab the text scale from the scene.
 		_TextScale = _Parent->_Parent->GetTextScale();
 	}
@@ -79,36 +72,8 @@ namespace UI
 				SelectorWidget *const RESTRICT _this{ static_cast<SelectorWidget *const RESTRICT>(widget) };
 				const ClickableInterfaceData *const RESTRICT clickable_interface_data{ static_cast<const ClickableInterfaceData *const RESTRICT>(clickable_interface->GetUserData()) };
 
-				switch (previous_state)
-				{
-					case UI::ClickableInterface::State::IDLE:
-					{
-						_this->_SourceColors[clickable_interface_data->_Index] = SelectorWidgetConstants::IDLE_COLOR;
-
-						break;
-					}
-
-					case UI::ClickableInterface::State::HOVERED:
-					{
-						_this->_SourceColors[clickable_interface_data->_Index] = SelectorWidgetConstants::HOVERED_COLOR;
-
-						break;
-					}
-
-					case UI::ClickableInterface::State::PRESSED:
-					{
-						_this->_SourceColors[clickable_interface_data->_Index] = SelectorWidgetConstants::PRESSED_COLOR;
-
-						break;
-					}
-
-					default:
-					{
-						ASSERT(false, "Invalid case!");
-
-						break;
-					}
-				}
+				_this->_SourceStates[clickable_interface_data->_Index] = previous_state;
+				_this->_DestinationStates[clickable_interface_data->_Index] = new_state;
 
 				switch (new_state)
 				{
@@ -116,8 +81,6 @@ namespace UI
 					{
 						_this->_Animators[clickable_interface_data->_Index].SetCurrent(0.0f);
 						_this->_Animators[clickable_interface_data->_Index].SetSpeed(2.0f);
-
-						_this->_DestinationColors[clickable_interface_data->_Index] = SelectorWidgetConstants::IDLE_COLOR;
 
 						_this->_AnimationDirections[clickable_interface_data->_Index] = AnimationDirection::LEFT;
 
@@ -128,8 +91,6 @@ namespace UI
 					{
 						_this->_Animators[clickable_interface_data->_Index].SetCurrent(0.0f);
 						_this->_Animators[clickable_interface_data->_Index].SetSpeed(2.0f);
-
-						_this->_DestinationColors[clickable_interface_data->_Index] = SelectorWidgetConstants::HOVERED_COLOR;
 
 						if (previous_state == UI::ClickableInterface::State::IDLE)
 						{
@@ -148,8 +109,6 @@ namespace UI
 					{
 						_this->_Animators[clickable_interface_data->_Index].SetCurrent(0.0f);
 						_this->_Animators[clickable_interface_data->_Index].SetSpeed(16.0f);
-
-						_this->_DestinationColors[clickable_interface_data->_Index] = SelectorWidgetConstants::PRESSED_COLOR;
 
 						_this->_AnimationDirections[clickable_interface_data->_Index] = AnimationDirection::RIGHT;
 
@@ -203,7 +162,7 @@ namespace UI
 			const float32 current_animator_value{ _Animators[clickable_interface_index].Update(context._DeltaTime)};
 
 			//Render the base box.
-			RenderBox(context, _ClickableInterfaceData[clickable_interface_index]._AxisAlignedBoundingBox, BaseMath::LinearlyInterpolate(_SourceColors[clickable_interface_index], _DestinationColors[clickable_interface_index], current_animator_value), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), SelectorWidgetConstants::RADIUS);
+			RenderBox(context, _ClickableInterfaceData[clickable_interface_index]._AxisAlignedBoundingBox, BaseMath::LinearlyInterpolate(GetColor(_SourceStates[clickable_interface_index]), GetColor(_DestinationStates[clickable_interface_index]), current_animator_value), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
 
 			//Draw the overlay box.
 			if (current_animator_value < 1.0f)
@@ -216,7 +175,7 @@ namespace UI
 					case AnimationDirection::RIGHT:
 					{
 						axis_aligned_bounding_box._Maximum._X = BaseMath::LinearlyInterpolate(axis_aligned_bounding_box._Minimum._X, axis_aligned_bounding_box._Maximum._X, current_animator_value);
-						color = _DestinationColors[clickable_interface_index];
+						color = GetColor(_DestinationStates[clickable_interface_index]);
 
 						break;
 					}
@@ -224,7 +183,7 @@ namespace UI
 					case AnimationDirection::LEFT:
 					{
 						axis_aligned_bounding_box._Minimum._X = BaseMath::LinearlyInterpolate(axis_aligned_bounding_box._Maximum._X, axis_aligned_bounding_box._Minimum._X, current_animator_value);
-						color = _SourceColors[clickable_interface_index];
+						color = GetColor(_SourceStates[clickable_interface_index]);
 
 						break;
 					}
@@ -239,7 +198,7 @@ namespace UI
 
 				color._A *= (1.0f - current_animator_value);
 
-				RenderBox(context, axis_aligned_bounding_box, color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), SelectorWidgetConstants::RADIUS);
+				RenderBox(context, axis_aligned_bounding_box, color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
 			}
 
 			{
@@ -265,7 +224,30 @@ namespace UI
 		//Render the text.
 		{
 			char buffer[128];
-			sprintf_s(buffer, "%s%s%s", _Prefix ? _Prefix.Data() : "", _Values[_CurrentIndex].Data(), _Postfix ? _Postfix.Data() : "");
+
+			switch (_ValuesType)
+			{
+				case ValuesType::VALUES_INDEX:
+				{
+					sprintf_s(buffer, "%s%s%s", _Prefix ? _Prefix.Data() : "", _ValuesIndexData._Values[_ValuesIndexData._CurrentIndex].Data(), _Postfix ? _Postfix.Data() : "");
+
+					break;
+				}
+
+				case ValuesType::MINIMUM_MAXIMUM:
+				{
+					sprintf_s(buffer, "%s%i%s", _Prefix ? _Prefix.Data() : "", _MinimumMaximumData._Current, _Postfix ? _Postfix.Data() : "");
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
 
 			RenderText
 			(
@@ -289,9 +271,40 @@ namespace UI
 		//Set the animator's current value to 1.
 		for (UI::Animator &animator : _Animators) animator.SetCurrent(1.0f);
 
-		//Set the source/destination color.
-		for (Vector4<float32> &source_color : _SourceColors) source_color = SelectorWidgetConstants::IDLE_COLOR;
-		for (Vector4<float32> &destination_color : _DestinationColors) destination_color = SelectorWidgetConstants::IDLE_COLOR;
+		//Set the source/destination states.
+		for (UI::ClickableInterface::State &source_state : _SourceStates) source_state = UI::ClickableInterface::State::IDLE;
+		for (UI::ClickableInterface::State &destination_state : _DestinationStates) destination_state = UI::ClickableInterface::State::IDLE;
+	}
+
+	/*
+	*	Returns the color for the given state.
+	*/
+	NO_DISCARD Vector4<float32> SelectorWidget::GetColor(const UI::ClickableInterface::State state) NOEXCEPT
+	{
+		switch (state)
+		{
+			case UI::ClickableInterface::State::IDLE:
+			{
+				return _Style._UncheckedIdleColor;
+			}
+
+			case UI::ClickableInterface::State::HOVERED:
+			{
+				return _Style._UncheckedHoveredColor;
+			}
+
+			case UI::ClickableInterface::State::PRESSED:
+			{
+				return _Style._UncheckedPressedColor;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				return Vector4<float32>(0.0f, 0.0f, 0.0f, 0.0f);
+			}
+		}
 	}
 
 	/*
@@ -299,19 +312,54 @@ namespace UI
 	*/
 	void SelectorWidget::Decrement() NOEXCEPT
 	{
-		if (_CurrentIndex == 0)
+		switch (_ValuesType)
 		{
-			_CurrentIndex = _Values.LastIndex();
-		}
+			case ValuesType::VALUES_INDEX:
+			{
+				if (_ValuesIndexData._CurrentIndex == 0)
+				{
+					_ValuesIndexData._CurrentIndex = _ValuesIndexData._Values.LastIndex();
+				}
 
-		else
-		{
-			--_CurrentIndex;
-		}
+				else
+				{
+					--_ValuesIndexData._CurrentIndex;
+				}
 
-		if (_OnIndexChangedCallback)
-		{
-			_OnIndexChangedCallback(GetParent()->_Parent, _CurrentIndex);
+				if (_OnIndexChangedCallback)
+				{
+					_OnIndexChangedCallback(GetParent()->_Parent, this, _OnIndexChangedCallbackUserData, _ValuesIndexData._CurrentIndex);
+				}
+
+				break;
+			}
+
+			case ValuesType::MINIMUM_MAXIMUM:
+			{
+				if (_MinimumMaximumData._Current == _MinimumMaximumData._Minimum)
+				{
+					_MinimumMaximumData._Current = _MinimumMaximumData._Maximum;
+				}
+
+				else
+				{
+					--_MinimumMaximumData._Current;
+				}
+
+				if (_OnValueChangedCallback)
+				{
+					_OnValueChangedCallback(GetParent()->_Parent, this, _OnValueChangedCallbackUserData, _MinimumMaximumData._Current);
+				}
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
 		}
 	}
 
@@ -320,19 +368,54 @@ namespace UI
 	*/
 	void SelectorWidget::Increment() NOEXCEPT
 	{
-		if (_CurrentIndex == _Values.LastIndex())
+		switch (_ValuesType)
 		{
-			_CurrentIndex = 0;
-		}
+			case ValuesType::VALUES_INDEX:
+			{
+				if (_ValuesIndexData._CurrentIndex == _ValuesIndexData._Values.LastIndex())
+				{
+					_ValuesIndexData._CurrentIndex = 0;
+				}
 
-		else
-		{
-			++_CurrentIndex;
-		}
+				else
+				{
+					++_ValuesIndexData._CurrentIndex;
+				}
 
-		if (_OnIndexChangedCallback)
-		{
-			_OnIndexChangedCallback(GetParent()->_Parent, _CurrentIndex);
+				if (_OnIndexChangedCallback)
+				{
+					_OnIndexChangedCallback(GetParent()->_Parent, this, _OnIndexChangedCallbackUserData, _ValuesIndexData._CurrentIndex);
+				}
+
+				break;
+			}
+
+			case ValuesType::MINIMUM_MAXIMUM:
+			{
+				if (_MinimumMaximumData._Current == _MinimumMaximumData._Maximum)
+				{
+					_MinimumMaximumData._Current = _MinimumMaximumData._Minimum;
+				}
+
+				else
+				{
+					++_MinimumMaximumData._Current;
+				}
+
+				if (_OnValueChangedCallback)
+				{
+					_OnValueChangedCallback(GetParent()->_Parent, this, _OnValueChangedCallbackUserData, _MinimumMaximumData._Current);
+				}
+
+				break;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				break;
+			}
 		}
 	}
 

@@ -144,7 +144,7 @@ void UISystem::UpdateWidgets() NOEXCEPT
 
 						else
 						{
-							if (clickable_interface->_IsInside(widget, clickable_interface, mouse_position))
+							if (clickable_interface->_IsInside(widget, clickable_interface, mouse_position) && !AnyWidgetBlockingPosition(mouse_position, widget))
 							{
 								if (mouse_button_state == ButtonState::PRESSED)
 								{
@@ -306,5 +306,39 @@ void UISystem::UpdatePreRender() NOEXCEPT
 			position._Y = position._Y * 2.0f - 1.0f;
 		}
 	}
+}
+
+/*
+*	Returns if any widget is blocking the given position for the given widget.
+*/
+NO_DISCARD bool UISystem::AnyWidgetBlockingPosition(const Vector2<float32> position, const UI::Widget *const RESTRICT widget) NOEXCEPT
+{
+	for (int64 scene_index{ static_cast<int64>(_Scenes.Size() - 1) }; scene_index >= 0; --scene_index)
+	{
+		const UI::Scene *const RESTRICT scene{ _Scenes[scene_index] };
+
+		//Iterate through all of this scene's widgets.
+		const DynamicArray<UI::Widget *RESTRICT> &widgets{ scene->GetWidgets() };
+
+		if (!widgets.Empty())
+		{
+			for (int64 widget_index{ static_cast<int64>(widgets.Size() - 1) }; widget_index >= 0; --widget_index)
+			{
+				UI::Widget *const RESTRICT _widget{ widgets[widget_index] };
+
+				if (_widget == widget)
+				{
+					return false;
+				}
+
+				if (_widget->IsEnabled() && _widget->GetAxisAlignedBoundingBox().IsInside(position))
+				{
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
 }
 #endif

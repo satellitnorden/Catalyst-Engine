@@ -6,6 +6,7 @@
 //UI.
 #include <UI/Core/Container.h>
 #include <UI/Core/BuildContext.h>
+#include <UI/Core/Style.h>
 #include <UI/Core/Widget.h>
 
 namespace UI
@@ -30,6 +31,14 @@ namespace UI
 		FORCE_INLINE virtual ~Scene() NOEXCEPT
 		{
 
+		}
+
+		/*
+		*	Returns the style for this scene.
+		*/
+		FORCE_INLINE NO_DISCARD const UI::Style &GetStyle() const NOEXCEPT
+		{
+			return _Style;
 		}
 
 		/*
@@ -161,6 +170,18 @@ namespace UI
 		}
 
 		/*
+		*	Finds the widget with the given identifier.
+		*/
+		FORCE_INLINE NO_DISCARD UI::Widget *const RESTRICT FindWidget(const UI::BuildContext &context, const UI::Identifier identifier) NOEXCEPT
+		{
+			//Calculate the combined identifier, with a mix of the scene identifier, the container identifier and the widget identifier.
+			const UI::Identifier combined_identifier{ _Identifier, UI::Identifier(_ActiveContainer->_Identifier, identifier) };
+
+			//Try to find the widget.
+			return context._WidgetAllocator->Find<UI::Widget>(combined_identifier);
+		}
+
+		/*
 		*	Ends the active container.
 		*/
 		void EndContainer(const UI::BuildContext &context) NOEXCEPT;
@@ -178,6 +199,9 @@ namespace UI
 
 		//The widgets.
 		DynamicArray<UI::Widget *RESTRICT> _Widgets;
+
+		//The style.
+		UI::Style _Style;
 
 		//The font.
 		AssetPointer<FontAsset> _Font;

@@ -6,6 +6,7 @@
 
 //UI.
 #include <UI/Core/Animator.h>
+#include <UI/Core/Style.h>
 #include <UI/Core/Widget.h>
 
 namespace UI
@@ -149,17 +150,20 @@ namespace UI
 		//The animator.
 		UI::Animator _Animator;
 
-		//The source color.
-		Vector4<float32> _SourceColor;
+		//The source state.
+		UI::ClickableInterface::State _SourceState;
 
-		//The destination color.
-		Vector4<float32> _DestinationColor;
+		//The destination state.
+		UI::ClickableInterface::State _DestinationState;
 
 		//The animation direction.
 		AnimationDirection _AnimationDirection{ AnimationDirection::RIGHT };
 
 		//The text.
 		DynamicString _Text;
+
+		//The style.
+		UI::Style _Style;
 
 		//The text scale.
 		float32 _TextScale;
@@ -186,6 +190,11 @@ namespace UI
 		*	Resets the animation.
 		*/
 		void ResetAnimation() NOEXCEPT;
+
+		/*
+		*	Returns the color for the given state.
+		*/
+		NO_DISCARD Vector4<float32> GetColor(const UI::ClickableInterface::State state) NOEXCEPT;
 
 	};
 

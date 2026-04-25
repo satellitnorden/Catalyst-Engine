@@ -7,16 +7,6 @@
 namespace UI
 {
 
-	//Checkbox widget constants.
-	namespace CheckboxWidgetConstants
-	{
-		constexpr Vector4<float32> IDLE_COLOR{ 0.125f, 0.125f, 0.125f, 0.25f };
-		constexpr Vector4<float32> HOVERED_COLOR{ 0.25f, 0.25f, 0.25f, 0.5f };
-		constexpr Vector4<float32> PRESSED_COLOR{ 0.5f, 0.5f, 0.5f, 1.0f };
-
-		constexpr float32 RADIUS{ 8.0f };
-	}
-
 	/*
 	*	Default constructor.
 	*/
@@ -27,36 +17,8 @@ namespace UI
 		{
 			CheckboxWidget *const RESTRICT _this{ static_cast<CheckboxWidget *const RESTRICT>(widget) };
 
-			switch (previous_state)
-			{
-				case UI::ClickableInterface::State::IDLE:
-				{
-					_this->_SourceColor = CheckboxWidgetConstants::IDLE_COLOR;
-
-					break;
-				}
-
-				case UI::ClickableInterface::State::HOVERED:
-				{
-					_this->_SourceColor = CheckboxWidgetConstants::HOVERED_COLOR;
-
-					break;
-				}
-
-				case UI::ClickableInterface::State::PRESSED:
-				{
-					_this->_SourceColor = CheckboxWidgetConstants::PRESSED_COLOR;
-
-					break;
-				}
-
-				default:
-				{
-					ASSERT(false, "Invalid case!");
-
-					break;
-				}
-			}
+			_this->_SourceState = previous_state;
+			_this->_DestinationState = new_state;
 
 			switch (new_state)
 			{
@@ -64,8 +26,6 @@ namespace UI
 				{
 					_this->_Animator.SetCurrent(0.0f);
 					_this->_Animator.SetSpeed(2.0f);
-
-					_this->_DestinationColor = CheckboxWidgetConstants::IDLE_COLOR;
 
 					_this->_AnimationDirection = AnimationDirection::LEFT;
 
@@ -77,8 +37,6 @@ namespace UI
 					_this->_Animator.SetCurrent(0.0f);
 					_this->_Animator.SetSpeed(2.0f);
 
-					_this->_DestinationColor = CheckboxWidgetConstants::HOVERED_COLOR;
-
 					if (previous_state == UI::ClickableInterface::State::IDLE)
 					{
 						_this->_AnimationDirection = AnimationDirection::RIGHT;
@@ -89,22 +47,23 @@ namespace UI
 						_this->_AnimationDirection = AnimationDirection::LEFT;
 					}
 
+					if (previous_state == UI::ClickableInterface::State::PRESSED)
+					{
+						_this->_Value = !_this->_Value;
+
+						if (_this->_OnValueChangedCallback)
+						{
+							_this->_OnValueChangedCallback(widget->GetParent()->_Parent, _this->_Value);
+						}
+					}
+
 					break;
 				}
 
 				case UI::ClickableInterface::State::PRESSED:
 				{
-					_this->_Value = !_this->_Value;
-
-					if (_this->_OnValueChangedCallback)
-					{
-						_this->_OnValueChangedCallback(widget->GetParent()->_Parent, _this->_Value);
-					}
-
 					_this->_Animator.SetCurrent(0.0f);
 					_this->_Animator.SetSpeed(16.0f);
-
-					_this->_DestinationColor = CheckboxWidgetConstants::PRESSED_COLOR;
 
 					_this->_AnimationDirection = AnimationDirection::RIGHT;
 
@@ -129,6 +88,9 @@ namespace UI
 	*/
 	void CheckboxWidget::OnParentAvailable() NOEXCEPT
 	{
+		//Grab the style from the scene.
+		_Style = _Parent->_Parent->GetStyle();
+
 		//Grab the text scale from the scene.
 		_TextScale = _Parent->_Parent->GetTextScale();
 	}
@@ -160,7 +122,7 @@ namespace UI
 		const float32 current_animator_value{ _Animator.Update(context._DeltaTime) };
 
 		//Render the base box.
-		RenderBox(context, button_axis_aligned_bounding_box, BaseMath::LinearlyInterpolate(_SourceColor, _DestinationColor, current_animator_value) * (_Value ? 1.75f : 1.0f), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), CheckboxWidgetConstants::RADIUS);
+		RenderBox(context, button_axis_aligned_bounding_box, BaseMath::LinearlyInterpolate(GetColor(_SourceState), GetColor(_DestinationState), current_animator_value), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
 
 		//Draw the overlay box.
 		if (current_animator_value < 1.0f)
@@ -173,7 +135,7 @@ namespace UI
 				case AnimationDirection::RIGHT:
 				{
 					axis_aligned_bounding_box._Maximum._X = BaseMath::LinearlyInterpolate(axis_aligned_bounding_box._Minimum._X, axis_aligned_bounding_box._Maximum._X, current_animator_value);
-					color = _DestinationColor;
+					color = GetColor(_DestinationState);
 
 					break;
 				}
@@ -181,7 +143,7 @@ namespace UI
 				case AnimationDirection::LEFT:
 				{
 					axis_aligned_bounding_box._Minimum._X = BaseMath::LinearlyInterpolate(axis_aligned_bounding_box._Maximum._X, axis_aligned_bounding_box._Minimum._X, current_animator_value);
-					color = _SourceColor;
+					color = GetColor(_SourceState);
 
 					break;
 				}
@@ -196,7 +158,7 @@ namespace UI
 
 			color._A *= (1.0f - current_animator_value);
 
-			RenderBox(context, axis_aligned_bounding_box, color * (_Value ? 1.75f : 1.0f), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), CheckboxWidgetConstants::RADIUS);
+			RenderBox(context, axis_aligned_bounding_box, color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
 		}
 
 		//Render the text.
@@ -224,9 +186,70 @@ namespace UI
 		//Set the animator's current value to 1.
 		_Animator.SetCurrent(1.0f);
 
-		//Set the source/destination color.
-		_SourceColor = CheckboxWidgetConstants::IDLE_COLOR;
-		_DestinationColor = CheckboxWidgetConstants::IDLE_COLOR;
+		//Set the source/destination states.
+		_SourceState = _DestinationState = UI::ClickableInterface::State::IDLE;
+	}
+
+	/*
+	*	Returns the color for the given state.
+	*/
+	NO_DISCARD Vector4<float32> CheckboxWidget::GetColor(const UI::ClickableInterface::State state) NOEXCEPT
+	{
+		if (_Value)
+		{
+			switch (state)
+			{
+				case UI::ClickableInterface::State::IDLE:
+				{
+					return _Style._CheckedIdleColor;
+				}
+
+				case UI::ClickableInterface::State::HOVERED:
+				{
+					return _Style._CheckedHoveredColor;
+				}
+
+				case UI::ClickableInterface::State::PRESSED:
+				{
+					return _Style._CheckedPressedColor;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					return Vector4<float32>(0.0f, 0.0f, 0.0f, 0.0f);
+				}
+			}
+		}
+
+		else
+		{
+			switch (state)
+			{
+				case UI::ClickableInterface::State::IDLE:
+				{
+					return _Style._UncheckedIdleColor;
+				}
+
+				case UI::ClickableInterface::State::HOVERED:
+				{
+					return _Style._UncheckedHoveredColor;
+				}
+
+				case UI::ClickableInterface::State::PRESSED:
+				{
+					return _Style._UncheckedPressedColor;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					return Vector4<float32>(0.0f, 0.0f, 0.0f, 0.0f);
+				}
+			}
+		}
 	}
 
 }

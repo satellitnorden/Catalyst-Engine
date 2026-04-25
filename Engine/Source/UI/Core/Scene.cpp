@@ -22,6 +22,15 @@ namespace UI
 			_Identifier = COUNTER.FetchAdd(1);
 		}
 
+		//Set up the default style.
+		_Style._UncheckedIdleColor = Vector4<float32>(0.125f, 0.125f, 0.125f, 0.25f);
+		_Style._UncheckedHoveredColor = Vector4<float32>(0.25f, 0.25f, 0.25f, 0.5f);
+		_Style._UncheckedPressedColor = Vector4<float32>(0.5f, 0.5f, 0.5f, 0.75f);
+		_Style._CheckedIdleColor = Vector4<float32>(0.5f, 0.5f, 0.5f, 0.5f);
+		_Style._CheckedHoveredColor = Vector4<float32>(0.6875f, 0.6875f, 0.6875f, 0.6875f);
+		_Style._CheckedPressedColor = Vector4<float32>(0.875f, 0.875f, 0.875f, 0.875f);
+		_Style._Rounding = 8.0f;
+
 		//Set the default font.
 		_Font = ContentSystem::Instance->GetAsset<FontAsset>(HashString("Default"));
 
@@ -305,6 +314,8 @@ namespace UI
 						break;
 					}
 				}
+
+				container->_ScrollOffset = BaseMath::Round<float32>(container->_ScrollOffset / container->_WidgetSize) * container->_WidgetSize;
 			}
 		)
 		->SetOnScrollUpCallback
@@ -344,6 +355,8 @@ namespace UI
 						break;
 					}
 				}
+
+				container->_ScrollOffset = BaseMath::Round<float32>(container->_ScrollOffset / container->_WidgetSize) * container->_WidgetSize;
 			}
 		);
 	}
@@ -555,7 +568,7 @@ namespace UI
 			AddWidget<UI::ScrollBarWidget>(context, UI::Identifier("_SCROLL_BAR"))->SetRange(scroll_bar_start, scroll_bar_end);
 		}
 
-		//Otherwise, enable all widgets.
+		//Otherwise, enable all widgets all disable the scrollable widget.
 		else
 		{
 			for (uint64 widget_index{ _ActiveContainer->_StartWidgetIndex }; widget_index < _Widgets.Size(); ++widget_index)
@@ -564,6 +577,8 @@ namespace UI
 
 				widget->SetEnabled(true);
 			}
+
+			FindWidget(context, UI::Identifier("_SCROLLABLE"))->SetEnabled(false);
 		}
 
 		//Set whether or not this container wants scroll.

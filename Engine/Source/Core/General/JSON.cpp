@@ -270,6 +270,19 @@ JSON JSON::Emplace(const char *const RESTRICT name) NOEXCEPT
 }
 
 /*
+*	Emplaces a new object under this JSON object.
+*/
+JSON JSON::Emplace(const uint32 value) NOEXCEPT
+{
+	JSON sub_object;
+
+	sub_object._Implementation.Get<Implementation>()->_JSON = &(*IMPLEMENTATION->_JSON).emplace_back(value);
+	sub_object._Implementation.Get<Implementation>()->_IsSubObject = true;
+
+	return sub_object;
+}
+
+/*
 *	Returns the size of this JSON object.
 */
 NO_DISCARD uint64 JSON::Size() const NOEXCEPT
