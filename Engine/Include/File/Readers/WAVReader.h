@@ -88,6 +88,11 @@ public:
 
 		};
 
+		if (!File::Exists(file_path))
+		{
+			return false;
+		}
+
 		//Open the file.
 		BinaryInputFile file{ file_path };
 

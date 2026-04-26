@@ -191,16 +191,12 @@ namespace UI
 		float32 _scale{ scale };
 
 		{
-			float32 largest_outside{ 0.0f };
+			const Vector2<float32> aligned_size{ aligned_maximum - aligned_minimum };
+			const Vector2<float32> constraint_size{ axis_aligned_bounding_box._Maximum - axis_aligned_bounding_box._Minimum };
 
-			largest_outside = BaseMath::Maximum<float32>(largest_outside, axis_aligned_bounding_box._Minimum._X - aligned_minimum._X);
-			largest_outside = BaseMath::Maximum<float32>(largest_outside, axis_aligned_bounding_box._Minimum._Y - aligned_minimum._Y);
-			largest_outside = BaseMath::Maximum<float32>(largest_outside, aligned_maximum._X - axis_aligned_bounding_box._Maximum._X);
-			largest_outside = BaseMath::Maximum<float32>(largest_outside, aligned_maximum._Y - axis_aligned_bounding_box._Maximum._Y);
-
-			if (largest_outside > 0.0f)
+			if (aligned_size._X > constraint_size._X || aligned_size._Y > constraint_size._Y)
 			{
-				_scale *= 1.0f / (1.0f + (largest_outside * 2.0f));
+				_scale *= BaseMath::Minimum<float32>(constraint_size._X / aligned_size._X, constraint_size._Y / aligned_size._Y);
 
 				UI::Utilities::CalculateTextAlignedBoundingBox
 				(

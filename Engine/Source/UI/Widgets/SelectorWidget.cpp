@@ -249,10 +249,15 @@ namespace UI
 				}
 			}
 
+			AxisAlignedBoundingBox2D text_axis_aligned_bounding_box{ _AxisAlignedBoundingBox };
+
+			text_axis_aligned_bounding_box._Minimum._X += (_AxisAlignedBoundingBox._Maximum._Y - _AxisAlignedBoundingBox._Minimum._Y);
+			text_axis_aligned_bounding_box._Maximum._X -= (_AxisAlignedBoundingBox._Maximum._Y - _AxisAlignedBoundingBox._Minimum._Y);
+
 			RenderText
 			(
 				context,
-				_AxisAlignedBoundingBox,
+				text_axis_aligned_bounding_box,
 				_Parent->_Parent->GetFont(),
 				buffer,
 				StringUtilities::StringLength(buffer),
