@@ -74,7 +74,38 @@ public:
 */
 std::string GetUpdateTaskName(const SystemData &system_data, const SystemData::UpdateRange &update_range)
 {
-	return system_data._Name + update_range._StartPhase + std::string("To") + update_range._EndPhase + std::string("Task");
+	constexpr auto HUMAN_READABLE_NAME
+	{
+		[](const std::string &input_string)
+		{
+			char buffer[64];
+			size_t current_index{ 0 };
+
+			for (size_t i{ 0 }; i < input_string.length(); ++i)
+			{
+				if (input_string[i] == '_')
+				{
+					continue;
+				}
+
+				if (i > 0 && input_string[i - 1] != '_')
+				{
+					buffer[current_index++] = input_string[i] + (32 * static_cast<char>(input_string[i] >= 'A' && input_string[i] <= 'Z'));
+				}
+
+				else
+				{
+					buffer[current_index++] = input_string[i];
+				}
+			}
+
+			buffer[current_index] = '\0';
+
+			return std::string(buffer);
+		}
+	};
+
+	return system_data._Name + HUMAN_READABLE_NAME(update_range._StartPhase) + std::string("To") + HUMAN_READABLE_NAME(update_range._EndPhase) + std::string("Task");
 }
 
 /*
@@ -763,6 +794,7 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 			file << "\t\t" << update_string.c_str() << "._Function = [](void *const RESTRICT /*arguments*/)" << std::endl;
 			file << "\t\t{" << std::endl;
+			file << "\t\t\tPROFILING_SCOPE(\"" << _system_data._Name.c_str() << "::Instance->Update(UpdatePhase::" << update_range._StartPhase.c_str() << ")\");" << std::endl;
 			file << "\t\t\t" << _system_data._Name.c_str() << "::Instance->Update(UpdatePhase::" << update_range._StartPhase.c_str() << ");" << std::endl;
 			file << "\t\t};" << std::endl;
 			file << "\t\t" << update_string.c_str() << "._Arguments = nullptr;" << std::endl;
@@ -1029,6 +1061,9 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 			file << "\t\tcase UpdatePhase::" << unique_end_update_phase.c_str() << ":" << std::endl;
 			file << "\t\t{" << std::endl;
 
+			file << "\t\t\tPROFILING_SCOPE(\"Systems::Update(UpdatePhase::" << unique_end_update_phase.c_str() << ") - Wait for tasks\");" << std::endl;
+			file << std::endl;
+
 			file << "\t\t\tbool all_tasks_finished;" << std::endl;
 			file << std::endl;
 
@@ -1084,6 +1119,9 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 			file << "\t\tcase UpdatePhase::" << unique_start_update_phase.c_str() << ":" << std::endl;
 			file << "\t\t{" << std::endl;
 
+			file << "\t\t\tPROFILING_SCOPE(\"Systems::Update(UpdatePhase::" << unique_start_update_phase.c_str() << ") - Execute tasks\");" << std::endl;
+			file << std::endl;
+
 			for (const SystemData &_system_data : system_data)
 			{
 				for (const SystemData::UpdateRange &update_range : _system_data._UpdateRanges)
@@ -1126,6 +1164,9 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 		{
 			file << "\t\tcase UpdatePhase::" << unique_start_update_phase.c_str() << ":" << std::endl;
 			file << "\t\t{" << std::endl;
+
+			file << "\t\t\tPROFILING_SCOPE(\"Systems::Update(UpdatePhase::" << unique_start_update_phase.c_str() << ") - Serial update\");" << std::endl;
+			file << std::endl;
 
 			for (const SystemData &_system_data : system_data)
 			{

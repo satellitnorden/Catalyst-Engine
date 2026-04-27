@@ -8,6 +8,9 @@
 #include <Audio/Backends/ASIOAudioBackend.h>
 #include <Audio/Backends/WASAPIAudioBackend.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/LogSystem.h>
@@ -253,6 +256,8 @@ void AudioSystem::GetAudioTime(const Audio::Identifier identifier, float64 *cons
 */
 void AudioSystem::InitializeBackend(const Audio::Backend backend) NOEXCEPT
 {
+	PROFILING_SCOPE("AudioSystem::InitializeBackend()");
+
 	//Terminate the previous backend, if one exists.
 	TerminateBackend();
 
@@ -353,6 +358,8 @@ NO_DISCARD AudioBackend::Parameters AudioSystem::CreateBackendParameters() NOEXC
 */
 void AudioSystem::TerminateBackend() NOEXCEPT
 {
+	PROFILING_SCOPE("AudioSystem::TerminateBackend()");
+
 	if (_Backend)
 	{
 		delete _Backend;
@@ -529,6 +536,7 @@ void AudioSystem::ProcessPlayAudio2DRequest(const Request &request) NOEXCEPT
 
 	new_playing_audio._Identifier = request._PlayAudio2DData._Identifier;
 	new_playing_audio._Player.SetAudioStream(&request._PlayAudio2DData._Request._Asset->_AudioStream);
+	new_playing_audio._Player.GetADSREnvelope()->SetSampleRate(_SampleRate.Load());
 	new_playing_audio._Player.SetGain(request._PlayAudio2DData._Request._Gain);
 	new_playing_audio._Player.SetPlaybackRate(static_cast<float32>(request._PlayAudio2DData._Request._Asset->_AudioStream.GetSampleRate()) / _SampleRate.Load());
 	new_playing_audio._Player.SetCurrentSample(static_cast<int64>(request._PlayAudio2DData._Request._StartTime * static_cast<float32>(request._PlayAudio2DData._Request._Asset->_AudioStream.GetSampleRate())));
@@ -543,7 +551,8 @@ void AudioSystem::ProcessStopAudio2DRequest(const Request &request) NOEXCEPT
 	{
 		if (_PlayingAudio2D[i]._Identifier == request._StopAudio2DData._Identifier)
 		{
-			_PlayingAudio2D.EraseAt<false>(i);
+			_PlayingAudio2D[i]._Player.GetADSREnvelope()->SetRelease();
+
 			break;
 		}
 	}

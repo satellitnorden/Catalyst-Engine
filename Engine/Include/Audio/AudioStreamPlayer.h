@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Audio.
+#include <Audio/ADSREnvelope.h>
 #include <Audio/AudioStream.h>
 
 class AudioStreamPlayer final
@@ -25,6 +26,14 @@ public:
 	FORCE_INLINE void SetAudioStream(const AudioStream *const RESTRICT value) NOEXCEPT
 	{
 		_AudioStream = value;
+	}
+
+	/*
+	*	Returns the ADSR envelope.
+	*/
+	FORCE_INLINE NO_DISCARD ADSREnvelope *const RESTRICT GetADSREnvelope() NOEXCEPT
+	{
+		return &_ADSREnvelope;
 	}
 
 	/*
@@ -72,7 +81,7 @@ public:
 		const uint32 index_0{ BaseMath::Minimum<uint32>(static_cast<uint32>(_CurrentSample), _AudioStream->GetNumberOfSamples() - 1) };
 		const uint32 index_1{ BaseMath::Minimum<uint32>(index_0 + 1, _AudioStream->GetNumberOfSamples() - 1) };
 
-		return BaseMath::LinearlyInterpolate(_AudioStream->Sample(channel_index, index_0), _AudioStream->Sample(channel_index, index_1), _CurrentFraction) * _Gain;
+		return BaseMath::LinearlyInterpolate(_AudioStream->Sample(channel_index, index_0), _AudioStream->Sample(channel_index, index_1), _CurrentFraction) * _Gain * _ADSREnvelope.Sample();
 	}
 
 	/*
@@ -87,6 +96,8 @@ public:
 			++_CurrentSample;
 			_CurrentFraction -= 1.0f;
 		}
+
+		_ADSREnvelope.Advance();
 	}
 
 	/*
@@ -94,13 +105,16 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD bool IsActive() const NOEXCEPT
 	{
-		return _CurrentSample < _AudioStream->GetNumberOfSamples();
+		return _CurrentSample < _AudioStream->GetNumberOfSamples() && !_ADSREnvelope.IsOff();
 	}
 
 private:
 
 	//The audio stream.
 	const AudioStream *RESTRICT _AudioStream{ nullptr };
+
+	//The ADSR envelope.
+	ADSREnvelope _ADSREnvelope;
 
 	//The gain.
 	float32 _Gain{ 1.0f };
