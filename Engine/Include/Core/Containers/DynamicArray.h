@@ -96,9 +96,34 @@ public:
 	*/
 	FORCE_INLINE void operator=(const DynamicArray &other) NOEXCEPT
 	{
-		Destroy();
+		//Call the destructor on the remainder of the objects in the array.
+		for (uint64 i{ other._Size }; i < _Size; ++i)
+		{
+			_Array[i].~TYPE();
+		}
 
-		new (this) DynamicArray(other);
+		//Reserve extra space, if needed.
+		if (_Capacity < other._Size)
+		{
+			Reserve(other._Size);
+		}
+
+		//Add the objects from the other array.
+		for (uint64 i{ 0 }; i < other._Size; ++i)
+		{
+			if (i < _Size)
+			{
+				_Array[i] = other._Array[i];
+			}
+			
+			else
+			{
+				new (&_Array[i]) TYPE(other._Array[i]);
+			}
+		}
+
+		//Update the size.
+		_Size = other._Size;
 	}
 
 	/*

@@ -458,6 +458,8 @@ void ContentSystem::LoadAsset(const char *const RESTRICT file_path) NOEXCEPT
 */
 void ContentSystem::LoadAssetCollection(const char *const RESTRICT file_path) NOEXCEPT
 {
+	TimePoint start_time;
+
 	//Load the file into a stream archive.
 	StreamArchive stream_archive;
 
@@ -570,6 +572,8 @@ void ContentSystem::LoadAssetCollection(const char *const RESTRICT file_path) NO
 	{
 		asset_compiler->PostLoad();
 	}
+
+	LOG_INFORMATION("%s took %f seconds to load", file_path, start_time.GetSecondsSince());
 }
 
 /*

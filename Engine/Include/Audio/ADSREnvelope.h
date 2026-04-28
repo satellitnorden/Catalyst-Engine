@@ -229,7 +229,7 @@ private:
 	float32 _SustainGain{ 1.0f };
 
 	//The release time.
-	float32 _ReleaseTime{ 1.0f / 1'000.0f };
+	float32 _ReleaseTime{ 2.0f / 1'000.0f };
 
 	//The current sample.
 	uint32 _CurrentSample{ 0 };
