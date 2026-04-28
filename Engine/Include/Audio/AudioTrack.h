@@ -8,6 +8,7 @@
 #include <Audio/Core/Audio.h>
 #include <Audio/Effects/Core/AudioEffect.h>
 #include <Audio/AudioTrackInformation.h>
+#include <Audio/PlayingAudio2D.h>
 
 class AudioTrack final
 {
@@ -19,6 +20,9 @@ public:
 
 	//The identifier.
 	Audio::Identifier _Identifier;
+
+	//The playing audio 2D.
+	DynamicArray<PlayingAudio2D> _PlayingAudio2D;
 
 	//The samples.
 	DynamicArray<DynamicArray<float32>> _Samples;

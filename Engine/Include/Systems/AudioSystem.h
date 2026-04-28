@@ -311,22 +311,6 @@ private:
 
 	};
 
-	/*
-	*	Playing audio 2D class definition.
-	*/
-	class PlayingAudio2D final
-	{
-
-	public:
-
-		//The identifier.
-		Audio::Identifier _Identifier;
-
-		//The player.
-		AudioStreamPlayer _Player;
-
-	};
-
 	//The requested backend.
 	Audio::Backend _RequestedBackend{ Audio::Backend::WASAPI };
 
@@ -368,9 +352,6 @@ private:
 
 	//The mix thread audio tracks.
 	DynamicArray<AudioTrack> _MixThreadAudioTracks;
-
-	//The playing audio 2D.
-	DynamicArray<PlayingAudio2D> _PlayingAudio2D;
 
 	//Container for all effects.
 	DynamicArray<AudioEffect *RESTRICT> _AllEffects;

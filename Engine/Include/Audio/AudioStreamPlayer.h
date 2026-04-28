@@ -45,6 +45,19 @@ public:
 	}
 
 	/*
+	*	Sets the pan.
+	*/
+	FORCE_INLINE void SetPan(const float32 value) NOEXCEPT
+	{
+		_Pan = value;
+
+		const float32 pan_theta{ (_Pan + 1.0f) * (BaseMathConstants::PI * 0.25f) };
+
+		_LeftPanGainMultiplier = std::cos(pan_theta);
+		_RightPanGainMultiplier = std::sin(pan_theta);
+	}
+
+	/*
 	*	Sets the playback rate.
 	*/
 	FORCE_INLINE void SetPlaybackRate(const float32 value) NOEXCEPT
@@ -81,7 +94,10 @@ public:
 		const uint32 index_0{ BaseMath::Minimum<uint32>(static_cast<uint32>(_CurrentSample), _AudioStream->GetNumberOfSamples() - 1) };
 		const uint32 index_1{ BaseMath::Minimum<uint32>(index_0 + 1, _AudioStream->GetNumberOfSamples() - 1) };
 
-		return BaseMath::LinearlyInterpolate(_AudioStream->Sample(channel_index, index_0), _AudioStream->Sample(channel_index, index_1), _CurrentFraction) * _Gain * _ADSREnvelope.Sample();
+		return	BaseMath::LinearlyInterpolate(_AudioStream->Sample(channel_index, index_0), _AudioStream->Sample(channel_index, index_1), _CurrentFraction)
+				* _Gain
+				* (channel_index == 0 ? _LeftPanGainMultiplier : _RightPanGainMultiplier)
+				* _ADSREnvelope.Sample();
 	}
 
 	/*
@@ -118,6 +134,15 @@ private:
 
 	//The gain.
 	float32 _Gain{ 1.0f };
+
+	//The pan.
+	float32 _Pan{ 0.0f };
+
+	//The left pan gain multiplier.
+	float32 _LeftPanGainMultiplier{ 1.0f };
+
+	//The right pan gain multiplier.
+	float32 _RightPanGainMultiplier{ 1.0f };
 
 	//The playback rate.
 	float32 _PlaybackRate{ 1.0f };

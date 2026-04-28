@@ -530,14 +530,43 @@ void AudioSystem::ProcessAddAudioEffectToTrackRequest(const Request &request) NO
 */
 void AudioSystem::ProcessPlayAudio2DRequest(const Request &request) NOEXCEPT
 {
+	//Retrieve the audio track to add this to.
+	AudioTrack *RESTRICT audio_track{ nullptr };
+
+	if (request._PlayAudio2DData._Request._AudioTrackIdentifier == Audio::INVALID_IDENTIFIER)
+	{
+		audio_track = &_MixThreadAudioTracks[0];
+	}
+
+	else
+	{
+		for (uint64 i{ 1 }; i < _MixThreadAudioTracks.Size(); ++i)
+		{
+			if (_MixThreadAudioTracks[i]._Identifier == request._PlayAudio2DData._Request._AudioTrackIdentifier)
+			{
+				audio_track = &_MixThreadAudioTracks[i];
+
+				break;
+			}
+		}
+	}
+
+	ASSERT(audio_track, "Couldn't find audio track!");
+
+	if (!audio_track)
+	{
+		return;
+	}
+
 	//Add the new playing audio.
-	_PlayingAudio2D.Emplace();
-	PlayingAudio2D &new_playing_audio{ _PlayingAudio2D.Back() };
+	audio_track->_PlayingAudio2D.Emplace();
+	PlayingAudio2D &new_playing_audio{ audio_track->_PlayingAudio2D.Back() };
 
 	new_playing_audio._Identifier = request._PlayAudio2DData._Identifier;
 	new_playing_audio._Player.SetAudioStream(&request._PlayAudio2DData._Request._Asset->_AudioStream);
 	new_playing_audio._Player.GetADSREnvelope()->SetSampleRate(_SampleRate.Load());
 	new_playing_audio._Player.SetGain(request._PlayAudio2DData._Request._Gain);
+	new_playing_audio._Player.SetPan(request._PlayAudio2DData._Request._Pan);
 	new_playing_audio._Player.SetPlaybackRate(static_cast<float32>(request._PlayAudio2DData._Request._Asset->_AudioStream.GetSampleRate()) / _SampleRate.Load());
 	new_playing_audio._Player.SetCurrentSample(static_cast<int64>(request._PlayAudio2DData._Request._StartTime * static_cast<float32>(request._PlayAudio2DData._Request._Asset->_AudioStream.GetSampleRate())));
 }
@@ -547,13 +576,16 @@ void AudioSystem::ProcessPlayAudio2DRequest(const Request &request) NOEXCEPT
 */
 void AudioSystem::ProcessStopAudio2DRequest(const Request &request) NOEXCEPT
 {
-	for (uint64 i{ 0 }; i < _PlayingAudio2D.Size(); ++i)
+	for (AudioTrack &audio_track : _MixThreadAudioTracks)
 	{
-		if (_PlayingAudio2D[i]._Identifier == request._StopAudio2DData._Identifier)
+		for (PlayingAudio2D &playing_audio : audio_track._PlayingAudio2D)
 		{
-			_PlayingAudio2D[i]._Player.GetADSREnvelope()->SetRelease();
+			if (playing_audio._Identifier == request._StopAudio2DData._Identifier)
+			{
+				playing_audio._Player.GetADSREnvelope()->SetRelease();
 
-			break;
+				return;
+			}
 		}
 	}
 }
@@ -563,6 +595,51 @@ void AudioSystem::ProcessStopAudio2DRequest(const Request &request) NOEXCEPT
 */
 void AudioSystem::ProcessMixBufferRequest(const Request &request) NOEXCEPT
 {
+	//Define constants.
+	constexpr auto ProcessPlayingAudio2D
+	{
+		[](const uint8 number_of_channels, const uint32 number_of_samples, DynamicArray<PlayingAudio2D> &playing_audio, DynamicArray<DynamicArray<float32>> &outputs)
+		{
+			//Add all playing audio 2D to the output.
+			for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
+			{
+				for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
+				{
+					//Calculate the sample.
+					float32 sample{ 0.0f };
+
+					//Iterate through all playing audio.
+					for (const PlayingAudio2D &_playing_audio : playing_audio)
+					{
+						sample += _playing_audio._Player.Sample(channel_index);
+					}
+
+					//Write the sample!
+					outputs[channel_index][sample_index] += sample;
+				}
+
+				//Advance all playing audio.
+				for (PlayingAudio2D &_playing_audio : playing_audio)
+				{
+					_playing_audio._Player.Advance();
+				}
+			}
+
+			//Remove all non-active playing audio.
+			for (uint64 i{ 0 }; i < playing_audio.Size();)
+			{
+				if (playing_audio[i]._Player.IsActive())
+				{
+					++i;
+				}
+
+				else
+				{
+					playing_audio.EraseAt<false>(i);
+				}
+			}
+		}
+	};
 #define PROFILE_MIX_BUFFER (0)
 
 #if PROFILE_MIX_BUFFER
@@ -623,28 +700,36 @@ void AudioSystem::ProcessMixBufferRequest(const Request &request) NOEXCEPT
 		AudioTrack &track{ _MixThreadAudioTracks[track_index] };
 
 		//Fill in the inputs.
-		ASSERT(track._Information._StartChannelIndex != UINT32_MAXIMUM && track._Information._NumberOfInputChannels != UINT32_MAXIMUM, "Currently there's no reason for an audio track to exist without any input channels!");
-	
 		track._Samples.Resize<true>(mix_buffer._Outputs.Size());
 
-		for (uint64 input_channel_index{ 0 }; input_channel_index < track._Samples.Size(); ++input_channel_index)
+		for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
 		{
-			track._Samples[input_channel_index].Resize<false>(number_of_samples);
+			//Make sure the buffer is big enough.
+			track._Samples[channel_index].Resize<false>(number_of_samples);
 
-			uint32 _input_channel_index{ track._Information._StartChannelIndex + static_cast<uint32>(input_channel_index) };
-			_input_channel_index = track._Information._StartChannelIndex + (_input_channel_index - track._Information._StartChannelIndex) % track._Information._NumberOfInputChannels;
-			_input_channel_index -= start_input_channel_index;
+			//Start with zero.
+			Memory::Set(track._Samples[channel_index].Data(), 0, number_of_samples * sizeof(float32));
+		}
 
-			if (_input_channel_index < mix_buffer._Inputs.Size())
+		//Fill in from playing audio 2D.
+		ProcessPlayingAudio2D(number_of_channels, number_of_samples, track._PlayingAudio2D, track._Samples);
+
+		//Fill in from input channels.
+		if (track._Information._StartChannelIndex != UINT32_MAXIMUM && track._Information._NumberOfInputChannels != UINT32_MAXIMUM)
+		{
+			for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
 			{
-				Memory::Copy(track._Samples[input_channel_index].Data(), mix_buffer._Inputs[_input_channel_index].Data(), sizeof(float32) * number_of_samples);
-			}
+				uint32 _input_channel_index{ track._Information._StartChannelIndex + static_cast<uint32>(channel_index) };
+				_input_channel_index = track._Information._StartChannelIndex + (_input_channel_index - track._Information._StartChannelIndex) % track._Information._NumberOfInputChannels;
+				_input_channel_index -= start_input_channel_index;
 
-			else
-			{
-				Memory::Set(track._Samples[input_channel_index].Data(), 0, sizeof(float32) * number_of_samples);
+				if (_input_channel_index < mix_buffer._Inputs.Size())
+				{
+					SIMD::Add(track._Samples[channel_index].Data(), mix_buffer._Inputs[_input_channel_index].Data(), number_of_samples);
+				}
 			}
 		}
+		
 
 		//Apply the audio effects.
 		for (AudioEffect *const RESTRICT effect : track._Effects)
@@ -666,44 +751,8 @@ void AudioSystem::ProcessMixBufferRequest(const Request &request) NOEXCEPT
 		}
 	}
 
-	//Add all playing audio 2D to the output.
-	for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
-	{
-		for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
-		{
-			//Calculate the sample.
-			float32 sample{ 0.0f };
-
-			//Iterate through all playing audio.
-			for (const PlayingAudio2D &playing_audio : _PlayingAudio2D)
-			{
-				sample += playing_audio._Player.Sample(channel_index);
-			}
-
-			//Write the sample!
-			mix_buffer._Outputs[channel_index][sample_index] += sample;
-		}
-
-		//Advance all playing audio.
-		for (PlayingAudio2D &playing_audio : _PlayingAudio2D)
-		{
-			playing_audio._Player.Advance();
-		}
-	}
-
-	//Remove all non-active playing audio.
-	for (uint64 i{ 0 }; i < _PlayingAudio2D.Size();)
-	{
-		if (_PlayingAudio2D[i]._Player.IsActive())
-		{
-			++i;
-		}
-
-		else
-		{
-			_PlayingAudio2D.EraseAt<false>(i);
-		}
-	}
+	//Add playing audio 2D to the output.
+	ProcessPlayingAudio2D(number_of_channels, number_of_samples, _MixThreadAudioTracks[0]._PlayingAudio2D, mix_buffer._Outputs);
 
 	//Process the master track effects, if there are any.
 	if (!_MixThreadAudioTracks[0]._Effects.Empty())
@@ -769,13 +818,16 @@ void AudioSystem::ProcessMixBufferRequest(const Request &request) NOEXCEPT
 */
 void AudioSystem::ProcessGetAudioTimeRequest(const Request &request) NOEXCEPT
 {
-	for (const PlayingAudio2D &playing_audio : _PlayingAudio2D)
+	for (AudioTrack &audio_track : _MixThreadAudioTracks)
 	{
-		if (playing_audio._Identifier == request._GetAudioTimeData._Identifier)
+		for (PlayingAudio2D &playing_audio : audio_track._PlayingAudio2D)
 		{
-			(*request._GetAudioTimeData._Value) = static_cast<float64>(playing_audio._Player.GetCurrentSample()) / static_cast<float64>(playing_audio._Player.GetAudioStream()->GetSampleRate());
+			if (playing_audio._Identifier == request._GetAudioTimeData._Identifier)
+			{
+				(*request._GetAudioTimeData._Value) = static_cast<float64>(playing_audio._Player.GetCurrentSample()) / static_cast<float64>(playing_audio._Player.GetAudioStream()->GetSampleRate());
 
-			break;
+				return;
+			}
 		}
 	}
 
