@@ -463,6 +463,14 @@ namespace Audio
 	}
 
 	/*
+	*	Converts a pitch value (in semitones) to a playback rate value.
+	*/
+	FORCE_INLINE NO_DISCARD float32 PitchToPlaybackRate(const float32 value) NOEXCEPT
+	{
+		return std::pow(2.0f, value / 12.0f);
+	}
+
+	/*
 	*	Converts time (in seconds) to samples.
 	*/
 	FORCE_INLINE NO_DISCARD uint32 TimeToSamples(const float32 time, const float32 sample_rate) NOEXCEPT

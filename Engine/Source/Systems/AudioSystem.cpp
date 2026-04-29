@@ -567,7 +567,7 @@ void AudioSystem::ProcessPlayAudio2DRequest(const Request &request) NOEXCEPT
 	new_playing_audio._Player.GetADSREnvelope()->SetSampleRate(_SampleRate.Load());
 	new_playing_audio._Player.SetGain(request._PlayAudio2DData._Request._Gain);
 	new_playing_audio._Player.SetPan(request._PlayAudio2DData._Request._Pan);
-	new_playing_audio._Player.SetPlaybackRate(static_cast<float32>(request._PlayAudio2DData._Request._Asset->_AudioStream.GetSampleRate()) / _SampleRate.Load());
+	new_playing_audio._Player.SetPlaybackRate(static_cast<float32>(request._PlayAudio2DData._Request._Asset->_AudioStream.GetSampleRate()) / _SampleRate.Load() * request._PlayAudio2DData._Request._PlaybackRate);
 	new_playing_audio._Player.SetCurrentSample(static_cast<int64>(request._PlayAudio2DData._Request._StartTime * static_cast<float32>(request._PlayAudio2DData._Request._Asset->_AudioStream.GetSampleRate())));
 }
 
@@ -729,7 +729,6 @@ void AudioSystem::ProcessMixBufferRequest(const Request &request) NOEXCEPT
 				}
 			}
 		}
-		
 
 		//Apply the audio effects.
 		for (AudioEffect *const RESTRICT effect : track._Effects)
@@ -824,7 +823,11 @@ void AudioSystem::ProcessGetAudioTimeRequest(const Request &request) NOEXCEPT
 		{
 			if (playing_audio._Identifier == request._GetAudioTimeData._Identifier)
 			{
+				//Set the value.
 				(*request._GetAudioTimeData._Value) = static_cast<float64>(playing_audio._Player.GetCurrentSample()) / static_cast<float64>(playing_audio._Player.GetAudioStream()->GetSampleRate());
+
+				//The value is now set!
+				request._GetAudioTimeData._Ready->Set();
 
 				return;
 			}
