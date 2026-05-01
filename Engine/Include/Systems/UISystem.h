@@ -1,4 +1,3 @@
-#if defined(USE_NEW_UI_SYSTEM)
 #pragma once
 
 //Core.
@@ -25,7 +24,6 @@ public:
 	CATALYST_SYSTEM
 	(
 		UISystem,
-		SYSTEM_DEFINED_REQUIREMENT(USE_NEW_UI_SYSTEM)
 		SYSTEM_INITIALIZE()
 		SYSTEM_UPDATE(RANGE(USER_INTERFACE, RUN_ON_MAIN_THREAD), RANGE(PRE_RENDER, RENDER))
 	);
@@ -95,4 +93,3 @@ private:
 	NO_DISCARD bool AnyWidgetBlockingPosition(const Vector2<float32> position, const UI::Widget *const RESTRICT widget) NOEXCEPT;
 
 };
-#endif

@@ -26,11 +26,7 @@
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/TaskSystem.h>
-#include <Systems/UserInterfaceSystem.h>
 #include <Systems/WorldTracingSystem.h>
-
-//User interface.
-#include <UserInterface/UserInterfaceScene.h>
 
 //STL.
 #include <stdio.h>
@@ -38,6 +34,7 @@
 //Constants.
 #define NEW_GATHER_TRIANGLES (1)
 
+#if 0
 /*
 *	Path tracing user interface scene class definition.
 */
@@ -149,6 +146,7 @@ private:
 
 //The user interface scene.
 PathTracingUserInterfaceScene USER_INTERFACE_SCENE;
+#endif
 
 //Path tracing system constants.
 namespace PathTracingSystemConstants
@@ -170,7 +168,9 @@ void PathTracingSystem::Update(const UpdatePhase phase) NOEXCEPT
 	}
 
 	//Update the progress.
+#if 0
 	USER_INTERFACE_SCENE.SetProgress(static_cast<float32>(_CurrentNumberOfPixels.Load()) / static_cast<float32>(_TotalNumberOfPixels));
+#endif
 
 	//Are all tasks done?
 	if (AllTasksDone())
@@ -183,10 +183,14 @@ void PathTracingSystem::Update(const UpdatePhase phase) NOEXCEPT
 		const uint32 new_final_texture_index{ RenderingSystem::Instance->AddTextureToGlobalRenderData(new_final_texture_handle) };
 
 		//Tell the user interface scene the new texture index.
+#if 0
 		USER_INTERFACE_SCENE.SetTextureIndex(new_final_texture_index);
+#endif
 
 		//Tell the user interface scene the of samples.
+#if 0
 		USER_INTERFACE_SCENE.SetSamples(_CurrentNumberOfSamples);
+#endif
 
 		//Remove the old final texture, if there is one.
 		if (_FinalTextureHandle)
@@ -274,7 +278,9 @@ void PathTracingSystem::Start() NOEXCEPT
 	ExecuteTasks();
 
 	//Activate the user interface scene.
+#if 0
 	UserInterfaceSystem::Instance->ActivateScene(&USER_INTERFACE_SCENE);
+#endif
 
 	//Path tracing is now in progress!
 	_IsInProgress = true;
@@ -312,7 +318,9 @@ void PathTracingSystem::Stop(const char* const RESTRICT file_path) NOEXCEPT
 	}
 
 	//Deactivate the rendering reference user interface scene.
+#if 0
 	UserInterfaceSystem::Instance->DeactivateScene(&USER_INTERFACE_SCENE);
+#endif
 
 	//Resume the Catalyst engine system.
 	CatalystEngineSystem::Instance->SetUpdateSpeed(1.0f);

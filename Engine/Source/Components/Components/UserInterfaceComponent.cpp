@@ -11,9 +11,6 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/WorldSystem.h>
 
-//User interface.
-#include <UserInterface/UserInterfaceSceneFactory.h>
-
 /*
 *	User interface background push constant data class definition.
 */
@@ -33,12 +30,14 @@ public:
 void UserInterfaceComponent::Initialize() NOEXCEPT
 {
 	//Add the editable fields.
+#if 0
 	AddEditableEnumerationField
 	(
 		"Identifier",
 		offsetof(UserInterfaceInitializationData, _Identifier),
 		offsetof(UserInterfaceInstanceData, _Identifier)
 	);
+#endif
 
 	//Register the "UserInterface3DBackground" input stream.
 	RenderingSystem::Instance->GetRenderInputManager()->RegisterInputStream
@@ -62,9 +61,12 @@ void UserInterfaceComponent::Initialize() NOEXCEPT
 void UserInterfaceComponent::CreateInstance(Entity *const RESTRICT entity, UserInterfaceInitializationData *const RESTRICT initialization_data, UserInterfaceInstanceData *const RESTRICT instance_data) NOEXCEPT
 {
 	//Copy data.
+#if 0
 	instance_data->_Identifier = initialization_data->_Identifier;
+#endif
 
 	//Create the scene.
+#if 0
 	if (instance_data->_Identifier != UserInterfaceSceneIdentifier::None)
 	{
 		instance_data->_Scene = UserInterfaceSceneFactory::Create(instance_data->_Identifier);
@@ -76,6 +78,7 @@ void UserInterfaceComponent::CreateInstance(Entity *const RESTRICT entity, UserI
 	{
 		instance_data->_Scene = nullptr;
 	}
+#endif
 }
 
 /*

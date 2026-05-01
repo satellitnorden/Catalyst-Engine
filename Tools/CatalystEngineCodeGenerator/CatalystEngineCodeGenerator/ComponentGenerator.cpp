@@ -96,14 +96,14 @@ void ComponentGenerator::Run()
 	nlohmann::json JSON;
 
 	//Read the cache, if it exists.
-//#if defined(NDEBUG)
+#if defined(NDEBUG)
 	if (std::filesystem::exists("..\\..\\..\\Code\\CodeGeneration\\ComponentCache.json"))
 	{
 		std::ifstream input_file{ "..\\..\\..\\Code\\CodeGeneration\\ComponentCache.json" };
 		input_file >> JSON;
 		input_file.close();
 	}
-//#endif
+#endif
 
 	//Gather components!
 	bool new_files_parsed{ false };
@@ -779,9 +779,12 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << "#include <Systems/TaskSystem.h>" << std::endl;
 	file << std::endl;
 
+	file << "//Third party." << std::endl;
+	file << "#include <ImGui/imgui.h>" << std::endl;
+	file << std::endl;
+
 	file << "//STD." << std::endl;
 	file << "#include <stdio.h>" << std::endl;
-
 	file << std::endl;
 
 	//Add includes for all components.

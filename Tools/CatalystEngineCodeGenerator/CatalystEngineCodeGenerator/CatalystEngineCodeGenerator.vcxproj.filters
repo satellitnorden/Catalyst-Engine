@@ -28,9 +28,6 @@
     <ClCompile Include="SystemGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UserInterfaceGenerator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="RenderPipelineGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -64,9 +61,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="SystemGenerator.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UserInterfaceGenerator.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="RenderPipelineGenerator.h">

@@ -1,4 +1,3 @@
-#if defined(USE_NEW_UI_SYSTEM)
 //Header file.
 #include <Systems/UISystem.h>
 
@@ -341,4 +340,3 @@ NO_DISCARD bool UISystem::AnyWidgetBlockingPosition(const Vector2<float32> posit
 
 	return false;
 }
-#endif

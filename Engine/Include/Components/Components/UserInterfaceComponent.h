@@ -6,12 +6,6 @@
 //Components.
 #include <Components/Core/Component.h>
 
-//Generated.
-#include <Generated/UserInterface.Generated.h>
-
-//User interface.
-#include <UserInterface/UserInterfaceScene.h>
-
 //Forward declarations.
 class RenderInputStream;
 
@@ -21,7 +15,9 @@ class UserInterfaceInitializationData final : public ComponentInitializationData
 public:
 
 	//The identifier.
+#if 0
 	UserInterfaceSceneIdentifier _Identifier;
+#endif
 
 };
 
@@ -31,10 +27,14 @@ class UserInterfaceInstanceData final
 public:
 
 	//The identifier.
+#if 0
 	UserInterfaceSceneIdentifier _Identifier;
+#endif
 
 	//The scene.
+#if 0
 	UserInterfaceScene *RESTRICT _Scene;
+#endif
 
 };
 
