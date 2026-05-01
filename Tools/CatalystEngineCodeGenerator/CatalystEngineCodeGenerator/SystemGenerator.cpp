@@ -997,7 +997,10 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 					file << "#if defined(" << defined_requirement.c_str() << ")" << std::endl;
 				}
 
-				file << "\t" << _system_data._Name.c_str() << "::Instance->Initialize();" << std::endl;
+				file << "\t{" << std::endl;
+				file << "\t\tPROFILING_SCOPE(\"" << _system_data._Name.c_str() << "::Instance->Initialize()\");" << std::endl;
+				file << "\t\t" << _system_data._Name.c_str() << "::Instance->Initialize();" << std::endl;
+				file << "\t}" << std::endl;
 
 				for (size_t i{ 0 }; i < (_system_data._NotDefinedRequirements.size() + _system_data._DefinedRequirements.size()); ++i)
 				{
