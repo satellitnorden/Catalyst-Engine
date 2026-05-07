@@ -119,7 +119,7 @@ void AudioSystem::AddMasterAudioEffect(AudioEffect *const RESTRICT effect) NOEXC
 Audio::Identifier AudioSystem::AddAudioTrack(const AudioTrackInformation &information) NOEXCEPT
 {
 	//Terminate the backend if this track has input channels.
-	if (information._NumberOfInputChannels > 0)
+	if (information._NumberOfInputChannels != UINT32_MAXIMUM && information._NumberOfInputChannels > 0)
 	{
 		TerminateBackend();
 	}
@@ -141,7 +141,7 @@ Audio::Identifier AudioSystem::AddAudioTrack(const AudioTrackInformation &inform
 	_Requests.Push(request);
 
 	//If the audio track has any input channels, (probably) has to reconstruct the backend.
-	if (information._NumberOfInputChannels > 0)
+	if (information._NumberOfInputChannels != UINT32_MAXIMUM && information._NumberOfInputChannels > 0)
 	{
 		InitializeBackend(_RequestedBackend);
 	}
@@ -567,7 +567,13 @@ void AudioSystem::ProcessPlayAudio2DRequest(const Request &request) NOEXCEPT
 	new_playing_audio._Player.GetADSREnvelope()->SetSampleRate(_SampleRate.Load());
 	new_playing_audio._Player.SetGain(request._PlayAudio2DData._Request._Gain);
 	new_playing_audio._Player.SetPan(request._PlayAudio2DData._Request._Pan);
-	new_playing_audio._Player.SetPlaybackRate(static_cast<float32>(request._PlayAudio2DData._Request._Asset->_AudioStream.GetSampleRate()) / _SampleRate.Load() * request._PlayAudio2DData._Request._PlaybackRate);
+
+	float32 playback_rate{ 1.0f };
+
+	playback_rate *= (static_cast<float32>(request._PlayAudio2DData._Request._Asset->_AudioStream.GetSampleRate()) / _SampleRate.Load());
+	playback_rate *= request._PlayAudio2DData._Request._PlaybackRate;
+
+	new_playing_audio._Player.SetPlaybackRate(playback_rate);
 	new_playing_audio._Player.SetCurrentSample(static_cast<int64>(request._PlayAudio2DData._Request._StartTime * static_cast<float32>(request._PlayAudio2DData._Request._Asset->_AudioStream.GetSampleRate())));
 }
 
