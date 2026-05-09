@@ -35,11 +35,17 @@ public:
 
 	public:
 
+		//The topology.
+		Topology _Topology{ Topology::TriangleFan };
+
 		//The color load operator.
-		AttachmentLoadOperator _ColorLoadOperator;
+		AttachmentLoadOperator _ColorLoadOperator{ AttachmentLoadOperator::DONT_CARE };
 
 		//The color store operator.
-		AttachmentStoreOperator _ColorStoreOperator;
+		AttachmentStoreOperator _ColorStoreOperator{ AttachmentStoreOperator::DONT_CARE };
+
+		//The render resolution.
+		HashString _RenderResolution;
 
 	};
 

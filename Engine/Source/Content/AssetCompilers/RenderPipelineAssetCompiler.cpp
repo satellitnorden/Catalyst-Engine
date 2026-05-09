@@ -39,6 +39,25 @@ class ExtraData final
 
 public:
 
+	/*
+	*	Push constant data value class definition.
+	*/
+	class PushConstantDataValue final
+	{
+
+	public:
+
+		//The type.
+		DynamicString _Type;
+
+		//The name.
+		DynamicString _Name;
+
+	};
+
+	//The push constant data values.
+	DynamicArray<PushConstantDataValue> _PushConstantDataValues;
+
 	//The compute local size.
 	struct
 	{
@@ -297,11 +316,17 @@ void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT co
 
 	//Write the graphics data.
 	{
+		//Write the topology.
+		output_file.Write(&asset._GraphicsData._Topology, sizeof(Topology));
+
 		//Write the color load operator.
 		output_file.Write(&asset._GraphicsData._ColorLoadOperator, sizeof(AttachmentLoadOperator));
 
 		//Write the color store operator.
 		output_file.Write(&asset._GraphicsData._ColorStoreOperator, sizeof(AttachmentStoreOperator));
+
+		//Write the render resolution.
+		output_file.Write(&asset._GraphicsData._RenderResolution, sizeof(HashString));
 	}
 
 	//Close the output file.
@@ -335,11 +360,17 @@ void RenderPipelineAssetCompiler::LoadInternal(LoadData *const RESTRICT load_dat
 
 	//Read the graphics data.
 	{
+		//Read the topology.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._Topology, sizeof(Topology), &stream_archive_position);
+
 		//Read the color load operator.
 		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._ColorLoadOperator, sizeof(AttachmentLoadOperator), &stream_archive_position);
 
 		//Read the color store operator.
 		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._ColorStoreOperator, sizeof(AttachmentStoreOperator), &stream_archive_position);
+
+		//Read the render resolution.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._RenderResolution, sizeof(HashString), &stream_archive_position);
 	}
 }
 
@@ -722,6 +753,58 @@ void RenderPipelineAssetCompiler::ConsumeSettings(RenderPipelineAsset *const RES
 			lines->EraseAt<true>(line_index);
 		}
 
+		//Is this a push constant data declaration?
+		else if (line.Find("PushConstantData("))
+		{
+			//Parse the argument.
+			StaticArray<DynamicString, 2> arguments;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					arguments.Data()
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 2, "Invalid number of arguments for 'PushConstantData()'!");
+
+			//Set the values.
+			extra_data->_PushConstantDataValues.Emplace();
+			ExtraData::PushConstantDataValue &value{ extra_data->_PushConstantDataValues.Back() };
+
+			value._Type = arguments[0];
+			value._Name = arguments[1];
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a render resolution definition?
+		else if (line.Find("RenderResolution("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'RenderResolution()'!");
+
+			//Set the value.
+			asset->_GraphicsData._RenderResolution = HashString(argument.Data());
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
 		//Is this an input stream subscription definition?
 		if (line.Find("SubscribeToInputStream("))
 		{
@@ -741,6 +824,88 @@ void RenderPipelineAssetCompiler::ConsumeSettings(RenderPipelineAsset *const RES
 
 			//Set the value.
 			asset->_CommonData._InputStreamSubscriptions.Emplace(HashString(argument.Data()));
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a topology definition?
+		else if (line.Find("Topology("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'Topology()'!");
+
+			//Set the value.
+			if (argument == "LINE_LIST")
+			{
+				asset->_GraphicsData._Topology = Topology::LineList;
+			}
+
+			else if (argument == "LINE_LIST_WITH_ADJACENCY")
+			{
+				asset->_GraphicsData._Topology = Topology::LineListWithAdjacency;
+			}
+
+			else if (argument == "LINE_STRIP")
+			{
+				asset->_GraphicsData._Topology = Topology::LineStrip;
+			}
+
+			else if (argument == "LINE_STRIP_WITH_ADJACENCY")
+			{
+				asset->_GraphicsData._Topology = Topology::LineStripWithAdjacency;
+			}
+
+			else if (argument == "PATCH_LIST")
+			{
+				asset->_GraphicsData._Topology = Topology::PatchList;
+			}
+
+			else if (argument == "POINT_LIST")
+			{
+				asset->_GraphicsData._Topology = Topology::PointList;
+			}
+
+			else if (argument == "TRIANGLE_FAN")
+			{
+				asset->_GraphicsData._Topology = Topology::TriangleFan;
+			}
+
+			else if (argument == "TRIANGLE_LIST")
+			{
+				asset->_GraphicsData._Topology = Topology::TriangleList;
+			}
+
+			else if (argument == "TRIANGLE_LIST_WITH_ADJACENCY")
+			{
+				asset->_GraphicsData._Topology = Topology::TriangleListWithAdjacency;
+			}
+
+			else if (argument == "TRIANGLE_STRIP")
+			{
+				asset->_GraphicsData._Topology = Topology::TriangleStrip;
+			}
+
+			else if (argument == "TRIANGLE_STRIP_WITH_ADJACENCY")
+			{
+				asset->_GraphicsData._Topology = Topology::TriangleStripWithAdjacency;
+			}
+
+			else
+			{
+				ASSERT(false, "Unknown argument for 'Topology()': %s", argument.Data());
+			}
 
 			//Remove this line.
 			lines->EraseAt<true>(line_index);
@@ -860,6 +1025,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 		//Iterate over the shader stage lines, GLSL-ifying each line.
 		uint32 current_binding_index{ 0 };
+		uint32 location_index{ 0 };
 
 		for (uint64 current_line_index{ 0 }; current_line_index < shader_stage._Lines.Size(); ++current_line_index)
 		{
@@ -1047,6 +1213,28 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 			//Handle the entrypoint.
 			if (current_line.Find("__ENTRYPOINT"))
 			{
+				//Add the push constant data.
+				if (!extra_data._PushConstantDataValues.Empty())
+				{
+					glsl_lines.Emplace("layout (push_constant) uniform PushConstantData");
+					glsl_lines.Emplace("{");
+
+					uint64 current_offset{ 0 };
+
+					for (const ExtraData::PushConstantDataValue &value : extra_data._PushConstantDataValues)
+					{
+						char buffer[64];
+						sprintf_s(buffer, "\tlayout (offset = %llu) %s %s;", current_offset, value._Type.Data(), value._Name.Data());
+
+						glsl_lines.Emplace(buffer);
+
+						current_offset += GLSLCompilation::GetByteOffsetForType(value._Type.Data());
+					}
+
+					glsl_lines.Emplace("};");
+					glsl_lines.Emplace("");
+				}
+
 				//This is a good time to add shader stage specific stuff.
 				switch (shader_stage._ShaderStage)
 				{
@@ -1200,6 +1388,54 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 				}
 
 				current_line = _current_line.c_str();
+			}
+
+			//Handle compute input render targets.
+			if (current_line.Find("InputRenderTarget("))
+			{
+				//Parse the arguments.
+				StaticArray<DynamicString, 4> arguments;
+
+				const uint64 number_of_arguments_parsed
+				{
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.Data(),
+						current_line.Length(),
+						arguments.Data()
+					)
+				};
+				ASSERT(number_of_arguments_parsed == 4, "Wrong number of arguments for 'InputRenderTarget()' declaration!");
+
+				//Construct the GLSL line and add it.
+				char glsl_line[128];
+				sprintf_s(glsl_line, "layout (set = 1, binding = %u) uniform sampler2D %s;", current_binding_index++, arguments[0].Data());
+
+				current_line = glsl_line;
+			}
+
+			//Handle compute outoput render targets.
+			if (current_line.Find("OutputRenderTarget("))
+			{
+				//Parse the arguments.
+				StaticArray<DynamicString, 1> arguments;
+
+				const uint64 number_of_arguments_parsed
+				{
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.Data(),
+						current_line.Length(),
+						arguments.Data()
+					)
+				};
+				ASSERT(number_of_arguments_parsed == 1, "Wrong number of arguments for 'OutputRenderTarget()' declaration!");
+
+				//Construct the GLSL line and add it.
+				char glsl_line[128];
+				sprintf_s(glsl_line, "layout (location = %u) out vec4 %s;", location_index++, arguments[0].Data());
+
+				current_line = glsl_line;
 			}
 
 			//Add the line.
