@@ -162,7 +162,7 @@ void AudioSystem::RemoveAudioTrack(const Audio::Identifier identifier) NOEXCEPT
 	{
 		if (_MainThreadAudioTracks[i]._Identifier == identifier)
 		{
-			removed_track_had_inputs = _MainThreadAudioTracks[i]._Information._NumberOfInputChannels > 0;
+			removed_track_had_inputs = _MainThreadAudioTracks[i]._Information._NumberOfInputChannels != UINT32_MAXIMUM && _MainThreadAudioTracks[i]._Information._NumberOfInputChannels > 0;
 
 			_MainThreadAudioTracks.EraseAt<false>(i);
 
