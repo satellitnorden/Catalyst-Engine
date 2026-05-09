@@ -17,6 +17,7 @@
 #include <Content/AssetCompilers/LevelAssetCompiler.h>
 #include <Content/AssetCompilers/MaterialAssetCompiler.h>
 #include <Content/AssetCompilers/ModelAssetCompiler.h>
+#include <Content/AssetCompilers/RenderPipelineAssetCompiler.h>
 #include <Content/AssetCompilers/SettingsAssetCompiler.h>
 #include <Content/AssetCompilers/SoundAssetCompiler.h>
 #include <Content/AssetCompilers/Texture2DAssetCompiler.h>
@@ -46,8 +47,10 @@
 
 //Constants.
 #define ENGINE_ASSETS "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets"
+#define ENGINE_RENDERING "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering"
 #define ENGINE_COMPILED "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Compiled"
 #define GAME_ASSETS "..\\..\\..\\Content\\Assets"
+#define GAME_RENDERING "..\\..\\..\\Rendering"
 #define GAME_COMPILED "..\\..\\..\\Content\\Compiled"
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
@@ -71,6 +74,9 @@ void ContentSystem::Initialize() NOEXCEPT
 	RegisterAssetCompiler(LevelAssetCompiler::Instance);
 	RegisterAssetCompiler(MaterialAssetCompiler::Instance);
 	RegisterAssetCompiler(ModelAssetCompiler::Instance);
+#if 0
+	RegisterAssetCompiler(RenderPipelineAssetCompiler::Instance);
+#endif
 	RegisterAssetCompiler(SettingsAssetCompiler::Instance);
 	RegisterAssetCompiler(SoundAssetCompiler::Instance);
 	RegisterAssetCompiler(Texture2DAssetCompiler::Instance);
@@ -195,6 +201,7 @@ RECOMPILE:
 
 		//Compile assets.
 		CompileAssetsInDirectory(CompilationDomain::ENGINE, &content_cache, ENGINE_ASSETS, nullptr, &compile_result);
+		CompileAssetsInDirectory(CompilationDomain::ENGINE, &content_cache, ENGINE_RENDERING, nullptr, &compile_result);
 
 		//Write the content cache.
 		content_cache.Write(content_cache_file_path);
@@ -274,6 +281,7 @@ RECOMPILE:
 
 		//Compile assets.
 		CompileAssetsInDirectory(CompilationDomain::GAME, &content_cache, GAME_ASSETS, nullptr, &compile_result);
+		CompileAssetsInDirectory(CompilationDomain::GAME, &content_cache, GAME_RENDERING, nullptr, &compile_result);
 
 		//Write the content cache.
 		content_cache.Write(content_cache_file_path);
@@ -588,6 +596,12 @@ void ContentSystem::CompileAssetsInDirectory
 	CompileResult *const RESTRICT compile_result
 ) NOEXCEPT
 {
+	//Skip if the directory doesn't exist.
+	if (!std::filesystem::exists(std::string(directory_path)))
+	{
+		return;
+	}
+
 	//Scan the directory!
 	for (const auto &entry : std::filesystem::directory_iterator(std::string(directory_path)))
 	{
