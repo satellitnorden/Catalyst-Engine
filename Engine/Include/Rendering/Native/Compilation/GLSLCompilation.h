@@ -7,10 +7,16 @@
 //File.
 #include <File/Utilities/TextParsingUtilities.h>
 
+//Rendering.
+#include <Rendering/Native/RenderingCore.h>
+
 //STL.
 #include <fstream>
 #include <string>
 
+/*
+*	Namespace that includes some utilities for "GLSL-ifying" code as well as handles GLSL shader compilation.
+*/
 namespace GLSLCompilation
 {
 
@@ -68,6 +74,33 @@ namespace GLSLCompilation
 
 		return 0;
 	}
+
+	/*
+	*	Compile parameters class definition.
+	*/
+	class CompileParameters final
+	{
+
+	public:
+
+		//The shader stage.
+		ShaderStage _ShaderStage;
+
+		//The input lines.
+		const DynamicArray<DynamicString> *RESTRICT _InputLines;
+
+		//The input file path. This is used for debug purposes when printing error messages, and doesn't have to be an actual file path.
+		const char *RESTRICT _InputFilePath;
+
+		//The output data.
+		DynamicArray<uint8> *RESTRICT _OutputData;
+
+	};
+
+	/*
+	*	Compiles a GLSL shader of the given shader stage with the given lines.
+	*/
+	NO_DISCARD bool Compile(const CompileParameters &parameters) NOEXCEPT;
 
 	/*
 	*	Returns the location offset for the given type.

@@ -158,4 +158,13 @@ private:
 	*/
 	void SplitShaderStages(const DynamicArray<DynamicString> &lines, DynamicArray<class ShaderStageLines> *const RESTRICT shader_stages) NOEXCEPT;
 
+	/*
+	*	Compiles GLSL shaders.
+	*/
+	void CompileGLSLShaders
+	(
+		const CompileData &compile_data,
+		const DynamicArray<class ShaderStageLines> &shader_stages
+	) NOEXCEPT;
+
 };

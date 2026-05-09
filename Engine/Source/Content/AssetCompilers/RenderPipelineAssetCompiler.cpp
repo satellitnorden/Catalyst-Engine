@@ -11,6 +11,9 @@
 //Profiling.
 #include <Profiling/Profiling.h>
 
+//Rendering.
+#include <Rendering/Native/Compilation/GLSLCompilation.h>
+
 //Systems.
 #include <Systems/LogSystem.h>
 #include <Systems/TaskSystem.h>
@@ -206,29 +209,8 @@ void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT co
 	DynamicArray<ShaderStageLines> shader_stages;
 	SplitShaderStages(lines, &shader_stages);
 
-	//Write it out to a debug directory, for now.
-	{
-		std::filesystem::create_directories("RenderPipelineAssetCompiler Debug");
-
-		std::string file_name{ compile_data->_FilePath.Data() };
-		file_name = file_name.substr(file_name.find_last_of('\\') + 1);
-		file_name = file_name.substr(0, file_name.find_last_of('.'));
-
-		for (const ShaderStageLines &shader_stage : shader_stages)
-		{
-			char file_path[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(file_path, "%s\\%s %s.glsl", "RenderPipelineAssetCompiler Debug", file_name.c_str(), ShaderStageString(shader_stage._ShaderStage));
-
-			std::ofstream file{ file_path };
-
-			for (const DynamicString &line : shader_stage._Lines)
-			{
-				file << line.Data() << std::endl;
-			}
-
-			file.close();
-		}
-	}
+	//Compile the GLSL shaders.
+	CompileGLSLShaders(*compile_data, shader_stages);
 
 	//BREAKPOINT();
 }
@@ -569,6 +551,304 @@ void RenderPipelineAssetCompiler::SplitShaderStages(const DynamicArray<DynamicSt
 			{
 				common_lines.Emplace(current_line);
 			}
+		}
+	}
+}
+
+/*
+*	Compiles GLSL shaders.
+*/
+void RenderPipelineAssetCompiler::CompileGLSLShaders
+(
+	const CompileData &compile_data,
+	const DynamicArray<ShaderStageLines> &shader_stages
+) NOEXCEPT
+{
+	//Compile all shader stages.
+	for (const ShaderStageLines &shader_stage : shader_stages)
+	{
+		//Create a separate set of the GLSL-ified lines.
+		DynamicArray<DynamicString> glsl_lines;
+
+		//Insert the version.
+		glsl_lines.Emplace("#version 460");
+		glsl_lines.Emplace("");
+
+		//Iterate over the shader stage lines, GLSL-ifying each line.
+		uint32 current_binding_index{ 0 };
+
+		for (uint64 current_line_index{ 0 }; current_line_index < shader_stage._Lines.Size(); ++current_line_index)
+		{
+			//Cache the current line.
+			const DynamicString &current_line{ shader_stage._Lines[current_line_index] };
+
+			//Handle compute render targets.
+			if (current_line.Find("ComputeRenderTarget("))
+			{
+				//Parse the arguments.
+				StaticArray<DynamicString, 2> arguments;
+
+				const uint64 number_of_arguments_parsed
+				{
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.Data(),
+						current_line.Length(),
+						arguments.Data()
+					)
+				};
+				ASSERT(number_of_arguments_parsed == 2, "Wrong number of arguments for 'ComputeRenderTarget()' declaration!");
+
+				//Figure out the format string.
+				const char* RESTRICT format_string;
+
+				if (arguments[1] == "R_UINT8")
+				{
+					format_string = "r8";
+				}
+
+				else if (arguments[1] == "RGBA_UINT8")
+				{
+					format_string = "rgba8";
+				}
+
+				else if (arguments[1] == "RGBA_FLOAT32")
+				{
+					format_string = "rgba32f";
+				}
+
+				else
+				{
+					ASSERT(false, "Unknown compute render target format!");
+				}
+
+				//Construct the GLSL line and add it.
+				char glsl_line[128];
+				sprintf_s(glsl_line, "layout (set = 1, binding = %u, %s) uniform image2D %s;", current_binding_index++, format_string, arguments[0].Data());
+
+				glsl_lines.Emplace(glsl_line);
+			}
+
+			//Handle uniform buffer declarations.
+			else if (current_line.Find("UniformBuffer("))
+			{
+				//Parse the buffer name.
+				DynamicString buffer_name;
+
+				const uint64 number_of_arguments_parsed
+				{
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.Data(),
+						current_line.Length(),
+						&buffer_name
+					)
+				};
+				ASSERT(number_of_arguments_parsed == 1, "Wrong number of arguments for 'UniformBuffer()' declaration!");
+
+				//Insert the header.
+				char header[64];
+				sprintf_s(header, "layout (std430, set = 1, binding = %u) buffer %s", current_binding_index++, buffer_name.Data());
+
+				glsl_lines.Emplace(header);
+
+				//Iterate over the rest of the lines.
+				uint64 current_offset{ 0 };
+
+				while (true)
+				{
+					//Increment the current line index.
+					++current_line_index;
+
+					//Cache the current sub line.
+					const DynamicString &current_sub_line{ shader_stage._Lines[current_line_index] };
+
+					//If the line is only whitespace, ignore it.
+					if (TextParsingUtilities::OnlyWhitespace(current_sub_line.Data(), current_sub_line.Length()))
+					{
+						continue;
+					}
+
+					//If this is the opening bracket, add it.
+					if (current_sub_line == "{")
+					{
+						glsl_lines.Emplace(current_sub_line);
+					}
+
+					//If this is the ending bracket, add it and quit.
+					else if (current_sub_line == "};")
+					{
+						glsl_lines.Emplace(current_sub_line);
+
+						break;
+					}
+
+					//Otherwise, parse the type and name and output the GLSL-ified line.
+					else
+					{
+						uint64 type_begin{ 0 };
+
+						for (uint64 i{ 0 }; i < current_sub_line.Length(); ++i)
+						{
+							if (TextParsingUtilities::IsWhitespace(current_sub_line[i]))
+							{
+								++type_begin;
+							}
+
+							else
+							{
+								break;
+							}
+						}
+
+						uint64 type_end{ type_begin };
+
+						for (uint64 i{ type_begin }; i < current_sub_line.Length(); ++i)
+						{
+							if (!TextParsingUtilities::IsWhitespace(current_sub_line[i]))
+							{
+								++type_end;
+							}
+
+							else
+							{
+								break;
+							}
+						}
+
+						const uint64 type_length{ type_end - type_begin };
+
+						char type[8];
+
+						for (uint64 i{ 0 }; i < type_length; ++i)
+						{
+							type[i] = current_sub_line[type_begin + i];
+						}
+
+						type[type_length] = '\0';
+
+						const uint64 name_begin{ type_end + 1 };
+
+						char name[64];
+
+						for (uint64 i{ 0 };; ++i)
+						{
+							if ((name_begin + i) >= current_sub_line.Length() || current_sub_line[(name_begin + i)] == ';')
+							{
+								name[i] = '\0';
+
+								break;
+							}
+
+							else
+							{
+								name[i] = current_sub_line[(name_begin + i)];
+							}
+						}
+
+						char glsl_line[128];
+						sprintf_s(glsl_line, "\tlayout (offset = %llu) %s %s;", current_offset, type, name);
+
+						glsl_lines.Emplace(glsl_line);
+
+						//Update the current offset.
+						{
+							//Figure out if this is an array.
+							uint64 array_count{ 0 };
+
+							{
+								const char *const RESTRICT array_start_position{ current_sub_line.Find("[") };
+
+								if (array_start_position)
+								{
+									char array_count_buffer[8];
+
+									for (uint64 i{ 0 };; ++i)
+									{
+										if (array_start_position[1 + i] == ']' || array_start_position[1 + i] == '\0')
+										{
+											array_count_buffer[i] = '\0';
+
+											break;
+										}
+
+										else
+										{
+											array_count_buffer[i] = array_start_position[1 + i];
+										}
+									}
+
+									array_count = std::stoull(array_count_buffer);
+								}
+							}
+
+							//Update the current offset. Assume 16 bytes for each array element if this is an array.
+							if (array_count > 0)
+							{
+								current_offset += 16 * array_count;
+							}
+
+							else
+							{
+								current_offset += GLSLCompilation::GetByteOffsetForType(type);
+							}
+						}
+					}
+				}
+			}
+
+			//Otherwise, just add the line as is.
+			else
+			{
+				glsl_lines.Emplace(current_line);
+			}
+		}
+
+		//For debug purposes, write out the GLSL shader to file for inspection.
+		char file_path[MAXIMUM_FILE_PATH_LENGTH];
+
+		{
+			//Create the directory where we host the GLSL shaders.
+			std::filesystem::create_directories("RenderPipelineAssetCompiler GLSL Shaders");
+
+			//Figure out the file name.
+			std::string file_name{ compile_data._FilePath.Data() };
+			file_name = file_name.substr(file_name.find_last_of('\\') + 1);
+			file_name = file_name.substr(0, file_name.find_last_of('.'));
+
+			//Figure out the file path.
+			sprintf_s(file_path, "%s\\%s %s.glsl", "RenderPipelineAssetCompiler GLSL Shaders", file_name.c_str(), ShaderStageString(shader_stage._ShaderStage));
+
+			//Open the file.
+			std::ofstream file{ file_path };
+
+			//Write the lines.
+			for (uint64 current_line_index{ 0 }; current_line_index < glsl_lines.Size(); ++current_line_index)
+			{
+				file << glsl_lines[current_line_index].Data();
+
+				if (current_line_index != glsl_lines.LastIndex())
+				{
+					file << std::endl;
+				}
+			}
+
+			//Close the file.
+			file.close();
+		}
+
+		//Compile the shader!
+		DynamicArray<byte> compiled_shader_data;
+
+		{
+			GLSLCompilation::CompileParameters parameters;
+
+			parameters._ShaderStage = shader_stage._ShaderStage;
+			parameters._InputLines = &glsl_lines;
+			parameters._InputFilePath = file_path;
+			parameters._OutputData = &compiled_shader_data;
+
+			GLSLCompilation::Compile(parameters);
 		}
 	}
 }
