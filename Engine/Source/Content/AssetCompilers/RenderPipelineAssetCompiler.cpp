@@ -1,6 +1,9 @@
 //Header file.
 #include <Content/AssetCompilers/RenderPipelineAssetCompiler.h>
 
+//Core.
+#include <Core/General/Pair.h>
+
 //File.
 #include <File/Core/File.h>
 #include <File/Utilities/TextParsingUtilities.h>
@@ -23,6 +26,56 @@
 
 #define COMPILE_SINGLE_THREADED (1)
 #define LOAD_SINGLE_THREADED (1)
+
+//The shader stage -> string lookup.
+constexpr Pair<ShaderStage, const char *const RESTRICT> SHADER_STAGE_TO_STRING_LOOKUP[]
+{
+	{ ShaderStage::COMPUTE, "Compute" },
+	{ ShaderStage::FRAGMENT, "Fragment" },
+	{ ShaderStage::GEOMETRY, "Geometry" },
+	{ ShaderStage::RAY_ANY_HIT, "RayAnyHit" },
+	{ ShaderStage::RAY_CLOSEST_HIT, "RayClosestHit" },
+	{ ShaderStage::RAY_GENERATION, "RayGeneration" },
+	{ ShaderStage::RAY_INTERSECTION, "RayInteresection" },
+	{ ShaderStage::RAY_MISS, "RayMiss" },
+	{ ShaderStage::TESSELLATION_CONTROL, "TessellationControl" },
+	{ ShaderStage::TESSELLATION_EVALUATION, "TessellationEvaluation" },
+	{ ShaderStage::VERTEX, "Vertex" }
+};
+
+/*
+*	Returns the string for the given shader stage.
+*/
+FORCE_INLINE NO_DISCARD const char *const RESTRICT ShaderStageString(const ShaderStage shader_stage) NOEXCEPT
+{
+	for (const Pair<ShaderStage, const char *const RESTRICT> &shader_stage_to_string_lookup : SHADER_STAGE_TO_STRING_LOOKUP)
+	{
+		if (shader_stage_to_string_lookup._First == shader_stage)
+		{
+			return shader_stage_to_string_lookup._Second;
+		}
+	}
+
+	ASSERT(false, "Couldn't find shader stage string!");
+
+	return "";
+}
+
+/*
+*	Shader stage lines class definition.
+*/
+class ShaderStageLines final
+{
+
+public:
+
+	//The shader stage.
+	ShaderStage _ShaderStage;
+
+	//The lines.
+	DynamicArray<DynamicString> _Lines;
+
+};
 
 /*
 *	Default constructor.
@@ -146,22 +199,35 @@ void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT co
 	//Strip comments.
 	StripComments(&lines);
 
+	//Consume settings.
+	ConsumeSettings(&lines);
+
+	//Split the shader stages.
+	DynamicArray<ShaderStageLines> shader_stages;
+	SplitShaderStages(lines, &shader_stages);
+
 	//Write it out to a debug directory, for now.
 	{
 		std::filesystem::create_directories("RenderPipelineAssetCompiler Debug");
 
-		std::string file_path{ compile_data->_FilePath.Data() };
-		file_path = file_path.substr(file_path.find_last_of('\\'));
-		file_path = std::string("RenderPipelineAssetCompiler Debug\\") + file_path;
+		std::string file_name{ compile_data->_FilePath.Data() };
+		file_name = file_name.substr(file_name.find_last_of('\\') + 1);
+		file_name = file_name.substr(0, file_name.find_last_of('.'));
 
-		std::ofstream file{ file_path };
-
-		for (const DynamicString &line : lines)
+		for (const ShaderStageLines &shader_stage : shader_stages)
 		{
-			file << line.Data() << std::endl;
-		}
+			char file_path[MAXIMUM_FILE_PATH_LENGTH];
+			sprintf_s(file_path, "%s\\%s %s.glsl", "RenderPipelineAssetCompiler Debug", file_name.c_str(), ShaderStageString(shader_stage._ShaderStage));
 
-		file.close();
+			std::ofstream file{ file_path };
+
+			for (const DynamicString &line : shader_stage._Lines)
+			{
+				file << line.Data() << std::endl;
+			}
+
+			file.close();
+		}
 	}
 
 	//BREAKPOINT();
@@ -258,7 +324,8 @@ void RenderPipelineAssetCompiler::ResolveInclude
 	const char *const RESTRICT extension,
 	const char *const RESTRICT sub_folder,
 	DynamicArray<DynamicString> *const RESTRICT lines,
-	const uint64 current_line_index
+	const uint64 current_line_index,
+	const char *const RESTRICT replacement_line
 ) NOEXCEPT
 {
 	//Retrieve the argument.
@@ -299,6 +366,12 @@ void RenderPipelineAssetCompiler::ResolveInclude
 
 	//Retrieve the include lines.
 	DynamicArray<DynamicString> include_lines;
+
+	if (replacement_line)
+	{
+		include_lines.Emplace(replacement_line);
+	}
+
 	RetrieveLines(file_path, &include_lines);
 
 	//Erase the line, don't need it anymore.
@@ -343,7 +416,8 @@ void RenderPipelineAssetCompiler::ResolveIncludes(DynamicArray<DynamicString> *c
 				"common_shader",
 				"Common Shaders",
 				lines,
-				current_line_index
+				current_line_index,
+				"Vertex"
 			);
 		}
 
@@ -403,6 +477,98 @@ void RenderPipelineAssetCompiler::ResolveIncludes(DynamicArray<DynamicString> *c
 		else
 		{
 			++current_line_index;
+		}
+	}
+}
+
+/*
+*	Consumes settings.
+*/
+void RenderPipelineAssetCompiler::ConsumeSettings(DynamicArray<DynamicString> *const RESTRICT lines) NOEXCEPT
+{
+	//TODO. (:
+}
+
+/*
+*	Splits shader stages.
+*/
+void RenderPipelineAssetCompiler::SplitShaderStages(const DynamicArray<DynamicString> &lines, DynamicArray<ShaderStageLines> *const RESTRICT shader_stages) NOEXCEPT
+{
+	//Keep track of the common lines.
+	DynamicArray<DynamicString> common_lines;
+
+	//Iterate through the lines.
+	bool has_started_parsing_first_shader{ false };
+	bool is_parsing_shader{ false };
+	uint32 current_parantheses_depth{ 0 };
+	ShaderStageLines *RESTRICT current_shader_stage{ nullptr };
+
+	for (uint64 current_line_index{ 0 }; current_line_index < lines.Size(); ++current_line_index)
+	{
+		//Cache the current line.
+		const DynamicString &current_line{ lines[current_line_index] };
+
+		//If we're currentl parsing a shader, add the lines.
+		if (is_parsing_shader)
+		{
+			//Add the line.
+			current_shader_stage->_Lines.Emplace(current_line);
+
+			//Update the current parantheses depth.
+			for (uint64 i{ 0 }; i < current_line.Length(); ++i)
+			{
+				if (current_line[i] == '{')
+				{
+					++current_parantheses_depth;
+				}
+
+				else if (current_line[i] == '}')
+				{
+					ASSERT(current_parantheses_depth > 0, "Invalid parentheses depth!");
+					--current_parantheses_depth;
+				}
+			}
+
+			//If we reached the end, stop parsing.
+			if (current_parantheses_depth == 0)
+			{
+				is_parsing_shader = false;
+				current_shader_stage = nullptr;
+			}
+		}
+
+		else
+		{
+			//Check if this is potentially the start of a shader.
+			for (const Pair<ShaderStage, const char *const RESTRICT> &shader_stage_to_string_lookup : SHADER_STAGE_TO_STRING_LOOKUP)
+			{
+				if (current_line == shader_stage_to_string_lookup._Second)
+				{
+					has_started_parsing_first_shader = true;
+					is_parsing_shader = true;
+
+					shader_stages->Emplace();
+					current_shader_stage = &shader_stages->Back();
+
+					current_shader_stage->_ShaderStage = shader_stage_to_string_lookup._First;
+
+					for (const DynamicString &common_line : common_lines)
+					{
+						current_shader_stage->_Lines.Emplace(common_line);
+					}
+
+					//Add the entry point marker.
+					current_shader_stage->_Lines.Emplace("__ENTRYPOINT");
+
+					break;
+				}
+			}
+
+			//If we haven't started parsing the first shader, add to the common lines.
+			if (!has_started_parsing_first_shader)
+			{
+				common_lines.Emplace(current_line);
+			}
 		}
 	}
 }

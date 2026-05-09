@@ -139,12 +139,23 @@ private:
 		const char *const RESTRICT extension,
 		const char *const RESTRICT sub_folder,
 		DynamicArray<DynamicString> *const RESTRICT lines,
-		const uint64 current_line_index
+		const uint64 current_line_index,
+		const char *const RESTRICT replacement_line = nullptr
 	) NOEXCEPT;
 
 	/*
 	*	Resolves includes.
 	*/
 	void ResolveIncludes(DynamicArray<DynamicString> *const RESTRICT lines) NOEXCEPT;
+
+	/*
+	*	Consumes settings.
+	*/
+	void ConsumeSettings(DynamicArray<DynamicString> *const RESTRICT lines) NOEXCEPT;
+
+	/*
+	*	Splits shader stages.
+	*/
+	void SplitShaderStages(const DynamicArray<DynamicString> &lines, DynamicArray<class ShaderStageLines> *const RESTRICT shader_stages) NOEXCEPT;
 
 };
