@@ -6,6 +6,7 @@
 
 //File.
 #include <File/Core/File.h>
+#include <File/Core/BinaryOutputFile.h>
 #include <File/Utilities/TextParsingUtilities.h>
 
 //Profiling.
@@ -29,6 +30,29 @@
 
 #define COMPILE_SINGLE_THREADED (1)
 #define LOAD_SINGLE_THREADED (1)
+
+/*
+*	Extra data class definition.
+*/
+class ExtraData final
+{
+
+public:
+
+	//The compute local size.
+	struct
+	{
+		//The width.
+		uint32 _Width;
+
+		//The height.
+		uint32 _Height;
+
+		//The depth.
+		uint32 _Depth;
+	} _ComputeLocalSize;
+
+};
 
 //The shader stage -> string lookup.
 constexpr Pair<ShaderStage, const char *const RESTRICT> SHADER_STAGE_TO_STRING_LOOKUP[]
@@ -192,8 +216,19 @@ void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT co
 {
 	PROFILING_SCOPE("RenderPipelineAssetCompiler::CompileInternal");
 
-	//Retrieve all the lines from the file.
+	//We should be able to store everything directly in an asset and then serialize that.
+	RenderPipelineAsset asset;
+
+	//Store extra data.
+	ExtraData extra_data;
+
+	//Retrieve the lines.
 	DynamicArray<DynamicString> lines;
+
+	//Start with the global render data.
+	RetrieveLines(ENGINE_RENDERING_PATH "\\Global Render Data\\GlobalRenderData.global_render_data", &lines);
+
+	//Then add in the lines from the file.
 	RetrieveLines(compile_data->_FilePath.Data(), &lines);
 
 	//Resolve includes.
@@ -203,16 +238,74 @@ void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT co
 	StripComments(&lines);
 
 	//Consume settings.
-	ConsumeSettings(&lines);
+	ConsumeSettings(&asset, &extra_data, &lines);
 
 	//Split the shader stages.
 	DynamicArray<ShaderStageLines> shader_stages;
 	SplitShaderStages(lines, &shader_stages);
 
 	//Compile the GLSL shaders.
-	CompileGLSLShaders(*compile_data, shader_stages);
+	CompileGLSLShaders(*compile_data, extra_data, shader_stages);
 
-	//BREAKPOINT();
+	//Determine the collection directory.
+	char collection_directory_path[MAXIMUM_FILE_PATH_LENGTH];
+
+	if (compile_data->_Collection)
+	{
+		sprintf_s(collection_directory_path, "%s\\COLLECTION %s", GetCompiledDirectoryPath(compile_data->_CompilationDomain), compile_data->_Collection.Data());
+	}
+
+	else
+	{
+		sprintf_s(collection_directory_path, "%s\\COLLECTION Default", GetCompiledDirectoryPath(compile_data->_CompilationDomain));
+	}
+
+	//Create the compiled directory, if it doesn't exist.
+	File::CreateDirectory(collection_directory_path);
+
+	//Determine the directory path.
+	char directory_path[MAXIMUM_FILE_PATH_LENGTH];
+	sprintf_s(directory_path, "%s\\RenderPipelines", collection_directory_path);
+
+	//Create the compiled directory, if it doesn't exist.
+	File::CreateDirectory(directory_path);
+
+	//Determine the output file path.
+	char output_file_path[MAXIMUM_FILE_PATH_LENGTH];
+	sprintf_s(output_file_path, "%s\\%s.ca", directory_path, compile_data->_Name.Data());
+
+	//Open the output file.
+	BinaryOutputFile output_file{ output_file_path };
+
+	//Write the asset header to the file.
+	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_data->_Name.Data()), compile_data->_Name.Data() };
+	output_file.Write(&asset_header, sizeof(AssetHeader));
+
+	//Write the common data.
+	{
+		//Write the input stream subscriptions.
+		{
+			const uint64 number_of_input_stream_subscriptions{ asset._CommonData._InputStreamSubscriptions.Size() };
+			output_file.Write(&number_of_input_stream_subscriptions, sizeof(uint64));
+
+			if (number_of_input_stream_subscriptions > 0)
+			{
+				output_file.Write(asset._CommonData._InputStreamSubscriptions.Data(), number_of_input_stream_subscriptions * sizeof(HashString));
+			}
+		}
+	}
+
+	//Write the graphics data.
+	{
+		//Write the color load operator.
+		output_file.Write(&asset._GraphicsData._ColorLoadOperator, sizeof(AttachmentLoadOperator));
+
+		//Write the color store operator.
+		output_file.Write(&asset._GraphicsData._ColorStoreOperator, sizeof(AttachmentStoreOperator));
+	}
+
+	//Close the output file.
+	output_file.Close();
 }
 
 /*
@@ -224,6 +317,30 @@ void RenderPipelineAssetCompiler::LoadInternal(LoadData *const RESTRICT load_dat
 
 	//Read the data.
 	uint64 stream_archive_position{ load_data->_StreamArchivePosition };
+
+	//Read the common data.
+	{
+		//Read the input stream subscriptions.
+		{
+			uint64 number_of_input_stream_subscriptions;
+			load_data->_StreamArchive->Read(&number_of_input_stream_subscriptions, sizeof(uint64), &stream_archive_position);
+
+			if (number_of_input_stream_subscriptions > 0)
+			{
+				load_data->_Asset->_CommonData._InputStreamSubscriptions.Upsize<false>(number_of_input_stream_subscriptions);
+				load_data->_StreamArchive->Read(load_data->_Asset->_CommonData._InputStreamSubscriptions.Data(), number_of_input_stream_subscriptions * sizeof(HashString), &stream_archive_position);
+			}
+		}
+	}
+
+	//Read the graphics data.
+	{
+		//Read the color load operator.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._ColorLoadOperator, sizeof(AttachmentLoadOperator), &stream_archive_position);
+
+		//Read the color store operator.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._ColorStoreOperator, sizeof(AttachmentStoreOperator), &stream_archive_position);
+	}
 }
 
 /*
@@ -466,9 +583,175 @@ void RenderPipelineAssetCompiler::ResolveIncludes(DynamicArray<DynamicString> *c
 /*
 *	Consumes settings.
 */
-void RenderPipelineAssetCompiler::ConsumeSettings(DynamicArray<DynamicString> *const RESTRICT lines) NOEXCEPT
+void RenderPipelineAssetCompiler::ConsumeSettings(RenderPipelineAsset *const RESTRICT asset, ExtraData *const RESTRICT extra_data, DynamicArray<DynamicString> *const RESTRICT lines) NOEXCEPT
 {
-	//TODO. (:
+	//Iterate over the lines, and either consume them or add them back (or both).
+	for (uint64 line_index{ 0 }; line_index < lines->Size();)
+	{
+		//Cache the line.
+		const DynamicString &line{ lines->At(line_index) };
+
+		//Is this a compute local size definition?
+		if (line.Find("ComputeLocalSize("))
+		{
+			//Parse the arguments.
+			StaticArray<DynamicString, 3> arguments;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					arguments.Data()
+				)
+			};
+			ASSERT(number_of_arguments_parsed <= 3, "Invalid number of arguments for 'ComputeLocalSize()'!");
+
+			//Fill in the extra data.
+			if (number_of_arguments_parsed >= 1)
+			{
+				extra_data->_ComputeLocalSize._Width = std::stoul(arguments[0].Data());
+			}
+
+			else
+			{
+				extra_data->_ComputeLocalSize._Width = 1;
+			}
+
+			if (number_of_arguments_parsed >= 2)
+			{
+				extra_data->_ComputeLocalSize._Height = std::stoul(arguments[1].Data());
+			}
+
+			else
+			{
+				extra_data->_ComputeLocalSize._Height = 1;
+			}
+
+			if (number_of_arguments_parsed >= 3)
+			{
+				extra_data->_ComputeLocalSize._Depth = std::stoul(arguments[2].Data());
+			}
+
+			else
+			{
+				extra_data->_ComputeLocalSize._Depth = 1;
+			}
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a color load operator definition?
+		else if (line.Find("ColorLoadOperator("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'ColorLoadOperator()'!");
+
+			//Set the value.
+			if (argument == "LOAD")
+			{
+				asset->_GraphicsData._ColorLoadOperator = AttachmentLoadOperator::LOAD;
+			}
+
+			else if (argument == "CLEAR")
+			{
+				asset->_GraphicsData._ColorLoadOperator = AttachmentLoadOperator::CLEAR;
+			}
+
+			else if (argument == "DONT_CARE")
+			{
+				asset->_GraphicsData._ColorLoadOperator = AttachmentLoadOperator::DONT_CARE;
+			}
+
+			else
+			{
+				ASSERT(false, "Unknown argument for 'ColorLoadOperator()': %s", argument.Data());
+			}
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a color store operator definition?
+		if (line.Find("ColorStoreOperator("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'ColorStoreOperator()'!");
+
+			//Set the value.
+			if (argument == "STORE")
+			{
+				asset->_GraphicsData._ColorStoreOperator = AttachmentStoreOperator::STORE;
+			}
+
+			else if (argument == "DONT_CARE")
+			{
+				asset->_GraphicsData._ColorStoreOperator = AttachmentStoreOperator::DONT_CARE;
+			}
+
+			else
+			{
+				ASSERT(false, "Unknown argument for 'ColorStoreOperator()': %s", argument.Data());
+			}
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this an input stream subscription definition?
+		if (line.Find("SubscribeToInputStream("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'SubscribeToInputStream()'!");
+
+			//Set the value.
+			asset->_CommonData._InputStreamSubscriptions.Emplace(HashString(argument.Data()));
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Otherwise, just increment.
+		else
+		{
+			++line_index;
+		}
+	}
 }
 
 /*
@@ -561,6 +844,7 @@ void RenderPipelineAssetCompiler::SplitShaderStages(const DynamicArray<DynamicSt
 void RenderPipelineAssetCompiler::CompileGLSLShaders
 (
 	const CompileData &compile_data,
+	const ExtraData &extra_data,
 	const DynamicArray<ShaderStageLines> &shader_stages
 ) NOEXCEPT
 {
@@ -580,57 +864,14 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 		for (uint64 current_line_index{ 0 }; current_line_index < shader_stage._Lines.Size(); ++current_line_index)
 		{
 			//Cache the current line.
-			const DynamicString &current_line{ shader_stage._Lines[current_line_index] };
+			DynamicString current_line{ shader_stage._Lines[current_line_index] };
 
-			//Handle compute render targets.
-			if (current_line.Find("ComputeRenderTarget("))
-			{
-				//Parse the arguments.
-				StaticArray<DynamicString, 2> arguments;
-
-				const uint64 number_of_arguments_parsed
-				{
-					TextParsingUtilities::ParseFunctionArguments
-					(
-						current_line.Data(),
-						current_line.Length(),
-						arguments.Data()
-					)
-				};
-				ASSERT(number_of_arguments_parsed == 2, "Wrong number of arguments for 'ComputeRenderTarget()' declaration!");
-
-				//Figure out the format string.
-				const char* RESTRICT format_string;
-
-				if (arguments[1] == "R_UINT8")
-				{
-					format_string = "r8";
-				}
-
-				else if (arguments[1] == "RGBA_UINT8")
-				{
-					format_string = "rgba8";
-				}
-
-				else if (arguments[1] == "RGBA_FLOAT32")
-				{
-					format_string = "rgba32f";
-				}
-
-				else
-				{
-					ASSERT(false, "Unknown compute render target format!");
-				}
-
-				//Construct the GLSL line and add it.
-				char glsl_line[128];
-				sprintf_s(glsl_line, "layout (set = 1, binding = %u, %s) uniform image2D %s;", current_binding_index++, format_string, arguments[0].Data());
-
-				glsl_lines.Emplace(glsl_line);
-			}
+			//////////////////////////////
+			// MULTI LINE MODIFICATIONS //
+			//////////////////////////////
 
 			//Handle uniform buffer declarations.
-			else if (current_line.Find("UniformBuffer("))
+			if (current_line.Find("UniformBuffer("))
 			{
 				//Parse the buffer name.
 				DynamicString buffer_name;
@@ -795,13 +1036,174 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 						}
 					}
 				}
+
+				continue;
 			}
 
-			//Otherwise, just add the line as is.
-			else
+			///////////////////////////////
+			// SINGLE LINE MODIFICATIONS //
+			///////////////////////////////
+
+			//Handle the entrypoint.
+			if (current_line.Find("__ENTRYPOINT"))
 			{
-				glsl_lines.Emplace(current_line);
+				//This is a good time to add shader stage specific stuff.
+				switch (shader_stage._ShaderStage)
+				{
+					case ShaderStage::COMPUTE:
+					{
+						//Add the compute local size.
+						{
+							char buffer[128];
+							sprintf_s(buffer, "layout (local_size_x = %u, local_size_y = %u, local_size_z = %u) in;", extra_data._ComputeLocalSize._Width, extra_data._ComputeLocalSize._Height, extra_data._ComputeLocalSize._Depth);
+						
+							glsl_lines.Emplace(buffer);
+							glsl_lines.Emplace("");
+						}
+
+						//Add the "ComputeWorkGroupSize()" function.
+						{
+							char buffer[128];
+
+							sprintf_s(buffer, "%s", "uvec3 ComputeWorkGroupSize()");
+							glsl_lines.Emplace(buffer);
+
+							sprintf_s(buffer, "%s", "{");
+							glsl_lines.Emplace(buffer);
+
+							sprintf_s(buffer, "\treturn uvec3(%u, %u, %u);", extra_data._ComputeLocalSize._Width, extra_data._ComputeLocalSize._Height, extra_data._ComputeLocalSize._Depth);
+							glsl_lines.Emplace(buffer);
+
+							sprintf_s(buffer, "%s", "}");
+							glsl_lines.Emplace(buffer);
+
+							glsl_lines.Emplace("");
+						}
+
+						//Add the "ComputeDimensions()" function.
+						{
+							char buffer[128];
+
+							sprintf_s(buffer, "%s", "uvec3 ComputeDimensions()");
+							glsl_lines.Emplace(buffer);
+
+							sprintf_s(buffer, "%s", "{");
+							glsl_lines.Emplace(buffer);
+
+							sprintf_s(buffer, "%s", "\treturn ComputeWorkGroupSize() * gl_NumWorkGroups;");
+							glsl_lines.Emplace(buffer);
+
+							sprintf_s(buffer, "%s", "}");
+							glsl_lines.Emplace(buffer);
+
+							glsl_lines.Emplace("");
+						}
+
+						break;
+					}
+				}
+
+				//Modify the line.
+				current_line = "void main()";
 			}
+
+			//Replace "COMPUTE_GLOBAL_ID" with "gl_GlobalInvocationID".
+			if (current_line.Find("COMPUTE_GLOBAL_ID"))
+			{
+				std::string _current_line{ current_line.Data() };
+
+				size_t position{ _current_line.find("COMPUTE_GLOBAL_ID") };
+
+				while (position != std::string::npos)
+				{
+					_current_line.replace(position, strlen("COMPUTE_GLOBAL_ID"), "gl_GlobalInvocationID");
+					position = _current_line.find("COMPUTE_GLOBAL_ID");
+				}
+
+				current_line = _current_line.c_str();
+			}
+
+			//Handle compute render targets.
+			if (current_line.Find("ComputeRenderTarget("))
+			{
+				//Parse the arguments.
+				StaticArray<DynamicString, 2> arguments;
+
+				const uint64 number_of_arguments_parsed
+				{
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.Data(),
+						current_line.Length(),
+						arguments.Data()
+					)
+				};
+				ASSERT(number_of_arguments_parsed == 2, "Wrong number of arguments for 'ComputeRenderTarget()' declaration!");
+
+				//Figure out the format string.
+				const char *RESTRICT format_string;
+
+				if (arguments[1] == "R_UINT8")
+				{
+					format_string = "r8";
+				}
+
+				else if (arguments[1] == "RGBA_UINT8")
+				{
+					format_string = "rgba8";
+				}
+
+				else if (arguments[1] == "RGBA_FLOAT32")
+				{
+					format_string = "rgba32f";
+				}
+
+				else
+				{
+					ASSERT(false, "Unknown compute render target format!");
+				}
+
+				//Construct the GLSL line and add it.
+				char glsl_line[128];
+				sprintf_s(glsl_line, "layout (set = 1, binding = %u, %s) uniform image2D %s;", current_binding_index++, format_string, arguments[0].Data());
+
+				current_line = glsl_line;
+			}
+
+			//Replace "ImageLoad" with "imageLoad".
+			if (current_line.Find("ImageLoad"))
+			{
+				std::string _current_line{ current_line.Data() };
+
+				size_t position{ _current_line.find("ImageLoad") };
+
+				while (position != std::string::npos)
+				{
+					_current_line.replace(position, strlen("ImageLoad"), "imageLoad");
+					position = _current_line.find("ImageLoad");
+				}
+
+				current_line = _current_line.c_str();
+			}
+
+			//Replace "ImageStore" with "imageStore".
+			if (current_line.Find("ImageStore"))
+			{
+				std::string _current_line{ current_line.Data() };
+
+				size_t position{ _current_line.find("ImageStore") };
+
+				while (position != std::string::npos)
+				{
+					_current_line.replace(position, strlen("ImageStore"), "imageStore");
+					position = _current_line.find("ImageStore");
+				}
+
+				current_line = _current_line.c_str();
+			}
+
+			//Add the line.
+			glsl_lines.Emplace(current_line);
 		}
 
 		//For debug purposes, write out the GLSL shader to file for inspection.

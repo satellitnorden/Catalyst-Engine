@@ -151,7 +151,7 @@ private:
 	/*
 	*	Consumes settings.
 	*/
-	void ConsumeSettings(DynamicArray<DynamicString> *const RESTRICT lines) NOEXCEPT;
+	void ConsumeSettings(RenderPipelineAsset *const RESTRICT asset, class ExtraData *const RESTRICT extra_data, DynamicArray<DynamicString> *const RESTRICT lines) NOEXCEPT;
 
 	/*
 	*	Splits shader stages.
@@ -164,6 +164,7 @@ private:
 	void CompileGLSLShaders
 	(
 		const CompileData &compile_data,
+		const class ExtraData &extra_data,
 		const DynamicArray<class ShaderStageLines> &shader_stages
 	) NOEXCEPT;
 

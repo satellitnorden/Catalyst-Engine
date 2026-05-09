@@ -61,6 +61,13 @@ NO_DISCARD bool GLSLCompilation::Compile(const CompileParameters &parameters) NO
 			break;
 		}
 
+		case ShaderStage::VERTEX:
+		{
+			shader_kind = shaderc_shader_kind::shaderc_glsl_vertex_shader;
+
+			break;
+		}
+
 		default:
 		{
 			ASSERT(false, "Invalid case!");
