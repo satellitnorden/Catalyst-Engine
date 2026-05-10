@@ -442,7 +442,7 @@ public:
 
 				if (matching_characters == substring_length)
 				{
-					return &_String[i - matching_characters];
+					return &_String[i - matching_characters + 1];
 				}
 			}
 

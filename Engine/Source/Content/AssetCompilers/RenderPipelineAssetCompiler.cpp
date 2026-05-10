@@ -56,9 +56,9 @@ public:
 	};
 
 	/*
-	*	Vertex output parameter class definition.
+	*	Output parameter class definition.
 	*/
-	class VertexOutputParameter final
+	class OutputParameter final
 	{
 
 	public:
@@ -72,9 +72,9 @@ public:
 	};
 
 	/*
-	*	Fragment input parameter class definition.
+	*	Input parameter class definition.
 	*/
-	class FragmentInputParameter final
+	class InputParameter final
 	{
 
 	public:
@@ -87,14 +87,36 @@ public:
 
 	};
 
+	/*
+	*	Ray tracing payload.
+	*/
+	class RayTracingPayload final
+	{
+
+	public:
+
+		//The index.
+		uint32 _Index;
+
+		//The type.
+		DynamicString _Type;
+
+		//The name.
+		DynamicString _Name;
+
+	};
+
 	//The push constant data values.
 	DynamicArray<PushConstantDataValue> _PushConstantDataValues;
 
+	//The vertex input parameters.
+	DynamicArray<InputParameter> _VertexInputParameters;
+
 	//The vertex output parameters.
-	DynamicArray<VertexOutputParameter> _VertexOutputParameters;
+	DynamicArray<OutputParameter> _VertexOutputParameters;
 
 	//The fragment input parameters.
-	DynamicArray<FragmentInputParameter> _FragmentInputParameters;
+	DynamicArray<InputParameter> _FragmentInputParameters;
 
 	//The compute local size.
 	struct
@@ -108,6 +130,18 @@ public:
 		//The depth.
 		uint32 _Depth;
 	} _ComputeLocalSize;
+
+	//The ray generation payloads.
+	DynamicArray<RayTracingPayload> _RayGenerationPayloads;
+
+	//The ray miss payloads.
+	DynamicArray<DynamicArray<RayTracingPayload>> _RayMissPayloads;
+
+	//The ray any hit payloads.
+	DynamicArray<DynamicArray<RayTracingPayload>> _RayAnyHitPayloads;
+
+	//The ray closest hit payloads.
+	DynamicArray<DynamicArray<RayTracingPayload>> _RayClosestHitPayloads;
 
 };
 
@@ -175,6 +209,107 @@ FORCE_INLINE NO_DISCARD AttachmentStoreOperator ParseAttachmentStoreOperator(con
 		ASSERT(false, "Unknown attachment store operator string: %s", string);
 
 		return static_cast<AttachmentStoreOperator>(0);
+	}
+}
+
+/*
+*	Parses a blend factor.
+*/
+FORCE_INLINE NO_DISCARD BlendFactor ParseBlendFactor(const char *const RESTRICT string) NOEXCEPT
+{
+	if (StringUtilities::IsEqual(string, "ZERO"))
+	{
+		return BlendFactor::ZERO;
+	}
+
+	else if (StringUtilities::IsEqual(string, "ONE"))
+	{
+		return BlendFactor::ONE;
+	}
+
+	else if (StringUtilities::IsEqual(string, "SOURCE_COLOR"))
+	{
+		return BlendFactor::SOURCE_COLOR;
+	}
+
+	else if (StringUtilities::IsEqual(string, "ONE_MINUS_SOURCE_COLOR"))
+	{
+		return BlendFactor::ONE_MINUS_SOURCE_COLOR;
+	}
+
+	else if (StringUtilities::IsEqual(string, "DESTINATION_COLOR"))
+	{
+		return BlendFactor::DESTINATION_COLOR;
+	}
+
+	else if (StringUtilities::IsEqual(string, "ONE_MINUS_DESTINATION_COLOR"))
+	{
+		return BlendFactor::ONE_MINUS_DESTINATION_COLOR;
+	}
+
+	else if (StringUtilities::IsEqual(string, "SOURCE_ALPHA"))
+	{
+		return BlendFactor::SOURCE_ALPHA;
+	}
+
+	else if (StringUtilities::IsEqual(string, "ONE_MINUS_SOURCE_ALPHA"))
+	{
+		return BlendFactor::ONE_MINUS_SOURCE_ALPHA;
+	}
+
+	else if (StringUtilities::IsEqual(string, "DESTINATION_ALPHA"))
+	{
+		return BlendFactor::DESTINATION_ALPHA;
+	}
+
+	else if (StringUtilities::IsEqual(string, "ONE_MINUS_DESTINATION_ALPHA"))
+	{
+		return BlendFactor::ONE_MINUS_DESTINATION_ALPHA;
+	}
+
+	else
+	{
+		ASSERT(false, "Unknown blend factor: %s", string);
+
+		return static_cast<BlendFactor>(0);
+	}
+}
+
+/*
+*	Parses a blend operator.
+*/
+FORCE_INLINE NO_DISCARD BlendOperator ParseBlendOperator(const char *const RESTRICT string) NOEXCEPT
+{
+	if (StringUtilities::IsEqual(string, "ADD"))
+	{
+		return BlendOperator::ADD;
+	}
+
+	else if (StringUtilities::IsEqual(string, "SUBTRACT"))
+	{
+		return BlendOperator::SUBTRACT;
+	}
+
+	else if (StringUtilities::IsEqual(string, "REVERSE_SUBTRACT"))
+	{
+		return BlendOperator::REVERSE_SUBTRACT;
+	}
+
+	else if (StringUtilities::IsEqual(string, "MIN"))
+	{
+		return BlendOperator::MIN;
+	}
+
+	else if (StringUtilities::IsEqual(string, "MAX"))
+	{
+		return BlendOperator::MAX;
+	}
+
+	else
+	{
+		ASSERT(false, "Unknown blend operator: %s", string);
+
+		return static_cast<BlendOperator>(0);
 	}
 }
 
@@ -313,6 +448,9 @@ public:
 
 	//The shader stage.
 	ShaderStage _ShaderStage;
+
+	//The ray tracing hit group this shader belongs to (if any).
+	DynamicString _RayTracingHitGroup;
 
 	//The lines.
 	DynamicArray<DynamicString> _Lines;
@@ -565,6 +703,27 @@ void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT co
 
 		//Write the depth buffer.
 		output_file.Write(&asset._GraphicsData._DepthBuffer, sizeof(HashString));
+
+		//Write whether or not blend is enabled.
+		output_file.Write(&asset._GraphicsData._BlendEnabled, sizeof(bool));
+
+		//Write the blend color source factor.
+		output_file.Write(&asset._GraphicsData._BlendColorSourceFactor, sizeof(BlendFactor));
+
+		//Write the blend color destination factor.
+		output_file.Write(&asset._GraphicsData._BlendColorDestinationFactor, sizeof(BlendFactor));
+
+		//Write the blend color operator.
+		output_file.Write(&asset._GraphicsData._BlendColorOperator, sizeof(BlendOperator));
+
+		//Write the blend alpha source factor.
+		output_file.Write(&asset._GraphicsData._BlendAlphaSourceFactor, sizeof(BlendFactor));
+
+		//Write the blend alpha destination factor.
+		output_file.Write(&asset._GraphicsData._BlendAlphaDestinationFactor, sizeof(BlendFactor));
+
+		//Write the blend alpha operator.
+		output_file.Write(&asset._GraphicsData._BlendAlphaOperator, sizeof(BlendOperator));
 	}
 
 	//Close the output file.
@@ -651,6 +810,27 @@ void RenderPipelineAssetCompiler::LoadInternal(LoadData *const RESTRICT load_dat
 
 		//Read the depth buffer.
 		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._DepthBuffer, sizeof(HashString), &stream_archive_position);
+
+		//Read whether or not blend is enabled.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._BlendEnabled, sizeof(bool), &stream_archive_position);
+
+		//Read the blend color source factor.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._BlendColorSourceFactor, sizeof(BlendFactor), &stream_archive_position);
+
+		//Read the blend color destination factor.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._BlendColorDestinationFactor, sizeof(BlendFactor), &stream_archive_position);
+
+		//Read the blend color operator.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._BlendColorOperator, sizeof(BlendOperator), &stream_archive_position);
+
+		//Read the blend alpha source factor.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._BlendAlphaSourceFactor, sizeof(BlendFactor), &stream_archive_position);
+
+		//Read the blend alpha destination factor.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._BlendAlphaDestinationFactor, sizeof(BlendFactor), &stream_archive_position);
+
+		//Read the blend alpha operator.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._BlendAlphaOperator, sizeof(BlendOperator), &stream_archive_position);
 	}
 }
 
@@ -840,7 +1020,8 @@ void RenderPipelineAssetCompiler::ResolveIncludes(DynamicArray<DynamicString> *c
 				"common_shader",
 				"Common Shaders",
 				lines,
-				current_line_index
+				current_line_index,
+				"RayClosestHit"
 			);
 		}
 
@@ -896,14 +1077,211 @@ void RenderPipelineAssetCompiler::ResolveIncludes(DynamicArray<DynamicString> *c
 */
 void RenderPipelineAssetCompiler::ConsumeSettings(RenderPipelineAsset *const RESTRICT asset, ExtraData *const RESTRICT extra_data, DynamicArray<DynamicString> *const RESTRICT lines) NOEXCEPT
 {
+	//Keep track of the current shader stage.
+	ShaderStage current_shader_stage{ static_cast<ShaderStage>(0) };
+
+	//Remember the current ray tracing indices.
+	uint32 current_ray_any_hit_index{ UINT32_MAXIMUM };
+	uint32 current_ray_closest_hit_index{ UINT32_MAXIMUM };
+	uint32 current_ray_miss_index{ UINT32_MAXIMUM };
+
 	//Iterate over the lines, and either consume them or add them back (or both).
 	for (uint64 line_index{ 0 }; line_index < lines->Size();)
 	{
 		//Cache the line.
 		const DynamicString &line{ lines->At(line_index) };
 
+		//Update the current shader stage.
+		for (const Pair<ShaderStage, const char *const RESTRICT> &shader_stage_to_string_lookup : SHADER_STAGE_TO_STRING_LOOKUP)
+		{
+			if (line == shader_stage_to_string_lookup._Second)
+			{
+				current_shader_stage = shader_stage_to_string_lookup._First;
+
+				switch (current_shader_stage)
+				{
+					case ShaderStage::RAY_ANY_HIT:
+					{
+						++current_ray_any_hit_index;
+
+						break;
+					}
+
+					case ShaderStage::RAY_CLOSEST_HIT:
+					{
+						++current_ray_closest_hit_index;
+
+						break;
+					}
+
+					case ShaderStage::RAY_MISS:
+					{
+						++current_ray_miss_index;
+
+						break;
+					}
+				}
+
+				break;
+			}
+		}
+
+		//Is this a blend alpha destination factor declaration?
+		if (line.Find("BlendAlphaDestinationFactor("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'BlendAlphaDestinationFactor()'!");
+
+			//Set the value.
+			asset->_GraphicsData._BlendAlphaDestinationFactor = ParseBlendFactor(argument.Data());
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a blend alpha source factor declaration?
+		else if (line.Find("BlendAlphaSourceFactor("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'BlendAlphaSourceFactor()'!");
+
+			//Set the value.
+			asset->_GraphicsData._BlendAlphaSourceFactor = ParseBlendFactor(argument.Data());
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a blend alpha operator declaration?
+		else if (line.Find("BlendAlphaOperator("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'BlendAlphaOperator()'!");
+
+			//Set the value.
+			asset->_GraphicsData._BlendAlphaOperator = ParseBlendOperator(argument.Data());
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a blend color destination factor declaration?
+		else if (line.Find("BlendColorDestinationFactor("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'BlendColorDestinationFactor()'!");
+
+			//Set the value.
+			asset->_GraphicsData._BlendColorDestinationFactor = ParseBlendFactor(argument.Data());
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a blend color source factor declaration?
+		else if (line.Find("BlendColorSourceFactor("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'BlendColorSourceFactor()'!");
+
+			//Set the value.
+			asset->_GraphicsData._BlendColorSourceFactor = ParseBlendFactor(argument.Data());
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a blend color operator declaration?
+		else if (line.Find("BlendColorOperator("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'BlendColorOperator()'!");
+
+			//Set the value.
+			asset->_GraphicsData._BlendColorOperator = ParseBlendOperator(argument.Data());
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a blend enable declaration?
+		else if (line.Find("BlendEnable()"))
+		{
+			//Set the value.
+			asset->_GraphicsData._BlendEnabled = true;
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
 		//Is this a compute local size definition?
-		if (line.Find("ComputeLocalSize("))
+		else if (line.Find("ComputeLocalSize("))
 		{
 			//Parse the arguments.
 			StaticArray<DynamicString, 3> arguments;
@@ -1158,9 +1536,36 @@ void RenderPipelineAssetCompiler::ConsumeSettings(RenderPipelineAsset *const RES
 			};
 			ASSERT(number_of_arguments_parsed == 2, "Invalid number of arguments for 'InputParameter()'!");
 
+			//Cache the input parameters array. This can be for either vertex or fragment shaders.
+			DynamicArray<ExtraData::InputParameter> *RESTRICT input_parameters{ nullptr };
+
+			switch (current_shader_stage)
+			{
+				case ShaderStage::FRAGMENT:
+				{
+					input_parameters = &extra_data->_FragmentInputParameters;
+
+					break;
+				}
+
+				case ShaderStage::VERTEX:
+				{
+					input_parameters = &extra_data->_VertexInputParameters;
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+
 			//Set the values.
-			extra_data->_FragmentInputParameters.Emplace();
-			ExtraData::FragmentInputParameter &value{ extra_data->_FragmentInputParameters.Back() };
+			input_parameters->Emplace();
+			ExtraData::InputParameter &value{ input_parameters->Back() };
 
 			value._Type = arguments[0];
 			value._Name = arguments[1];
@@ -1212,10 +1617,97 @@ void RenderPipelineAssetCompiler::ConsumeSettings(RenderPipelineAsset *const RES
 
 			//Set the values.
 			extra_data->_VertexOutputParameters.Emplace();
-			ExtraData::VertexOutputParameter &value{ extra_data->_VertexOutputParameters.Back() };
+			ExtraData::OutputParameter &value{ extra_data->_VertexOutputParameters.Back() };
 
 			value._Type = arguments[0];
 			value._Name = arguments[1];
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a payload definition?
+		else if (line.Find("Payload("))
+		{
+			//Parse the arguments.
+			StaticArray<DynamicString, 3> arguments;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					arguments.Data()
+				)
+			};
+			ASSERT(number_of_arguments_parsed <= 3, "Invalid number of arguments for 'Payload()'!");
+
+			//Fill in depending on the current shader stage.
+			switch (current_shader_stage)
+			{
+				case ShaderStage::RAY_ANY_HIT:
+				{
+					if (current_ray_any_hit_index >= extra_data->_RayAnyHitPayloads.Size())
+					{
+						extra_data->_RayAnyHitPayloads.Emplace();
+					}
+
+					extra_data->_RayAnyHitPayloads[current_ray_any_hit_index].Emplace();
+					extra_data->_RayAnyHitPayloads[current_ray_any_hit_index].Back()._Index = std::stoul(arguments[0].Data());
+					extra_data->_RayAnyHitPayloads[current_ray_any_hit_index].Back()._Type = arguments[1];
+					extra_data->_RayAnyHitPayloads[current_ray_any_hit_index].Back()._Name = arguments[2];
+
+					break;
+				}
+
+				case ShaderStage::RAY_CLOSEST_HIT:
+				{
+					if (current_ray_closest_hit_index >= extra_data->_RayClosestHitPayloads.Size())
+					{
+						extra_data->_RayClosestHitPayloads.Emplace();
+					}
+
+					extra_data->_RayClosestHitPayloads[current_ray_closest_hit_index].Emplace();
+					extra_data->_RayClosestHitPayloads[current_ray_closest_hit_index].Back()._Index = std::stoul(arguments[0].Data());
+					extra_data->_RayClosestHitPayloads[current_ray_closest_hit_index].Back()._Type = arguments[1];
+					extra_data->_RayClosestHitPayloads[current_ray_closest_hit_index].Back()._Name = arguments[2];
+
+					break;
+				}
+
+				case ShaderStage::RAY_GENERATION:
+				{
+					extra_data->_RayGenerationPayloads.Emplace();
+					extra_data->_RayGenerationPayloads.Back()._Index = std::stoul(arguments[0].Data());
+					extra_data->_RayGenerationPayloads.Back()._Type = arguments[1];
+					extra_data->_RayGenerationPayloads.Back()._Name = arguments[2];
+
+					break;
+				}
+
+				case ShaderStage::RAY_MISS:
+				{
+					if (current_ray_miss_index >= extra_data->_RayMissPayloads.Size())
+					{
+						extra_data->_RayMissPayloads.Emplace();
+					}
+
+					extra_data->_RayMissPayloads[current_ray_miss_index].Emplace();
+					extra_data->_RayMissPayloads[current_ray_miss_index].Back()._Index = std::stoul(arguments[0].Data());
+					extra_data->_RayMissPayloads[current_ray_miss_index].Back()._Type = arguments[1];
+					extra_data->_RayMissPayloads[current_ray_miss_index].Back()._Name = arguments[2];
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
 
 			//Remove this line.
 			lines->EraseAt<true>(line_index);
@@ -1579,12 +2071,35 @@ void RenderPipelineAssetCompiler::SplitShaderStages(const DynamicArray<DynamicSt
 	uint32 current_parantheses_depth{ 0 };
 	ShaderStageLines *RESTRICT current_shader_stage{ nullptr };
 
+	DynamicString current_ray_tracing_hit_group;
+
 	for (uint64 current_line_index{ 0 }; current_line_index < lines.Size(); ++current_line_index)
 	{
 		//Cache the current line.
 		const DynamicString &current_line{ lines[current_line_index] };
 
-		//If we're currentl parsing a shader, add the lines.
+		//Is this a hit group declaration?
+		if (current_line.Find("HitGroup("))
+		{
+			//Retrieve the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					current_line.Data(),
+					current_line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'HitGroup()'!");
+
+			//Set the current ray tracing hit group
+			current_ray_tracing_hit_group = argument;
+		}
+
+		//If we're currently parsing a shader, add the lines.
 		if (is_parsing_shader)
 		{
 			//Add the line.
@@ -1636,6 +2151,13 @@ void RenderPipelineAssetCompiler::SplitShaderStages(const DynamicArray<DynamicSt
 					//Add the entry point marker.
 					current_shader_stage->_Lines.Emplace("__ENTRYPOINT");
 
+					//If this is a shader that's supposed to be part of a hit group, add the current hit ray tracing hit group to the lines.
+					if (current_shader_stage->_ShaderStage == ShaderStage::RAY_ANY_HIT
+						|| current_shader_stage->_ShaderStage == ShaderStage::RAY_CLOSEST_HIT)
+					{
+						current_shader_stage->_RayTracingHitGroup = current_ray_tracing_hit_group;
+					}
+
 					break;
 				}
 			}
@@ -1659,15 +2181,277 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 	const DynamicArray<ShaderStageLines> &shader_stages
 ) NOEXCEPT
 {
+	//Define constants.
+	constexpr auto AddRayTracingData
+	{
+		[](DynamicArray<DynamicString> *const RESTRICT glsl_lines, const char *const RESTRICT hit_group = nullptr)
+		{
+			//TODO: This should not be hardcoded.
+			constexpr const char *const RESTRICT HIT_GROUPS[]
+			{
+				"OpaqueModels",
+				"MaskedModels"
+			};
+
+			char buffer[256];
+
+			uint32 current_binding{ 0 };
+
+			sprintf_s(buffer, "layout (set = 2, binding = %u) uniform accelerationStructureNV TOP_LEVEL_ACCELERATION_STRUCTURE;", current_binding++);
+			glsl_lines->Emplace(buffer);
+
+			for (const char *const RESTRICT _hit_group : HIT_GROUPS)
+			{
+				sprintf_s(buffer, "layout (set = 2, binding = %u) buffer %s_VERTEX_DATA_BUFFER { vec4 %s_VERTEX_DATA[]; } %s_VERTEX_BUFFERS[];", current_binding++, _hit_group, _hit_group, _hit_group);
+				glsl_lines->Emplace(buffer);
+
+				sprintf_s(buffer, "layout (set = 2, binding = %u) buffer %s_INDEX_DATA_BUFFER { uint %s_INDEX_DATA[]; } %s_INDEX_BUFFERS[];", current_binding++, _hit_group, _hit_group, _hit_group);
+				glsl_lines->Emplace(buffer);
+
+				sprintf_s(buffer, "layout (set = 2, binding = %u) buffer %s_MATERIAL_BUFFER { layout (offset = 0) uvec4[] %s_MATERIAL_INDICES; };", current_binding++, _hit_group, _hit_group);
+				glsl_lines->Emplace(buffer);
+			}
+
+			glsl_lines->Emplace("");
+
+			if (hit_group)
+			{
+				glsl_lines->Emplace("hitAttributeNV vec3 HIT_ATTRIBUTE;");
+				glsl_lines->Emplace("");
+
+				glsl_lines->Emplace("struct HitVertexInformation");
+				glsl_lines->Emplace("{");
+				glsl_lines->Emplace("\tvec3 _Position;");
+				glsl_lines->Emplace("\tvec3 _Normal;");
+				glsl_lines->Emplace("\tvec3 _Tangent;");
+				glsl_lines->Emplace("\tvec2 _TextureCoordinate;");
+				glsl_lines->Emplace("};");
+				glsl_lines->Emplace("");
+
+				glsl_lines->Emplace("HitVertexInformation GetHitVertexInformation()");
+				glsl_lines->Emplace("{");
+				glsl_lines->Emplace("\tHitVertexInformation hit_vertex_information;");
+				glsl_lines->Emplace("\t");
+
+				for (uint32 vertex_index{ 0 }; vertex_index < 3; ++vertex_index)
+				{
+					sprintf_s(buffer, "\tuint vertex_index_%u = %s_INDEX_BUFFERS[gl_InstanceCustomIndexNV].%s_INDEX_DATA[gl_PrimitiveID * 3 + %u];", vertex_index, hit_group, hit_group, vertex_index);
+					glsl_lines->Emplace(buffer);
+
+					for (uint32 vertex_data_index{ 0 }; vertex_data_index < 3; ++vertex_data_index)
+					{
+						sprintf_s(buffer, "\tvec4 vertex_data_%u_%u = %s_VERTEX_BUFFERS[gl_InstanceCustomIndexNV].%s_VERTEX_DATA[3 * vertex_index_%u + %u];", vertex_index, vertex_data_index, hit_group, hit_group, vertex_index, vertex_data_index);
+						glsl_lines->Emplace(buffer);
+					}
+				}
+
+				glsl_lines->Emplace("\t");
+
+				glsl_lines->Emplace("\tvec3 barycentric_coordinates = vec3(1.0f - HIT_ATTRIBUTE.x - HIT_ATTRIBUTE.y, HIT_ATTRIBUTE.x, HIT_ATTRIBUTE.y);");
+				glsl_lines->Emplace("\t");
+
+				glsl_lines->Emplace("\thit_vertex_information._Position = ");
+
+				for (uint32 vertex_index{ 0 }; vertex_index < 3; ++vertex_index)
+				{
+					sprintf_s(buffer, "\tvec3(vertex_data_%u_0.x, vertex_data_%u_0.y, vertex_data_%u_0.z) * barycentric_coordinates[%u]", vertex_index, vertex_index, vertex_index, vertex_index);
+					glsl_lines->Emplace(buffer);
+
+					if (vertex_index < 2)
+					{
+						glsl_lines->Emplace("\t+");
+					}
+
+					else
+					{
+						glsl_lines->Emplace("\t;");
+					}
+				}
+
+				glsl_lines->Emplace("\t");
+
+				glsl_lines->Emplace("\thit_vertex_information._Position = gl_ObjectToWorldNV * vec4(hit_vertex_information._Normal, 1.0f);");
+				glsl_lines->Emplace("\t");
+
+				glsl_lines->Emplace("\thit_vertex_information._Normal = ");
+
+				for (uint32 vertex_index{ 0 }; vertex_index < 3; ++vertex_index)
+				{
+					sprintf_s(buffer, "\tvec3(vertex_data_%u_0.w, vertex_data_%u_1.x, vertex_data_%u_1.y) * barycentric_coordinates[%u]", vertex_index, vertex_index, vertex_index, vertex_index);
+					glsl_lines->Emplace(buffer);
+
+					if (vertex_index < 2)
+					{
+						glsl_lines->Emplace("\t+");
+					}
+
+					else
+					{
+						glsl_lines->Emplace("\t;");
+					}
+				}
+
+				glsl_lines->Emplace("\t");
+
+				glsl_lines->Emplace("\thit_vertex_information._Normal = normalize(gl_ObjectToWorldNV * vec4(hit_vertex_information._Normal, 0.0f));");
+				glsl_lines->Emplace("\t");
+
+				glsl_lines->Emplace("\thit_vertex_information._Tangent = ");
+
+				for (uint32 vertex_index{ 0 }; vertex_index < 3; ++vertex_index)
+				{
+					sprintf_s(buffer, "\tvec3(vertex_data_%u_1.z, vertex_data_%u_1.w, vertex_data_%u_2.x) * barycentric_coordinates[%u]", vertex_index, vertex_index, vertex_index, vertex_index);
+					glsl_lines->Emplace(buffer);
+
+					if (vertex_index < 2)
+					{
+						glsl_lines->Emplace("\t+");
+					}
+
+					else
+					{
+						glsl_lines->Emplace("\t;");
+					}
+				}
+
+				glsl_lines->Emplace("\t");
+
+				glsl_lines->Emplace("\thit_vertex_information._Tangent = normalize(gl_ObjectToWorldNV * vec4(hit_vertex_information._Tangent, 0.0f));");
+				glsl_lines->Emplace("\t");
+
+				glsl_lines->Emplace("\thit_vertex_information._TextureCoordinate = ");
+
+				for (uint32 vertex_index{ 0 }; vertex_index < 3; ++vertex_index)
+				{
+					sprintf_s(buffer, "\tvec2(vertex_data_%u_2.y, vertex_data_%u_2.z) * barycentric_coordinates[%u]", vertex_index, vertex_index, vertex_index);
+					glsl_lines->Emplace(buffer);
+
+					if (vertex_index < 2)
+					{
+						glsl_lines->Emplace("\t+");
+					}
+
+					else
+					{
+						glsl_lines->Emplace("\t;");
+					}
+				}
+
+				glsl_lines->Emplace("\t");
+
+				glsl_lines->Emplace("\treturn hit_vertex_information;");
+				glsl_lines->Emplace("}");
+				glsl_lines->Emplace("");
+
+				glsl_lines->Emplace("uint GetHitMaterialIndex()");
+				glsl_lines->Emplace("{");
+
+				sprintf_s(buffer, "\treturn %s_MATERIAL_INDICES[gl_InstanceCustomIndexNV / 4][gl_InstanceCustomIndexNV & 3];", hit_group);
+				glsl_lines->Emplace(buffer);
+
+				glsl_lines->Emplace("}");
+				glsl_lines->Emplace("");
+			}
+		}
+	};
+	constexpr auto AddRayTracingPayloads
+	{
+		[](const DynamicArray<ExtraData::RayTracingPayload> &payloads, DynamicArray<DynamicString> *const RESTRICT glsl_lines)
+		{
+			if (!payloads.Empty())
+			{
+				for (const ExtraData::RayTracingPayload &payload : payloads)
+				{
+					char buffer[64];
+					sprintf_s(buffer, "layout (location = %u) rayPayloadNV %s %s;", payload._Index, payload._Type.Data(), payload._Name.Data());
+
+					glsl_lines->Emplace(buffer);
+				}
+
+				glsl_lines->Emplace("");
+			}
+		}
+	};
+
+	//Remember the current ray tracing indices.
+	uint32 current_ray_any_hit_index{ UINT32_MAXIMUM };
+	uint32 current_ray_closest_hit_index{ UINT32_MAXIMUM };
+	uint32 current_ray_miss_index{ UINT32_MAXIMUM };
+
 	//Compile all shader stages.
 	for (const ShaderStageLines &shader_stage : shader_stages)
 	{
+		//Increment the current ray tracing indices.
+		switch (shader_stage._ShaderStage)
+		{
+			case ShaderStage::RAY_ANY_HIT:
+			{
+				++current_ray_any_hit_index;
+
+				break;
+			}
+
+			case ShaderStage::RAY_CLOSEST_HIT:
+			{
+				++current_ray_closest_hit_index;
+
+				break;
+			}
+
+			case ShaderStage::RAY_MISS:
+			{
+				++current_ray_miss_index;
+
+				break;
+			}
+		}
+
 		//Create a separate set of the GLSL-ified lines.
 		DynamicArray<DynamicString> glsl_lines;
 
 		//Insert the version.
 		glsl_lines.Emplace("#version 460");
 		glsl_lines.Emplace("");
+
+		//Add global extensions.
+		glsl_lines.Emplace("#extension GL_EXT_nonuniform_qualifier : require");
+		glsl_lines.Emplace("");
+
+		//Insert shader stage specific extensions.
+		switch (shader_stage._ShaderStage)
+		{
+			case ShaderStage::RAY_ANY_HIT:
+			{
+				glsl_lines.Emplace("#extension GL_NV_ray_tracing : require");
+				glsl_lines.Emplace("");
+
+				break;
+			}
+
+			case ShaderStage::RAY_CLOSEST_HIT:
+			{
+				glsl_lines.Emplace("#extension GL_NV_ray_tracing : require");
+				glsl_lines.Emplace("");
+
+				break;
+			}
+
+			case ShaderStage::RAY_GENERATION:
+			{
+				glsl_lines.Emplace("#extension GL_NV_ray_tracing : require");
+				glsl_lines.Emplace("");
+
+				break;
+			}
+
+			case ShaderStage::RAY_MISS:
+			{
+				glsl_lines.Emplace("#extension GL_NV_ray_tracing : require");
+				glsl_lines.Emplace("");
+
+				break;
+			}
+		}
 
 		//Iterate over the shader stage lines, GLSL-ifying each line.
 		uint32 current_binding_index{ 0 };
@@ -1771,7 +2555,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 						const uint64 type_length{ type_end - type_begin };
 
-						char type[8];
+						char type[32];
 
 						for (uint64 i{ 0 }; i < type_length; ++i)
 						{
@@ -1831,7 +2615,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 										}
 									}
 
-									if (array_count_buffer[0] != '[')
+									if (array_count_buffer[0] != '\0')
 									{
 										array_count = std::stoull(array_count_buffer);
 									}
@@ -1852,6 +2636,59 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 						}
 					}
 				}
+
+				continue;
+			}
+
+			//Handle 'TraceRay()' calls.
+			if (current_line.Find("TraceRay("))
+			{
+				//Parse the arguments
+				StaticArray<DynamicString, 6> arguments;
+
+				const uint64 number_of_arguments_parsed
+				{
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.Data(),
+						current_line.Length(),
+						arguments.Data()
+					)
+				};
+				ASSERT(number_of_arguments_parsed == 6, "Wrong number of arguments for 'TraceRay()'!");
+
+				//Output the lines.
+				char buffer[64];
+
+				glsl_lines.Emplace("traceNV");
+				glsl_lines.Emplace("(");
+				glsl_lines.Emplace("\tTOP_LEVEL_ACCELERATION_STRUCTURE, /*topLevel*/");
+
+				sprintf_s(buffer, "\t%s, /*rayFlags*/", arguments[0].Data());
+				glsl_lines.Emplace(buffer);
+
+				glsl_lines.Emplace("\t0xff, /*cullMask*/");
+				glsl_lines.Emplace("\t0, /*sbtRecordOffset*/");
+				glsl_lines.Emplace("\t0, /*sbtRecordStride*/");
+
+				sprintf_s(buffer, "\t%s, /*missIndex*/", arguments[1].Data());
+				glsl_lines.Emplace(buffer);
+
+				sprintf_s(buffer, "\t%s, /*origin*/", arguments[2].Data());
+				glsl_lines.Emplace(buffer);
+
+				glsl_lines.Emplace("\tFLOAT32_EPSILON * 128.0f, /*Tmin*/");
+
+				sprintf_s(buffer, "\t%s, /*direction*/", arguments[3].Data());
+				glsl_lines.Emplace(buffer);
+
+				sprintf_s(buffer, "\t%s, /*Tmax*/", arguments[4].Data());
+				glsl_lines.Emplace(buffer);
+
+				sprintf_s(buffer, "\t%s /*payload*/", arguments[5].Data());
+				glsl_lines.Emplace(buffer);
+
+				glsl_lines.Emplace(");");
 
 				continue;
 			}
@@ -2115,7 +2952,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 						//Add the input parameters.
 						if (!extra_data._FragmentInputParameters.Empty())
 						{
-							for (const ExtraData::FragmentInputParameter &parameter : extra_data._FragmentInputParameters)
+							for (const ExtraData::InputParameter &parameter : extra_data._FragmentInputParameters)
 							{
 								char buffer[64];
 								sprintf_s(buffer, "layout (location = %u) %s in %s %s;", location_index, parameter._Type == "uint" ? "flat" : "", parameter._Type.Data(), parameter._Name.Data());
@@ -2131,12 +2968,75 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 						break;
 					}
 
+					case ShaderStage::RAY_ANY_HIT:
+					{
+						//Add the ray tracing data.
+						AddRayTracingData(&glsl_lines, shader_stage._RayTracingHitGroup.Data());
+
+						//Add the ray generation payloads.
+						if (current_ray_any_hit_index < extra_data._RayAnyHitPayloads.Size() && !extra_data._RayAnyHitPayloads[current_ray_any_hit_index].Empty())
+						{
+							AddRayTracingPayloads(extra_data._RayAnyHitPayloads[current_ray_any_hit_index], &glsl_lines);
+						}
+
+						break;
+					}
+
+					case ShaderStage::RAY_CLOSEST_HIT:
+					{
+						//Add the ray tracing data.
+						AddRayTracingData(&glsl_lines, shader_stage._RayTracingHitGroup.Data());
+
+						//Add the ray generation payloads.
+						AddRayTracingPayloads(extra_data._RayClosestHitPayloads[current_ray_closest_hit_index], &glsl_lines);
+
+						break;
+					}
+
+					case ShaderStage::RAY_GENERATION:
+					{
+						//Add the ray tracing data.
+						AddRayTracingData(&glsl_lines);
+
+						//Add the ray generation payloads.
+						AddRayTracingPayloads(extra_data._RayGenerationPayloads, &glsl_lines);
+
+						break;
+					}
+
+					case ShaderStage::RAY_MISS:
+					{
+						//Add the ray tracing data.
+						AddRayTracingData(&glsl_lines);
+
+						//Add the ray generation payloads.
+						AddRayTracingPayloads(extra_data._RayMissPayloads[current_ray_miss_index], &glsl_lines);
+
+						break;
+					}
+
 					case ShaderStage::VERTEX:
 					{
+						//Add the input parameters.
+						if (!extra_data._VertexInputParameters.Empty())
+						{
+							for (const ExtraData::InputParameter &parameter : extra_data._VertexInputParameters)
+							{
+								char buffer[64];
+								sprintf_s(buffer, "layout (location = %u) in %s %s;", location_index, parameter._Type.Data(), parameter._Name.Data());
+
+								glsl_lines.Emplace(buffer);
+
+								location_index += GLSLCompilation::GetLocationOffsetForType(parameter._Type.Data());
+							}
+
+							glsl_lines.Emplace("");
+						}
+
 						//Add the output parameters.
 						if (!extra_data._VertexOutputParameters.Empty())
 						{
-							for (const ExtraData::VertexOutputParameter &parameter : extra_data._VertexOutputParameters)
+							for (const ExtraData::OutputParameter &parameter : extra_data._VertexOutputParameters)
 							{
 								char buffer[64];
 								sprintf_s(buffer, "layout (location = %u) out %s %s;", location_index, parameter._Type.Data(), parameter._Name.Data());
@@ -2220,6 +3120,78 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 				current_line = glsl_line;
 			}
 
+			//Handle external textures.
+			if (current_line.Find("ExternalTexture("))
+			{
+				//Parse the arguments.
+				StaticArray<DynamicString, 1> arguments;
+
+				const uint64 number_of_arguments_parsed
+				{
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.Data(),
+						current_line.Length(),
+						arguments.Data()
+					)
+				};
+				ASSERT(number_of_arguments_parsed == 1, "Wrong number of arguments for 'ExternalTexture()' declaration!");
+
+				//Construct the GLSL line and add it.
+				char glsl_line[128];
+				sprintf_s(glsl_line, "layout (set = 1, binding = %u) uniform sampler2D %s;", current_binding_index++, arguments[0].Data());
+
+				current_line = glsl_line;
+			}
+
+			//Replace "FRAGMENT_COORDINATE" with "gl_FragCoord".
+			if (current_line.Find("FRAGMENT_COORDINATE"))
+			{
+				std::string _current_line{ current_line.Data() };
+
+				size_t position{ _current_line.find("FRAGMENT_COORDINATE") };
+
+				while (position != std::string::npos)
+				{
+					_current_line.replace(position, strlen("FRAGMENT_COORDINATE"), "gl_FragCoord");
+					position = _current_line.find("FRAGMENT_COORDINATE");
+				}
+
+				current_line = _current_line.c_str();
+			}
+
+			//Replace "FRAGMENT_FRONT_FACING" with "gl_FrontFacing".
+			if (current_line.Find("FRAGMENT_FRONT_FACING"))
+			{
+				std::string _current_line{ current_line.Data() };
+
+				size_t position{ _current_line.find("FRAGMENT_FRONT_FACING") };
+
+				while (position != std::string::npos)
+				{
+					_current_line.replace(position, strlen("FRAGMENT_FRONT_FACING"), "gl_FrontFacing");
+					position = _current_line.find("FRAGMENT_FRONT_FACING");
+				}
+
+				current_line = _current_line.c_str();
+			}
+
+			//Replace "IgnoreHit()" with "ignoreIntersectionNV()".
+			if (current_line.Find("IgnoreHit()"))
+			{
+				std::string _current_line{ current_line.Data() };
+
+				size_t position{ _current_line.find("IgnoreHit()") };
+
+				while (position != std::string::npos)
+				{
+					_current_line.replace(position, strlen("IgnoreHit()"), "ignoreIntersectionNV()");
+					position = _current_line.find("IgnoreHit()");
+				}
+
+				current_line = _current_line.c_str();
+			}
+
 			//Replace "ImageLoad" with "imageLoad".
 			if (current_line.Find("ImageLoad"))
 			{
@@ -2274,6 +3246,22 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 				sprintf_s(glsl_line, "layout (set = 1, binding = %u) uniform sampler2D %s;", current_binding_index++, arguments[0].Data());
 
 				current_line = glsl_line;
+			}
+
+			//Replace "INSTANCE_INDEX" with "gl_InstanceIndex".
+			if (current_line.Find("INSTANCE_INDEX"))
+			{
+				std::string _current_line{ current_line.Data() };
+
+				size_t position{ _current_line.find("INSTANCE_INDEX") };
+
+				while (position != std::string::npos)
+				{
+					_current_line.replace(position, strlen("INSTANCE_INDEX"), "gl_InstanceIndex");
+					position = _current_line.find("INSTANCE_INDEX");
+				}
+
+				current_line = _current_line.c_str();
 			}
 
 			//Handle fragment outputs.
@@ -2357,6 +3345,86 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 				current_line = glsl_line;
 			}
 
+			//Replace "RAY_HIT_DISTANCE" with "gl_HitTNV".
+			if (current_line.Find("RAY_HIT_DISTANCE"))
+			{
+				std::string _current_line{ current_line.Data() };
+
+				size_t position{ _current_line.find("RAY_HIT_DISTANCE") };
+
+				while (position != std::string::npos)
+				{
+					_current_line.replace(position, strlen("RAY_HIT_DISTANCE"), "gl_HitTNV");
+					position = _current_line.find("RAY_HIT_DISTANCE");
+				}
+
+				current_line = _current_line.c_str();
+			}
+
+			//Replace "RAY_TRACING_ID" with "gl_LaunchIDNV".
+			if (current_line.Find("RAY_TRACING_ID"))
+			{
+				std::string _current_line{ current_line.Data() };
+
+				size_t position{ _current_line.find("RAY_TRACING_ID") };
+
+				while (position != std::string::npos)
+				{
+					_current_line.replace(position, strlen("RAY_TRACING_ID"), "gl_LaunchIDNV");
+					position = _current_line.find("RAY_TRACING_ID");
+				}
+
+				current_line = _current_line.c_str();
+			}
+
+			//Replace "RAY_TRACING_SIZE" with "gl_LaunchSizeNV".
+			if (current_line.Find("RAY_TRACING_SIZE"))
+			{
+				std::string _current_line{ current_line.Data() };
+
+				size_t position{ _current_line.find("RAY_TRACING_SIZE") };
+
+				while (position != std::string::npos)
+				{
+					_current_line.replace(position, strlen("RAY_TRACING_SIZE"), "gl_LaunchSizeNV");
+					position = _current_line.find("RAY_TRACING_SIZE");
+				}
+
+				current_line = _current_line.c_str();
+			}
+
+			//Replace "RAY_TRACING_FLAG_SKIP_CLOSEST_HIT" with "gl_RayFlagsSkipClosestHitShaderNV".
+			if (current_line.Find("RAY_TRACING_FLAG_SKIP_CLOSEST_HIT"))
+			{
+				std::string _current_line{ current_line.Data() };
+
+				size_t position{ _current_line.find("RAY_TRACING_FLAG_SKIP_CLOSEST_HIT") };
+
+				while (position != std::string::npos)
+				{
+					_current_line.replace(position, strlen("RAY_TRACING_FLAG_SKIP_CLOSEST_HIT"), "gl_RayFlagsSkipClosestHitShaderNV");
+					position = _current_line.find("RAY_TRACING_FLAG_SKIP_CLOSEST_HIT");
+				}
+
+				current_line = _current_line.c_str();
+			}
+
+			//Replace "RAY_TRACING_FLAG_TERMINATE_ON_FIRST_HIT" with "gl_RayFlagsTerminateOnFirstHitNV".
+			if (current_line.Find("RAY_TRACING_FLAG_TERMINATE_ON_FIRST_HIT"))
+			{
+				std::string _current_line{ current_line.Data() };
+
+				size_t position{ _current_line.find("RAY_TRACING_FLAG_TERMINATE_ON_FIRST_HIT") };
+
+				while (position != std::string::npos)
+				{
+					_current_line.replace(position, strlen("RAY_TRACING_FLAG_TERMINATE_ON_FIRST_HIT"), "gl_RayFlagsTerminateOnFirstHitNV");
+					position = _current_line.find("RAY_TRACING_FLAG_TERMINATE_ON_FIRST_HIT");
+				}
+
+				current_line = _current_line.c_str();
+			}
+
 			//Handle samplers.
 			if (current_line.Find("Sampler("))
 			{
@@ -2392,6 +3460,38 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 				{
 					_current_line.replace(position, strlen("VERTEX_INDEX"), "gl_VertexIndex");
 					position = _current_line.find("VERTEX_INDEX");
+				}
+
+				current_line = _current_line.c_str();
+			}
+
+			//Replace "WORLD_RAY_DIRECTION" with "gl_WorldRayDirectionNV".
+			if (current_line.Find("WORLD_RAY_DIRECTION"))
+			{
+				std::string _current_line{ current_line.Data() };
+
+				size_t position{ _current_line.find("WORLD_RAY_DIRECTION") };
+
+				while (position != std::string::npos)
+				{
+					_current_line.replace(position, strlen("WORLD_RAY_DIRECTION"), "gl_WorldRayDirectionNV");
+					position = _current_line.find("WORLD_RAY_DIRECTION");
+				}
+
+				current_line = _current_line.c_str();
+			}
+
+			//Replace "WORLD_RAY_ORIGIN" with "gl_WorldRayOriginNV".
+			if (current_line.Find("WORLD_RAY_ORIGIN"))
+			{
+				std::string _current_line{ current_line.Data() };
+
+				size_t position{ _current_line.find("WORLD_RAY_ORIGIN") };
+
+				while (position != std::string::npos)
+				{
+					_current_line.replace(position, strlen("WORLD_RAY_ORIGIN"), "gl_WorldRayOriginNV");
+					position = _current_line.find("WORLD_RAY_ORIGIN");
 				}
 
 				current_line = _current_line.c_str();

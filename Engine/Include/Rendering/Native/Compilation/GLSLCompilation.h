@@ -132,6 +132,11 @@ namespace GLSLCompilation
 			return 1;
 		}
 
+		if (StringUtilities::IsEqual(type_string, "uvec4"))
+		{
+			return 1;
+		}
+
 		if (StringUtilities::IsEqual(type_string, "float"))
 		{
 			return 1;

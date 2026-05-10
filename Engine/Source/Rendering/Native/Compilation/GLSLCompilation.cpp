@@ -68,6 +68,34 @@ NO_DISCARD bool GLSLCompilation::Compile(const CompileParameters &parameters) NO
 			break;
 		}
 
+		case ShaderStage::RAY_ANY_HIT:
+		{
+			shader_kind = shaderc_shader_kind::shaderc_glsl_anyhit_shader;
+
+			break;
+		}
+
+		case ShaderStage::RAY_CLOSEST_HIT:
+		{
+			shader_kind = shaderc_shader_kind::shaderc_glsl_closesthit_shader;
+
+			break;
+		}
+
+		case ShaderStage::RAY_GENERATION:
+		{
+			shader_kind = shaderc_shader_kind::shaderc_glsl_raygen_shader;
+
+			break;
+		}
+
+		case ShaderStage::RAY_MISS:
+		{
+			shader_kind = shaderc_shader_kind::shaderc_glsl_miss_shader;
+
+			break;
+		}
+
 		case ShaderStage::VERTEX:
 		{
 			shader_kind = shaderc_shader_kind::shaderc_glsl_vertex_shader;

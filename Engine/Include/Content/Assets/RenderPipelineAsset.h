@@ -92,6 +92,27 @@ public:
 		//The depth buffer.
 		HashString _DepthBuffer;
 
+		//Denotes whether or not blend is enabled.
+		bool _BlendEnabled{ false };
+
+		//The blend color source factor.
+		BlendFactor _BlendColorSourceFactor{ BlendFactor::SOURCE_ALPHA };
+
+		//The blend color destination factor.
+		BlendFactor _BlendColorDestinationFactor{ BlendFactor::ONE_MINUS_SOURCE_ALPHA };
+
+		//The blend color operator.
+		BlendOperator _BlendColorOperator{ BlendOperator::ADD };
+
+		//The blend alpha source factor.
+		BlendFactor _BlendAlphaSourceFactor{ BlendFactor::ONE };
+
+		//The blend alpha destination factor.
+		BlendFactor _BlendAlphaDestinationFactor{ BlendFactor::ZERO };
+
+		//The blend alpha operator.
+		BlendOperator _BlendAlphaOperator{ BlendOperator::ADD };
+
 	};
 
 	//The type identifier.
