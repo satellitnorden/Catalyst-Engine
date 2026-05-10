@@ -38,14 +38,38 @@ public:
 		//The topology.
 		Topology _Topology{ Topology::TriangleFan };
 
+		//The cull mode.
+		CullMode _CullMode{ CullMode::NONE };
+
+		//The depth/stencil load operator.
+		AttachmentLoadOperator _DepthStencilLoadOperator{ AttachmentLoadOperator::LOAD };
+
+		//The depth/stencil store operator.
+		AttachmentStoreOperator _DepthStencilStoreOperator{ AttachmentStoreOperator::STORE };
+
 		//The color load operator.
-		AttachmentLoadOperator _ColorLoadOperator{ AttachmentLoadOperator::DONT_CARE };
+		AttachmentLoadOperator _ColorLoadOperator{ AttachmentLoadOperator::LOAD };
 
 		//The color store operator.
-		AttachmentStoreOperator _ColorStoreOperator{ AttachmentStoreOperator::DONT_CARE };
+		AttachmentStoreOperator _ColorStoreOperator{ AttachmentStoreOperator::STORE };
+
+		//Denotes whether or not the depth test is enabled.
+		bool _DepthTestEnabled{ false };
+
+		//Denotes whether or not the stencil test is enabled.
+		bool _StencilTestEnabled{ false };
+
+		//Denotes whether or not depth write is enabled.
+		bool _DepthWriteEnabled{ false };
+
+		//The depth compare operator.
+		CompareOperator _DepthCompareOperator{ CompareOperator::Always };
 
 		//The render resolution.
 		HashString _RenderResolution;
+
+		//The depth buffer.
+		HashString _DepthBuffer;
 
 	};
 

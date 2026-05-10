@@ -61,6 +61,13 @@ NO_DISCARD bool GLSLCompilation::Compile(const CompileParameters &parameters) NO
 			break;
 		}
 
+		case ShaderStage::FRAGMENT:
+		{
+			shader_kind = shaderc_shader_kind::shaderc_glsl_fragment_shader;
+
+			break;
+		}
+
 		case ShaderStage::VERTEX:
 		{
 			shader_kind = shaderc_shader_kind::shaderc_glsl_vertex_shader;

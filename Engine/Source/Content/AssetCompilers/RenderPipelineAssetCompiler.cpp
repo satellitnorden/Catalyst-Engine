@@ -55,8 +55,46 @@ public:
 
 	};
 
+	/*
+	*	Vertex output parameter class definition.
+	*/
+	class VertexOutputParameter final
+	{
+
+	public:
+
+		//The type.
+		DynamicString _Type;
+
+		//The name.
+		DynamicString _Name;
+
+	};
+
+	/*
+	*	Fragment input parameter class definition.
+	*/
+	class FragmentInputParameter final
+	{
+
+	public:
+
+		//The type.
+		DynamicString _Type;
+
+		//The name.
+		DynamicString _Name;
+
+	};
+
 	//The push constant data values.
 	DynamicArray<PushConstantDataValue> _PushConstantDataValues;
+
+	//The vertex output parameters.
+	DynamicArray<VertexOutputParameter> _VertexOutputParameters;
+
+	//The fragment input parameters.
+	DynamicArray<FragmentInputParameter> _FragmentInputParameters;
 
 	//The compute local size.
 	struct
@@ -88,6 +126,110 @@ constexpr Pair<ShaderStage, const char *const RESTRICT> SHADER_STAGE_TO_STRING_L
 	{ ShaderStage::TESSELLATION_EVALUATION, "TessellationEvaluation" },
 	{ ShaderStage::VERTEX, "Vertex" }
 };
+
+/*
+*	Parses an attachment load operator.
+*/
+FORCE_INLINE NO_DISCARD AttachmentLoadOperator ParseAttachmentLoadOperator(const char *const RESTRICT string) NOEXCEPT
+{
+	if (StringUtilities::IsEqual(string, "LOAD"))
+	{
+		return AttachmentLoadOperator::LOAD;
+	}
+
+	else if (StringUtilities::IsEqual(string, "CLEAR"))
+	{
+		return AttachmentLoadOperator::CLEAR;
+	}
+
+	else if (StringUtilities::IsEqual(string, "DONT_CARE"))
+	{
+		return AttachmentLoadOperator::DONT_CARE;
+	}
+
+	else
+	{
+		ASSERT(false, "Unknown attachment load operator string: %s", string);
+
+		return static_cast<AttachmentLoadOperator>(0);
+	}
+}
+
+/*
+*	Parses an attachment store operator.
+*/
+FORCE_INLINE NO_DISCARD AttachmentStoreOperator ParseAttachmentStoreOperator(const char* const RESTRICT string) NOEXCEPT
+{
+	if (StringUtilities::IsEqual(string, "STORE"))
+	{
+		return AttachmentStoreOperator::STORE;
+	}
+
+	else if (StringUtilities::IsEqual(string, "DONT_CARE"))
+	{
+		return AttachmentStoreOperator::DONT_CARE;
+	}
+
+	else
+	{
+		ASSERT(false, "Unknown attachment store operator string: %s", string);
+
+		return static_cast<AttachmentStoreOperator>(0);
+	}
+}
+
+/*
+*	Parses a compare operator.
+*/
+FORCE_INLINE NO_DISCARD CompareOperator ParseCompareOperator(const char *const RESTRICT string) NOEXCEPT
+{
+	if (StringUtilities::IsEqual(string, "ALWAYS"))
+	{
+		return CompareOperator::Always;
+	}
+
+	else if (StringUtilities::IsEqual(string, "EQUAL"))
+	{
+		return CompareOperator::Equal;
+	}
+
+	else if (StringUtilities::IsEqual(string, "GREATER"))
+	{
+		return CompareOperator::Greater;
+	}
+
+	else if (StringUtilities::IsEqual(string, "GREATER_OR_EQUAL"))
+	{
+		return CompareOperator::GreaterOrEqual;
+	}
+
+	else if (StringUtilities::IsEqual(string, "LESS"))
+	{
+		return CompareOperator::Less;
+	}
+
+	else if (StringUtilities::IsEqual(string, "LESS_OR_EQUAL"))
+	{
+		return CompareOperator::LessOrEqual;
+	}
+
+	else if (StringUtilities::IsEqual(string, "NEVER"))
+	{
+		return CompareOperator::Never;
+	}
+
+	else if (StringUtilities::IsEqual(string, "NOT_EQUAL"))
+	{
+		return CompareOperator::NotEqual;
+	}
+
+	else
+	{
+		ASSERT(false, "Unknown compare operator string: %s", string);
+
+		return static_cast<CompareOperator>(0);
+	}
+}
 
 /*
 *	Returns the string for the given shader stage.
@@ -319,14 +461,35 @@ void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT co
 		//Write the topology.
 		output_file.Write(&asset._GraphicsData._Topology, sizeof(Topology));
 
+		//Write the depth/stencil load operator.
+		output_file.Write(&asset._GraphicsData._DepthStencilLoadOperator, sizeof(AttachmentLoadOperator));
+
+		//Write the depth/stencil store operator.
+		output_file.Write(&asset._GraphicsData._DepthStencilStoreOperator, sizeof(AttachmentStoreOperator));
+
 		//Write the color load operator.
 		output_file.Write(&asset._GraphicsData._ColorLoadOperator, sizeof(AttachmentLoadOperator));
 
 		//Write the color store operator.
 		output_file.Write(&asset._GraphicsData._ColorStoreOperator, sizeof(AttachmentStoreOperator));
 
+		//Write whether or not the depth test is enabled.
+		output_file.Write(&asset._GraphicsData._DepthTestEnabled, sizeof(bool));
+
+		//Write whether or not the stencil test is enabled.
+		output_file.Write(&asset._GraphicsData._StencilTestEnabled, sizeof(bool));
+
+		//Write whether or not depth write is enabled.
+		output_file.Write(&asset._GraphicsData._DepthWriteEnabled, sizeof(bool));
+
+		//Write the depth compare operator.
+		output_file.Write(&asset._GraphicsData._DepthCompareOperator, sizeof(CompareOperator));
+
 		//Write the render resolution.
 		output_file.Write(&asset._GraphicsData._RenderResolution, sizeof(HashString));
+
+		//Write the depth buffer.
+		output_file.Write(&asset._GraphicsData._DepthBuffer, sizeof(HashString));
 	}
 
 	//Close the output file.
@@ -363,14 +526,35 @@ void RenderPipelineAssetCompiler::LoadInternal(LoadData *const RESTRICT load_dat
 		//Read the topology.
 		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._Topology, sizeof(Topology), &stream_archive_position);
 
+		//Read the depth/stencil load operator.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._DepthStencilLoadOperator, sizeof(AttachmentLoadOperator), &stream_archive_position);
+
+		//Read the depth/stencil store operator.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._DepthStencilLoadOperator, sizeof(AttachmentStoreOperator), &stream_archive_position);
+
 		//Read the color load operator.
 		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._ColorLoadOperator, sizeof(AttachmentLoadOperator), &stream_archive_position);
 
 		//Read the color store operator.
 		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._ColorStoreOperator, sizeof(AttachmentStoreOperator), &stream_archive_position);
 
+		//Read whether or not the depth test is enabled.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._DepthTestEnabled, sizeof(bool), &stream_archive_position);
+
+		//Read whether or not the stencil test is enabled.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._StencilTestEnabled, sizeof(bool), &stream_archive_position);
+
+		//Read whether or not depth write is enabled.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._DepthWriteEnabled, sizeof(bool), &stream_archive_position);
+
+		//Read the color store operator.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._DepthCompareOperator, sizeof(CompareOperator), &stream_archive_position);
+
 		//Read the render resolution.
 		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._RenderResolution, sizeof(HashString), &stream_archive_position);
+
+		//Read the depth buffer.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._DepthBuffer, sizeof(HashString), &stream_archive_position);
 	}
 }
 
@@ -692,32 +876,14 @@ void RenderPipelineAssetCompiler::ConsumeSettings(RenderPipelineAsset *const RES
 			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'ColorLoadOperator()'!");
 
 			//Set the value.
-			if (argument == "LOAD")
-			{
-				asset->_GraphicsData._ColorLoadOperator = AttachmentLoadOperator::LOAD;
-			}
-
-			else if (argument == "CLEAR")
-			{
-				asset->_GraphicsData._ColorLoadOperator = AttachmentLoadOperator::CLEAR;
-			}
-
-			else if (argument == "DONT_CARE")
-			{
-				asset->_GraphicsData._ColorLoadOperator = AttachmentLoadOperator::DONT_CARE;
-			}
-
-			else
-			{
-				ASSERT(false, "Unknown argument for 'ColorLoadOperator()': %s", argument.Data());
-			}
+			asset->_GraphicsData._ColorLoadOperator = ParseAttachmentLoadOperator(argument.Data());
 
 			//Remove this line.
 			lines->EraseAt<true>(line_index);
 		}
 
 		//Is this a color store operator definition?
-		if (line.Find("ColorStoreOperator("))
+		else if (line.Find("ColorStoreOperator("))
 		{
 			//Parse the argument.
 			DynamicString argument;
@@ -734,20 +900,226 @@ void RenderPipelineAssetCompiler::ConsumeSettings(RenderPipelineAsset *const RES
 			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'ColorStoreOperator()'!");
 
 			//Set the value.
-			if (argument == "STORE")
+			asset->_GraphicsData._ColorStoreOperator = ParseAttachmentStoreOperator(argument.Data());
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a cull mode definition?
+		else if (line.Find("CullMode("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
 			{
-				asset->_GraphicsData._ColorStoreOperator = AttachmentStoreOperator::STORE;
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'CullMode()'!");
+
+			//Set the value.
+			if (argument == "NONE")
+			{
+				asset->_GraphicsData._CullMode = CullMode::NONE;
 			}
 
-			else if (argument == "DONT_CARE")
+			else if (argument == "BACK")
 			{
-				asset->_GraphicsData._ColorStoreOperator = AttachmentStoreOperator::DONT_CARE;
+				asset->_GraphicsData._CullMode = CullMode::BACK;
+			}
+
+			else if (argument == "FRONT")
+			{
+				asset->_GraphicsData._CullMode = CullMode::FRONT;
+			}
+
+			else if (argument == "FRONT_AND_BACK")
+			{
+				asset->_GraphicsData._CullMode = CullMode::FRONT_AND_BACK;
 			}
 
 			else
 			{
-				ASSERT(false, "Unknown argument for 'ColorStoreOperator()': %s", argument.Data());
+				ASSERT(false, "Unknown argument for 'CullMode()': %s", argument.Data());
 			}
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a depth compare operator definition?
+		else if (line.Find("DepthCompareOperator("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'DepthCompareOperator()'!");
+
+			//Set the value.
+			asset->_GraphicsData._DepthCompareOperator = ParseCompareOperator(argument.Data());
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a depth/stencil load operator definition?
+		else if (line.Find("DepthStencilLoadOperator("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'DepthStencilLoadOperator()'!");
+
+			//Set the value.
+			asset->_GraphicsData._DepthStencilLoadOperator = ParseAttachmentLoadOperator(argument.Data());
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a depth/stencil store operator definition?
+		else if (line.Find("DepthStencilStoreOperator("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'DepthStencilStoreOperator()'!");
+
+			//Set the value.
+			asset->_GraphicsData._DepthStencilStoreOperator = ParseAttachmentStoreOperator(argument.Data());
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a depth test enable declaration?
+		else if (line.Find("DepthTestEnable()"))
+		{
+			//Set the value.
+			asset->_GraphicsData._DepthTestEnabled = true;
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a depth write enable declaration?
+		else if (line.Find("DepthWriteEnable()"))
+		{
+			//Set the value.
+			asset->_GraphicsData._DepthWriteEnabled = true;
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a (fragment) input parameter declaration?
+		else if (line.Find("InputParameter("))
+		{
+			//Parse the argument.
+			StaticArray<DynamicString, 2> arguments;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					arguments.Data()
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 2, "Invalid number of arguments for 'InputParameter()'!");
+
+			//Set the values.
+			extra_data->_FragmentInputParameters.Emplace();
+			ExtraData::FragmentInputParameter &value{ extra_data->_FragmentInputParameters.Back() };
+
+			value._Type = arguments[0];
+			value._Name = arguments[1];
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this an output depth buffer declaration?
+		else if (line.Find("OutputDepthBuffer("))
+		{
+			//Parse the argument.
+			StaticArray<DynamicString, 1> arguments;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					arguments.Data()
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'OutputDepthBuffer()'!");
+
+			//Set the value.
+			asset->_GraphicsData._DepthBuffer = HashString(arguments[0].Data());
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a (vertex) output parameter declaration?
+		else if (line.Find("OutputParameter("))
+		{
+			//Parse the argument.
+			StaticArray<DynamicString, 2> arguments;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					arguments.Data()
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 2, "Invalid number of arguments for 'OutputParameter()'!");
+
+			//Set the values.
+			extra_data->_VertexOutputParameters.Emplace();
+			ExtraData::VertexOutputParameter &value{ extra_data->_VertexOutputParameters.Back() };
+
+			value._Type = arguments[0];
+			value._Name = arguments[1];
 
 			//Remove this line.
 			lines->EraseAt<true>(line_index);
@@ -805,8 +1177,18 @@ void RenderPipelineAssetCompiler::ConsumeSettings(RenderPipelineAsset *const RES
 			lines->EraseAt<true>(line_index);
 		}
 
+		//Is this a stencil test enable declaration?
+		else if (line.Find("StencilTestEnable()"))
+		{
+			//Set the value.
+			asset->_GraphicsData._StencilTestEnabled = true;
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+			}
+
 		//Is this an input stream subscription definition?
-		if (line.Find("SubscribeToInputStream("))
+		else if (line.Find("SubscribeToInputStream("))
 		{
 			//Parse the argument.
 			DynamicString argument;
@@ -1036,6 +1418,180 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 			// MULTI LINE MODIFICATIONS //
 			//////////////////////////////
 
+			//Handle storage buffer declarations.
+			if (current_line.Find("StorageBuffer("))
+			{
+				//Parse the buffer name.
+				DynamicString buffer_name;
+
+				const uint64 number_of_arguments_parsed
+				{
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.Data(),
+						current_line.Length(),
+						&buffer_name
+					)
+				};
+				ASSERT(number_of_arguments_parsed == 1, "Wrong number of arguments for 'StorageBuffer()' declaration!");
+
+				//Insert the header.
+				char header[128];
+				sprintf_s(header, "layout (std430, set = 1, binding = %u) buffer %s", current_binding_index++, buffer_name.Data());
+
+				glsl_lines.Emplace(header);
+
+				//Iterate over the rest of the lines.
+				uint64 current_offset{ 0 };
+
+				while (true)
+				{
+					//Increment the current line index.
+					++current_line_index;
+
+					//Cache the current sub line.
+					const DynamicString &current_sub_line{ shader_stage._Lines[current_line_index] };
+
+					//If the line is only whitespace, ignore it.
+					if (TextParsingUtilities::OnlyWhitespace(current_sub_line.Data(), current_sub_line.Length()))
+					{
+						continue;
+					}
+
+					//If this is the opening bracket, add it.
+					if (current_sub_line == "{")
+					{
+						glsl_lines.Emplace(current_sub_line);
+					}
+
+					//If this is the ending bracket, add it and quit.
+					else if (current_sub_line == "};")
+					{
+						glsl_lines.Emplace(current_sub_line);
+
+						break;
+					}
+
+					//Otherwise, parse the type and name and output the GLSL-ified line.
+					else
+					{
+						uint64 type_begin{ 0 };
+
+						for (uint64 i{ 0 }; i < current_sub_line.Length(); ++i)
+						{
+							if (TextParsingUtilities::IsWhitespace(current_sub_line[i]))
+							{
+								++type_begin;
+							}
+
+							else
+							{
+								break;
+							}
+						}
+
+						uint64 type_end{ type_begin };
+
+						for (uint64 i{ type_begin }; i < current_sub_line.Length(); ++i)
+						{
+							if (!TextParsingUtilities::IsWhitespace(current_sub_line[i]))
+							{
+								++type_end;
+							}
+
+							else
+							{
+								break;
+							}
+						}
+
+						const uint64 type_length{ type_end - type_begin };
+
+						char type[8];
+
+						for (uint64 i{ 0 }; i < type_length; ++i)
+						{
+							type[i] = current_sub_line[type_begin + i];
+						}
+
+						type[type_length] = '\0';
+
+						const uint64 name_begin{ type_end + 1 };
+
+						char name[64];
+
+						for (uint64 i{ 0 };; ++i)
+						{
+							if ((name_begin + i) >= current_sub_line.Length() || current_sub_line[(name_begin + i)] == ';')
+							{
+								name[i] = '\0';
+
+								break;
+							}
+
+							else
+							{
+								name[i] = current_sub_line[(name_begin + i)];
+							}
+						}
+
+						char glsl_line[128];
+						sprintf_s(glsl_line, "\tlayout (offset = %llu) %s %s;", current_offset, type, name);
+
+						glsl_lines.Emplace(glsl_line);
+
+						//Update the current offset.
+						{
+							//Figure out if this is an array.
+							uint64 array_count{ 0 };
+
+							{
+								const char *const RESTRICT array_start_position{ current_sub_line.Find("[") };
+
+								if (array_start_position)
+								{
+									char array_count_buffer[8];
+
+									for (uint64 i{ 0 };; ++i)
+									{
+										if (array_start_position[1 + i] == ']' || array_start_position[1 + i] == '\0')
+										{
+											array_count_buffer[i] = '\0';
+
+											break;
+										}
+
+										else
+										{
+											array_count_buffer[i] = array_start_position[1 + i];
+										}
+									}
+
+									if (array_count_buffer[0] != '[')
+									{
+										array_count = std::stoull(array_count_buffer);
+									}
+								}
+							}
+
+							//Update the current offset. Assume 16 bytes for each array element if this is an array.
+							if (array_count > 0)
+							{
+								current_offset += 16 * array_count;
+							}
+
+							else
+							{
+								//Offsets are always 16 for storage buffers.
+								current_offset += 16;
+							}
+						}
+					}
+				}
+
+				continue;
+			}
+
 			//Handle uniform buffer declarations.
 			if (current_line.Find("UniformBuffer("))
 			{
@@ -1054,8 +1610,8 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 				ASSERT(number_of_arguments_parsed == 1, "Wrong number of arguments for 'UniformBuffer()' declaration!");
 
 				//Insert the header.
-				char header[64];
-				sprintf_s(header, "layout (std430, set = 1, binding = %u) buffer %s", current_binding_index++, buffer_name.Data());
+				char header[128];
+				sprintf_s(header, "layout (std140, set = 1, binding = %u) uniform %s", current_binding_index++, buffer_name.Data());
 
 				glsl_lines.Emplace(header);
 
@@ -1289,6 +1845,48 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 						break;
 					}
+
+					case ShaderStage::FRAGMENT:
+					{
+						//Add the input parameters.
+						if (!extra_data._FragmentInputParameters.Empty())
+						{
+							for (const ExtraData::FragmentInputParameter &parameter : extra_data._FragmentInputParameters)
+							{
+								char buffer[64];
+								sprintf_s(buffer, "layout (location = %u) %s in %s %s;", location_index, parameter._Type == "uint" ? "flat" : "", parameter._Type.Data(), parameter._Name.Data());
+
+								glsl_lines.Emplace(buffer);
+
+								location_index += GLSLCompilation::GetLocationOffsetForType(parameter._Type.Data());
+							}
+
+							glsl_lines.Emplace("");
+						}
+
+						break;
+					}
+
+					case ShaderStage::VERTEX:
+					{
+						//Add the output parameters.
+						if (!extra_data._VertexOutputParameters.Empty())
+						{
+							for (const ExtraData::VertexOutputParameter &parameter : extra_data._VertexOutputParameters)
+							{
+								char buffer[64];
+								sprintf_s(buffer, "layout (location = %u) out %s %s;", location_index, parameter._Type.Data(), parameter._Name.Data());
+
+								glsl_lines.Emplace(buffer);
+
+								location_index += GLSLCompilation::GetLocationOffsetForType(parameter._Type.Data());
+							}
+
+							glsl_lines.Emplace("");
+						}
+
+						break;
+					}
 				}
 
 				//Modify the line.
@@ -1414,8 +2012,65 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 				current_line = glsl_line;
 			}
 
+			//Handle fragment outputs.
+			if (current_line.Find("OutputFragment("))
+			{
+				//Parse the arguments.
+				StaticArray<DynamicString, 2> arguments;
+
+				const uint64 number_of_arguments_parsed
+				{
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.Data(),
+						current_line.Length(),
+						arguments.Data()
+					)
+				};
+				ASSERT(number_of_arguments_parsed == 2, "Wrong number of arguments for 'OutputFragment()' declaration!");
+
+				//Construct the GLSL line and add it.
+				char glsl_line[128];
+				sprintf_s(glsl_line, "\t%s =  %s;", arguments[0].Data(), arguments[1].Data());
+
+				current_line = glsl_line;
+			}
+
 			//Handle compute outoput render targets.
 			if (current_line.Find("OutputRenderTarget("))
+			{
+				//This is only valid for fragment shaders.
+				if (shader_stage._ShaderStage == ShaderStage::FRAGMENT)
+				{
+					//Parse the arguments.
+					StaticArray<DynamicString, 1> arguments;
+
+					const uint64 number_of_arguments_parsed
+					{
+						TextParsingUtilities::ParseFunctionArguments
+						(
+							current_line.Data(),
+							current_line.Length(),
+							arguments.Data()
+						)
+					};
+					ASSERT(number_of_arguments_parsed == 1, "Wrong number of arguments for 'OutputRenderTarget()' declaration!");
+
+					//Construct the GLSL line and add it.
+					char glsl_line[128];
+					sprintf_s(glsl_line, "layout (location = %u) out vec4 %s;", location_index++, arguments[0].Data());
+
+					current_line = glsl_line;
+				}
+
+				else
+				{
+					current_line = "";
+				}
+			}
+
+			//Handle vertex position outputs.
+			if (current_line.Find("OutputVertexPosition("))
 			{
 				//Parse the arguments.
 				StaticArray<DynamicString, 1> arguments;
@@ -1429,13 +2084,29 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 						arguments.Data()
 					)
 				};
-				ASSERT(number_of_arguments_parsed == 1, "Wrong number of arguments for 'OutputRenderTarget()' declaration!");
+				ASSERT(number_of_arguments_parsed == 1, "Wrong number of arguments for 'OutputVertexPosition()' declaration!");
 
 				//Construct the GLSL line and add it.
 				char glsl_line[128];
-				sprintf_s(glsl_line, "layout (location = %u) out vec4 %s;", location_index++, arguments[0].Data());
+				sprintf_s(glsl_line, "\tgl_Position =  %s;", arguments[0].Data());
 
 				current_line = glsl_line;
+			}
+
+			//Replace "VERTEX_INDEX" with "gl_VertexIndex".
+			if (current_line.Find("VERTEX_INDEX"))
+			{
+				std::string _current_line{ current_line.Data() };
+
+				size_t position{ _current_line.find("VERTEX_INDEX") };
+
+				while (position != std::string::npos)
+				{
+					_current_line.replace(position, strlen("VERTEX_INDEX"), "gl_VertexIndex");
+					position = _current_line.find("VERTEX_INDEX");
+				}
+
+				current_line = _current_line.c_str();
 			}
 
 			//Add the line.
