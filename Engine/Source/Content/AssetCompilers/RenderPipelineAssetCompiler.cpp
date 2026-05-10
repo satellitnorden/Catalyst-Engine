@@ -463,7 +463,7 @@ public:
 RenderPipelineAssetCompiler::RenderPipelineAssetCompiler() NOEXCEPT
 {
 	//Set the flags.
-	_Flags = Flags::ALWAYS_COMPILE;
+	_Flags = Flags::NONE;
 }
 
 /*
@@ -610,7 +610,7 @@ void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT co
 
 	else
 	{
-		sprintf_s(collection_directory_path, "%s\\COLLECTION Default", GetCompiledDirectoryPath(compile_data->_CompilationDomain));
+		sprintf_s(collection_directory_path, "%s\\COLLECTION Base", GetCompiledDirectoryPath(compile_data->_CompilationDomain));
 	}
 
 	//Create the compiled directory, if it doesn't exist.

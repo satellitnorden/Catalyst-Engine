@@ -74,9 +74,7 @@ void ContentSystem::Initialize() NOEXCEPT
 	RegisterAssetCompiler(LevelAssetCompiler::Instance);
 	RegisterAssetCompiler(MaterialAssetCompiler::Instance);
 	RegisterAssetCompiler(ModelAssetCompiler::Instance);
-#if 0
 	RegisterAssetCompiler(RenderPipelineAssetCompiler::Instance);
-#endif
 	RegisterAssetCompiler(SettingsAssetCompiler::Instance);
 	RegisterAssetCompiler(SoundAssetCompiler::Instance);
 	RegisterAssetCompiler(Texture2DAssetCompiler::Instance);
