@@ -232,6 +232,60 @@ FORCE_INLINE NO_DISCARD CompareOperator ParseCompareOperator(const char *const R
 }
 
 /*
+*	Parses a stencil operator.
+*/
+FORCE_INLINE NO_DISCARD StencilOperator ParseStencilOperator(const char *const RESTRICT string) NOEXCEPT
+{
+	if (StringUtilities::IsEqual(string, "KEEP"))
+	{
+		return StencilOperator::Keep;
+	}
+
+	else if (StringUtilities::IsEqual(string, "ZERO"))
+	{
+		return StencilOperator::Zero;
+	}
+
+	else if (StringUtilities::IsEqual(string, "REPLACE"))
+	{
+		return StencilOperator::Replace;
+	}
+
+	else if (StringUtilities::IsEqual(string, "INCREMENT_AND_CLAMP"))
+	{
+		return StencilOperator::IncrementAndClamp;
+	}
+
+	else if (StringUtilities::IsEqual(string, "DECREMENT_AND_CLAMP"))
+	{
+		return StencilOperator::DecrementAndClamp;
+	}
+
+	else if (StringUtilities::IsEqual(string, "INVERT"))
+	{
+		return StencilOperator::Invert;
+	}
+
+	else if (StringUtilities::IsEqual(string, "INCREMENT_AND_WRAP"))
+	{
+		return StencilOperator::IncrementAndWrap;
+	}
+
+	else if (StringUtilities::IsEqual(string, "DECREMENT_AND_WRAP"))
+	{
+		return StencilOperator::DecrementAndWrap;
+	}
+
+	else
+	{
+		ASSERT(false, "Unknown stencil operator string: %s", string);
+
+		return static_cast<StencilOperator>(0);
+	}
+}
+
+
+/*
 *	Returns the string for the given shader stage.
 */
 FORCE_INLINE NO_DISCARD const char *const RESTRICT ShaderStageString(const ShaderStage shader_stage) NOEXCEPT
@@ -485,6 +539,27 @@ void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT co
 		//Write the depth compare operator.
 		output_file.Write(&asset._GraphicsData._DepthCompareOperator, sizeof(CompareOperator));
 
+		//Write the stencil compare operator.
+		output_file.Write(&asset._GraphicsData._StencilCompareOperator, sizeof(CompareOperator));
+
+		//Write the stencil fail operator.
+		output_file.Write(&asset._GraphicsData._StencilFailOperator, sizeof(StencilOperator));
+
+		//Write the stencil pass operator.
+		output_file.Write(&asset._GraphicsData._StencilPassOperator, sizeof(StencilOperator));
+
+		//Write the stencil depth fail operator.
+		output_file.Write(&asset._GraphicsData._StencilDepthFailOperator, sizeof(StencilOperator));
+
+		//Write the stencil reference mask.
+		output_file.Write(&asset._GraphicsData._StencilReferenceMask, sizeof(uint32));
+
+		//Write the stencil compare mask.
+		output_file.Write(&asset._GraphicsData._StencilCompareMask, sizeof(uint32));
+
+		//Write the stencil write mask.
+		output_file.Write(&asset._GraphicsData._StencilWriteMask, sizeof(uint32));
+
 		//Write the render resolution.
 		output_file.Write(&asset._GraphicsData._RenderResolution, sizeof(HashString));
 
@@ -547,8 +622,29 @@ void RenderPipelineAssetCompiler::LoadInternal(LoadData *const RESTRICT load_dat
 		//Read whether or not depth write is enabled.
 		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._DepthWriteEnabled, sizeof(bool), &stream_archive_position);
 
-		//Read the color store operator.
+		//Read the depth compare operator.
 		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._DepthCompareOperator, sizeof(CompareOperator), &stream_archive_position);
+
+		//Read the stencil compare operator.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._StencilCompareOperator, sizeof(CompareOperator), &stream_archive_position);
+
+		//Read the stencil fail operator.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._StencilFailOperator, sizeof(StencilOperator), &stream_archive_position);
+
+		//Read the stencil pass operator.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._StencilPassOperator, sizeof(StencilOperator), &stream_archive_position);
+
+		//Read the stencil depth fail operator.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._StencilDepthFailOperator, sizeof(StencilOperator), &stream_archive_position);
+
+		//Read the stencil reference mask.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._StencilReferenceMask, sizeof(uint32), &stream_archive_position);
+
+		//Read the stencil compare mask.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._StencilCompareMask, sizeof(uint32), &stream_archive_position);
+
+		//Read the stencil write mask.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._StencilWriteMask, sizeof(uint32), &stream_archive_position);
 
 		//Read the render resolution.
 		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._RenderResolution, sizeof(HashString), &stream_archive_position);
@@ -1177,6 +1273,150 @@ void RenderPipelineAssetCompiler::ConsumeSettings(RenderPipelineAsset *const RES
 			lines->EraseAt<true>(line_index);
 		}
 
+		//Is this a stencil compare mask definition?
+		else if (line.Find("StencilCompareMask("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'StencilCompareMask()'!");
+
+			//Set the value.
+			asset->_GraphicsData._StencilCompareMask = std::stoul(argument.Data());
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a stencil compare operator definition?
+		else if (line.Find("StencilCompareOperator("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'StencilCompareOperator()'!");
+
+			//Set the value.
+			asset->_GraphicsData._StencilCompareOperator = ParseCompareOperator(argument.Data());
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a stencil depth fail operator definition?
+		else if (line.Find("StencilDepthFailOperator("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'StencilPassOperator()'!");
+
+			//Set the value.
+			asset->_GraphicsData._StencilDepthFailOperator = ParseStencilOperator(argument.Data());
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a stencil fail operator definition?
+		else if (line.Find("StencilFailOperator("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'StencilFailOperator()'!");
+
+			//Set the value.
+			asset->_GraphicsData._StencilFailOperator = ParseStencilOperator(argument.Data());
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a stencil pass operator definition?
+		else if (line.Find("StencilPassOperator("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'StencilPassOperator()'!");
+
+			//Set the value.
+			asset->_GraphicsData._StencilPassOperator = ParseStencilOperator(argument.Data());
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a stencil reference mask definition?
+		else if (line.Find("StencilReferenceMask("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'StencilReferenceMask()'!");
+
+			//Set the value.
+			asset->_GraphicsData._StencilReferenceMask = std::stoul(argument.Data());
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
 		//Is this a stencil test enable declaration?
 		else if (line.Find("StencilTestEnable()"))
 		{
@@ -1185,7 +1425,31 @@ void RenderPipelineAssetCompiler::ConsumeSettings(RenderPipelineAsset *const RES
 
 			//Remove this line.
 			lines->EraseAt<true>(line_index);
-			}
+		}
+
+		//Is this a stencil write mask definition?
+		else if (line.Find("StencilWriteMask("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'StencilWriteMask()'!");
+
+			//Set the value.
+			asset->_GraphicsData._StencilWriteMask = std::stoul(argument.Data());
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
 
 		//Is this an input stream subscription definition?
 		else if (line.Find("SubscribeToInputStream("))
@@ -1988,7 +2252,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 				current_line = _current_line.c_str();
 			}
 
-			//Handle compute input render targets.
+			//Handle input render targets.
 			if (current_line.Find("InputRenderTarget("))
 			{
 				//Parse the arguments.
@@ -2089,6 +2353,30 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 				//Construct the GLSL line and add it.
 				char glsl_line[128];
 				sprintf_s(glsl_line, "\tgl_Position =  %s;", arguments[0].Data());
+
+				current_line = glsl_line;
+			}
+
+			//Handle samplers.
+			if (current_line.Find("Sampler("))
+			{
+				//Parse the arguments.
+				StaticArray<DynamicString, 5> arguments;
+
+				const uint64 number_of_arguments_parsed
+				{
+					TextParsingUtilities::ParseFunctionArguments
+					(
+						current_line.Data(),
+						current_line.Length(),
+						arguments.Data()
+					)
+				};
+				ASSERT(number_of_arguments_parsed == 5, "Wrong number of arguments for 'Sampler()' declaration!");
+
+				//Construct the GLSL line and add it.
+				char glsl_line[128];
+				sprintf_s(glsl_line, "layout (set = 1, binding = %u) uniform sampler %s;", current_binding_index++, arguments[0].Data());
 
 				current_line = glsl_line;
 			}

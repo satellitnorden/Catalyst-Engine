@@ -65,6 +65,27 @@ public:
 		//The depth compare operator.
 		CompareOperator _DepthCompareOperator{ CompareOperator::Always };
 
+		//The stencil compare operator.
+		CompareOperator _StencilCompareOperator{ CompareOperator::Always };
+
+		//The stencil fail operator.
+		StencilOperator _StencilFailOperator{ StencilOperator::Keep };
+
+		//The stencil pass operator.
+		StencilOperator _StencilPassOperator{ StencilOperator::Keep };
+
+		//The stencil depth fail operator.
+		StencilOperator _StencilDepthFailOperator{ StencilOperator::Keep };
+
+		//The stencil reference mask.
+		uint32 _StencilReferenceMask{ 0 };
+
+		//The stencil compare mask.
+		uint32 _StencilCompareMask{ 0 };
+
+		//The stencil write mask mask.
+		uint32 _StencilWriteMask{ 0 };
+
 		//The render resolution.
 		HashString _RenderResolution;
 
