@@ -653,6 +653,9 @@ void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT co
 		//Write the topology.
 		output_file.Write(&asset._GraphicsData._Topology, sizeof(Topology));
 
+		//Write the polygon mode.
+		output_file.Write(&asset._GraphicsData._PolygonMode, sizeof(PolygonMode));
+
 		//Write the depth/stencil load operator.
 		output_file.Write(&asset._GraphicsData._DepthStencilLoadOperator, sizeof(AttachmentLoadOperator));
 
@@ -759,6 +762,9 @@ void RenderPipelineAssetCompiler::LoadInternal(LoadData *const RESTRICT load_dat
 	{
 		//Read the topology.
 		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._Topology, sizeof(Topology), &stream_archive_position);
+
+		//Read the polygon mode.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._PolygonMode, sizeof(PolygonMode), &stream_archive_position);
 
 		//Read the depth/stencil load operator.
 		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._DepthStencilLoadOperator, sizeof(AttachmentLoadOperator), &stream_archive_position);
@@ -1707,6 +1713,48 @@ void RenderPipelineAssetCompiler::ConsumeSettings(RenderPipelineAsset *const RES
 
 					break;
 				}
+			}
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this a polygon mode definition?
+		else if (line.Find("PolygonMode("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'PolygonMode()'!");
+
+			//Set the value.
+			if (argument == "FILL")
+			{
+				asset->_GraphicsData._PolygonMode = PolygonMode::FILL;
+			}
+
+			else if (argument == "LINE")
+			{
+				asset->_GraphicsData._PolygonMode = PolygonMode::LINE;
+			}
+
+			else if (argument == "POINT")
+			{
+				asset->_GraphicsData._PolygonMode = PolygonMode::POINT;
+			}
+
+			else
+			{
+				ASSERT(false, "Unknown argument for 'PolygonMode()': %s", argument.Data());
 			}
 
 			//Remove this line.

@@ -7,6 +7,9 @@ IncludeUniformBuffer(World);
 //Declare storage buffer includes.
 IncludeStorageBuffer(Lighting);
 
+//Declare samplers.
+Sampler(SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, REPEAT /* Address Mode */, 8 /* Anisotropic Samples */);
+
 //Declare shader function library includes.
 IncludeShaderFunctionLibrary(Camera);
 IncludeShaderFunctionLibrary(Lighting);
@@ -59,9 +62,6 @@ PushConstantData(uint, TEXTURE_INDEX);
 
 //Subscribe to input streams.
 SubscribeToInputStream(Water);
-
-//Declare samplers.
-Sampler(SAMPLER /* Name */, LINEAR /* Magnification Filter */, LINEAR /* Mipmap Mode */, REPEAT /* Address Mode */, 8 /* Anisotropic Samples */);
 
 //The vertex shader.
 Vertex

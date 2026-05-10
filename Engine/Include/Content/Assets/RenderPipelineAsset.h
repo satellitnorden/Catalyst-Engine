@@ -38,6 +38,9 @@ public:
 		//The topology.
 		Topology _Topology{ Topology::TriangleFan };
 
+		//The polygon mode.
+		PolygonMode _PolygonMode{ PolygonMode::FILL };
+
 		//The cull mode.
 		CullMode _CullMode{ CullMode::NONE };
 
