@@ -107,6 +107,25 @@ public:
 
 	};
 
+	/*
+	*	Ray tracing hit group class definition.
+	*/
+	class RayTracingHitGroup final
+	{
+
+	public:
+
+		//The name.
+		DynamicString _Name;
+
+		//The ray closest hit shader data.
+		DynamicArray<byte> _RayClosestHitShaderData;
+
+		//The ray any hit shader data.
+		DynamicArray<byte> _RayAnyHitShaderData;
+
+	};
+
 	//The push constant data values.
 	DynamicArray<PushConstantDataValue> _PushConstantDataValues;
 
@@ -152,6 +171,15 @@ public:
 
 	//The fragment shader data.
 	DynamicArray<byte> _FragmentShaderData;
+
+	//The ray generation shader data.
+	DynamicArray<byte> _RayGenerationShaderData;
+
+	//The ray miss shader data.
+	DynamicArray<DynamicArray<byte>> _RayMissShaderData;
+
+	//The ray tracing hit groups.
+	DynamicArray<RayTracingHitGroup> _RayTracingHitGroups;
 
 };
 
@@ -883,6 +911,44 @@ void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT co
 		output_file.Write(&asset._GraphicsData._BlendAlphaOperator, sizeof(BlendOperator));
 	}
 
+	//Write the ray tracing data.
+	{
+		//Write the ray generation shader data.
+		WriteShaderData(extra_data._RayGenerationShaderData, &output_file);
+
+		//Write the ray miss shader data.
+		{
+			const uint64 number_of_ray_miss_shader_data{ extra_data._RayMissShaderData.Size() };
+			output_file.Write(&number_of_ray_miss_shader_data, sizeof(uint64));
+
+			if (number_of_ray_miss_shader_data > 0)
+			{
+				for (const DynamicArray<byte> &ray_miss_shader_data : extra_data._RayMissShaderData)
+				{
+					WriteShaderData(ray_miss_shader_data, &output_file);
+				}
+			}
+		}
+
+		//Write the hit groups.
+		{
+			const uint64 number_of_hit_groups{ extra_data._RayTracingHitGroups.Size() };
+			output_file.Write(&number_of_hit_groups, sizeof(uint64));
+
+			if (number_of_hit_groups > 0)
+			{
+				for (const ExtraData::RayTracingHitGroup &hit_group : extra_data._RayTracingHitGroups)
+				{
+					const HashString identifier{ hit_group._Name.Data() };
+					output_file.Write(&identifier, sizeof(HashString));
+
+					WriteShaderData(hit_group._RayClosestHitShaderData, &output_file);
+					WriteShaderData(hit_group._RayAnyHitShaderData, &output_file);
+				}
+			}
+		}
+	}
+
 	//Close the output file.
 	output_file.Close();
 }
@@ -1053,6 +1119,46 @@ void RenderPipelineAssetCompiler::LoadInternal(LoadData *const RESTRICT load_dat
 
 		//Read the blend alpha operator.
 		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._BlendAlphaOperator, sizeof(BlendOperator), &stream_archive_position);
+	}
+
+	//Read the ray tracing data.
+	{
+		//Read the ray generation shader.
+		ReadShader(load_data->_StreamArchive, &stream_archive_position, ShaderStage::RAY_GENERATION, &load_data->_Asset->_RayTracingData._RayGenerationShader);
+
+		//Read the ray miss shaders.
+		{
+			uint64 number_of_miss_shaders{ 0 };
+			load_data->_StreamArchive->Read(&number_of_miss_shaders, sizeof(uint64), &stream_archive_position);
+
+			if (number_of_miss_shaders > 0)
+			{
+				load_data->_Asset->_RayTracingData._RayMissShaders.Upsize<false>(number_of_miss_shaders);
+
+				for (ShaderHandle &miss_shader : load_data->_Asset->_RayTracingData._RayMissShaders)
+				{
+					ReadShader(load_data->_StreamArchive, &stream_archive_position, ShaderStage::RAY_MISS, &miss_shader);
+				}
+			}
+		}
+
+		//Read the hit groups.
+		{
+			uint64 number_of_hit_groups{ 0 };
+			load_data->_StreamArchive->Read(&number_of_hit_groups, sizeof(uint64), &stream_archive_position);
+
+			if (number_of_hit_groups > 0)
+			{
+				load_data->_Asset->_RayTracingData._HitGroups.Upsize<false>(number_of_hit_groups);
+
+				for (RenderPipelineAsset::RayTracingData::HitGroup &hit_group : load_data->_Asset->_RayTracingData._HitGroups)
+				{
+					load_data->_StreamArchive->Read(&hit_group._Identifier, sizeof(HashString), &stream_archive_position);
+					ReadShader(load_data->_StreamArchive, &stream_archive_position, ShaderStage::RAY_CLOSEST_HIT, &hit_group._RayClosestHitShader);
+					ReadShader(load_data->_StreamArchive, &stream_archive_position, ShaderStage::RAY_ANY_HIT, &hit_group._RayAnyHitShader);
+				}
+			}
+		}
 	}
 }
 
@@ -3995,7 +4101,6 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 		}
 
 		//Retrieve the output data.
-		DynamicArray<byte> fallback_output_data;
 		DynamicArray<byte> *RESTRICT output_data{ nullptr };
 
 		switch (shader_stage._ShaderStage)
@@ -4021,10 +4126,79 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 				break;
 			}
 
+			case ShaderStage::RAY_ANY_HIT:
+			{
+				ExtraData::RayTracingHitGroup *RESTRICT hit_group{ nullptr };
+
+				for (ExtraData::RayTracingHitGroup &_hit_group : extra_data->_RayTracingHitGroups)
+				{
+					if (_hit_group._Name == shader_stage._RayTracingHitGroup)
+					{
+						hit_group = &_hit_group;
+
+						break;
+					}
+				}
+
+				if (!hit_group)
+				{
+					extra_data->_RayTracingHitGroups.Emplace();
+					hit_group = &extra_data->_RayTracingHitGroups.Back();
+
+					hit_group->_Name = shader_stage._RayTracingHitGroup;
+				}
+
+				output_data = &hit_group->_RayAnyHitShaderData;
+
+				break;
+			}
+
+			case ShaderStage::RAY_CLOSEST_HIT:
+			{
+				ExtraData::RayTracingHitGroup *RESTRICT hit_group{ nullptr };
+
+				for (ExtraData::RayTracingHitGroup &_hit_group : extra_data->_RayTracingHitGroups)
+				{
+					if (_hit_group._Name == shader_stage._RayTracingHitGroup)
+					{
+						hit_group = &_hit_group;
+
+						break;
+					}
+				}
+
+				if (!hit_group)
+				{
+					extra_data->_RayTracingHitGroups.Emplace();
+					hit_group = &extra_data->_RayTracingHitGroups.Back();
+
+					hit_group->_Name = shader_stage._RayTracingHitGroup;
+				}
+
+				output_data = &hit_group->_RayClosestHitShaderData;
+
+				break;
+			}
+
+			case ShaderStage::RAY_MISS:
+			{
+				extra_data->_RayMissShaderData.Emplace();
+				output_data = &extra_data->_RayMissShaderData.Back();
+
+				break;
+			}
+
+			case ShaderStage::RAY_GENERATION:
+			{
+				output_data = &extra_data->_RayGenerationShaderData;
+
+				break;
+			}
+
 			//TODO: Remove this once we are properly storing all output data.
 			default:
 			{
-				output_data = &fallback_output_data;
+				ASSERT(false, "Invalid case!");
 
 				break;
 			}

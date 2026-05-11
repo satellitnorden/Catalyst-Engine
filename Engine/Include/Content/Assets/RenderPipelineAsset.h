@@ -221,6 +221,44 @@ public:
 
 	};
 
+	/*
+	*	Ray tracin data class definition.
+	*/
+	struct RayTracingData final
+	{
+
+	public:
+
+		/*
+		*	Hit group class definition.
+		*/
+		class HitGroup final
+		{
+
+		public:
+
+			//The identifier.
+			HashString _Identifier;
+
+			//The ray closest hit shader.
+			ShaderHandle _RayClosestHitShader;
+
+			//The ray any hit shader.
+			ShaderHandle _RayAnyHitShader{ EMPTY_HANDLE };
+
+		};
+
+		//The ray generation shader.
+		ShaderHandle _RayGenerationShader;
+
+		//The ray miss shaders.
+		DynamicArray<ShaderHandle> _RayMissShaders;
+
+		//The hit groups.
+		DynamicArray<HitGroup> _HitGroups;
+
+	};
+
 	//The type identifier.
 	static HashString TYPE_IDENTIFIER;
 
@@ -232,5 +270,8 @@ public:
 
 	//The graphics data.
 	GraphicsData _GraphicsData;
+
+	//The ray tracing data.
+	RayTracingData _RayTracingData;
 
 };
