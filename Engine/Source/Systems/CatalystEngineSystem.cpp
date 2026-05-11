@@ -102,6 +102,9 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	ContentSystem::Instance->LoadAssetCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Collections\\Editor.cac");
 #endif
 
+	//Load assets for all systems.
+	Systems::LoadAssets();
+
 	//Post-initialize all systems.
 	Systems::PostInitialize();
 

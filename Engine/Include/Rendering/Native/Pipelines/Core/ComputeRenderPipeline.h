@@ -4,11 +4,20 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/Pair.h>
 
+//Content.
+#if defined(USE_RENDER_PIPELINE_ASSET)
+#include <Content/Core/AssetPointer.h>
+#include <Content/Assets/RenderPipelineAsset.h>
+#endif
+
 //Rendering.
 #include <Rendering/Native/Pipelines/ComputePipelines/ComputePipeline.h>
 
 //Resources.
+#if !defined(USE_RENDER_PIPELINE_ASSET)
+#include <Resources/Core/ResourcePointer.h>
 #include <Resources/Core/RenderPipelineResource.h>
+#endif
 
 class ComputeRenderPipelineParameters final
 {
@@ -55,8 +64,13 @@ private:
 	//The render pipeline identifier.
 	HashString _RenderPipelineIdentifier;
 
+#if defined(USE_RENDER_PIPELINE_ASSET)
+	//The render pipeline asset.
+	AssetPointer<RenderPipelineAsset> _RenderPipelineAsset;
+#else
 	//The render pipeline resource.
 	ResourcePointer<RenderPipelineResource> _RenderPipelineResource;
+#endif
 
 	//Denotes if this render pipeline uses it's own render data table.
 	bool _UsesRenderDataTable;

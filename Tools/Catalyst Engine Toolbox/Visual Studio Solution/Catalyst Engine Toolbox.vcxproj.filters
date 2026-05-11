@@ -47,5 +47,8 @@
     <ClInclude Include="..\Code\GenerateSolution\GenerateVisualStudioSolution.h">
       <Filter>GenerateSolution</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Core\MurmurHash.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,6 +1,9 @@
 //Header file.
 #include <GenerateSolution/GenerateVisualStudioSolution.h>
 
+//Core.
+#include <Core/MurmurHash.h>
+
 //Windows.
 #include <objbase.h>
 
@@ -322,7 +325,7 @@ void GenerateVisualStudioSolution::GenerateProjectFile(const Parameters &paramet
 
     for (const Parameters::Directory &directory : parameters._Directories)
     {
-        AddCompileFiles(file, directory);
+        AddCompileFiles(parameters, file, directory);
     }
 
     file << "\t</ItemGroup>" << std::endl;
@@ -475,11 +478,11 @@ void GenerateVisualStudioSolution::GenerateSolutionFile(const Parameters &parame
 /*
 *   Adds compile files for the given directory.
 */
-void GenerateVisualStudioSolution::AddCompileFiles(std::ofstream &file, const Parameters::Directory &directory)
+void GenerateVisualStudioSolution::AddCompileFiles(const Parameters &parameters, std::ofstream &file, const Parameters::Directory &directory)
 {
     for (const Parameters::Directory &_directory : directory._Directories)
     {
-        AddCompileFiles(file, _directory);
+        AddCompileFiles(parameters, file, _directory);
     }
 
     for (const Parameters::File &compile_file : directory._Files)
@@ -496,6 +499,26 @@ void GenerateVisualStudioSolution::AddCompileFiles(std::ofstream &file, const Pa
         else
         {
             file << "\t\t<ClInclude Include=\"" << compile_file._Path.c_str() << "\">" << std::endl;
+        }
+
+        if (is_compile_file)
+        {
+            const uint64 hash{ MurmurHash64(compile_file._Path.c_str(), compile_file._Path.length()) };
+
+            std::string file_name{ compile_file._Path.substr(compile_file._Path.find_last_of('\\') + 1) };
+            file_name = file_name.substr(0, file_name.find_last_of('.'));
+
+            char buffer[128];
+            sprintf_s(buffer, "%s_0x%llx.obj", file_name.c_str(), hash);
+
+            for (const Parameters::Configuration &configuration : parameters._Configurations)
+            {
+                for (const Parameters::Platform &platform : parameters._Platforms)
+                {
+                    //Set the object file name.
+                    file << "\t\t<ObjectFileName Condition=" << GetConfigurationPlatformConditionString(configuration._Name, platform._Name) << ">ObjectFiles\\" << configuration._Name << "\\" << buffer << "</ObjectFileName>" << std::endl;
+                }
+            }
         }
 
         if (!compile_file._EnableWarnings)

@@ -166,7 +166,7 @@ private:
 	/*
 	*   Adds compile files for the given directory.
 	*/
-	static void AddCompileFiles(std::ofstream &file, const Parameters::Directory &directory);
+	static void AddCompileFiles(const Parameters &parameters, std::ofstream &file, const Parameters::Directory &directory);
 
 	/*
 	*	Adds filter files.

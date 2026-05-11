@@ -50,7 +50,7 @@ void UserInterfaceRenderPass::Initialize() NOEXCEPT
 	{
 		GraphicsRenderPipelineInitializeParameters parameters;
 
-		parameters._InputStreamSubscriptions.Emplace(HashString("UserInterface"));
+		parameters._InputStreamSubscriptions.Emplace(HashString("UI"));
 
 		_Pipeline.Initialize(parameters);
 	}

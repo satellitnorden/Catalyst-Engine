@@ -141,6 +141,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Core\Core.h" />
+    <ClInclude Include="..\Code\Core\MurmurHash.h" />
     <ClInclude Include="..\Code\GenerateSolution\GenerateSolution.h" />
     <ClInclude Include="..\Code\GenerateSolution\GenerateVisualStudioSolution.h" />
     <ClInclude Include="..\Code\ProjectSettings\ProjectSettings.h" />

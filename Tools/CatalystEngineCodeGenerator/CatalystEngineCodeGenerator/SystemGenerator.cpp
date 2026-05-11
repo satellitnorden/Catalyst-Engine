@@ -55,6 +55,9 @@ public:
 	//Denotes whether or not this systems wants an 'Initialize()' call.
 	bool _Initialize;
 
+	//Denotes whether or not this systems wants an 'LoadAssets()' call.
+	bool _LoadAssets;
+
 	//Denotes whether or not this systems wants a 'PostInitialize()' call.
 	bool _PostInitialize;
 
@@ -299,6 +302,7 @@ void SystemGenerator::ParseSystem(std::ifstream &file, std::string &current_line
 	//Set to initial state.
 	system_entry["PreInitialize"] = false;
 	system_entry["Initialize"] = false;
+	system_entry["LoadAssets"] = false;
 	system_entry["PostInitialize"] = false;
 	system_entry["Terminate"] = false;
 	system_entry["PostTerminate"] = false;
@@ -385,6 +389,18 @@ void SystemGenerator::ParseSystem(std::ifstream &file, std::string &current_line
 			if (position != std::string::npos)
 			{
 				system_entry["Initialize"] = true;
+
+				continue;
+			}
+		}
+
+		//Check if this system wants a 'LoadAssets()' call.
+		{
+			const size_t position{ current_line.find("SYSTEM_LOAD_ASSETS()") };
+
+			if (position != std::string::npos)
+			{
+				system_entry["LoadAssets"] = true;
 
 				continue;
 			}
@@ -561,6 +577,9 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 				//Set whether or not this systems wants an 'Initialize()' call.
 				new_system_data._Initialize = system_entry.contains("Initialize") && system_entry["Initialize"].get<bool>();
+
+				//Set whether or not this systems wants a 'LoadAssets()' call.
+				new_system_data._LoadAssets = system_entry.contains("LoadAssets") && system_entry["LoadAssets"].get<bool>();
 
 				//Set whether or not this systems wants a 'PostInitialize()' call.
 				new_system_data._PostInitialize = system_entry.contains("PostInitialize") && system_entry["PostInitialize"].get<bool>();
@@ -1009,6 +1028,42 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 			}
 		}
 #endif
+
+		file << "}" << std::endl;
+
+		file << std::endl;
+	}
+
+	//Add the "Systems::LoadAssets()" function.
+	{
+		file << "void Systems::LoadAssets() NOEXCEPT" << std::endl;
+		file << "{" << std::endl;
+
+		file << "\tPROFILING_SCOPE(\"Systems::LoadAssets()\");" << std::endl;
+		file << std::endl;
+
+		for (const SystemData &_system_data : system_data)
+		{
+			if (_system_data._LoadAssets)
+			{
+				for (const std::string &not_defined_requirement : _system_data._NotDefinedRequirements)
+				{
+					file << "#if !defined(" << not_defined_requirement.c_str() << ")" << std::endl;
+				}
+
+				for (const std::string &defined_requirement : _system_data._DefinedRequirements)
+				{
+					file << "#if defined(" << defined_requirement.c_str() << ")" << std::endl;
+				}
+
+				file << "\t" << _system_data._Name.c_str() << "::Instance->LoadAssets();" << std::endl;
+
+				for (size_t i{ 0 }; i < (_system_data._NotDefinedRequirements.size() + _system_data._DefinedRequirements.size()); ++i)
+				{
+					file << "#endif" << std::endl;
+				}
+			}
+		}
 
 		file << "}" << std::endl;
 

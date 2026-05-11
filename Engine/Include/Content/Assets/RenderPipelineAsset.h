@@ -8,11 +8,86 @@
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
+#include <Rendering/Native/SamplerProperties.h>
 
 class RenderPipelineAsset final : public Asset
 {
 
 public:
+
+	/*
+	*	Binding class definition.
+	*/
+	class Binding final
+	{
+
+	public:
+
+		//Enumeration covering all types.
+		enum class Type : uint8
+		{
+			NONE,
+
+			COMPUTE_RENDER_TARGET,
+			INPUT_RENDER_TARGET,
+			SAMPLER,
+			STORAGE_BUFFER,
+			UNIFORM_BUFFER
+		};
+
+		//The type.
+		Type _Type;
+
+		//Type specific data.
+		union
+		{
+			//Compute render target data.
+			struct
+			{
+				//The identifier.
+				HashString _Identifier;
+			} _ComputeRenderTargetData;
+
+			//Input render target data.
+			struct
+			{
+				//The identifier.
+				HashString _Identifier;
+
+				//The sampler properties.
+				SamplerProperties _SamplerProperties;
+			} _InputRenderTargetData;
+
+			//Sampler data.
+			struct
+			{
+				//The sampler properties.
+				SamplerProperties _SamplerProperties;
+			} _SamplerData;
+
+			//Storage buffer data.
+			struct
+			{
+				//The identifier.
+				HashString _Identifier;
+			} _StorageBufferData;
+
+			//Uniform buffer data.
+			struct
+			{
+				//The identifier.
+				HashString _Identifier;
+			} _UniformBufferData;
+		};
+
+		/*
+		*	Default constructor.
+		*/
+		FORCE_INLINE Binding() NOEXCEPT
+		{
+			Memory::Set(this, 0, sizeof(Binding));
+		}
+	};
 
 	/*
 	*	Common data class definition.
@@ -22,8 +97,27 @@ public:
 
 	public:
 
+		//The bindings.
+		DynamicArray<Binding> _Bindings;
+
+		//The number of external textures.
+		uint32 _NumberOfExternalTextures{ 0 };
+
 		//The input stream subscriptions.
 		DynamicArray<HashString> _InputStreamSubscriptions;
+
+	};
+
+	/*
+	*	Compute data class definition.
+	*/
+	struct ComputeData final
+	{
+
+	public:
+
+		//The shader.
+		ShaderHandle _Shader;
 
 	};
 
@@ -34,6 +128,12 @@ public:
 	{
 
 	public:
+
+		//The vertex shader.
+		ShaderHandle _VertexShader;
+
+		//The fragment shader.
+		ShaderHandle _FragmentShader;
 
 		//The topology.
 		Topology _Topology{ Topology::TriangleFan };
@@ -95,6 +195,9 @@ public:
 		//The depth buffer.
 		HashString _DepthBuffer;
 
+		//The output render targets.
+		DynamicArray<HashString> _OutputRenderTargets;
+
 		//Denotes whether or not blend is enabled.
 		bool _BlendEnabled{ false };
 
@@ -123,6 +226,9 @@ public:
 
 	//The common data.
 	CommonData _CommonData;
+
+	//The compute data.
+	ComputeData _ComputeData;
 
 	//The graphics data.
 	GraphicsData _GraphicsData;

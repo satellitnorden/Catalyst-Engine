@@ -51,8 +51,10 @@ private:
 		GraphicsRenderPipeline(HashString("UserInterface3DBackground_RenderPipeline"))
 	};
 
+#if 0
 	//The user interface 3D pipeline.
 	GraphicsRenderPipeline _UserInterface3DPipeline{ HashString("UserInterface_RenderPipeline") };
+#endif
 
 	//The velocity graphics pipeline.
 	GraphicsRenderPipeline _VelocityGraphicsPipeline{ HashString("Velocity_RenderPipeline") };

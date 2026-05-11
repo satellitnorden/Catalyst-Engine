@@ -17,6 +17,7 @@
 
 //Systems.
 #include <Systems/LogSystem.h>
+#include <Systems/RenderingSystem.h>
 #include <Systems/TaskSystem.h>
 
 //STD.
@@ -143,6 +144,15 @@ public:
 	//The ray closest hit payloads.
 	DynamicArray<DynamicArray<RayTracingPayload>> _RayClosestHitPayloads;
 
+	//The computer shader data.
+	DynamicArray<byte> _ComputeShaderData;
+
+	//The vertex shader data.
+	DynamicArray<byte> _VertexShaderData;
+
+	//The fragment shader data.
+	DynamicArray<byte> _FragmentShaderData;
+
 };
 
 //The shader stage -> string lookup.
@@ -160,6 +170,44 @@ constexpr Pair<ShaderStage, const char *const RESTRICT> SHADER_STAGE_TO_STRING_L
 	{ ShaderStage::TESSELLATION_EVALUATION, "TessellationEvaluation" },
 	{ ShaderStage::VERTEX, "Vertex" }
 };
+
+/*
+*	Parses an address mode.
+*/
+FORCE_INLINE NO_DISCARD AddressMode ParseAddressMode(const char *const RESTRICT string) NOEXCEPT
+{
+	if (StringUtilities::IsEqual(string, "CLAMP_TO_BORDER"))
+	{
+		return AddressMode::CLAMP_TO_BORDER;
+	}
+
+	else if (StringUtilities::IsEqual(string, "CLAMP_TO_EDGE"))
+	{
+		return AddressMode::CLAMP_TO_EDGE;
+	}
+
+	else if (StringUtilities::IsEqual(string, "MIRROR_CLAMP_TO_EDGE"))
+	{
+		return AddressMode::MIRROR_CLAMP_TO_EDGE;
+	}
+
+	else if (StringUtilities::IsEqual(string, "MIRRORED_REPEAT"))
+	{
+		return AddressMode::MIRRORED_REPEAT;
+	}
+
+	else if (StringUtilities::IsEqual(string, "REPEAT"))
+	{
+		return AddressMode::REPEAT;
+	}
+
+	else
+	{
+		ASSERT(false, "Unknown address mode string: %s", string);
+
+		return static_cast<AddressMode>(0);
+	}
+}
 
 /*
 *	Parses an attachment load operator.
@@ -367,6 +415,29 @@ FORCE_INLINE NO_DISCARD CompareOperator ParseCompareOperator(const char *const R
 }
 
 /*
+*	Parses a mipmap mode.
+*/
+FORCE_INLINE NO_DISCARD MipmapMode ParseMipmapMode(const char *const RESTRICT string) NOEXCEPT
+{
+	if (StringUtilities::IsEqual(string, "LINEAR"))
+	{
+		return MipmapMode::LINEAR;
+	}
+
+	else if (StringUtilities::IsEqual(string, "NEAREST"))
+	{
+		return MipmapMode::NEAREST;
+	}
+
+	else
+	{
+		ASSERT(false, "Unknown mipmap mode string: %s", string);
+
+		return static_cast<MipmapMode>(0);
+	}
+}
+
+/*
 *	Parses a stencil operator.
 */
 FORCE_INLINE NO_DISCARD StencilOperator ParseStencilOperator(const char *const RESTRICT string) NOEXCEPT
@@ -419,6 +490,28 @@ FORCE_INLINE NO_DISCARD StencilOperator ParseStencilOperator(const char *const R
 	}
 }
 
+/*
+*	Parses a texture filter.
+*/
+FORCE_INLINE NO_DISCARD TextureFilter ParseTextureFilter(const char *const RESTRICT string) NOEXCEPT
+{
+	if (StringUtilities::IsEqual(string, "LINEAR"))
+	{
+		return TextureFilter::LINEAR;
+	}
+
+	else if (StringUtilities::IsEqual(string, "NEAREST"))
+	{
+		return TextureFilter::NEAREST;
+	}
+
+	else
+	{
+		ASSERT(false, "Unknown texture filter string: %s", string);
+
+		return static_cast<TextureFilter>(0);
+	}
+}
 
 /*
 *	Returns the string for the given shader stage.
@@ -463,7 +556,11 @@ public:
 RenderPipelineAssetCompiler::RenderPipelineAssetCompiler() NOEXCEPT
 {
 	//Set the flags.
+#if defined(USE_RENDER_PIPELINE_ASSET)
+	_Flags = Flags::ALWAYS_COMPILE;
+#else
 	_Flags = Flags::NONE;
+#endif
 }
 
 /*
@@ -567,6 +664,21 @@ NO_DISCARD Asset *const RESTRICT RenderPipelineAssetCompiler::Load(const LoadCon
 */
 void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data) NOEXCEPT
 {
+	//Define constants.
+	constexpr auto WriteShaderData
+	{
+		[](const DynamicArray<byte> &shader_data, BinaryOutputFile *const RESTRICT file)
+		{
+			const uint64 shader_data_size{shader_data.Size()};
+			file->Write(&shader_data_size, sizeof(uint64));
+
+			if (shader_data_size > 0)
+			{
+				file->Write(shader_data.Data(), shader_data_size);
+			}
+		}
+	};
+
 	PROFILING_SCOPE("RenderPipelineAssetCompiler::CompileInternal");
 
 	//We should be able to store everything directly in an asset and then serialize that.
@@ -598,7 +710,7 @@ void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT co
 	SplitShaderStages(lines, &shader_stages);
 
 	//Compile the GLSL shaders.
-	CompileGLSLShaders(*compile_data, extra_data, shader_stages);
+	CompileGLSLShaders(*compile_data, &extra_data, shader_stages);
 
 	//Determine the collection directory.
 	char collection_directory_path[MAXIMUM_FILE_PATH_LENGTH];
@@ -630,12 +742,31 @@ void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT co
 	//Open the output file.
 	BinaryOutputFile output_file{ output_file_path };
 
+	//TODO: Remove this!
+	//For compatibility purposes, append a "_RenderPipeline" to the name.
+	char name[64];
+	sprintf_s(name, "%s_RenderPipeline", compile_data->_Name.Data());
+
 	//Write the asset header to the file.
-	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_data->_Name.Data()), compile_data->_Name.Data() };
+	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(name), name };
 	output_file.Write(&asset_header, sizeof(AssetHeader));
 
 	//Write the common data.
 	{
+		//Write the bindings.
+		{
+			const uint64 number_of_bindings{ asset._CommonData._Bindings.Size() };
+			output_file.Write(&number_of_bindings, sizeof(uint64));
+
+			if (number_of_bindings > 0)
+			{
+				output_file.Write(asset._CommonData._Bindings.Data(), number_of_bindings * sizeof(RenderPipelineAsset::Binding));
+			}
+		}
+
+		//Write the number of external textures.
+		output_file.Write(&asset._CommonData._NumberOfExternalTextures, sizeof(uint32));
+
 		//Write the input stream subscriptions.
 		{
 			const uint64 number_of_input_stream_subscriptions{ asset._CommonData._InputStreamSubscriptions.Size() };
@@ -648,8 +779,20 @@ void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT co
 		}
 	}
 
+	//Write the compute data.
+	{
+		//Write the shader data.
+		WriteShaderData(extra_data._ComputeShaderData, &output_file);
+	}
+
 	//Write the graphics data.
 	{
+		//Write the vertex shader data.
+		WriteShaderData(extra_data._VertexShaderData, &output_file);
+
+		//Write the fragment shader data.
+		WriteShaderData(extra_data._FragmentShaderData, &output_file);
+
 		//Write the topology.
 		output_file.Write(&asset._GraphicsData._Topology, sizeof(Topology));
 
@@ -707,6 +850,17 @@ void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT co
 		//Write the depth buffer.
 		output_file.Write(&asset._GraphicsData._DepthBuffer, sizeof(HashString));
 
+		//Write the output render targets.
+		{
+			const uint64 number_of_output_render_targets{ asset._GraphicsData._OutputRenderTargets.Size() };
+			output_file.Write(&number_of_output_render_targets, sizeof(uint64));
+
+			if (number_of_output_render_targets)
+			{
+				output_file.Write(asset._GraphicsData._OutputRenderTargets.Data(), number_of_output_render_targets * sizeof(HashString));
+			}
+		}
+
 		//Write whether or not blend is enabled.
 		output_file.Write(&asset._GraphicsData._BlendEnabled, sizeof(bool));
 
@@ -738,6 +892,29 @@ void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT co
 */
 void RenderPipelineAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCEPT
 {
+	//Define constants.
+	constexpr auto ReadShader
+	{
+		[](StreamArchive *const RESTRICT stream_archive, uint64 *const RESTRICT stream_archive_position, const ShaderStage shader_stage, ShaderHandle *const RESTRICT shader)
+		{
+			uint64 shader_data_size{ 0 };
+			stream_archive->Read(&shader_data_size, sizeof(uint64), stream_archive_position);
+
+			if (shader_data_size > 0)
+			{
+				DynamicArray<byte> shader_data;
+				shader_data.Upsize<false>(shader_data_size);
+				stream_archive->Read(shader_data.Data(), shader_data_size, stream_archive_position);
+				RenderingSystem::Instance->CreateShader(ArrayProxy<byte>(shader_data), shader_stage, shader);
+			}
+
+			else
+			{
+				*shader = EMPTY_HANDLE;
+			}
+		}
+	};
+
 	PROFILING_SCOPE("RenderPipelineAssetCompiler::LoadInternal");
 
 	//Read the data.
@@ -745,6 +922,21 @@ void RenderPipelineAssetCompiler::LoadInternal(LoadData *const RESTRICT load_dat
 
 	//Read the common data.
 	{
+		//Read the bindings.
+		{
+			uint64 number_of_bindings;
+			load_data->_StreamArchive->Read(&number_of_bindings, sizeof(uint64), &stream_archive_position);
+
+			if (number_of_bindings > 0)
+			{
+				load_data->_Asset->_CommonData._Bindings.Upsize<false>(number_of_bindings);
+				load_data->_StreamArchive->Read(load_data->_Asset->_CommonData._Bindings.Data(), number_of_bindings * sizeof(RenderPipelineAsset::Binding), &stream_archive_position);
+			}
+		}
+
+		//Read the number of external textures.
+		load_data->_StreamArchive->Read(&load_data->_Asset->_CommonData._NumberOfExternalTextures, sizeof(uint32), &stream_archive_position);
+
 		//Read the input stream subscriptions.
 		{
 			uint64 number_of_input_stream_subscriptions;
@@ -758,8 +950,20 @@ void RenderPipelineAssetCompiler::LoadInternal(LoadData *const RESTRICT load_dat
 		}
 	}
 
+	//Read the compute data.
+	{
+		//Read the shader.
+		ReadShader(load_data->_StreamArchive, &stream_archive_position, ShaderStage::COMPUTE, &load_data->_Asset->_ComputeData._Shader);
+	}
+
 	//Read the graphics data.
 	{
+		//Read the vertex shader.
+		ReadShader(load_data->_StreamArchive, &stream_archive_position, ShaderStage::VERTEX, &load_data->_Asset->_GraphicsData._VertexShader);
+
+		//Read the fragment shader.
+		ReadShader(load_data->_StreamArchive, &stream_archive_position, ShaderStage::FRAGMENT, &load_data->_Asset->_GraphicsData._FragmentShader);
+
 		//Read the topology.
 		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._Topology, sizeof(Topology), &stream_archive_position);
 
@@ -816,6 +1020,18 @@ void RenderPipelineAssetCompiler::LoadInternal(LoadData *const RESTRICT load_dat
 
 		//Read the depth buffer.
 		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._DepthBuffer, sizeof(HashString), &stream_archive_position);
+
+		//Read the output render targets.
+		{
+			uint64 number_of_output_render_targets{ 0 };
+			load_data->_StreamArchive->Read(&number_of_output_render_targets, sizeof(uint64), &stream_archive_position);
+
+			if (number_of_output_render_targets)
+			{
+				load_data->_Asset->_GraphicsData._OutputRenderTargets.Upsize<false>(number_of_output_render_targets);
+				load_data->_StreamArchive->Read(load_data->_Asset->_GraphicsData._OutputRenderTargets.Data(), number_of_output_render_targets * sizeof(HashString), &stream_archive_position);
+			}
+		}
 
 		//Read whether or not blend is enabled.
 		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._BlendEnabled, sizeof(bool), &stream_archive_position);
@@ -1132,8 +1348,197 @@ void RenderPipelineAssetCompiler::ConsumeSettings(RenderPipelineAsset *const RES
 			}
 		}
 
+		/////////////////
+		// PASSTHROUGH //
+		/////////////////
+
+		//Is this a compute render target declaration?
+		if (line.Find("ComputeRenderTarget("))
+		{
+			//Parse the argument.
+			StaticArray<DynamicString, 2> arguments;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					arguments.Data()
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 2, "Invalid number of arguments for 'ComputeRenderTarget()'!");
+
+			//Add the binding.
+			asset->_CommonData._Bindings.Emplace();
+			RenderPipelineAsset::Binding &binding{ asset->_CommonData._Bindings.Back() };
+
+			binding._Type = RenderPipelineAsset::Binding::Type::COMPUTE_RENDER_TARGET;
+			binding._ComputeRenderTargetData._Identifier = HashString(arguments[0].Data());
+
+			//Move on to the next line.
+			++line_index;
+		}
+
+		//Is this an external texture declaration?
+		else if (line.Find("ExternalTexture("))
+		{
+			//Increment the number of external textures.
+			++asset->_CommonData._NumberOfExternalTextures;
+
+			//Move on to the next line.
+			++line_index;
+		}
+		
+		//Is this an input render target declaration?
+		else if (line.Find("InputRenderTarget("))
+		{
+			//Parse the argument.
+			StaticArray<DynamicString, 4> arguments;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					arguments.Data()
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 4, "Invalid number of arguments for 'InputRenderTarget()'!");
+
+			//Add the binding.
+			asset->_CommonData._Bindings.Emplace();
+			RenderPipelineAsset::Binding &binding{ asset->_CommonData._Bindings.Back() };
+
+			binding._Type = RenderPipelineAsset::Binding::Type::INPUT_RENDER_TARGET;
+			binding._InputRenderTargetData._Identifier = HashString(arguments[0].Data());
+			binding._InputRenderTargetData._SamplerProperties._MagnificationFilter = ParseTextureFilter(arguments[1].Data());
+			binding._InputRenderTargetData._SamplerProperties._MipmapMode = ParseMipmapMode(arguments[2].Data());
+			binding._InputRenderTargetData._SamplerProperties._AddressMode = ParseAddressMode(arguments[3].Data());
+			binding._InputRenderTargetData._SamplerProperties._AnisotropicSamples = 0;
+
+			//Move on to the next line.
+			++line_index;
+		}
+
+		//Is this an output render target declaration?
+		else if (line.Find("OutputRenderTarget("))
+		{
+			//Parse the argument.
+			StaticArray<DynamicString, 1> arguments;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					arguments.Data()
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'OutputRenderTarget()'!");
+
+			//Set the value.
+			asset->_GraphicsData._OutputRenderTargets.Emplace(HashString(arguments[0].Data()));
+
+			//Move on to the next line.
+			++line_index;
+		}
+
+		//Is this a sampler declaration?
+		else if (line.Find("Sampler("))
+		{
+			//Parse the argument.
+			StaticArray<DynamicString, 5> arguments;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					arguments.Data()
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 5, "Invalid number of arguments for 'Sampler()'!");
+
+			//Add the binding.
+			asset->_CommonData._Bindings.Emplace();
+			RenderPipelineAsset::Binding &binding{ asset->_CommonData._Bindings.Back() };
+
+			binding._Type = RenderPipelineAsset::Binding::Type::SAMPLER;
+			binding._SamplerData._SamplerProperties._MagnificationFilter = ParseTextureFilter(arguments[1].Data());
+			binding._SamplerData._SamplerProperties._MipmapMode = ParseMipmapMode(arguments[2].Data());
+			binding._SamplerData._SamplerProperties._AddressMode = ParseAddressMode(arguments[3].Data());
+			binding._SamplerData._SamplerProperties._AnisotropicSamples = static_cast<uint8>(std::stoul(arguments[4].Data()));
+
+			//Move on to the next line.
+			++line_index;
+		}
+
+		//Is this a storage buffer declaration?
+		else if (line.Find("StorageBuffer("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'StorageBuffer()'!");
+
+			//Add the binding.
+			asset->_CommonData._Bindings.Emplace();
+			RenderPipelineAsset::Binding &binding{ asset->_CommonData._Bindings.Back() };
+
+			binding._Type = RenderPipelineAsset::Binding::Type::STORAGE_BUFFER;
+			binding._StorageBufferData._Identifier = HashString(argument.Data());
+
+			//Move on to the next line.
+			++line_index;
+		}
+
+		//Is this a uniform buffer declaration?
+		else if (line.Find("UniformBuffer("))
+		{
+			//Parse the argument.
+			DynamicString argument;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					&argument
+				)
+			};
+			ASSERT(number_of_arguments_parsed == 1, "Invalid number of arguments for 'UniformBuffer()'!");
+
+			//Add the binding.
+			asset->_CommonData._Bindings.Emplace();
+			RenderPipelineAsset::Binding &binding{ asset->_CommonData._Bindings.Back() };
+
+			binding._Type = RenderPipelineAsset::Binding::Type::UNIFORM_BUFFER;
+			binding._UniformBufferData._Identifier = HashString(argument.Data());
+
+			//Move on to the next line.
+			++line_index;
+		}
+
+		/////////////
+		// CONSUME //
+		/////////////
+
 		//Is this a blend alpha destination factor declaration?
-		if (line.Find("BlendAlphaDestinationFactor("))
+		else if (line.Find("BlendAlphaDestinationFactor("))
 		{
 			//Parse the argument.
 			DynamicString argument;
@@ -2225,7 +2630,7 @@ void RenderPipelineAssetCompiler::SplitShaderStages(const DynamicArray<DynamicSt
 void RenderPipelineAssetCompiler::CompileGLSLShaders
 (
 	const CompileData &compile_data,
-	const ExtraData &extra_data,
+	ExtraData *const RESTRICT extra_data,
 	const DynamicArray<ShaderStageLines> &shader_stages
 ) NOEXCEPT
 {
@@ -2462,6 +2867,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 		glsl_lines.Emplace("");
 
 		//Add global extensions.
+		glsl_lines.Emplace("#extension GL_ARB_separate_shader_objects : require");
 		glsl_lines.Emplace("#extension GL_EXT_nonuniform_qualifier : require");
 		glsl_lines.Emplace("");
 
@@ -2503,7 +2909,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 		//Iterate over the shader stage lines, GLSL-ifying each line.
 		uint32 current_binding_index{ 0 };
-		uint32 location_index{ 0 };
+		uint32 output_render_target_location_index{ 0 };
 
 		for (uint64 current_line_index{ 0 }; current_line_index < shader_stage._Lines.Size(); ++current_line_index)
 		{
@@ -2919,14 +3325,14 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 			if (current_line.Find("__ENTRYPOINT"))
 			{
 				//Add the push constant data.
-				if (!extra_data._PushConstantDataValues.Empty())
+				if (!extra_data->_PushConstantDataValues.Empty())
 				{
 					glsl_lines.Emplace("layout (push_constant) uniform PushConstantData");
 					glsl_lines.Emplace("{");
 
 					uint64 current_offset{ 0 };
 
-					for (const ExtraData::PushConstantDataValue &value : extra_data._PushConstantDataValues)
+					for (const ExtraData::PushConstantDataValue &value : extra_data->_PushConstantDataValues)
 					{
 						char buffer[64];
 						sprintf_s(buffer, "\tlayout (offset = %llu) %s %s;", current_offset, value._Type.Data(), value._Name.Data());
@@ -2948,7 +3354,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 						//Add the compute local size.
 						{
 							char buffer[128];
-							sprintf_s(buffer, "layout (local_size_x = %u, local_size_y = %u, local_size_z = %u) in;", extra_data._ComputeLocalSize._Width, extra_data._ComputeLocalSize._Height, extra_data._ComputeLocalSize._Depth);
+							sprintf_s(buffer, "layout (local_size_x = %u, local_size_y = %u, local_size_z = %u) in;", extra_data->_ComputeLocalSize._Width, extra_data->_ComputeLocalSize._Height, extra_data->_ComputeLocalSize._Depth);
 						
 							glsl_lines.Emplace(buffer);
 							glsl_lines.Emplace("");
@@ -2964,7 +3370,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 							sprintf_s(buffer, "%s", "{");
 							glsl_lines.Emplace(buffer);
 
-							sprintf_s(buffer, "\treturn uvec3(%u, %u, %u);", extra_data._ComputeLocalSize._Width, extra_data._ComputeLocalSize._Height, extra_data._ComputeLocalSize._Depth);
+							sprintf_s(buffer, "\treturn uvec3(%u, %u, %u);", extra_data->_ComputeLocalSize._Width, extra_data->_ComputeLocalSize._Height, extra_data->_ComputeLocalSize._Depth);
 							glsl_lines.Emplace(buffer);
 
 							sprintf_s(buffer, "%s", "}");
@@ -2998,9 +3404,11 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 					case ShaderStage::FRAGMENT:
 					{
 						//Add the input parameters.
-						if (!extra_data._FragmentInputParameters.Empty())
+						if (!extra_data->_FragmentInputParameters.Empty())
 						{
-							for (const ExtraData::InputParameter &parameter : extra_data._FragmentInputParameters)
+							uint32 location_index{ 0 };
+
+							for (const ExtraData::InputParameter &parameter : extra_data->_FragmentInputParameters)
 							{
 								char buffer[64];
 								sprintf_s(buffer, "layout (location = %u) %s in %s %s;", location_index, parameter._Type == "uint" ? "flat" : "", parameter._Type.Data(), parameter._Name.Data());
@@ -3022,9 +3430,9 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 						AddRayTracingData(&glsl_lines, shader_stage._RayTracingHitGroup.Data());
 
 						//Add the ray generation payloads.
-						if (current_ray_any_hit_index < extra_data._RayAnyHitPayloads.Size() && !extra_data._RayAnyHitPayloads[current_ray_any_hit_index].Empty())
+						if (current_ray_any_hit_index < extra_data->_RayAnyHitPayloads.Size() && !extra_data->_RayAnyHitPayloads[current_ray_any_hit_index].Empty())
 						{
-							AddRayTracingPayloads(extra_data._RayAnyHitPayloads[current_ray_any_hit_index], &glsl_lines);
+							AddRayTracingPayloads(extra_data->_RayAnyHitPayloads[current_ray_any_hit_index], &glsl_lines);
 						}
 
 						break;
@@ -3036,7 +3444,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 						AddRayTracingData(&glsl_lines, shader_stage._RayTracingHitGroup.Data());
 
 						//Add the ray generation payloads.
-						AddRayTracingPayloads(extra_data._RayClosestHitPayloads[current_ray_closest_hit_index], &glsl_lines);
+						AddRayTracingPayloads(extra_data->_RayClosestHitPayloads[current_ray_closest_hit_index], &glsl_lines);
 
 						break;
 					}
@@ -3047,7 +3455,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 						AddRayTracingData(&glsl_lines);
 
 						//Add the ray generation payloads.
-						AddRayTracingPayloads(extra_data._RayGenerationPayloads, &glsl_lines);
+						AddRayTracingPayloads(extra_data->_RayGenerationPayloads, &glsl_lines);
 
 						break;
 					}
@@ -3058,7 +3466,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 						AddRayTracingData(&glsl_lines);
 
 						//Add the ray generation payloads.
-						AddRayTracingPayloads(extra_data._RayMissPayloads[current_ray_miss_index], &glsl_lines);
+						AddRayTracingPayloads(extra_data->_RayMissPayloads[current_ray_miss_index], &glsl_lines);
 
 						break;
 					}
@@ -3066,9 +3474,11 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 					case ShaderStage::VERTEX:
 					{
 						//Add the input parameters.
-						if (!extra_data._VertexInputParameters.Empty())
+						if (!extra_data->_VertexInputParameters.Empty())
 						{
-							for (const ExtraData::InputParameter &parameter : extra_data._VertexInputParameters)
+							uint32 location_index{ 0 };
+
+							for (const ExtraData::InputParameter &parameter : extra_data->_VertexInputParameters)
 							{
 								char buffer[64];
 								sprintf_s(buffer, "layout (location = %u) in %s %s;", location_index, parameter._Type.Data(), parameter._Name.Data());
@@ -3082,9 +3492,11 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 						}
 
 						//Add the output parameters.
-						if (!extra_data._VertexOutputParameters.Empty())
+						if (!extra_data->_VertexOutputParameters.Empty())
 						{
-							for (const ExtraData::OutputParameter &parameter : extra_data._VertexOutputParameters)
+							uint32 location_index{ 0 };
+
+							for (const ExtraData::OutputParameter &parameter : extra_data->_VertexOutputParameters)
 							{
 								char buffer[64];
 								sprintf_s(buffer, "layout (location = %u) out %s %s;", location_index, parameter._Type.Data(), parameter._Name.Data());
@@ -3336,7 +3748,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 				current_line = glsl_line;
 			}
 
-			//Handle compute outoput render targets.
+			//Handle output render targets.
 			if (current_line.Find("OutputRenderTarget("))
 			{
 				//This is only valid for fragment shaders.
@@ -3358,7 +3770,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 					//Construct the GLSL line and add it.
 					char glsl_line[128];
-					sprintf_s(glsl_line, "layout (location = %u) out vec4 %s;", location_index++, arguments[0].Data());
+					sprintf_s(glsl_line, "layout (location = %u) out vec4 %s;", output_render_target_location_index++, arguments[0].Data());
 
 					current_line = glsl_line;
 				}
@@ -3582,16 +3994,50 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 			file.close();
 		}
 
-		//Compile the shader!
-		DynamicArray<byte> compiled_shader_data;
+		//Retrieve the output data.
+		DynamicArray<byte> fallback_output_data;
+		DynamicArray<byte> *RESTRICT output_data{ nullptr };
 
+		switch (shader_stage._ShaderStage)
+		{
+			case ShaderStage::COMPUTE:
+			{
+				output_data = &extra_data->_ComputeShaderData;
+
+				break;
+			}
+
+			case ShaderStage::VERTEX:
+			{
+				output_data = &extra_data->_VertexShaderData;
+
+				break;
+			}
+
+			case ShaderStage::FRAGMENT:
+			{
+				output_data = &extra_data->_FragmentShaderData;
+
+				break;
+			}
+
+			//TODO: Remove this once we are properly storing all output data.
+			default:
+			{
+				output_data = &fallback_output_data;
+
+				break;
+			}
+		}
+
+		//Compile the shader!
 		{
 			GLSLCompilation::CompileParameters parameters;
 
 			parameters._ShaderStage = shader_stage._ShaderStage;
 			parameters._InputLines = &glsl_lines;
 			parameters._InputFilePath = file_path;
-			parameters._OutputData = &compiled_shader_data;
+			parameters._OutputData = output_data;
 
 			GLSLCompilation::Compile(parameters);
 		}

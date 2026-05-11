@@ -63,7 +63,9 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 		AddPipeline(&pipeline);
 	}
 
+#if 0
 	AddPipeline(&_UserInterface3DPipeline);
+#endif
 
 	AddPipeline(&_VelocityGraphicsPipeline);
 
@@ -73,6 +75,7 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 		pipeline.Initialize();
 	}
 
+#if 0
 	{
 		GraphicsRenderPipelineInitializeParameters parameters;
 
@@ -83,6 +86,7 @@ void SceneFeaturesRenderPass::Initialize() NOEXCEPT
 
 		_UserInterface3DPipeline.Initialize(parameters);
 	}
+#endif
 
 	_VelocityGraphicsPipeline.Initialize();
 }
@@ -108,7 +112,9 @@ void SceneFeaturesRenderPass::Execute() NOEXCEPT
 		pipeline.Execute();
 	}
 
+#if 0
 	_UserInterface3DPipeline.Execute();
+#endif
 	_VelocityGraphicsPipeline.Execute();
 }
 
@@ -123,6 +129,8 @@ void SceneFeaturesRenderPass::Terminate() NOEXCEPT
 		pipeline.Terminate();
 	}
 
+#if 0
 	_UserInterface3DPipeline.Terminate();
+#endif
 	_VelocityGraphicsPipeline.Terminate();
 }

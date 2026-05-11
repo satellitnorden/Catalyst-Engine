@@ -29,7 +29,7 @@ public:
 private:
 
 	//The pipeline.
-	GraphicsRenderPipeline _Pipeline{ HashString("UserInterface_RenderPipeline") };
+	GraphicsRenderPipeline _Pipeline{ HashString("UI_RenderPipeline") };
 
 	/*
 	*	Initializes this render pass.

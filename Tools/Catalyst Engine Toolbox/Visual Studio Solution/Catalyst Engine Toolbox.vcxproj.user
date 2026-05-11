@@ -3,7 +3,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LocalDebuggerCommandArguments>generate_solution</LocalDebuggerCommandArguments>
     <RemoteDebuggerCommandArguments>generate_solution</RemoteDebuggerCommandArguments>
-    <LocalDebuggerWorkingDirectory>C:\GitHub\DrumAttack\Solutions</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>C:\GitHub\Clairvoyant\Solutions</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

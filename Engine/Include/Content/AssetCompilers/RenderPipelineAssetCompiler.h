@@ -164,7 +164,7 @@ private:
 	void CompileGLSLShaders
 	(
 		const CompileData &compile_data,
-		const class ExtraData &extra_data,
+		class ExtraData *const RESTRICT extra_data,
 		const DynamicArray<class ShaderStageLines> &shader_stages
 	) NOEXCEPT;
 

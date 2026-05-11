@@ -28,6 +28,13 @@ public:							\
 	void Initialize() NOEXCEPT;
 
 /*
+*	Put this in your system declaration and implement it to receive an "LoadAssets()" call.
+*/
+#define SYSTEM_LOAD_ASSETS()	\
+public:							\
+	void LoadAssets() NOEXCEPT;
+
+/*
 *	Put this in your system declaration and implement it to receive an "PostInitialize()" call.
 */
 #define SYSTEM_POST_INITIALIZE()	\
@@ -94,6 +101,11 @@ public:
 	*	Initializes all systems.
 	*/
 	static void Initialize() NOEXCEPT;
+
+	/*
+	*	Loads assets for all systems.
+	*/
+	static void LoadAssets() NOEXCEPT;
 
 	/*
 	*	Post-initializes all systems.

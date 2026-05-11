@@ -417,6 +417,18 @@ void RenderingSystem::Initialize() NOEXCEPT
 		1.0f,
 		_PostProcessingSystem.GetBloomIntensity()
 	);
+	DebugSystem::Instance->RegisterSliderDebugCommand
+	(
+		"Rendering\\Post Processing\\Chromatic Aberration Intensity",
+		[](class DebugCommand *const RESTRICT debug_command, void *const RESTRICT user_data)
+		{
+			RenderingSystem::Instance->GetPostProcessingSystem()->SetChromaticAberrationIntensity(debug_command->_State._SliderState._Value);
+		},
+		nullptr,
+		0.0f,
+		1.0f,
+		_PostProcessingSystem.GetChromaticAberrationIntensity()
+	);
 #endif
 }
 
