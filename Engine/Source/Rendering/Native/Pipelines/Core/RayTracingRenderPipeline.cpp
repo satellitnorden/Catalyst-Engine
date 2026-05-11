@@ -2,9 +2,11 @@
 #include <Rendering/Native/Pipelines/Core/RayTracingRenderPipeline.h>
 
 //Rendering.
+#include <Rendering/Native/Utilities/RenderPipelineUtilities.h>
 #include <Rendering/Native/CommandBuffer.h>
 
 //Systems.
+#include <Systems/ContentSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/ResourceSystem.h>
 
@@ -13,6 +15,260 @@
 */
 void RayTracingRenderPipeline::Initialize(const RayTracingRenderPipelineParameters &parameters) NOEXCEPT
 {
+#if defined(USE_RENDER_PIPELINE_ASSET)
+	//Reset this pipeline.
+	ResetPipeline();
+
+	//Retrieve the render pipeline asset.
+	_RenderPipelineAsset = ContentSystem::Instance->GetAsset<RenderPipelineAsset>(_RenderPipelineIdentifier);
+
+	//Set if this render pipeline needs a render data table.
+	_UsesRenderDataTable = !_RenderPipelineAsset->_CommonData._Bindings.Empty();
+
+	//Calculate the shader stages.
+	ShaderStage shader_stages{ static_cast<ShaderStage>(0) };
+
+	if (_RenderPipelineAsset->_RayTracingData._RayGenerationShader != EMPTY_HANDLE)
+	{
+		shader_stages |= ShaderStage::RAY_GENERATION;
+	}
+
+	if (!_RenderPipelineAsset->_RayTracingData._RayMissShaders.Empty())
+	{
+		shader_stages |= ShaderStage::RAY_MISS;
+	}
+
+	for (const RenderPipelineAsset::RayTracingData::HitGroup &hit_group : _RenderPipelineAsset->_RayTracingData._HitGroups)
+	{
+		if (hit_group._RayClosestHitShader != EMPTY_HANDLE)
+		{
+			shader_stages |= ShaderStage::RAY_CLOSEST_HIT;
+		}
+
+		if (hit_group._RayAnyHitShader != EMPTY_HANDLE)
+		{
+			shader_stages |= ShaderStage::RAY_ANY_HIT;
+		}
+	}
+
+	//If this render pipeline has bindings, create a render data table (and its layout).
+	if (_UsesRenderDataTable)
+	{
+		//Create the render data table layout.
+		RenderPipelineUtilities::CreateRenderDataTableLayoutFromBindings
+		(
+			_RenderPipelineAsset->_CommonData._Bindings,
+			shader_stages,
+			&_RenderDataTableLayout
+		);
+
+		//Create the render data tables.
+		_RenderDataTables.Upsize<false>(RenderingSystem::Instance->GetNumberOfFramebuffers());
+
+		for (uint64 i{ 0 }; i < _RenderDataTables.Size(); ++i)
+		{
+			//Cache the render data table.
+			RenderDataTableHandle &render_data_table{ _RenderDataTables[i] };
+
+			//Create the render data table.
+			RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &render_data_table);
+
+			//Bind all bindings.
+			for (uint64 binding_index{ 0 }; binding_index < _RenderPipelineAsset->_CommonData._Bindings.Size(); ++binding_index)
+			{
+				//Cache the binding.
+				const RenderPipelineAsset::Binding &binding{ _RenderPipelineAsset->_CommonData._Bindings[binding_index] };
+
+				//Bind depending on type.
+				switch (binding._Type)
+				{
+					case RenderPipelineAsset::Binding::Type::COMPUTE_RENDER_TARGET:
+					{
+						//Retrieve the render target.
+						RenderTargetHandle render_target;
+
+						//First check if we received an input render target in the parameters.
+						bool found{ false };
+
+						for (const Pair<HashString, RenderTargetHandle> &_compute_render_target : parameters._ComputeRenderTargets)
+						{
+							if (_compute_render_target._First == binding._ComputeRenderTargetData._Identifier)
+							{
+								render_target = _compute_render_target._Second;
+								found = true;
+
+								break;
+							}
+						}
+
+						//Otherwise, try the shared render target manager.
+						if (!found)
+						{
+							render_target = RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(binding._ComputeRenderTargetData._Identifier);
+						}
+
+						//Bind the input render target!
+						RenderingSystem::Instance->BindStorageImageToRenderDataTable
+						(
+							static_cast<uint32>(binding_index),
+							0,
+							&render_data_table,
+							render_target
+						);
+
+						//Add the compute render target.
+						_ComputeRenderTargets.Emplace(render_target);
+
+						break;
+					}
+
+					case RenderPipelineAsset::Binding::Type::INPUT_RENDER_TARGET:
+					{
+						//Bind the input render target!
+						RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable
+						(
+							static_cast<uint32>(binding_index),
+							0,
+							&render_data_table,
+							RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(binding._InputRenderTargetData._Identifier),
+							RenderingSystem::Instance->GetSampler(binding._InputRenderTargetData._SamplerProperties)
+						);
+
+						break;
+					}
+
+					case RenderPipelineAsset::Binding::Type::SAMPLER:
+					{
+						//Bind the sampler!
+						RenderingSystem::Instance->BindSamplerToRenderDataTable
+						(
+							static_cast<uint32>(binding_index),
+							0,
+							&render_data_table,
+							RenderingSystem::Instance->GetSampler(binding._SamplerData._SamplerProperties)
+						);
+
+						break;
+					}
+
+					case RenderPipelineAsset::Binding::Type::STORAGE_BUFFER:
+					{
+						//Bind the storage buffer!
+						RenderingSystem::Instance->BindStorageBufferToRenderDataTable
+						(
+							static_cast<uint32>(binding_index),
+							0,
+							&render_data_table,
+							RenderingSystem::Instance->GetBufferManager()->GetStorageBuffer(binding._StorageBufferData._Identifier, static_cast<uint8>(i))
+						);
+
+						break;
+					}
+
+					case RenderPipelineAsset::Binding::Type::UNIFORM_BUFFER:
+					{
+						//Bind the uniform buffer!
+						RenderingSystem::Instance->BindUniformBufferToRenderDataTable
+						(
+							static_cast<uint32>(binding_index),
+							0,
+							&render_data_table,
+							RenderingSystem::Instance->GetBufferManager()->GetUniformBuffer(binding._UniformBufferData._Identifier, static_cast<uint8>(i))
+						);
+
+						break;
+					}
+
+					default:
+					{
+						ASSERT(false, "Invalid case!");
+
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	//Set the shaders.
+	if (_RenderPipelineAsset->_RayTracingData._RayGenerationShader != EMPTY_HANDLE)
+	{
+		SetRayGenerationShader(_RenderPipelineAsset->_RayTracingData._RayGenerationShader);
+	}
+
+	if (!_RenderPipelineAsset->_RayTracingData._RayMissShaders.Empty())
+	{
+		SetNumberOfMissShaders(_RenderPipelineAsset->_RayTracingData._RayMissShaders.Size());
+
+		for (const ShaderHandle ray_miss_shader : _RenderPipelineAsset->_RayTracingData._RayMissShaders)
+		{
+			AddMissShader(ray_miss_shader);
+		}
+	}
+
+	//Add the hit groups.
+	if (!_RenderPipelineAsset->_RayTracingData._HitGroups.Empty())
+	{
+		SetNumberOfHitGroups(RenderingSystem::Instance->GetRayTracingSystem()->GetHitGroups().Size());
+
+		for (const RayTracingHitGroup &hit_group : RenderingSystem::Instance->GetRayTracingSystem()->GetHitGroups())
+		{
+			const RenderPipelineAsset::RayTracingData::HitGroup *RESTRICT ray_hit_group{ nullptr };
+
+			for (const RenderPipelineAsset::RayTracingData::HitGroup &_ray_hit_group : _RenderPipelineAsset->_RayTracingData._HitGroups)
+			{
+				if (_ray_hit_group._Identifier == hit_group._Identifier)
+				{
+					ray_hit_group = &_ray_hit_group;
+
+					break;
+				}
+			}
+
+			AddHitGroup
+			(
+				ray_hit_group ? ray_hit_group->_RayClosestHitShader : EMPTY_HANDLE,
+				ray_hit_group ? ray_hit_group->_RayAnyHitShader : EMPTY_HANDLE,
+				EMPTY_HANDLE
+			);
+		}
+
+		//for (const RenderPipelineResource::RayHitGroupShaderData &ray_hit_group_shader_data : _RenderPipelineResource->_RayHitGroupShaderData)
+		//{
+		//	AddHitGroup(ray_hit_group_shader_data._RayClosestHitShaderHandle, ray_hit_group_shader_data._RayAnyHitShaderHandle, EMPTY_HANDLE);
+		//}
+	}
+
+	//Add the render data table layouts.
+	SetNumberOfRenderDataTableLayouts(_UsesRenderDataTable ? 3 : 2);
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL_2));
+
+	if (_UsesRenderDataTable)
+	{
+		AddRenderDataTableLayout(_RenderDataTableLayout);
+	}
+
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetRayTracingSystem()->GetRenderDataTableLayout());
+
+	//Retrieve the input stream.
+	ASSERT(!_RenderPipelineAsset->_CommonData._InputStreamSubscriptions.Empty(), "Need at least one input stream subscription!");
+	const RenderInputStream &input_stream{ RenderingSystem::Instance->GetRenderInputManager()->GetInputStream(_RenderPipelineAsset->_CommonData._InputStreamSubscriptions[0]) };
+
+	//Set the push constant ranges.
+	if (input_stream._RequiredPushConstantDataSize > 0)
+	{
+		SetNumberOfPushConstantRanges(1);
+		AddPushConstantRange(shader_stages, 0, static_cast<uint32>(input_stream._RequiredPushConstantDataSize));
+	}
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Set the name.
+	SetName(_RenderPipelineAsset->_Header._AssetName.Data());
+#endif
+
+	//Finalize the pipeline.
+	FinalizePipeline();
+#else
 	//Retrieve the render pipeline resource.
 	_RenderPipelineResource = ResourceSystem::Instance->GetRenderPipelineResource(_RenderPipelineIdentifier);
 
@@ -295,6 +551,7 @@ void RayTracingRenderPipeline::Initialize(const RayTracingRenderPipelineParamete
 
 	//Finalize the pipeline.
 	FinalizePipeline();
+#endif
 }
 
 /*
@@ -314,7 +571,11 @@ void RayTracingRenderPipeline::Execute() NOEXCEPT
 	{
 		bool all_input_streams_empty{ true };
 
+#if USE_RENDER_PIPELINE_ASSET
+		for (const HashString input_stream_subscription : _RenderPipelineAsset->_CommonData._InputStreamSubscriptions)
+#else
 		for (const HashString input_stream_subscription : _RenderPipelineResource->_InputStreamSubscriptions)
+#endif
 		{
 			const RenderInputStream &input_stream{ RenderingSystem::Instance->GetRenderInputManager()->GetInputStream(input_stream_subscription) };
 
@@ -368,7 +629,11 @@ void RayTracingRenderPipeline::Execute() NOEXCEPT
 	}
 
 	//Go over the input streams.
+#if USE_RENDER_PIPELINE_ASSET
+	for (const HashString input_stream_subscription : _RenderPipelineAsset->_CommonData._InputStreamSubscriptions)
+#else
 	for (const HashString input_stream_subscription : _RenderPipelineResource->_InputStreamSubscriptions)
+#endif
 	{
 		const RenderInputStream &input_stream{ RenderingSystem::Instance->GetRenderInputManager()->GetInputStream(input_stream_subscription) };
 

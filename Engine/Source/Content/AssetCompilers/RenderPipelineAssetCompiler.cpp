@@ -95,6 +95,18 @@ public:
 	{
 
 	public:
+		
+		//Enumeration covering all directions.
+		enum class Direction : uint8
+		{
+			UNKNOWN,
+
+			INCOMING,
+			OUTGOING
+		};
+
+		//The direction.
+		Direction _Direction;
 
 		//The index.
 		uint32 _Index;
@@ -2143,6 +2155,188 @@ void RenderPipelineAssetCompiler::ConsumeSettings(RenderPipelineAsset *const RES
 			lines->EraseAt<true>(line_index);
 		}
 
+		//Is this an incoming payload definition?
+		else if (line.Find("IncomingPayload("))
+		{
+			//Parse the arguments.
+			StaticArray<DynamicString, 3> arguments;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					arguments.Data()
+				)
+			};
+			ASSERT(number_of_arguments_parsed <= 3, "Invalid number of arguments for 'IncomingPayload()'!");
+
+			//Fill in depending on the current shader stage.
+			switch (current_shader_stage)
+			{
+				case ShaderStage::RAY_ANY_HIT:
+				{
+					if (current_ray_any_hit_index >= extra_data->_RayAnyHitPayloads.Size())
+					{
+						extra_data->_RayAnyHitPayloads.Emplace();
+					}
+
+					extra_data->_RayAnyHitPayloads[current_ray_any_hit_index].Emplace();
+					extra_data->_RayAnyHitPayloads[current_ray_any_hit_index].Back()._Direction = ExtraData::RayTracingPayload::Direction::INCOMING;
+					extra_data->_RayAnyHitPayloads[current_ray_any_hit_index].Back()._Index = std::stoul(arguments[0].Data());
+					extra_data->_RayAnyHitPayloads[current_ray_any_hit_index].Back()._Type = arguments[1];
+					extra_data->_RayAnyHitPayloads[current_ray_any_hit_index].Back()._Name = arguments[2];
+
+					break;
+				}
+
+				case ShaderStage::RAY_CLOSEST_HIT:
+				{
+					if (current_ray_closest_hit_index >= extra_data->_RayClosestHitPayloads.Size())
+					{
+						extra_data->_RayClosestHitPayloads.Emplace();
+					}
+
+					extra_data->_RayClosestHitPayloads[current_ray_closest_hit_index].Emplace();
+					extra_data->_RayClosestHitPayloads[current_ray_closest_hit_index].Back()._Direction = ExtraData::RayTracingPayload::Direction::INCOMING;
+					extra_data->_RayClosestHitPayloads[current_ray_closest_hit_index].Back()._Index = std::stoul(arguments[0].Data());
+					extra_data->_RayClosestHitPayloads[current_ray_closest_hit_index].Back()._Type = arguments[1];
+					extra_data->_RayClosestHitPayloads[current_ray_closest_hit_index].Back()._Name = arguments[2];
+
+					break;
+				}
+
+				case ShaderStage::RAY_GENERATION:
+				{
+					extra_data->_RayGenerationPayloads.Emplace();
+					extra_data->_RayGenerationPayloads.Back()._Direction = ExtraData::RayTracingPayload::Direction::INCOMING;
+					extra_data->_RayGenerationPayloads.Back()._Index = std::stoul(arguments[0].Data());
+					extra_data->_RayGenerationPayloads.Back()._Type = arguments[1];
+					extra_data->_RayGenerationPayloads.Back()._Name = arguments[2];
+
+					break;
+				}
+
+				case ShaderStage::RAY_MISS:
+				{
+					if (current_ray_miss_index >= extra_data->_RayMissPayloads.Size())
+					{
+						extra_data->_RayMissPayloads.Emplace();
+					}
+
+					extra_data->_RayMissPayloads[current_ray_miss_index].Emplace();
+					extra_data->_RayMissPayloads[current_ray_miss_index].Back()._Direction = ExtraData::RayTracingPayload::Direction::INCOMING;
+					extra_data->_RayMissPayloads[current_ray_miss_index].Back()._Index = std::stoul(arguments[0].Data());
+					extra_data->_RayMissPayloads[current_ray_miss_index].Back()._Type = arguments[1];
+					extra_data->_RayMissPayloads[current_ray_miss_index].Back()._Name = arguments[2];
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
+		//Is this an outgoing payload definition?
+		else if (line.Find("OutgoingPayload("))
+		{
+			//Parse the arguments.
+			StaticArray<DynamicString, 3> arguments;
+
+			const uint64 number_of_arguments_parsed
+			{
+				TextParsingUtilities::ParseFunctionArguments
+				(
+					line.Data(),
+					line.Length(),
+					arguments.Data()
+				)
+			};
+			ASSERT(number_of_arguments_parsed <= 3, "Invalid number of arguments for 'OutgoingPayload()'!");
+
+			//Fill in depending on the current shader stage.
+			switch (current_shader_stage)
+			{
+				case ShaderStage::RAY_ANY_HIT:
+				{
+					if (current_ray_any_hit_index >= extra_data->_RayAnyHitPayloads.Size())
+					{
+						extra_data->_RayAnyHitPayloads.Emplace();
+					}
+
+					extra_data->_RayAnyHitPayloads[current_ray_any_hit_index].Emplace();
+					extra_data->_RayAnyHitPayloads[current_ray_any_hit_index].Back()._Direction = ExtraData::RayTracingPayload::Direction::OUTGOING;
+					extra_data->_RayAnyHitPayloads[current_ray_any_hit_index].Back()._Index = std::stoul(arguments[0].Data());
+					extra_data->_RayAnyHitPayloads[current_ray_any_hit_index].Back()._Type = arguments[1];
+					extra_data->_RayAnyHitPayloads[current_ray_any_hit_index].Back()._Name = arguments[2];
+
+					break;
+				}
+
+				case ShaderStage::RAY_CLOSEST_HIT:
+				{
+					if (current_ray_closest_hit_index >= extra_data->_RayClosestHitPayloads.Size())
+					{
+						extra_data->_RayClosestHitPayloads.Emplace();
+					}
+
+					extra_data->_RayClosestHitPayloads[current_ray_closest_hit_index].Emplace();
+					extra_data->_RayClosestHitPayloads[current_ray_closest_hit_index].Back()._Direction = ExtraData::RayTracingPayload::Direction::OUTGOING;
+					extra_data->_RayClosestHitPayloads[current_ray_closest_hit_index].Back()._Index = std::stoul(arguments[0].Data());
+					extra_data->_RayClosestHitPayloads[current_ray_closest_hit_index].Back()._Type = arguments[1];
+					extra_data->_RayClosestHitPayloads[current_ray_closest_hit_index].Back()._Name = arguments[2];
+
+					break;
+				}
+
+				case ShaderStage::RAY_GENERATION:
+				{
+					extra_data->_RayGenerationPayloads.Emplace();
+					extra_data->_RayGenerationPayloads.Back()._Direction = ExtraData::RayTracingPayload::Direction::OUTGOING;
+					extra_data->_RayGenerationPayloads.Back()._Index = std::stoul(arguments[0].Data());
+					extra_data->_RayGenerationPayloads.Back()._Type = arguments[1];
+					extra_data->_RayGenerationPayloads.Back()._Name = arguments[2];
+
+					break;
+				}
+
+				case ShaderStage::RAY_MISS:
+				{
+					if (current_ray_miss_index >= extra_data->_RayMissPayloads.Size())
+					{
+						extra_data->_RayMissPayloads.Emplace();
+					}
+
+					extra_data->_RayMissPayloads[current_ray_miss_index].Emplace();
+					extra_data->_RayMissPayloads[current_ray_miss_index].Back()._Direction = ExtraData::RayTracingPayload::Direction::OUTGOING;
+					extra_data->_RayMissPayloads[current_ray_miss_index].Back()._Index = std::stoul(arguments[0].Data());
+					extra_data->_RayMissPayloads[current_ray_miss_index].Back()._Type = arguments[1];
+					extra_data->_RayMissPayloads[current_ray_miss_index].Back()._Name = arguments[2];
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+
+			//Remove this line.
+			lines->EraseAt<true>(line_index);
+		}
+
 		//Is this a payload definition?
 		else if (line.Find("Payload("))
 		{
@@ -2171,6 +2365,7 @@ void RenderPipelineAssetCompiler::ConsumeSettings(RenderPipelineAsset *const RES
 					}
 
 					extra_data->_RayAnyHitPayloads[current_ray_any_hit_index].Emplace();
+					extra_data->_RayAnyHitPayloads[current_ray_any_hit_index].Back()._Direction = ExtraData::RayTracingPayload::Direction::UNKNOWN;
 					extra_data->_RayAnyHitPayloads[current_ray_any_hit_index].Back()._Index = std::stoul(arguments[0].Data());
 					extra_data->_RayAnyHitPayloads[current_ray_any_hit_index].Back()._Type = arguments[1];
 					extra_data->_RayAnyHitPayloads[current_ray_any_hit_index].Back()._Name = arguments[2];
@@ -2186,6 +2381,7 @@ void RenderPipelineAssetCompiler::ConsumeSettings(RenderPipelineAsset *const RES
 					}
 
 					extra_data->_RayClosestHitPayloads[current_ray_closest_hit_index].Emplace();
+					extra_data->_RayClosestHitPayloads[current_ray_closest_hit_index].Back()._Direction = ExtraData::RayTracingPayload::Direction::UNKNOWN;
 					extra_data->_RayClosestHitPayloads[current_ray_closest_hit_index].Back()._Index = std::stoul(arguments[0].Data());
 					extra_data->_RayClosestHitPayloads[current_ray_closest_hit_index].Back()._Type = arguments[1];
 					extra_data->_RayClosestHitPayloads[current_ray_closest_hit_index].Back()._Name = arguments[2];
@@ -2196,6 +2392,7 @@ void RenderPipelineAssetCompiler::ConsumeSettings(RenderPipelineAsset *const RES
 				case ShaderStage::RAY_GENERATION:
 				{
 					extra_data->_RayGenerationPayloads.Emplace();
+					extra_data->_RayGenerationPayloads.Back()._Direction = ExtraData::RayTracingPayload::Direction::UNKNOWN;
 					extra_data->_RayGenerationPayloads.Back()._Index = std::stoul(arguments[0].Data());
 					extra_data->_RayGenerationPayloads.Back()._Type = arguments[1];
 					extra_data->_RayGenerationPayloads.Back()._Name = arguments[2];
@@ -2211,6 +2408,7 @@ void RenderPipelineAssetCompiler::ConsumeSettings(RenderPipelineAsset *const RES
 					}
 
 					extra_data->_RayMissPayloads[current_ray_miss_index].Emplace();
+					extra_data->_RayMissPayloads[current_ray_miss_index].Back()._Direction = ExtraData::RayTracingPayload::Direction::UNKNOWN;
 					extra_data->_RayMissPayloads[current_ray_miss_index].Back()._Index = std::stoul(arguments[0].Data());
 					extra_data->_RayMissPayloads[current_ray_miss_index].Back()._Type = arguments[1];
 					extra_data->_RayMissPayloads[current_ray_miss_index].Back()._Name = arguments[2];
@@ -2915,14 +3113,71 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 	};
 	constexpr auto AddRayTracingPayloads
 	{
-		[](const DynamicArray<ExtraData::RayTracingPayload> &payloads, DynamicArray<DynamicString> *const RESTRICT glsl_lines)
+		[](const ShaderStage shader_stage, const DynamicArray<ExtraData::RayTracingPayload> &payloads, DynamicArray<DynamicString> *const RESTRICT glsl_lines)
 		{
 			if (!payloads.Empty())
 			{
 				for (const ExtraData::RayTracingPayload &payload : payloads)
 				{
+					bool is_incoming;
+
+					switch (payload._Direction)
+					{
+						case ExtraData::RayTracingPayload::Direction::UNKNOWN:
+						{
+							switch (shader_stage)
+							{
+								case ShaderStage::RAY_ANY_HIT:
+								case ShaderStage::RAY_CLOSEST_HIT:
+								case ShaderStage::RAY_MISS:
+								{
+									is_incoming = true;
+
+									break;
+								}
+
+								case ShaderStage::RAY_GENERATION:
+								{
+									is_incoming = false;
+
+									break;
+								}
+
+								default:
+								{
+									ASSERT(false, "Invalid case!");
+
+									break;
+								}
+							}
+
+							break;
+						}
+
+						case ExtraData::RayTracingPayload::Direction::INCOMING:
+						{
+							is_incoming = true;
+
+							break;
+						}
+
+						case ExtraData::RayTracingPayload::Direction::OUTGOING:
+						{
+							is_incoming = false;
+
+							break;
+						}
+
+						default:
+						{
+							ASSERT(false, "Invalid case!");
+
+							break;
+						}
+					}
+
 					char buffer[64];
-					sprintf_s(buffer, "layout (location = %u) rayPayloadNV %s %s;", payload._Index, payload._Type.Data(), payload._Name.Data());
+					sprintf_s(buffer, "layout (location = %u) %s %s %s;", payload._Index, is_incoming ? "rayPayloadInNV" : "rayPayloadNV", payload._Type.Data(), payload._Name.Data());
 
 					glsl_lines->Emplace(buffer);
 				}
@@ -3538,7 +3793,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 						//Add the ray generation payloads.
 						if (current_ray_any_hit_index < extra_data->_RayAnyHitPayloads.Size() && !extra_data->_RayAnyHitPayloads[current_ray_any_hit_index].Empty())
 						{
-							AddRayTracingPayloads(extra_data->_RayAnyHitPayloads[current_ray_any_hit_index], &glsl_lines);
+							AddRayTracingPayloads(ShaderStage::RAY_ANY_HIT, extra_data->_RayAnyHitPayloads[current_ray_any_hit_index], &glsl_lines);
 						}
 
 						break;
@@ -3550,7 +3805,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 						AddRayTracingData(&glsl_lines, shader_stage._RayTracingHitGroup.Data());
 
 						//Add the ray generation payloads.
-						AddRayTracingPayloads(extra_data->_RayClosestHitPayloads[current_ray_closest_hit_index], &glsl_lines);
+						AddRayTracingPayloads(ShaderStage::RAY_CLOSEST_HIT, extra_data->_RayClosestHitPayloads[current_ray_closest_hit_index], &glsl_lines);
 
 						break;
 					}
@@ -3561,7 +3816,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 						AddRayTracingData(&glsl_lines);
 
 						//Add the ray generation payloads.
-						AddRayTracingPayloads(extra_data->_RayGenerationPayloads, &glsl_lines);
+						AddRayTracingPayloads(ShaderStage::RAY_GENERATION, extra_data->_RayGenerationPayloads, &glsl_lines);
 
 						break;
 					}
@@ -3572,7 +3827,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 						AddRayTracingData(&glsl_lines);
 
 						//Add the ray generation payloads.
-						AddRayTracingPayloads(extra_data->_RayMissPayloads[current_ray_miss_index], &glsl_lines);
+						AddRayTracingPayloads(ShaderStage::RAY_MISS, extra_data->_RayMissPayloads[current_ray_miss_index], &glsl_lines);
 
 						break;
 					}
