@@ -378,25 +378,35 @@ void ContentSystem::LoadAssets(const char *const RESTRICT directory_path) NOEXCE
 */
 void ContentSystem::LoadAsset(const char *const RESTRICT file_path) NOEXCEPT
 {
+	//Open the input file.
+	BinaryInputFile input_file{ file_path };
+
 	//Load the file into a stream archive.
 	StreamArchive stream_archive;
 
 	{
 		PROFILING_SCOPE("ContentSystem::LoadAsset::CreateStreamArchive");
 
-		BinaryInputFile file{ file_path };
-
 		{
 			PROFILING_SCOPE("ContentSystem::LoadAsset::AllocateStreamArchive");
-			stream_archive.Resize(file.Size());
+			stream_archive.Resize(input_file.Size());
 		}
 
 		{
 			PROFILING_SCOPE("ContentSystem::LoadAsset::ReadStreamArchive");
-			file.Read(stream_archive.Data(), file.Size());
-		}
 
-		file.Close();
+			stream_archive.SetMode(StreamArchive::Mode::READ);
+
+			if (input_file.IsMapped())
+			{
+				stream_archive.SetData(static_cast<byte *const RESTRICT>(const_cast<void *const RESTRICT>(input_file.GetMappedData())), input_file.Size());
+			}
+			
+			else
+			{
+				input_file.Read(stream_archive.Data(), input_file.Size());
+			}
+		}
 	}
 
 	//Set up the stream archive position.
@@ -432,7 +442,7 @@ void ContentSystem::LoadAsset(const char *const RESTRICT file_path) NOEXCEPT
 	load_context._Asset = nullptr;
 
 	//Load!
-	Asset* const RESTRICT new_asset{ asset_compiler->Load(load_context) };
+	Asset *const RESTRICT new_asset{ asset_compiler->Load(load_context) };
 
 	//Copy the asset header.
 	Memory::Copy(&new_asset->_Header, &asset_header, sizeof(AssetHeader));
@@ -459,6 +469,9 @@ void ContentSystem::LoadAsset(const char *const RESTRICT file_path) NOEXCEPT
 
 	//Clear the tasks.
 	_Tasks.Clear();
+
+	//Close the input file.
+	input_file.Close();
 }
 
 /*
@@ -468,25 +481,36 @@ void ContentSystem::LoadAssetCollection(const char *const RESTRICT file_path) NO
 {
 	TimePoint start_time;
 
+	//Open the input file.
+	BinaryInputFile input_file{ file_path };
+
 	//Load the file into a stream archive.
 	StreamArchive stream_archive;
 
 	{
 		PROFILING_SCOPE("ContentSystem::LoadAssetCollection::CreateStreamArchive");
 
-		BinaryInputFile file{ file_path };
 
 		{
 			PROFILING_SCOPE("ContentSystem::LoadAssetCollection::AllocateStreamArchive");
-			stream_archive.Resize(file.Size());
+			stream_archive.Resize(input_file.Size());
 		}
 
 		{
 			PROFILING_SCOPE("ContentSystem::LoadAssetCollection::ReadStreamArchive");
-			file.Read(stream_archive.Data(), file.Size());
-		}
 
-		file.Close();
+			stream_archive.SetMode(StreamArchive::Mode::READ);
+			
+			if (input_file.IsMapped())
+			{
+				stream_archive.SetData(static_cast<byte* const RESTRICT>(const_cast<void* const RESTRICT>(input_file.GetMappedData())), input_file.Size());
+			}
+
+			else
+			{
+				input_file.Read(stream_archive.Data(), input_file.Size());
+			}
+		}
 	}
 
 	//Read the whole file.
@@ -580,6 +604,9 @@ void ContentSystem::LoadAssetCollection(const char *const RESTRICT file_path) NO
 	{
 		asset_compiler->PostLoad();
 	}
+
+	//Close the input file.
+	input_file.Close();
 
 	LOG_INFORMATION("%s took %f seconds to load", file_path, start_time.GetSecondsSince());
 }

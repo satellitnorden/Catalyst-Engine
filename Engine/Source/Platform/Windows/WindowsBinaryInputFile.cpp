@@ -164,6 +164,26 @@ NO_DISCARD bool BinaryInputFile::HasReachedEndOfFile() NOEXCEPT
 }
 
 /*
+*	Returns if this binary input file is mapped.
+*/
+NO_DISCARD bool BinaryInputFile::IsMapped() const NOEXCEPT
+{
+	return true;
+}
+
+/*
+*	Returns the mapped data (assuming this binary input file is mapped).
+*/
+NO_DISCARD const void *const RESTRICT BinaryInputFile::GetMappedData() const NOEXCEPT
+{
+	//Cache the implementation.
+	const WindowsBinaryInputFileImplementation *const RESTRICT implementation{ _Implementation.Get<WindowsBinaryInputFileImplementation>() };
+
+	//Return the data.
+	return implementation->_Data;
+}
+
+/*
 *	Closes this binary file.
 */
 void BinaryInputFile::Close() NOEXCEPT

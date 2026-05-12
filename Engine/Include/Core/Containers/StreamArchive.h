@@ -12,6 +12,17 @@ class StreamArchive final
 public:
 
 	/*
+	*	Enumeration covering all modes.
+	*/
+	enum class Mode : uint8
+	{
+		READ,
+		WRITE,
+
+		READ_WRITE
+	};
+
+	/*
 	*	Default constructor.
 	*/
 	FORCE_INLINE StreamArchive() NOEXCEPT
@@ -28,10 +39,28 @@ public:
 	*/
 	FORCE_INLINE ~StreamArchive() NOEXCEPT
 	{
-		if (_Data)
-		{
-			Memory::Free(_Data);
-		}
+		Deallocate();
+	}
+
+	/*
+	*	Sets the mode.
+	*/
+	FORCE_INLINE void SetMode(const Mode value) NOEXCEPT
+	{
+		_Mode = value;
+	}
+
+	/*
+	*	Sets the data.
+	*/
+	FORCE_INLINE void SetData(byte *const RESTRICT data, const uint64 size) NOEXCEPT
+	{
+		Deallocate();
+
+		_Data = data;
+		_Size = size;
+		_Capacity = size;
+		_OwnsData = false;
 	}
 	
 	/*
@@ -73,6 +102,8 @@ public:
 	template <typename TYPE>
 	FORCE_INLINE void Read(TYPE *const RESTRICT destination, const uint64 size, uint64 *const RESTRICT position) const NOEXCEPT
 	{
+		ASSERT(_Mode == Mode::READ || _Mode == Mode::READ_WRITE, "Invalid mode!");
+
 		Memory::Copy(destination, &_Data[*position], size);
 
 		*position += size;
@@ -83,6 +114,8 @@ public:
 	*/
 	FORCE_INLINE void Write(const void *const RESTRICT source, const uint64 size) NOEXCEPT
 	{
+		ASSERT(_Mode == Mode::WRITE || _Mode == Mode::READ_WRITE, "Invalid mode!");
+
 		//Calculate the needed memory.
 		const uint64 needed_memory{ _Size + size };
 
@@ -110,6 +143,9 @@ public:
 
 private:
 
+	//The mode.
+	Mode _Mode{ Mode::READ_WRITE };
+
 	//The underlying data.
 	byte *RESTRICT _Data;
 
@@ -119,10 +155,13 @@ private:
 	//The current capacity of this dynamic array.
 	uint64 _Capacity;
 
+	//Denotes if this stream archive owns the underlying data.
+	bool _OwnsData{ true };
+
 	/*
 	*	Allocates.
 	*/
-	void Allocate(const uint64 capacity) NOEXCEPT
+	FORCE_INLINE void Allocate(const uint64 capacity) NOEXCEPT
 	{
 		//Allocate the new data.
 		byte *const RESTRICT new_data{ static_cast<byte *const RESTRICT>(Memory::Allocate(capacity)) };
@@ -139,6 +178,25 @@ private:
 
 		//Set the new capacity.
 		_Capacity = capacity;
+
+		//This stream archive now owns this data.
+		_OwnsData = true;
+	}
+
+	/*
+	*	Deallocates
+	*/
+	FORCE_INLINE void Deallocate() NOEXCEPT
+	{
+		if (_OwnsData && _Data)
+		{
+			Memory::Free(_Data);
+		}
+
+		_Data = nullptr;
+		_Size = 0;
+		_Capacity = 0;
+		_OwnsData = true;
 	}
 
 };

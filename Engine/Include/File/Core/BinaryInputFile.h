@@ -70,6 +70,16 @@ public:
 	NO_DISCARD bool HasReachedEndOfFile() NOEXCEPT;
 
 	/*
+	*	Returns if this binary input file is mapped.
+	*/
+	NO_DISCARD bool IsMapped() const NOEXCEPT;
+
+	/*
+	*	Returns the mapped data (assuming this binary input file is mapped).
+	*/
+	NO_DISCARD const void *const RESTRICT GetMappedData() const NOEXCEPT;
+
+	/*
 	*	Closes this binary file.
 	*/
 	void Close() NOEXCEPT;
