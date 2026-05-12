@@ -6,7 +6,6 @@
 
 //Resources.
 #include <Resources/Core/ResourcesCore.h>
-#include <Resources/Loading/RawDataData.h>
 #include <Resources/Loading/Texture3DData.h>
 
 //Forward declarations.
@@ -16,11 +15,6 @@ class ResourceLoadingSystem final
 {
 
 public:
-
-	/*
-	*	Given a file, load raw data data.
-	*/
-	void LoadRawData(BinaryInputFile *const RESTRICT file, RawDataData *const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Given a file, load texture 3D data.

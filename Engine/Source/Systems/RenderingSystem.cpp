@@ -160,8 +160,8 @@ void RenderingSystem::Initialize() NOEXCEPT
 	//Initialize all common render data tables.
 	InitializeCommonRenderDataTables();
 
-	//Initialize the default texture.
-	InitializeDefaultTexture();
+	//Initialize the default textures.
+	InitializeDefaultTextures();
 
 	//Initialize the Hammersley hemisphere samples uniform buffer.
 	InitializeHammersleyHemisphereSamplesUniformBuffer();
@@ -1715,13 +1715,34 @@ void RenderingSystem::InitializeCommonRenderDataTables() NOEXCEPT
 }
 
 /*
-*	Initializes the default texture.
+*	Initializes the default textures.
 */
-void RenderingSystem::InitializeDefaultTexture() NOEXCEPT
+void RenderingSystem::InitializeDefaultTextures() NOEXCEPT
 {
 	//Create the default texture 2D.
-	StaticArray<byte, 4> default_texture_2d_data{ static_cast<byte>(255), static_cast<byte>(0), static_cast<byte>(0), static_cast<byte>(255) };
-	CreateTexture2D(TextureData(TextureDataContainer(default_texture_2d_data.Data(), 1, 1, 1, 4), TextureFormat::RGBA_UINT8, TextureUsage::NONE, false), &_DefaultTexture2D);
+	{
+		StaticArray<byte, 4> default_texture_2d_data{ static_cast<byte>(255), static_cast<byte>(0), static_cast<byte>(0), static_cast<byte>(255) };
+		CreateTexture2D(TextureData(TextureDataContainer(default_texture_2d_data.Data(), 1, 1, 1, 4), TextureFormat::RGBA_UINT8, TextureUsage::NONE, false), &_DefaultTexture2D);
+	}
+
+	//Initialize the default texture cube.
+	{
+		DynamicArray<DynamicArray<float32>> default_texture_cube_data;
+
+		default_texture_cube_data.Upsize<true>(1);
+
+		default_texture_cube_data[0].Reserve(4 * 6);
+
+		for (uint8 side_index{ 0 }; side_index < 6; ++side_index)
+		{
+			default_texture_cube_data[0].Emplace(1.0f);
+			default_texture_cube_data[0].Emplace(0.0f);
+			default_texture_cube_data[0].Emplace(0.0f);
+			default_texture_cube_data[0].Emplace(1.0f);
+		}
+
+		CreateTextureCube(1, default_texture_cube_data, &_DefaultTextureCube);
+	}
 }
 
 /*
@@ -1848,6 +1869,12 @@ void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 	{
 		BindCombinedImageSamplerToRenderDataTable(5, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], WorldSystem::Instance->GetSkySystem()->GetSkyTexture()->_TextureCubeHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
 		BindCombinedImageSamplerToRenderDataTable(4, 0, &_GlobalRenderData._RenderDataTables2[current_framebuffer_index], WorldSystem::Instance->GetSkySystem()->GetSkyTexture()->_TextureCubeHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
+	}
+
+	else
+	{
+		BindCombinedImageSamplerToRenderDataTable(5, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], _DefaultTextureCube, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
+		BindCombinedImageSamplerToRenderDataTable(4, 0, &_GlobalRenderData._RenderDataTables2[current_framebuffer_index], _DefaultTextureCube, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
 	}
 
 #if defined(CATALYST_INCLUDE_ENVIRONMENT_RESOURCE_COLLECTION)

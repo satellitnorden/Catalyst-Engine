@@ -8,15 +8,6 @@
 #include <Systems/ResourceSystem.h>
 
 /*
-*	Creates a raw data.
-*/
-void ResourceCreationSystem::CreateRawData(RawDataData *const RESTRICT data, RawDataResource *const RESTRICT resource) NOEXCEPT
-{
-	//Move the data.
-	resource->_Data = std::move(data->_Data);
-}
-
-/*
 *	Creates a texture 3D.
 */
 void ResourceCreationSystem::CreateTexture3D(Texture3DData *const RESTRICT data, Texture3DResource *const RESTRICT resource) NOEXCEPT

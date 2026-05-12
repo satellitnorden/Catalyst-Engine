@@ -17,6 +17,7 @@
 #include <Content/AssetCompilers/LevelAssetCompiler.h>
 #include <Content/AssetCompilers/MaterialAssetCompiler.h>
 #include <Content/AssetCompilers/ModelAssetCompiler.h>
+#include <Content/AssetCompilers/RawDataAssetCompiler.h>
 #include <Content/AssetCompilers/RenderPipelineAssetCompiler.h>
 #include <Content/AssetCompilers/SettingsAssetCompiler.h>
 #include <Content/AssetCompilers/SoundAssetCompiler.h>
@@ -74,6 +75,7 @@ void ContentSystem::Initialize() NOEXCEPT
 	RegisterAssetCompiler(LevelAssetCompiler::Instance);
 	RegisterAssetCompiler(MaterialAssetCompiler::Instance);
 	RegisterAssetCompiler(ModelAssetCompiler::Instance);
+	RegisterAssetCompiler(RawDataAssetCompiler::Instance);
 	RegisterAssetCompiler(RenderPipelineAssetCompiler::Instance);
 	RegisterAssetCompiler(SettingsAssetCompiler::Instance);
 	RegisterAssetCompiler(SoundAssetCompiler::Instance);

@@ -16,7 +16,7 @@ public:
 	*/
 	FORCE_INLINE StreamArchive() NOEXCEPT
 		:
-		_Array(nullptr),
+		_Data(nullptr),
 		_Size(0),
 		_Capacity(0)
 	{
@@ -28,9 +28,9 @@ public:
 	*/
 	FORCE_INLINE ~StreamArchive() NOEXCEPT
 	{
-		if (_Array)
+		if (_Data)
 		{
-			Memory::Free(_Array);
+			Memory::Free(_Data);
 		}
 	}
 	
@@ -39,7 +39,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD const byte *const RESTRICT Data() const NOEXCEPT
 	{
-		return _Array;
+		return _Data;
 	}
 
 	/*
@@ -47,7 +47,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD byte *const RESTRICT Data() NOEXCEPT
 	{
-		return _Array;
+		return _Data;
 	}
 
 	/*
@@ -73,7 +73,7 @@ public:
 	template <typename TYPE>
 	FORCE_INLINE void Read(TYPE *const RESTRICT destination, const uint64 size, uint64 *const RESTRICT position) const NOEXCEPT
 	{
-		Memory::Copy(destination, &_Array[*position], size);
+		Memory::Copy(destination, &_Data[*position], size);
 
 		*position += size;
 	}
@@ -93,7 +93,7 @@ public:
 		}
 
 		//Copy the value.
-		Memory::Copy(&_Array[_Size], source, size);
+		Memory::Copy(&_Data[_Size], source, size);
 
 		//Update the size.
 		_Size += size;
@@ -110,8 +110,8 @@ public:
 
 private:
 
-	//The underlying array.
-	byte *RESTRICT _Array;
+	//The underlying data.
+	byte *RESTRICT _Data;
 
 	//The current size of this dynamic array.
 	uint64 _Size;
@@ -124,18 +124,18 @@ private:
 	*/
 	void Allocate(const uint64 capacity) NOEXCEPT
 	{
-		//Allocate the new array.
-		byte *const RESTRICT new_array{ static_cast<byte *const RESTRICT>(Memory::Allocate(capacity)) };
+		//Allocate the new data.
+		byte *const RESTRICT new_data{ static_cast<byte *const RESTRICT>(Memory::Allocate(capacity)) };
 
-		//Copy over data from the old array and destroy it, if there is one.
-		if (_Array)
+		//Copy over data from the old data and destroy it, if there is one.
+		if (_Data)
 		{
-			Memory::Copy(new_array, _Array, _Size);
-			Memory::Free(_Array);
+			Memory::Copy(new_data, _Data, _Size);
+			Memory::Free(_Data);
 		}
 
-		//Set the new array.
-		_Array = new_array;
+		//Set the new data.
+		_Data = new_data;
 
 		//Set the new capacity.
 		_Capacity = capacity;

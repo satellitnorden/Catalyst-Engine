@@ -98,44 +98,6 @@ void ResourceSystem::LoadResource(const char *const RESTRICT file_path) NOEXCEPT
 }
 
 /*
-*	Returns the raw data resource with the given identifier.
-*/
-NO_DISCARD ResourcePointer<RawDataResource> ResourceSystem::GetRawDataResource(const HashString identifier) NOEXCEPT
-{
-	//Find the resource.
-	RawDataResource *const RESTRICT *const RESTRICT resource{ _RawDataResources.Find(identifier) };
-
-	ASSERT(resource, "Couldn't find resource!");
-
-	return resource ? ResourcePointer<RawDataResource>(*resource) : ResourcePointer<RawDataResource>();
-}
-
-/*
-*	Returns or creates the raw data resource with the given identifier.
-*/
-NO_DISCARD ResourcePointer<RawDataResource> ResourceSystem::FindOrCreateRawDataResource(const HashString identifier) NOEXCEPT
-{
-	//Find the resource.
-	RawDataResource *const RESTRICT *const RESTRICT resource{ _RawDataResources.Find(identifier) };
-
-	if (!resource)
-	{
-		//If the resource couldn't be found, create it.
-		RawDataResource *const RESTRICT new_resource{ new (MemorySystem::Instance->TypeAllocate<RawDataResource>()) RawDataResource() };
-		new_resource->_Header._ResourceIdentifier = identifier;
-		_RawDataResources.Add(identifier, new_resource);
-		_AllResources.Emplace(new_resource);
-
-		return ResourcePointer<RawDataResource>(new_resource);
-	}
-
-	else
-	{
-		return ResourcePointer<RawDataResource>(*resource);
-	}
-}
-
-/*
 *	Returns the texture 3D resource with the given identifier.
 */
 NO_DISCARD ResourcePointer<Texture3DResource> ResourceSystem::GetTexture3DResource(const HashString identifier) NOEXCEPT
@@ -194,45 +156,7 @@ void ResourceSystem::LoadResource(BinaryInputFile *const RESTRICT file) NOEXCEPT
 	ResourceHeader header;
 	file->Read(&header, sizeof(ResourceHeader));
 
-	if (header._TypeIdentifier == ResourceConstants::RAW_DATA_TYPE_IDENTIFIER)
-	{
-		/*
-		*	Find or allocate the new resource.
-		*	The resource might have been created already by other dependant resources, but not loaded yet.
-		*/
-		RawDataResource* RESTRICT new_resource;
-
-		if (RawDataResource* const RESTRICT* const RESTRICT found_resource{ _RawDataResources.Find(header._ResourceIdentifier) })
-		{
-			new_resource = *found_resource;
-		}
-
-		else
-		{
-			new_resource = new (MemorySystem::Instance->TypeAllocate<RawDataResource>()) RawDataResource();
-			_RawDataResources.Add(header._ResourceIdentifier, new_resource);
-			_AllResources.Emplace(new_resource);
-		}
-
-		//Set the resource header.
-		new_resource->_Header = header;
-
-		//Set the file path and file offset.
-		new_resource->_FilePath = file->GetFilePath();
-		new_resource->_FileOffset = file->GetCurrentPosition() - sizeof(ResourceHeader);
-
-		//Load the resource.
-		RawDataData data;
-		_ResourceLoadingSystem.LoadRawData(file, &data);
-
-		//Create the resource.
-		_ResourceCreationSystem.CreateRawData(&data, new_resource);
-
-		//Register that the resource is now loaded.
-		new_resource->_LoadState = ResourceLoadState::LOADED;
-	}
-
-	else if (header._TypeIdentifier == ResourceConstants::TEXTURE_3D_TYPE_IDENTIFIER)
+	if (header._TypeIdentifier == ResourceConstants::TEXTURE_3D_TYPE_IDENTIFIER)
 	{
 		/*
 		*	Find or allocate the new resource.

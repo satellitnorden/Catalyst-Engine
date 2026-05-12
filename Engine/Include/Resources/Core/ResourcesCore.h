@@ -25,6 +25,5 @@ enum class ResourceLoadState : uint8
 namespace ResourceConstants
 {
 	//The type identifiers.
-	const extern HashString RAW_DATA_TYPE_IDENTIFIER;
 	const extern HashString TEXTURE_3D_TYPE_IDENTIFIER;
 }

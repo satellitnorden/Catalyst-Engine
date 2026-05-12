@@ -23,7 +23,7 @@ class ONNXData final
 public:
 
 	/*
-	*	Default constructor.
+	*	Constructor taking a model file path.
 	*/
 	FORCE_INLINE ONNXData(const char *const RESTRICT model_file_path, const uint32 input_size, const uint32 output_size) NOEXCEPT
 		:
@@ -36,23 +36,26 @@ public:
 		_InputTensor(nullptr),
 		_OutputTensor(nullptr)
 	{
-		//Upsize the input & output buffers.
-		_InputBuffer.Upsize<false>(input_size);
-		_OutputBuffer.Upsize<false>(output_size);
+		//Common construct.
+		CommonConstruct(input_size, output_size);
+	}
 
-		//Create the tensors.
-		{
-			//Set up the memory info.
-			const Ort::MemoryInfo memory_info{ Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault) };
-
-			//Set up the input tensor.
-			const int64_t input_tensor_shape[]{ 1, input_size, 1 };
-			_InputTensor = Ort::Value::CreateTensor(memory_info, _InputBuffer.Data(), _InputBuffer.Size(), input_tensor_shape, ARRAY_LENGTH(input_tensor_shape));
-
-			//Set up the output tensor.
-			const int64_t output_tensor_shape[]{ 1, output_size };
-			_OutputTensor = Ort::Value::CreateTensor(memory_info, _OutputBuffer.Data(), _OutputBuffer.Size(), output_tensor_shape, ARRAY_LENGTH(output_tensor_shape));
-		}
+	/*
+	*	Constructor taking model data.
+	*/
+	FORCE_INLINE ONNXData(const void *const RESTRICT model_data, const uint64 model_data_length, const uint32 input_size, const uint32 output_size) NOEXCEPT
+		:
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+		_Environment(OrtLoggingLevel::ORT_LOGGING_LEVEL_WARNING, "ONNX Environment", LoggingFunction, nullptr),
+#else
+		_Environment(OrtLoggingLevel::ORT_LOGGING_LEVEL_FATAL, "ONNX Environment"),
+#endif
+		_Session(_Environment, model_data, model_data_length, GetSessionOptions()),
+		_InputTensor(nullptr),
+		_OutputTensor(nullptr)
+	{
+		//Common construct.
+		CommonConstruct(input_size, output_size);
 	}
 
 	/*
@@ -203,6 +206,30 @@ private:
 	}
 #endif
 
+	/*
+	*	Common construct.
+	*/
+	FORCE_INLINE void CommonConstruct(const uint32 input_size, const uint32 output_size) NOEXCEPT
+	{
+		//Upsize the input & output buffers.
+		_InputBuffer.Upsize<false>(input_size);
+		_OutputBuffer.Upsize<false>(output_size);
+
+		//Create the tensors.
+		{
+			//Set up the memory info.
+			const Ort::MemoryInfo memory_info{ Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault) };
+
+			//Set up the input tensor.
+			const int64_t input_tensor_shape[]{ 1, input_size, 1 };
+			_InputTensor = Ort::Value::CreateTensor(memory_info, _InputBuffer.Data(), _InputBuffer.Size(), input_tensor_shape, ARRAY_LENGTH(input_tensor_shape));
+
+			//Set up the output tensor.
+			const int64_t output_tensor_shape[]{ 1, output_size };
+			_OutputTensor = Ort::Value::CreateTensor(memory_info, _OutputBuffer.Data(), _OutputBuffer.Size(), output_tensor_shape, ARRAY_LENGTH(output_tensor_shape));
+		}
+	}
+
 };
 
 /*
@@ -220,12 +247,21 @@ ONNXModel::~ONNXModel() NOEXCEPT
 }
 
 /*
-*	Initializes this ONNX model.
+*	Initializes this ONNX model with a model file path.
 */
 void ONNXModel::Initialize(const char *const RESTRICT model_file_path, const uint32 input_size, const uint32 output_size) NOEXCEPT
 {
 	//Allocate the data.
 	_Data = new (Memory::Allocate(sizeof(ONNXData))) ONNXData(model_file_path, input_size, output_size);
+}
+
+/*
+*	Initializes this ONNX model with raw data.
+*/
+void ONNXModel::Initialize(const void *const RESTRICT model_data, const uint64 model_data_length, const uint32 input_size, const uint32 output_size) NOEXCEPT
+{
+	//Allocate the data.
+	_Data = new (Memory::Allocate(sizeof(ONNXData))) ONNXData(model_data, model_data_length, input_size, output_size);
 }
 
 /*

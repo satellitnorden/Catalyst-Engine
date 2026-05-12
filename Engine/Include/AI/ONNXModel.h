@@ -18,9 +18,14 @@ public:
 	~ONNXModel() NOEXCEPT;
 
 	/*
-	*	Initializes this ONNX model.
+	*	Initializes this ONNX model with a model file path.
 	*/
 	void Initialize(const char *const RESTRICT model_file_path, const uint32 input_size, const uint32 output_size) NOEXCEPT;
+
+	/*
+	*	Initializes this ONNX model with raw data.
+	*/
+	void Initialize(const void *const RESTRICT model_data, const uint64 model_data_length, const uint32 input_size, const uint32 output_size) NOEXCEPT;
 
 	/*
 	*	Runs this ONNX model. Returns the outputs.

@@ -722,6 +722,9 @@ private:
 	//The default texture 2D.
 	Texture2DHandle _DefaultTexture2D;
 
+	//The default texture cube.
+	TextureCubeHandle _DefaultTextureCube;
+
 	//The dynamic uniform data.
 	DynamicUniformData _DynamicUniformData;
 
@@ -815,9 +818,9 @@ private:
 	void InitializeCommonRenderDataTables() NOEXCEPT;
 
 	/*
-	*	Initializes the default texture.
+	*	Initializes the default textures.
 	*/
-	void InitializeDefaultTexture() NOEXCEPT;
+	void InitializeDefaultTextures() NOEXCEPT;
 
 	/*
 	*	Initializes the Hammersley hemisphere samples uniform buffer.

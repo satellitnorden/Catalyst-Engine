@@ -7,20 +7,13 @@
 #include <Rendering/Native/TextureCube.h>
 
 //Resources.
-#include <Resources/Core/RawDataResource.h>
 #include <Resources/Core/Texture3DResource.h>
-#include <Resources/Loading/RawDataData.h>
 #include <Resources/Loading/Texture3DData.h>
 
 class ResourceCreationSystem final
 {
 
 public:
-
-	/*
-	*	Creates a raw data.
-	*/
-	void CreateRawData(RawDataData *const RESTRICT data, RawDataResource *const RESTRICT resource) NOEXCEPT;
 
 	/*
 	*	Creates a texture 3D.

@@ -6,7 +6,6 @@
 #include <Core/General/HashString.h>
 
 //Resources.
-#include <Resources/Core/RawDataResource.h>
 #include <Resources/Core/ResourcePointer.h>
 #include <Resources/Core/Texture3DResource.h>
 #if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
@@ -83,16 +82,6 @@ public:
 	void LoadResource(const char *const RESTRICT file_path) NOEXCEPT;
 
 	/*
-	*	Returns the raw data resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<RawDataResource> GetRawDataResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns or creates the raw data resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<RawDataResource> FindOrCreateRawDataResource(const HashString identifier) NOEXCEPT;
-
-	/*
 	*	Returns the texture 3D resource with the given identifier.
 	*/
 	NO_DISCARD ResourcePointer<Texture3DResource> GetTexture3DResource(const HashString identifier) NOEXCEPT;
@@ -130,9 +119,6 @@ private:
 
 	//The resource creation system.
 	ResourceCreationSystem _ResourceCreationSystem;
-
-	//Container for all raw data resources.
-	HashTable<HashString, RawDataResource *RESTRICT> _RawDataResources;
 
 	//Container for all texture 3D resources.
 	HashTable<HashString, Texture3DResource *RESTRICT> _Texture3DResources;
