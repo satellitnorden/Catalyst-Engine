@@ -39,7 +39,7 @@ public:
 private:
 
 	//The ImGui pipeline.
-	GraphicsRenderPipeline _ImGuiPipeline{ HashString("ImGui_RenderPipeline") };
+	GraphicsRenderPipeline _ImGuiPipeline{ HashString("ImGui") };
 
 	/*
 	*	Initializes this render pass.

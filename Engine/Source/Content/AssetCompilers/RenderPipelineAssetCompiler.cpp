@@ -29,8 +29,8 @@
 #define ENGINE_RENDERING_PATH "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering"
 #define GAME_RENDERING_PATH "..\\..\\..\\Rendering"
 
-#define COMPILE_SINGLE_THREADED (1)
-#define LOAD_SINGLE_THREADED (1)
+#define COMPILE_SINGLE_THREADED (0)
+#define LOAD_SINGLE_THREADED (0)
 
 /*
 *	Extra data class definition.
@@ -596,11 +596,7 @@ public:
 RenderPipelineAssetCompiler::RenderPipelineAssetCompiler() NOEXCEPT
 {
 	//Set the flags.
-#if defined(USE_RENDER_PIPELINE_ASSET)
-	_Flags = Flags::ALWAYS_COMPILE;
-#else
 	_Flags = Flags::NONE;
-#endif
 }
 
 /*
@@ -782,13 +778,8 @@ void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT co
 	//Open the output file.
 	BinaryOutputFile output_file{ output_file_path };
 
-	//TODO: Remove this!
-	//For compatibility purposes, append a "_RenderPipeline" to the name.
-	char name[64];
-	sprintf_s(name, "%s_RenderPipeline", compile_data->_Name.Data());
-
 	//Write the asset header to the file.
-	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(name), name };
+	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_data->_Name.Data()), compile_data->_Name.Data() };
 	output_file.Write(&asset_header, sizeof(AssetHeader));
 
 	//Write the common data.

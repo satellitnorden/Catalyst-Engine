@@ -44,27 +44,27 @@ private:
 	StaticArray<RenderTargetHandle, 2> _AmbientOcclusionTemporalBufferRenderTargets;
 
 	//The screen space ambient occlusion graphics pipeline.
-	GraphicsRenderPipeline _ScreenSpaceAmbientOcclusionGraphicsPipeline{ HashString("ScreenSpaceAmbientOcclusion_RenderPipeline") };
+	GraphicsRenderPipeline _ScreenSpaceAmbientOcclusionGraphicsPipeline{ HashString("ScreenSpaceAmbientOcclusion") };
 
 	//The horizon based ambient occlusion graphics pipeline.
-	GraphicsRenderPipeline _HorizonBasedAmbientOcclusionGraphicsPipeline{ HashString("HorizonBasedAmbientOcclusion_RenderPipeline") };
+	GraphicsRenderPipeline _HorizonBasedAmbientOcclusionGraphicsPipeline{ HashString("HorizonBasedAmbientOcclusion") };
 
 	//The ambient occlusion temporal denoising graphics pipelines.
 	StaticArray<GraphicsRenderPipeline, 2> _AmbientOcclusionTemporalDenoisingGraphicsPipelines
 	{
-		GraphicsRenderPipeline(HashString("AmbientOcclusionTemporalDenoising_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("AmbientOcclusionTemporalDenoising_RenderPipeline"))
+		GraphicsRenderPipeline(HashString("AmbientOcclusionTemporalDenoising")),
+		GraphicsRenderPipeline(HashString("AmbientOcclusionTemporalDenoising"))
 	};
 
 	//The ambient occlusion spatial denoising graphics pipelines.
 	StaticArray<GraphicsRenderPipeline, 2> _AmbientOcclusionSpatialDenoisingGraphicsPipelines
 	{
-		GraphicsRenderPipeline(HashString("AmbientOcclusionSpatialDenoising_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("AmbientOcclusionSpatialDenoising_RenderPipeline"))
+		GraphicsRenderPipeline(HashString("AmbientOcclusionSpatialDenoising")),
+		GraphicsRenderPipeline(HashString("AmbientOcclusionSpatialDenoising"))
 	};
 
 	//The ambient occlusion application graphics pipeline.
-	ComputeRenderPipeline _AmbientOcclusionApplicationGraphicsPipeline{ HashString("AmbientOcclusionApplication_RenderPipeline") };
+	ComputeRenderPipeline _AmbientOcclusionApplicationGraphicsPipeline{ HashString("AmbientOcclusionApplication") };
 
 	//The current temporal buffer index.
 	uint8 _CurrentTemporalBufferIndex{ 0 };

@@ -38,7 +38,7 @@ private:
 	uint32 _NumberOfSamples;
 
 	//The screenshot accumulation pipeline.
-	ComputeRenderPipeline _ScreenshotAccumulationPipeline{ HashString("ScreenshotAccumulation_RenderPipeline") };
+	ComputeRenderPipeline _ScreenshotAccumulationPipeline{ HashString("ScreenshotAccumulation") };
 
 	/*
 	*	Initializes this render pass.

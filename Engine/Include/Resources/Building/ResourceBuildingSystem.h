@@ -6,7 +6,6 @@
 
 //Resources.
 #include <Resources/Building/RawDataBuildParameters.h>
-#include <Resources/Building/RenderPipelineBuildParameters.h>
 #include <Resources/Building/ResourceCollectionBuildParameters.h>
 #include <Resources/Building/Texture3DBuildParameters.h>
 
@@ -24,11 +23,6 @@ public:
 	*	Builds a raw data.
 	*/
 	void BuildRawData(const RawDataBuildParameters &parameters) NOEXCEPT;
-
-	/*
-	*	Builds a render pipeline.
-	*/
-	void BuildRenderPipeline(const RenderPipelineBuildParameters &parameters) NOEXCEPT;
 
 	/*
 	*	Builds a texture 3D.

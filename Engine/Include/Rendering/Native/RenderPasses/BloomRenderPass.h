@@ -32,23 +32,23 @@ private:
 	//The bloom downsample pipelines.
 	StaticArray<GraphicsRenderPipeline, 5> _BloomDownsamplePipelines
 	{
-		GraphicsRenderPipeline(HashString("BloomDownsample_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("BloomDownsample_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("BloomDownsample_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("BloomDownsample_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("BloomDownsample_RenderPipeline"))
+		GraphicsRenderPipeline(HashString("BloomDownsample")),
+		GraphicsRenderPipeline(HashString("BloomDownsample")),
+		GraphicsRenderPipeline(HashString("BloomDownsample")),
+		GraphicsRenderPipeline(HashString("BloomDownsample")),
+		GraphicsRenderPipeline(HashString("BloomDownsample"))
 	};
 
 	StaticArray<GraphicsRenderPipeline, 4> _BloomUpsamplePipelines
 	{
-		GraphicsRenderPipeline(HashString("BloomUpsample_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("BloomUpsample_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("BloomUpsample_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("BloomUpsample_RenderPipeline"))
+		GraphicsRenderPipeline(HashString("BloomUpsample")),
+		GraphicsRenderPipeline(HashString("BloomUpsample")),
+		GraphicsRenderPipeline(HashString("BloomUpsample")),
+		GraphicsRenderPipeline(HashString("BloomUpsample"))
 	};
 
 	//The bloom application pipeline.
-	GraphicsRenderPipeline _BloomApplicationPipeline{ HashString("BloomApplication_RenderPipeline") };
+	GraphicsRenderPipeline _BloomApplicationPipeline{ HashString("BloomApplication") };
 
 	/*
 	*	Initializes this render pass.

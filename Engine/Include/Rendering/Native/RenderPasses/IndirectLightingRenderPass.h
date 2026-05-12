@@ -30,7 +30,7 @@ public:
 private:
 
 	//The indirect lighting pipeline.
-	GraphicsRenderPipeline _IndirectLightingPipeline{ HashString("IndirectLighting_RenderPipeline") };
+	GraphicsRenderPipeline _IndirectLightingPipeline{ HashString("IndirectLighting") };
 
 	/*
 	*	Initializes this render pass.

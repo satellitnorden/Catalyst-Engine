@@ -30,7 +30,7 @@ public:
 private:
 
 	//The sky pipeline.
-	GraphicsRenderPipeline _SkyPipeline{ HashString("Sky_RenderPipeline") };
+	GraphicsRenderPipeline _SkyPipeline{ HashString("Sky") };
 
 	/*
 	*	Initializes this render pass.

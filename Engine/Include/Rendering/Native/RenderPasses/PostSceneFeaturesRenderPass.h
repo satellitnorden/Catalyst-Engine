@@ -31,11 +31,11 @@ private:
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//The only lighting pipeline.
-	GraphicsRenderPipeline _OnlyLightingPipeline{ HashString("OnlyLighting_RenderPipeline") };
+	GraphicsRenderPipeline _OnlyLightingPipeline{ HashString("OnlyLighting") };
 #endif
 
 	//The scene features downsample graphics pipeline.
-	GraphicsRenderPipeline _SceneFeaturesDownsampleGraphicsPipeline{ HashString("SceneFeaturesDownsample_RenderPipeline") };
+	GraphicsRenderPipeline _SceneFeaturesDownsampleGraphicsPipeline{ HashString("SceneFeaturesDownsample") };
 
 	/*
 	*	Initializes this render pass.

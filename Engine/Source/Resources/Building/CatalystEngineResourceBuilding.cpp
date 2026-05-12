@@ -19,7 +19,6 @@
 #include <Math/Geometry/Sphere.h>
 
 //Rendering.
-#include <Rendering/Native/Compilation/RenderingCompiler.h>
 #include <Rendering/Native/Texture2D.h>
 
 //Resources.
@@ -51,9 +50,6 @@
 void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfiguration &configuration) NOEXCEPT
 {
 	TaskSystem::Instance->Initialize();
-
-	//Run the rendering compiler.
-	const bool new_rendering_data_was_compiled{ RenderingCompiler::Instance->Run() };
 
 	//Keep track of all tasks so that they can be deallocated.
 	DynamicArray<Task *RESTRICT> tasks;
@@ -934,8 +930,7 @@ void CatalystEngineResourceBuilding::BuildResources(const CatalystProjectConfigu
 		|| BUILD_ENGINE_BLUE_NOISE_TEXTURES
 		|| BUILD_ENGINE_DEFAULT_TEXTURE_3D
 		|| BUILD_ENGINE_MATERIALS 
-		|| BUILD_ENGINE_RESOURCE_COLLECTIONS
-		|| new_rendering_data_was_compiled)
+		|| BUILD_ENGINE_RESOURCE_COLLECTIONS)
 	{
 		ResourceCollectionBuildParameters parameters;
 

@@ -7,7 +7,6 @@
 
 //Resources.
 #include <Resources/Core/RawDataResource.h>
-#include <Resources/Core/RenderPipelineResource.h>
 #include <Resources/Core/ResourcePointer.h>
 #include <Resources/Core/Texture3DResource.h>
 #if defined(CATALYST_ENABLE_RESOURCE_BUILDING)
@@ -94,16 +93,6 @@ public:
 	NO_DISCARD ResourcePointer<RawDataResource> FindOrCreateRawDataResource(const HashString identifier) NOEXCEPT;
 
 	/*
-	*	Returns the render pipeline resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<RenderPipelineResource> GetRenderPipelineResource(const HashString identifier) NOEXCEPT;
-
-	/*
-	*	Returns or creates the render pipeline resource with the given identifier.
-	*/
-	NO_DISCARD ResourcePointer<RenderPipelineResource> FindOrCreateRenderPipelineResource(const HashString identifier) NOEXCEPT;
-
-	/*
 	*	Returns the texture 3D resource with the given identifier.
 	*/
 	NO_DISCARD ResourcePointer<Texture3DResource> GetTexture3DResource(const HashString identifier) NOEXCEPT;
@@ -144,9 +133,6 @@ private:
 
 	//Container for all raw data resources.
 	HashTable<HashString, RawDataResource *RESTRICT> _RawDataResources;
-
-	//Container for all render pipeline resources.
-	HashTable<HashString, RenderPipelineResource *RESTRICT> _RenderPipelineResources;
 
 	//Container for all texture 3D resources.
 	HashTable<HashString, Texture3DResource *RESTRICT> _Texture3DResources;

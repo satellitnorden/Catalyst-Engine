@@ -70,13 +70,13 @@ private:
 	VisualizationMode _CurrentVisualizationMode{ VisualizationMode::NONE };
 
 	//The debug visualization pipeline.
-	GraphicsRenderPipeline _DebugVisualizationPipeline{ HashString("DebugVisualization_RenderPipeline") };
+	GraphicsRenderPipeline _DebugVisualizationPipeline{ HashString("DebugVisualization") };
 
 	//The render pipelines.
 	StaticArray<GraphicsRenderPipeline, 2> _RenderPipelines
 	{
-		GraphicsRenderPipeline(HashString("TerrainWireframe_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("StaticModelWireframe_RenderPipeline"))
+		GraphicsRenderPipeline(HashString("TerrainWireframe")),
+		GraphicsRenderPipeline(HashString("StaticModelWireframe"))
 	};
 
 	/*

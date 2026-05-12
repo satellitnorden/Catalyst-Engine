@@ -29,7 +29,7 @@ public:
 private:
 
 	//The Screen graphics pipeline.
-	GraphicsRenderPipeline _ScreenGraphicsPipeline{ HashString("Screen_RenderPipeline") };
+	GraphicsRenderPipeline _ScreenGraphicsPipeline{ HashString("Screen") };
 
 	/*
 	*	Initializes this render pass.

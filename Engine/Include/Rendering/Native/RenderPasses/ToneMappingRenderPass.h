@@ -29,7 +29,7 @@ public:
 private:
 
 	//The tone mapping pipeline.
-	GraphicsRenderPipeline _ToneMappingPipeline{ HashString("ToneMapping_RenderPipeline") };
+	GraphicsRenderPipeline _ToneMappingPipeline{ HashString("ToneMapping") };
 
 	/*
 	*	Initializes this render pass.

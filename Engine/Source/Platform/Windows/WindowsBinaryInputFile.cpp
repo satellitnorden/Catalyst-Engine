@@ -23,7 +23,7 @@ public:
 	uint64 _Size;
 
 	//The data.
-	const byte* RESTRICT _Data;
+	const byte *RESTRICT _Data;
 
 	//The current position.
 	uint64 _CurrentPosition;
@@ -60,6 +60,18 @@ BinaryInputFile::BinaryInputFile(const char* const RESTRICT file_path) NOEXCEPT
 
 	//Set the current position.
 	implementation->_CurrentPosition = 0;
+}
+
+/*
+*	Default destructor.
+*/
+BinaryInputFile::~BinaryInputFile() NOEXCEPT
+{
+	//Cache the implementation.
+	WindowsBinaryInputFileImplementation *const RESTRICT implementation{ _Implementation.Get<WindowsBinaryInputFileImplementation>() };
+
+	//Call the destructor.
+	implementation->~WindowsBinaryInputFileImplementation();
 }
 
 /*

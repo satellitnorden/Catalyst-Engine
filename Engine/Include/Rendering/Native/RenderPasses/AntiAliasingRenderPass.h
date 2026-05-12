@@ -38,17 +38,17 @@ private:
 	RenderingConfiguration::AntiAliasingMode _CurrentAntiAliasingMode{ RenderingConfiguration::AntiAliasingMode::NONE };
 
 	//The sharpen pipeline.
-	GraphicsRenderPipeline _SharpenPipeline{ HashString("LuminanceSharpen_RenderPipeline") };
+	GraphicsRenderPipeline _SharpenPipeline{ HashString("LuminanceSharpen") };
 
 	//The passthrough pipeline.
-	GraphicsRenderPipeline _PassthroughPipeline{ HashString("Passthrough_RenderPipeline") };
+	GraphicsRenderPipeline _PassthroughPipeline{ HashString("Passthrough") };
 
 	////////////////////////////////////
 	// FAST APPROXIMATE ANTI ALIASING //
 	////////////////////////////////////
 
 	//The fast approximate anti aliasing pipeline.
-	GraphicsRenderPipeline _FastApproximateAntiAliasingPipeline{ HashString("FastApproximateAntiAliasing_RenderPipeline") };
+	GraphicsRenderPipeline _FastApproximateAntiAliasingPipeline{ HashString("FastApproximateAntiAliasing") };
 
 	////////////////////////////
 	// TEMPORAL ANTI ALIASING //
@@ -60,8 +60,8 @@ private:
 	//The temporal anti aliasing pipelines.
 	StaticArray<GraphicsRenderPipeline, 2> _TemporalAntiAliasingPipelines
 	{
-		GraphicsRenderPipeline(HashString("TemporalAntiAliasing_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("TemporalAntiAliasing_RenderPipeline"))
+		GraphicsRenderPipeline(HashString("TemporalAntiAliasing")),
+		GraphicsRenderPipeline(HashString("TemporalAntiAliasing"))
 	};
 
 	//The current temporal anti aliasing buffer index.

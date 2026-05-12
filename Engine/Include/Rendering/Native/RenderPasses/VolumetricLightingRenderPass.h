@@ -41,27 +41,27 @@ private:
 	StaticArray<RenderTargetHandle, 2> _VolumetricLightingTemporalBufferRenderTargets;
 
 	//The volumetric lighting graphics pipeline.
-	GraphicsRenderPipeline _VolumetricLightingGraphicsPipeline{ HashString("VolumetricLighting_RenderPipeline") };
+	GraphicsRenderPipeline _VolumetricLightingGraphicsPipeline{ HashString("VolumetricLighting") };
 
 	//The volumetric lighting ray tracing pipeline.
-	RayTracingRenderPipeline _VolumetricLightingRayTracingPipeline{ HashString("RayTracedVolumetricLighting_RenderPipeline") };
+	RayTracingRenderPipeline _VolumetricLightingRayTracingPipeline{ HashString("RayTracedVolumetricLighting") };
 
 	//The volumetric lighting tempora denoising pipelines.
 	StaticArray<GraphicsRenderPipeline, 2> _VolumetricLightingTemporalDenoisingPipelines
 	{
-		GraphicsRenderPipeline(HashString("VolumetricLightingTemporalDenoising_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("VolumetricLightingTemporalDenoising_RenderPipeline"))
+		GraphicsRenderPipeline(HashString("VolumetricLightingTemporalDenoising")),
+		GraphicsRenderPipeline(HashString("VolumetricLightingTemporalDenoising"))
 	};
 
 	//The volumetric lighting spatial denoising pipelines.
 	StaticArray<GraphicsRenderPipeline, 2> _VolumetricLightingSpatialDenoisingPipelines
 	{
-		GraphicsRenderPipeline(HashString("VolumetricLightingSpatialDenoising_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("VolumetricLightingSpatialDenoising_RenderPipeline"))
+		GraphicsRenderPipeline(HashString("VolumetricLightingSpatialDenoising")),
+		GraphicsRenderPipeline(HashString("VolumetricLightingSpatialDenoising"))
 	};
 
 	//The volumetric lighting application pipeline.
-	GraphicsRenderPipeline _VolumetricLightingApplicationPipeline{ HashString("VolumetricLightingApplication_RenderPipeline") };
+	GraphicsRenderPipeline _VolumetricLightingApplicationPipeline{ HashString("VolumetricLightingApplication") };
 
 	//The current temporal buffer index.
 	uint8 _CurrentTemporalBufferIndex{ 0 };

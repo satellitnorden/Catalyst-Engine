@@ -820,7 +820,6 @@ void ContentSystem::CreateAssetCollections(const char *const RESTRICT directory_
 */
 NO_DISCARD bool ContentSystem::WindowCallback(const Vector2<float32> minimum, const Vector2<float32> maximum) NOEXCEPT
 {
-
 	if (STATISTICS_WINDOW_OPEN)
 	{
 		//Begin the window.

@@ -25,6 +25,11 @@ public:
 	BinaryInputFile(const char *const RESTRICT file_path) NOEXCEPT;
 
 	/*
+	*	Default destructor.
+	*/
+	~BinaryInputFile() NOEXCEPT;
+
+	/*
 	*	Bool operator overload.
 	*/
 	NO_DISCARD operator bool() NOEXCEPT;

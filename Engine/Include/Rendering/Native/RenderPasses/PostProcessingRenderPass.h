@@ -29,10 +29,10 @@ public:
 private:
 
 	//The motion blur graphics pipeline.
-	GraphicsRenderPipeline _MotionBlurPipeline{ HashString("MotionBlur_RenderPipeline") };
+	GraphicsRenderPipeline _MotionBlurPipeline{ HashString("MotionBlur") };
 
 	//The post process pipeline.
-	GraphicsRenderPipeline _PostProcessPipeline{ HashString("PostProcess_RenderPipeline") };
+	GraphicsRenderPipeline _PostProcessPipeline{ HashString("PostProcess") };
 
 	/*
 	*	Initializes this render pass.

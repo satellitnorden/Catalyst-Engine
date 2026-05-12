@@ -32,7 +32,7 @@ private:
 	RenderTargetHandle _SceneRenderTarget;
 
 	//The water render pipeline.
-	GraphicsRenderPipeline _WaterRenderPipeline{ HashString("Water_RenderPipeline") };
+	GraphicsRenderPipeline _WaterRenderPipeline{ HashString("Water") };
 
 	/*
 	*	Initializes this render pass.

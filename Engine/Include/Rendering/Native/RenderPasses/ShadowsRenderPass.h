@@ -38,101 +38,101 @@ private:
 	//The clear shadow map pipelines.
 	StaticArray<GraphicsRenderPipeline, ShadowsSystem::MAXIMUM_NUMBER_OF_SHADOW_MAP_DATA> _ClearShadowMapPipelines
 	{
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ClearShadowMap_RenderPipeline"))
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap")),
+		GraphicsRenderPipeline(HashString("ClearShadowMap"))
 	};
 
 	//The opaque model shadow map pipelines.
 	StaticArray<GraphicsRenderPipeline, ShadowsSystem::MAXIMUM_NUMBER_OF_SHADOW_MAP_DATA> _OpaqueModelShadowMapPipelines
 	{
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap_RenderPipeline"))
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap")),
+		GraphicsRenderPipeline(HashString("OpaqueModelShadowMap"))
 	};
 
 	//The masked model shadow map pipelines.
 	StaticArray<GraphicsRenderPipeline, ShadowsSystem::MAXIMUM_NUMBER_OF_SHADOW_MAP_DATA> _MaskedModelShadowMapPipelines
 	{
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelShadowMap_RenderPipeline"))
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap")),
+		GraphicsRenderPipeline(HashString("MaskedModelShadowMap"))
 	};
 
 	//The shadow map resolve pipeline.
-	GraphicsRenderPipeline _ShadowMapResolvePipeline{ HashString("ShadowMapResolve_RenderPipeline") };
+	GraphicsRenderPipeline _ShadowMapResolvePipeline{ HashString("ShadowMapResolve") };
 
 	//The ray traced shadows pipeline.
-	RayTracingRenderPipeline _RayTracedShadowsPipeline{ HashString("RayTracedShadows_RenderPipeline") };
+	RayTracingRenderPipeline _RayTracedShadowsPipeline{ HashString("RayTracedShadows") };
 
 	//The shadows spatial denoising pipelines.
 	StaticArray<GraphicsRenderPipeline, 2> _ShadowsSpatialDenoisingPipelines
 	{
-		GraphicsRenderPipeline(HashString("ShadowsSpatialDenoising_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("ShadowsSpatialDenoising_RenderPipeline"))
+		GraphicsRenderPipeline(HashString("ShadowsSpatialDenoising")),
+		GraphicsRenderPipeline(HashString("ShadowsSpatialDenoising"))
 	};
 
 	/*

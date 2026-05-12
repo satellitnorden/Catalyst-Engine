@@ -34,8 +34,8 @@ private:
 	//The pipelines.
 	StaticArray<GraphicsRenderPipeline, 2> _Pipelines
 	{
-		GraphicsRenderPipeline(HashString("DebugRenderCircle_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("DebugRenderRectangle_RenderPipeline"))
+		GraphicsRenderPipeline(HashString("DebugRenderCircle")),
+		GraphicsRenderPipeline(HashString("DebugRenderRectangle"))
 	};
 
 	/*

@@ -44,40 +44,40 @@ private:
 	uint8 _CurrentTemporalBufferIndex{ 0 };
 
 	//The ray traced diffuse irradiance pipeline.
-	RayTracingRenderPipeline _RayTracedDiffuseIrradiancePipeline{ HashString("RayTracedDiffuseIrradiance_RenderPipeline") };
+	RayTracingRenderPipeline _RayTracedDiffuseIrradiancePipeline{ HashString("RayTracedDiffuseIrradiance") };
 
 	//The diffuse irradiance temporal denoising pipelines.
 	StaticArray<GraphicsRenderPipeline, 2> _DiffuseIrradianceTemporalDenoisingPipelines
 	{
-		GraphicsRenderPipeline(HashString("DiffuseIrradianceTemporalDenoising_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("DiffuseIrradianceTemporalDenoising_RenderPipeline"))
+		GraphicsRenderPipeline(HashString("DiffuseIrradianceTemporalDenoising")),
+		GraphicsRenderPipeline(HashString("DiffuseIrradianceTemporalDenoising"))
 	};
 
 	//The passthrough pipeline.
-	GraphicsRenderPipeline _PassthroughPipeline{ HashString("PassthroughHalf_RenderPipeline") };
+	GraphicsRenderPipeline _PassthroughPipeline{ HashString("PassthroughHalf") };
 
 	//The diffuse irradiance spatial denoising pipelines.
 	StaticArray<GraphicsRenderPipeline, 6> _DiffuseIrradianceSpatialDenoisingPipelines
 	{
-		GraphicsRenderPipeline(HashString("DiffuseIrradianceSpatialDenoising_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("DiffuseIrradianceSpatialDenoising_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("DiffuseIrradianceSpatialDenoising_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("DiffuseIrradianceSpatialDenoising_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("DiffuseIrradianceSpatialDenoising_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("DiffuseIrradianceSpatialDenoising_RenderPipeline"))
+		GraphicsRenderPipeline(HashString("DiffuseIrradianceSpatialDenoising")),
+		GraphicsRenderPipeline(HashString("DiffuseIrradianceSpatialDenoising")),
+		GraphicsRenderPipeline(HashString("DiffuseIrradianceSpatialDenoising")),
+		GraphicsRenderPipeline(HashString("DiffuseIrradianceSpatialDenoising")),
+		GraphicsRenderPipeline(HashString("DiffuseIrradianceSpatialDenoising")),
+		GraphicsRenderPipeline(HashString("DiffuseIrradianceSpatialDenoising"))
 	};
 
 	//The screen space specular irradiance data render target
 	RenderTargetHandle _ScreenSpaceSpecularIrradianceDataRenderTarget;
 
 	//The screen space specular irradiance pipeline.
-	GraphicsRenderPipeline _ScreenSpaceSpecularIrradiance{ HashString("ScreenSpaceSpecularIrradiance_RenderPipeline") };
+	GraphicsRenderPipeline _ScreenSpaceSpecularIrradiance{ HashString("ScreenSpaceSpecularIrradiance") };
 
 	//The screen space specular irradiance resolve pipeline.
-	GraphicsRenderPipeline _ScreenSpaceSpecularIrradianceResolve{ HashString("ScreenSpaceSpecularIrradianceResolve_RenderPipeline") };
+	GraphicsRenderPipeline _ScreenSpaceSpecularIrradianceResolve{ HashString("ScreenSpaceSpecularIrradianceResolve") };
 
 	//The ray traced specular irradiance pipeline.
-	RayTracingRenderPipeline _RayTracedSpecularIrradiancePipeline{ HashString("RayTracedSpecularIrradiance_RenderPipeline") };
+	RayTracingRenderPipeline _RayTracedSpecularIrradiancePipeline{ HashString("RayTracedSpecularIrradiance") };
 
 	/*
 	*	Initializes this render pass.

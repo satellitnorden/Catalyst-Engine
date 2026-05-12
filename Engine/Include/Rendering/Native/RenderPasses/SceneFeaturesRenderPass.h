@@ -32,32 +32,32 @@ private:
 	//The graphics render pipelines.
 	StaticArray<GraphicsRenderPipeline, 17> _GraphicsRenderPipelines
 	{
-		GraphicsRenderPipeline(HashString("MaskedModelDepthSingleSided_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelDepthDoubleSided_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("InstancedModelDepthSingleSided_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("InstancedModelDepthDoubleSided_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("InstancedImpostorDepth_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("Grass_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelSingleSided_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("OpaqueModelDoubleSided_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelColorSingleSided_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("MaskedModelColorDoubleSided_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("InstancedModelColorSingleSided_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("InstancedModelColorDoubleSided_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("InstancedImpostorColor_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("Terrain_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("Particles_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("AnimatedModel_RenderPipeline")),
-		GraphicsRenderPipeline(HashString("UserInterface3DBackground_RenderPipeline"))
+		GraphicsRenderPipeline(HashString("MaskedModelDepthSingleSided")),
+		GraphicsRenderPipeline(HashString("MaskedModelDepthDoubleSided")),
+		GraphicsRenderPipeline(HashString("InstancedModelDepthSingleSided")),
+		GraphicsRenderPipeline(HashString("InstancedModelDepthDoubleSided")),
+		GraphicsRenderPipeline(HashString("InstancedImpostorDepth")),
+		GraphicsRenderPipeline(HashString("Grass")),
+		GraphicsRenderPipeline(HashString("OpaqueModelSingleSided")),
+		GraphicsRenderPipeline(HashString("OpaqueModelDoubleSided")),
+		GraphicsRenderPipeline(HashString("MaskedModelColorSingleSided")),
+		GraphicsRenderPipeline(HashString("MaskedModelColorDoubleSided")),
+		GraphicsRenderPipeline(HashString("InstancedModelColorSingleSided")),
+		GraphicsRenderPipeline(HashString("InstancedModelColorDoubleSided")),
+		GraphicsRenderPipeline(HashString("InstancedImpostorColor")),
+		GraphicsRenderPipeline(HashString("Terrain")),
+		GraphicsRenderPipeline(HashString("Particles")),
+		GraphicsRenderPipeline(HashString("AnimatedModel")),
+		GraphicsRenderPipeline(HashString("UserInterface3DBackground"))
 	};
 
 #if 0
 	//The user interface 3D pipeline.
-	GraphicsRenderPipeline _UserInterface3DPipeline{ HashString("UserInterface_RenderPipeline") };
+	GraphicsRenderPipeline _UserInterface3DPipeline{ HashString("UserInterface") };
 #endif
 
 	//The velocity graphics pipeline.
-	GraphicsRenderPipeline _VelocityGraphicsPipeline{ HashString("Velocity_RenderPipeline") };
+	GraphicsRenderPipeline _VelocityGraphicsPipeline{ HashString("Velocity") };
 
 	/*
 	*	Initializes this render pass.
