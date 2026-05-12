@@ -14,6 +14,9 @@
 #include <ThirdParty/Minizip/minizip/unzip.h>
 #include <ThirdParty/pugixml/pugixml.hpp>
 
+//Defines.
+#define GP_READER_DEBUG (0)
+
 /*
 *	Bend properties class definition.
 */
@@ -200,7 +203,7 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 		return false;
 	}
 
-#if 1
+#if GP_READER_DEBUG
 	//Write out a "debug" version of the xml document.
 	{
 		constexpr const char *const RESTRICT FILE_POSTFIX{ "_debug.xml" };
@@ -779,10 +782,12 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 					new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::TAPPED));
 				}
 
+#if GP_READER_DEBUG
 				else
 				{
 					LOG_INFORMATION("Unhandled note property: %s", property_node.attribute("name").value());
 				}
+#endif
 			}
 
 			bend_properties.Construct(&new_note._BendOffsets, &new_note._BendValues);
