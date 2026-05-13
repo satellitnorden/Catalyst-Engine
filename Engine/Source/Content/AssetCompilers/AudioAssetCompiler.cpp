@@ -289,5 +289,5 @@ void AudioAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCE
 	DynamicArray<byte> data;
 	data.Upsize<false>(load_data->_Asset->_AudioStream.GetDataSize());
 	load_data->_StreamArchive->Read(data.Data(), load_data->_Asset->_AudioStream.GetDataSize(), &stream_archive_position);
-	load_data->_Asset->_AudioStream.SetDataInternal(data.Data());
+	load_data->_Asset->_AudioStream.SetDataInternal(std::move(data));
 }

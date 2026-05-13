@@ -110,7 +110,7 @@ public:
 	}
 
 	/*
-	*	Sets the data (internally).
+	*	Sets the data (internally) with a raw data pointer (will allocate).
 	*/
 	FORCE_INLINE void SetDataInternal(const byte *const RESTRICT data) NOEXCEPT
 	{
@@ -124,6 +124,21 @@ public:
 
 		_Data._Internal.Upsize<false>(data_size);
 		Memory::Copy(_Data._Internal.Data(), data, data_size);
+	}
+
+	/*
+	*	Sets the data (internally) with a dynamic array (will grab the data passed in and take it over, skipping allocation internally).
+	*/
+	FORCE_INLINE void SetDataInternal(DynamicArray<byte> &&data) NOEXCEPT
+	{
+		ASSERT(_NumberOfChannels > 0, "Need to set number of channels first!");
+		ASSERT(_NumberOfSamples > 0, "Need to set number of samples first!");
+		ASSERT(_Format != Audio::Format::UNKNOWN, "Need to set format first!");
+		ASSERT(_Data._Internal.Empty(), "Internal data already set!");
+		ASSERT(!_Data._External, "External data already set!");
+		ASSERT(data.Size() == GetDataSize(), "Mismatching sizes!");
+
+		_Data._Internal = std::move(data);
 	}
 
 	/*
