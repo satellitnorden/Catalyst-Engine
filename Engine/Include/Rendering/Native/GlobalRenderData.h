@@ -82,12 +82,6 @@ public:
 	//The render data tables.
 	DynamicArray<RenderDataTableHandle> _RenderDataTables;
 
-	//The render data tables 2.
-	DynamicArray<RenderDataTableHandle> _RenderDataTables2;
-
-	//The dynamic uniform data buffers.
-	DynamicArray<BufferHandle> _DynamicUniformDataBuffers;
-
 	//The global texture lock.
 	Spinlock _GlobalTexturesLock;
 
@@ -98,7 +92,7 @@ public:
 	StaticArray<Vector4<float32>, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES> _GlobalTextureAverageValues;
 
 	//The global texture average value buffers.
-	DynamicArray<BufferHandle> _GlobalTextureAverageValueBuffers;;
+	DynamicArray<BufferHandle> _GlobalTextureAverageValueBuffers;
 
 	//The remove global texture updates.
 	DynamicArray<DynamicArray<uint32>> _RemoveGlobalTextureUpdates;

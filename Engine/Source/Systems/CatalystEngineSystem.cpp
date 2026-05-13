@@ -45,6 +45,15 @@ namespace CatalystEngineSystemData
 void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initial_project_configuration) NOEXCEPT
 {
 	PROFILING_FRAME();
+
+#if 0 //Useful when profiling boot times, profiler doesn't seem to quite pick up on the first frame data.
+	{
+		PROFILING_SCOPE("First frame sleep");
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		PROFILING_FRAME();
+	}
+#endif
+
 	PROFILING_SCOPE("CatalystEngineSystem::Initialize()");
 
 	//Initialize the current thread's index.

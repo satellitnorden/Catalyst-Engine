@@ -170,6 +170,13 @@ void SharedRenderTargetManager::Initialize(const RenderingPath initial_rendering
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1)]._IsNeeded[UNDERLYING(RenderingPath::CUSTOM)] = false;
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1)]._IsDepthBuffer = false;
 
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2)]._Identifier = HashString("INTERMEDIATE_RGBA_FLOAT32_HALF_2");
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2)]._Resolution = RenderingSystem::Instance->GetScaledResolution(1);
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2)]._TextureFormat = TextureFormat::RGBA_FLOAT32;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2)]._IsNeeded[UNDERLYING(RenderingPath::DEFAULT)] = true;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2)]._IsNeeded[UNDERLYING(RenderingPath::CUSTOM)] = false;
+	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2)]._IsDepthBuffer = false;
+
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER_1)]._Identifier = HashString("INTERMEDIATE_RGBA_FLOAT32_QUARTER_1");
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER_1)]._Resolution = RenderingSystem::Instance->GetScaledResolution(2);
 	_SharedRenderTargetInformations[UNDERLYING(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_QUARTER_1)]._TextureFormat = TextureFormat::RGBA_FLOAT32;

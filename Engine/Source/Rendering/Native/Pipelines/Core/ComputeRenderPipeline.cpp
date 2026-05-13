@@ -167,7 +167,7 @@ void ComputeRenderPipeline::Initialize(const ComputeRenderPipelineParameters &pa
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(_UsesRenderDataTable ? 2 : 1);
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL_2));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
 
 	if (_UsesRenderDataTable)
 	{
@@ -229,7 +229,7 @@ void ComputeRenderPipeline::Execute() NOEXCEPT
 	command_buffer->BindPipeline(this);
 
 	//Bind the render data table.
-	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable2());
+	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
 	if (_UsesRenderDataTable)
 	{

@@ -219,21 +219,9 @@ enum class CommandBufferLevel : uint8
 //Enumeration covering all common render data table layouts.
 enum class CommonRenderDataTableLayout : uint8
 {
-	CLOUDS,
 	GLOBAL,
-	GLOBAL_2,
-	PARTICLE_SYSTEM,
-	USER_INTERFACE,
 
 	NUMBER_OF_COMMON_RENDER_DATA_TABLE_LAYOUTS
-};
-
-//Enumeration covering all common render data tables.
-enum class CommonRenderDataTable : uint8
-{
-	CLOUDS,
-
-	NUMBER_OF_COMMON_RENDER_DATA_TABLES
 };
 
 //Enumeration covering all compare operators.
@@ -312,17 +300,6 @@ enum class PipelineStageFlags : uint8
 };
 
 ENUMERATION_BIT_OPERATIONS(PipelineStageFlags);
-
-//Enumeration covering all render targets.
-enum class RenderTarget : uint8
-{
-	/*
-	*	Intermediate render target at half resolution.
-	*/
-	INTERMEDIATE_RGBA_FLOAT32_HALF_2,
-
-	NUMBER_OF_RENDER_TARGETS
-};
 
 //Enumeration covering all shared render targets.
 enum class SharedRenderTarget : uint8
@@ -438,6 +415,11 @@ enum class SharedRenderTarget : uint8
 	INTERMEDIATE_RGBA_FLOAT32_HALF_1,
 
 	/*
+	*	Intermediate render target at half resolution.
+	*/
+	INTERMEDIATE_RGBA_FLOAT32_HALF_2,
+
+	/*
 	*	Intermediate render target at quarter resolution.
 	*/
 	INTERMEDIATE_RGBA_FLOAT32_QUARTER_1,
@@ -477,19 +459,6 @@ enum class SampleCount : uint8
 	SAMPLE_COUNT_16,
 	SAMPLE_COUNT_32,
 	SAMPLE_COUNT_64
-};
-
-//Enumeration covering all samplers.
-enum class Sampler : uint8
-{
-	FilterLinear_MipmapModeLinear_AddressModeClampToEdge,
-	FilterLinear_MipmapModeLinear_AddressModeRepeat,
-	FilterLinear_MipmapModeNearest_AddressModeClampToEdge,
-	FilterLinear_MipmapModeNearest_AddressModeRepeat,
-	FilterNearest_MipmapModeNearest_AddressModeClampToEdge,
-	FilterNearest_MipmapModeNearest_AddressModeRepeat,
-
-	NumberOfSamplers
 };
 
 //Enumeration covering all shader stages.

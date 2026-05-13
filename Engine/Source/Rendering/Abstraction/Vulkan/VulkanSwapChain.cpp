@@ -5,6 +5,9 @@
 //Math.
 #include <Math/Core/BaseMath.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Rendering.
 #include <Rendering/Abstraction/Vulkan/VulkanInterface.h>
 #include <Rendering/Abstraction/Vulkan/VulkanLogicalDevice.h>
@@ -38,20 +41,32 @@ void VulkanSwapchain::Initialize() NOEXCEPT
 	CreateSwapChainCreateInfo(swapChainCreateInfo);
 
 	//Create the swapchain!
-	VULKAN_ERROR_CHECK(vkCreateSwapchainKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), &swapChainCreateInfo, nullptr, &_VulkanSwapchain));
+	{
+		PROFILING_SCOPE("vkCreateSwapchainKHR");
+		VULKAN_ERROR_CHECK(vkCreateSwapchainKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), &swapChainCreateInfo, nullptr, &_VulkanSwapchain));
+	}
 
 	//Query the swapchain images.
-	VULKAN_ERROR_CHECK(vkGetSwapchainImagesKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanSwapchain, &_NumberOfSwapchainImages, nullptr));
+	{
+		PROFILING_SCOPE("vkGetSwapchainImagesKHR 1");
+		VULKAN_ERROR_CHECK(vkGetSwapchainImagesKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanSwapchain, &_NumberOfSwapchainImages, nullptr));
+	}
 
-	_SwapchainImages.Upsize<false>(_NumberOfSwapchainImages);
-	VULKAN_ERROR_CHECK(vkGetSwapchainImagesKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanSwapchain, &_NumberOfSwapchainImages, _SwapchainImages.Data()));
+	{
+		PROFILING_SCOPE("vkGetSwapchainImagesKHR 2");
+		_SwapchainImages.Upsize<false>(_NumberOfSwapchainImages);
+		VULKAN_ERROR_CHECK(vkGetSwapchainImagesKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanSwapchain, &_NumberOfSwapchainImages, _SwapchainImages.Data()));
+	}
 
 	//Create the image views.
-	_SwapchainImageViews.Upsize<false>(_NumberOfSwapchainImages);
-
-	for (uint32 i = 0; i < _NumberOfSwapchainImages; ++i)
 	{
-		VulkanUtilities::CreateVulkanImageView(_SwapchainImages[i], VK_IMAGE_VIEW_TYPE_2D, VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format, VK_IMAGE_ASPECT_COLOR_BIT, 1, 1, _SwapchainImageViews[i]);
+		PROFILING_SCOPE("Create Image Views");
+		_SwapchainImageViews.Upsize<false>(_NumberOfSwapchainImages);
+
+		for (uint32 i = 0; i < _NumberOfSwapchainImages; ++i)
+		{
+			VulkanUtilities::CreateVulkanImageView(_SwapchainImages[i], VK_IMAGE_VIEW_TYPE_2D, VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format, VK_IMAGE_ASPECT_COLOR_BIT, 1, 1, _SwapchainImageViews[i]);
+		}
 	}
 #endif
 }

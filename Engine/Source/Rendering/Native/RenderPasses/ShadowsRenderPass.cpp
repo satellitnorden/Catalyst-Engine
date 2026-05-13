@@ -194,8 +194,8 @@ void ShadowsRenderPass::Initialize() NOEXCEPT
 	{
 		GraphicsRenderPipelineInitializeParameters parameters;
 
-		parameters._InputRenderTargets.Emplace(HashString("InputShadows"), i == 0 ? RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1) : RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2));
-		parameters._OutputRenderTargets.Emplace(HashString("OutputShadows"), i == 0 ? RenderingSystem::Instance->GetRenderTarget(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2) : RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
+		parameters._InputRenderTargets.Emplace(HashString("InputShadows"), i == 0 ? RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1) : RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2));
+		parameters._OutputRenderTargets.Emplace(HashString("OutputShadows"), i == 0 ? RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2) : RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_1));
 		parameters._InputStreamSubscriptions.Emplace(i == 0 ? HashString("ShadowsHorizontalSpatialDenoising") : HashString("ShadowsVerticalSpatialDenoising"));
 
 		_ShadowsSpatialDenoisingPipelines[i].Initialize(parameters);

@@ -130,11 +130,17 @@ void RenderingSystem::Initialize() NOEXCEPT
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Initialize the debug rendering system.
-	_DebugRenderingSystem.Initialize();
+	{
+		PROFILING_SCOPE("Initialize Debug Rendering System");
+		_DebugRenderingSystem.Initialize();
+	}
 #endif
 
 	//Pre-initialize the sub rendering system.
-	_SubRenderingSystem->PreInitialize();
+	{
+		PROFILING_SCOPE("Pre-Initialize Sub Rendering System");
+		_SubRenderingSystem->PreInitialize();
+	}
 
 	//Call the pre-render initialize function.
 	if (_Configuration._PreRenderInitializeFunction)
@@ -143,22 +149,19 @@ void RenderingSystem::Initialize() NOEXCEPT
 	}
 
 	//Initialize the render input manager.
-	_RenderInputManager.Initialize();
+	{
+		PROFILING_SCOPE("Initialize Render Input Manager");
+		_RenderInputManager.Initialize();
+	}
 
 	//Initialize the shared render target manager.
-	_SharedRenderTargetManager.Initialize(_CurrentRenderingPath);
-
-	//Initialize all render targets.
-	InitializeRenderTargets();
-
-	//Initialize all samplers.
-	InitializeSamplers();
+	{
+		PROFILING_SCOPE("Initialize Shared Render Target Manager");
+		_SharedRenderTargetManager.Initialize(_CurrentRenderingPath);
+	}
 
 	//Initialize all common render data table layouts.
 	InitializeCommonRenderDataTableLayouts();
-
-	//Initialize all common render data tables.
-	InitializeCommonRenderDataTables();
 
 	//Initialize the default textures.
 	InitializeDefaultTextures();
@@ -439,9 +442,6 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 {
 	//Post-initialize the global render data.
 	PostInitializeGlobalRenderData();
-
-	//Post-initialize the common render data tables.
-	PostInitializeCommonRenderDataTables();
 
 	//Initialize the camera system.
 	_CameraSystem.Initialize();
@@ -917,10 +917,10 @@ Matrix4x4 RenderingSystem::GetCurrentSurfaceTransformRotationMatrix() const NOEX
 		{
 			return Matrix4x4
 			(
-					0.0f, -1.0f, 0.0f, 0.0f,
-					1.0f, 0.0f, 0.0f, 0.0f,
-					0.0f, 0.0f, 1.0f, 0.0f,
-					0.0f, 0.0f, 0.0f, 1.0f
+				0.0f, -1.0f, 0.0f, 0.0f,
+				1.0f, 0.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 1.0f, 0.0f,
+				0.0f, 0.0f, 0.0f, 1.0f
 			);
 		}
 
@@ -931,34 +931,6 @@ Matrix4x4 RenderingSystem::GetCurrentSurfaceTransformRotationMatrix() const NOEX
 			return Matrix4x4();
 		}
 	}
-}
-
-/*
-*	Returns the given render target.
-*/
-RenderTargetHandle RenderingSystem::GetRenderTarget(const RenderTarget render_target) NOEXCEPT
-{
-	if (!_RenderTargets[UNDERLYING(render_target)])
-	{
-		switch (render_target)
-		{
-			case RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2:
-			{
-				CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2)]);
-
-				break;
-			}
-
-			default:
-			{
-				ASSERT(false, "Invalid case!");
-
-				break;
-			}
-		}
-	}
-
-	return _RenderTargets[UNDERLYING(render_target)];
 }
 
 /*
@@ -1381,19 +1353,11 @@ void RenderingSystem::TerminateRenderPass(RenderPass *const RESTRICT render_pass
 }
 
 /*
-*	Returns the global render data table.
+*	Returns the global render data table 2.
 */
 RenderDataTableHandle RenderingSystem::GetGlobalRenderDataTable() const NOEXCEPT
 {
 	return _GlobalRenderData._RenderDataTables[GetCurrentFramebufferIndex()];
-}
-
-/*
-*	Returns the global render data table 2.
-*/
-RenderDataTableHandle RenderingSystem::GetGlobalRenderDataTable2() const NOEXCEPT
-{
-	return _GlobalRenderData._RenderDataTables2[GetCurrentFramebufferIndex()];
 }
 
 /*
@@ -1465,15 +1429,6 @@ RenderDataTableLayoutHandle RenderingSystem::GetCommonRenderDataTableLayout(cons
 {
 	//Return the given common render data table layout.
 	return _CommonRenderDataTableLayouts[UNDERLYING(commonRenderDataTableLayout)];
-}
-
-/*
-*	Returns the given common render data table.
-*/
-RenderDataTableHandle RenderingSystem::GetCommonRenderDataTable(const CommonRenderDataTable common_render_data_table) const NOEXCEPT
-{
-	//Return the given common render data table layout.
-	return _CommonRenderDataTables[UNDERLYING(common_render_data_table)];
 }
 
 /*
@@ -1549,8 +1504,6 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 
 	//Upsize the buffers.
 	_GlobalRenderData._RenderDataTables.Upsize<false>(number_of_framebuffers);
-	_GlobalRenderData._RenderDataTables2.Upsize<false>(number_of_framebuffers);
-	_GlobalRenderData._DynamicUniformDataBuffers.Upsize<false>(number_of_framebuffers);
 	_GlobalRenderData._GlobalTextureAverageValueBuffers.Upsize<false>(number_of_framebuffers);
 	_GlobalRenderData._RemoveGlobalTextureUpdates.Upsize<true>(number_of_framebuffers);
 	_GlobalRenderData._AddGlobalTextureUpdates.Upsize<true>(number_of_framebuffers);
@@ -1563,19 +1516,12 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 	{
 		//Create the render data table.
 		CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL), &_GlobalRenderData._RenderDataTables[i]);
-		CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL_2), &_GlobalRenderData._RenderDataTables2[i]);
 
-		//Create the dynamic uniform data buffer.
-		CreateBuffer(sizeof(DynamicUniformData), BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &_GlobalRenderData._DynamicUniformDataBuffers[i]);
-
-		//Bind the dynamic uniform data buffer to the render data table.
-		BindUniformBufferToRenderDataTable(0, 0, &_GlobalRenderData._RenderDataTables[i], _GlobalRenderData._DynamicUniformDataBuffers[i]);
-	
 		//Create the dynamic uniform data buffer.
 		CreateBuffer(sizeof(Vector4<float32>) * CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, BufferUsage::UniformBuffer, MemoryProperty::HostCoherent | MemoryProperty::HostVisible, &_GlobalRenderData._GlobalTextureAverageValueBuffers[i]);
 
 		//Bind the dynamic uniform data buffer to the render data table.
-		BindUniformBufferToRenderDataTable(1, 0, &_GlobalRenderData._RenderDataTables2[i], _GlobalRenderData._GlobalTextureAverageValueBuffers[i]);
+		BindUniformBufferToRenderDataTable(1, 0, &_GlobalRenderData._RenderDataTables[i], _GlobalRenderData._GlobalTextureAverageValueBuffers[i]);
 
 #if RENDERING_PERFORMANCE_QUERY
 		CreateQueryPool(256, &_GlobalRenderData._PerformanceData[i]._QueryPool);
@@ -1590,74 +1536,10 @@ void RenderingSystem::PreInitializeGlobalRenderData() NOEXCEPT
 }
 
 /*
-*	Initializes all render targets.
-*/
-void RenderingSystem::InitializeRenderTargets() NOEXCEPT
-{
-	//Initialize all render targets.
-	CreateRenderTarget(GetScaledResolution(1), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_RenderTargets[UNDERLYING(RenderTarget::INTERMEDIATE_RGBA_FLOAT32_HALF_2)]);
-}
-
-/*
-*	Initializes all samplers.
-*/
-void RenderingSystem::InitializeSamplers() NOEXCEPT
-{
-	CreateSampler(SamplerProperties(TextureFilter::LINEAR, MipmapMode::LINEAR, AddressMode::CLAMP_TO_EDGE, 0), &_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge)]);
-	CreateSampler(SamplerProperties(TextureFilter::LINEAR, MipmapMode::LINEAR, AddressMode::REPEAT, 8), &_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat)]);
-	CreateSampler(SamplerProperties(TextureFilter::LINEAR, MipmapMode::NEAREST, AddressMode::CLAMP_TO_EDGE, 0), &_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge)]);
-	CreateSampler(SamplerProperties(TextureFilter::LINEAR, MipmapMode::NEAREST, AddressMode::REPEAT, 0), &_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat)]);
-	CreateSampler(SamplerProperties(TextureFilter::NEAREST, MipmapMode::NEAREST, AddressMode::CLAMP_TO_EDGE, 0), &_Samplers[UNDERLYING(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge)]);
-	CreateSampler(SamplerProperties(TextureFilter::NEAREST, MipmapMode::NEAREST, AddressMode::REPEAT, 0), &_Samplers[UNDERLYING(Sampler::FilterNearest_MipmapModeNearest_AddressModeRepeat)]);
-}
-
-/*
 *	Initializes all common render data table layouts.
 */
 void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 {
-	//Initialize the CLOUDS render data table layout.
-	{
-		constexpr StaticArray<RenderDataTableLayoutBinding, 1> bindings
-		{
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT)
-		};
-
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::CLOUDS)]);
-	}
-
-	{
-		//Initialize the dynamic uniform data render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 8> bindings
-		{
-			//Global uniform data.
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::GEOMETRY | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::RAY_MISS | ShaderStage::VERTEX),
-			
-			//Global textures.
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::SampledImage, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::VERTEX),
-			
-			//Global samplers.
-			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::Sampler, UNDERLYING(Sampler::NumberOfSamplers), ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::GEOMETRY | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::VERTEX),
-			
-			//Global materials.
-			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::VERTEX),
-
-			//Blue noise textures.
-			RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, CatalystShaderConstants::NUMBER_OF_BLUE_NOISE_TEXTURES, ShaderStage::COMPUTE | ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_MISS | ShaderStage::RAY_GENERATION),
-
-			//Sky texture.
-			RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::RAY_MISS),
-
-			//Star texture.
-			RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::RAY_MISS),
-
-			//Hammersley hemisphere samples uniform buffer.
-			RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::FRAGMENT | ShaderStage::RAY_GENERATION),
-		};
-
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::GLOBAL)]);
-	}
-
 	{
 		//Initialize the dynamic uniform data render data table layout.
 		constexpr StaticArray<RenderDataTableLayoutBinding, 5> bindings
@@ -1679,38 +1561,7 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 
 		};
 
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::GLOBAL_2)]);
-	}
-
-	{
-		//Initialize the particle system data render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 1> bindings
-		{
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::StorageBuffer, 1, ShaderStage::COMPUTE)
-		};
-
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::PARTICLE_SYSTEM)]);
-	}
-
-	{
-		//Initialize the user interface data render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 1> bindings
-		{
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::VERTEX | ShaderStage::FRAGMENT)
-		};
-
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::USER_INTERFACE)]);
-	}
-}
-
-/*
-*	Initializes all common render data tables.
-*/
-void RenderingSystem::InitializeCommonRenderDataTables() NOEXCEPT
-{
-	//Initialize the CLOUDS common render data table.
-	{
-		CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::CLOUDS), &_CommonRenderDataTables[UNDERLYING(CommonRenderDataTable::CLOUDS)]);
+		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::GLOBAL)]);
 	}
 }
 
@@ -1765,12 +1616,6 @@ void RenderingSystem::InitializeHammersleyHemisphereSamplesUniformBuffer() NOEXC
 			++counter;
 		}
 	}
-
-	//Create the buffer and upload the data.
-	const void* const RESTRICT data_chunks[]{ hemisphere_samples.Data() };
-	const uint64 data_sizes[]{ hemisphere_samples.Size() * sizeof(Vector4<float32>) };
-	CreateBuffer(data_sizes[0], BufferUsage::UniformBuffer, MemoryProperty::DeviceLocal, &_HammersleyHemisphereSamplesUniformBuffer);
-	UploadDataToBuffer(data_chunks, data_sizes, 1, &_HammersleyHemisphereSamplesUniformBuffer);
 }
 
 /*
@@ -1783,18 +1628,8 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 		//Bind some default texture to the global textures, because... Validation layers tells me I need to do this. (:
 		for (uint32 j{ 0 }; j < CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++j)
 		{
-			BindSampledImageToRenderDataTable(1, j, &_GlobalRenderData._RenderDataTables[i], _DefaultTexture2D);
-			BindSampledImageToRenderDataTable(0, j, &_GlobalRenderData._RenderDataTables2[i], _DefaultTexture2D);
+			BindSampledImageToRenderDataTable(0, j, &_GlobalRenderData._RenderDataTables[i], _DefaultTexture2D);
 		}
-
-		//Bind all the samplers to the render data table.
-		for (uint32 j{ 0 }; j < UNDERLYING(Sampler::NumberOfSamplers); ++j)
-		{
-			BindSamplerToRenderDataTable(2, j, &_GlobalRenderData._RenderDataTables[i], _Samplers[j]);
-		}
-
-		//Bind the Hammersley hemisphere samples uniform buffer.
-		BindUniformBufferToRenderDataTable(7, 0, &_GlobalRenderData._RenderDataTables[i], _HammersleyHemisphereSamplesUniformBuffer);
 	}
 
 	//Bind all the blue noise textures to the global render data tables.
@@ -1811,8 +1646,7 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 		//Bind the texture to the global render data tables.
 		for (uint8 j{ 0 }; j < GetNumberOfFramebuffers(); ++j)
 		{
-			BindCombinedImageSamplerToRenderDataTable(4, i, &_GlobalRenderData._RenderDataTables[j], texture_2D_handle, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeRepeat));
-			BindCombinedImageSamplerToRenderDataTable(3, i, &_GlobalRenderData._RenderDataTables2[j], texture_2D_handle, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeRepeat));
+			BindCombinedImageSamplerToRenderDataTable(3, i, &_GlobalRenderData._RenderDataTables[j], texture_2D_handle, GetSampler(SamplerProperties(TextureFilter::NEAREST, MipmapMode::NEAREST, AddressMode::REPEAT, 1)));
 		}
 	}
 
@@ -1832,28 +1666,12 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 }
 
 /*
-*	Post-initializes the common render data tables.
-*/
-void RenderingSystem::PostInitializeCommonRenderDataTables() NOEXCEPT
-{
-	//Bind the clouds texture to the CLOUDS common render data table.
-#if defined(CATALYST_INCLUDE_ENVIRONMENT_RESOURCE_COLLECTION)
-	BindCombinedImageSamplerToRenderDataTable(0, 0, &_CommonRenderDataTables[UNDERLYING(CommonRenderDataTable::CLOUDS)], ResourceSystem::Instance->GetTexture3DResource(HashString("Cloud_Texture3D"))->_Texture3DHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
-#else
-	BindCombinedImageSamplerToRenderDataTable(0, 0, &_CommonRenderDataTables[UNDERLYING(CommonRenderDataTable::CLOUDS)], ResourceSystem::Instance->GetTexture3DResource(HashString("Catalyst_Engine_Default_Texture_3D"))->_Texture3DHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
-#endif
-}
-
-/*
 *	Updates the global render data.
 */
 void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 {
 	//Retrieve the current frame buffer index.
 	const uint8 current_framebuffer_index{ GetCurrentFramebufferIndex() };
-
-	//Update the global uniform data.
-	UpdateGlobalUniformData(current_framebuffer_index);
 
 	//Update the global textures.
 	UpdateGlobalTextures(current_framebuffer_index);
@@ -1867,120 +1685,13 @@ void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 	//Bind the sky texture.
 	if (WorldSystem::Instance->GetSkySystem()->GetSkyTexture())
 	{
-		BindCombinedImageSamplerToRenderDataTable(5, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], WorldSystem::Instance->GetSkySystem()->GetSkyTexture()->_TextureCubeHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
-		BindCombinedImageSamplerToRenderDataTable(4, 0, &_GlobalRenderData._RenderDataTables2[current_framebuffer_index], WorldSystem::Instance->GetSkySystem()->GetSkyTexture()->_TextureCubeHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
+		BindCombinedImageSamplerToRenderDataTable(4, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], WorldSystem::Instance->GetSkySystem()->GetSkyTexture()->_TextureCubeHandle, RenderingSystem::Instance->GetSampler(SamplerProperties(TextureFilter::LINEAR, MipmapMode::LINEAR, AddressMode::CLAMP_TO_EDGE, 1)));
 	}
 
 	else
 	{
-		BindCombinedImageSamplerToRenderDataTable(5, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], _DefaultTextureCube, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
-		BindCombinedImageSamplerToRenderDataTable(4, 0, &_GlobalRenderData._RenderDataTables2[current_framebuffer_index], _DefaultTextureCube, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
+		BindCombinedImageSamplerToRenderDataTable(4, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], _DefaultTextureCube, RenderingSystem::Instance->GetSampler(SamplerProperties(TextureFilter::LINEAR, MipmapMode::LINEAR, AddressMode::CLAMP_TO_EDGE, 1)));
 	}
-
-#if defined(CATALYST_INCLUDE_ENVIRONMENT_RESOURCE_COLLECTION)
-	BindCombinedImageSamplerToRenderDataTable(6, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], ResourceSystem::Instance->GetTextureCubeResource(HashString("Catalyst_Engine_Star_TextureCube"))->_TextureCubeHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
-#else
-	//BindCombinedImageSamplerToRenderDataTable(6, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], ResourceSystem::Instance->GetTextureCubeResource(HashString("Catalyst_Engine_Default_TextureCube"))->_TextureCubeHandle, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
-#endif
-}
-
-/*
-*	Updates the global render data.
-*/
-void RenderingSystem::UpdateGlobalUniformData(const uint8 current_framebuffer_index) NOEXCEPT
-{
-	//Update the previous camera world transform.
-	_PreviousCameraWorldTransform = _CurrentCameraWorldTransform;
-	_CurrentCameraWorldTransform = _CameraSystem.GetCurrentCamera()->GetWorldTransform();
-
-	//Calculate the previous and current camera matrices, as well as their inverses.
-	const Matrix4x4 previous_camera_matrix{ Matrix4x4::LookAt(_PreviousCameraWorldTransform.GetRelativePosition(_CurrentCameraWorldTransform.GetCell()), _PreviousCameraWorldTransform.GetRelativePosition(_CurrentCameraWorldTransform.GetCell()) + CatalystCoordinateSpacesUtilities::RotatedWorldForwardVector(_PreviousCameraWorldTransform.GetRotation().ToEulerAngles()), CatalystCoordinateSpacesUtilities::RotatedWorldUpVector(_PreviousCameraWorldTransform.GetRotation().ToEulerAngles())) };
-
-	//Update matrices.
-	_DynamicUniformData._PreviousWorldToClipMatrix = *_CameraSystem.GetCurrentCamera()->GetProjectionMatrix() * previous_camera_matrix;
-	_DynamicUniformData._InverseWorldToCameraMatrix = *_CameraSystem.GetCurrentCamera()->GetInverseCameraMatrix();
-	_DynamicUniformData._InverseCameraToClipMatrix = *_CameraSystem.GetCurrentCamera()->GetInverseProjectionMatrix();
-	_DynamicUniformData._WorldToCameraMatrix = *_CameraSystem.GetCurrentCamera()->GetCameraMatrix();
-	_DynamicUniformData._WorldToClipMatrix = *_CameraSystem.GetCurrentCamera()->GetViewMatrix();
-	
-	//Rotate the relevant matrices to fit the surface transform.
-	{
-		const Matrix4x4 rotation_matrix{ GetCurrentSurfaceTransformRotationMatrix() };
-
-		_DynamicUniformData._PreviousWorldToClipMatrix = rotation_matrix * _DynamicUniformData._PreviousWorldToClipMatrix;
-		_DynamicUniformData._UserInterfaceMatrix = rotation_matrix;
-		_DynamicUniformData._WorldToClipMatrix = rotation_matrix * _DynamicUniformData._WorldToClipMatrix;
-	}
-
-	//Update vectors.
-	_DynamicUniformData._SkyLightRadiance = VectorConstants::ZERO;
-	_DynamicUniformData._SkyLightDirection = CatalystWorldCoordinateSpace::DOWN;
-
-	{
-		for (const LightInstanceData &instance_data : LightComponent::Instance->InstanceData())
-		{
-			if (instance_data._LightType == LightType::DIRECTIONAL)
-			{
-				_DynamicUniformData._SkyLightRadiance = Vector4<float32>(instance_data._Color, instance_data._Intensity);
-				_DynamicUniformData._SkyLightDirection = CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(instance_data._DirectionalLightData._Rotation);
-
-				break;
-			}
-		}
-	}
-
-	_DynamicUniformData._CameraForwardVector = _CameraSystem.GetCurrentCamera()->GetForwardVector();
-	_DynamicUniformData._CameraWorldPosition = _CameraSystem.GetCurrentCamera()->GetWorldTransform().GetLocalPosition();
-
-	_DynamicUniformData._UpperSkyColor = WorldSystem::Instance->GetSkySystem()->GetSkyGradient()._UpperSkyColor;
-	_DynamicUniformData._LowerSkyColor = WorldSystem::Instance->GetSkySystem()->GetSkyGradient()._LowerSkyColor;
-
-	_DynamicUniformData._CurrentWorldGridCell = WorldSystem::Instance->GetCurrentWorldGridCell();
-
-	_DynamicUniformData._ScaledResolution = Vector2<float32>(static_cast<float32>(GetScaledResolution(0)._Width), static_cast<float32>(GetScaledResolution(0)._Height));
-	_DynamicUniformData._InverseScaledResolution = 1.0f / Vector2<float32>(static_cast<float32>(GetScaledResolution(0)._Width), static_cast<float32>(GetScaledResolution(0)._Height));
-	_DynamicUniformData._PreviousFramejitter = _DynamicUniformData._CurrentFrameJitter;
-	_DynamicUniformData._CurrentFrameJitter = _CameraSystem.GetCurrentCamera()->GetProjectionMatrixJitter();
-
-	_DynamicUniformData._HeightMapCoordinateOffset._X = 0.0f;
-	_DynamicUniformData._HeightMapCoordinateOffset._Y = 0.0f;
-
-	//Update floats.
-	_DynamicUniformData._DeltaTime = CatalystEngineSystem::Instance->GetDeltaTime();
-	_DynamicUniformData._GlobalRandomSeed1 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
-	_DynamicUniformData._GlobalRandomSeed2 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
-	_DynamicUniformData._GlobalRandomSeed3 = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
-	_DynamicUniformData._TotalTime = CatalystEngineSystem::Instance->GetTotalTime();
-
-	_DynamicUniformData._AspectRatio = static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Width) / static_cast<float32>(RenderingSystem::Instance->GetScaledResolution(0)._Height);
-
-	_DynamicUniformData._CurrentBlueNoiseTextureIndex = _CurrentBlueNoiseTextureIndex;
-	_DynamicUniformData._CurrentBlueNoiseTextureOffsetX = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
-	_DynamicUniformData._CurrentBlueNoiseTextureOffsetY = CatalystRandomMath::RandomFloatInRange(0.0f, 1.0f);
-	_DynamicUniformData._ViewDistance = _Configuration._ViewDistance;
-	_DynamicUniformData._MaximumSkyTextureMipmapLevel = WorldSystem::Instance->GetSkySystem()->GetSkyTexture() ? static_cast<float32>(WorldSystem::Instance->GetSkySystem()->GetSkyTexture()->_MipLevels) : 1.0f;
-	_DynamicUniformData._Wetness = WorldSystem::Instance->GetWetness();
-	_DynamicUniformData._NearPlane = _CameraSystem.GetCurrentCamera()->GetNearPlane();
-	_DynamicUniformData._FarPlane = _CameraSystem.GetCurrentCamera()->GetFarPlane();
-	_DynamicUniformData._CameraAbsoluteHeight = _CurrentCameraWorldTransform.GetAbsolutePosition()._Y;
-
-	_DynamicUniformData._SkyMode = static_cast<uint32>(WorldSystem::Instance->GetSkySystem()->GetSkyMode());
-	_DynamicUniformData._SkyIntensity = WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();
-	_DynamicUniformData._StarIntensity = WorldSystem::Instance->GetSkySystem()->GetStarIntensity();
-
-	//_DynamicUniformData._VolumetricLightingDistance = WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Distance;
-	_DynamicUniformData._VolumetricLightingHeight = WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Height;
-	//_DynamicUniformData._VolumetricLightingThickness = WorldSystem::Instance->GetEnvironmentSystem()->GetVolumetricLightingProperties()->_Thickness;
-
-	_DynamicUniformData._WorldGridSize = WorldSystem::Instance->GetWorldGridSize();
-
-	void *const RESTRICT dataChunks[]{ &_DynamicUniformData };
-	const uint64 dataSizes[]{ sizeof(DynamicUniformData) };
-
-	UploadDataToBuffer(dataChunks, dataSizes, 1, &_GlobalRenderData._DynamicUniformDataBuffers[current_framebuffer_index]);
-
-	//Update the active noise texture index.
-	_CurrentBlueNoiseTextureIndex = _CurrentBlueNoiseTextureIndex == CatalystShaderConstants::NUMBER_OF_BLUE_NOISE_TEXTURES - 1 ? 0 : _CurrentBlueNoiseTextureIndex + 1;
 }
 
 /*
@@ -1993,16 +1704,14 @@ void RenderingSystem::UpdateGlobalTextures(const uint8 current_framebuffer_index
 
 	for (const uint32 update : _GlobalRenderData._RemoveGlobalTextureUpdates[current_framebuffer_index])
 	{
-		BindSampledImageToRenderDataTable(1, update, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], _DefaultTexture2D);
-		BindSampledImageToRenderDataTable(0, update, &_GlobalRenderData._RenderDataTables2[current_framebuffer_index], _DefaultTexture2D);
+		BindSampledImageToRenderDataTable(0, update, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], _DefaultTexture2D);
 	}
 
 	_GlobalRenderData._RemoveGlobalTextureUpdates[current_framebuffer_index].Clear();
 
 	for (GlobalRenderData::AddGlobalTextureRequest &update : _GlobalRenderData._AddGlobalTextureUpdates[current_framebuffer_index])
 	{
-		BindSampledImageToRenderDataTable(1, update._Index, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], update._Texture);
-		BindSampledImageToRenderDataTable(0, update._Index, &_GlobalRenderData._RenderDataTables2[current_framebuffer_index], update._Texture);
+		BindSampledImageToRenderDataTable(0, update._Index, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], update._Texture);
 	}
 
 	_GlobalRenderData._AddGlobalTextureUpdates[current_framebuffer_index].Clear();
@@ -2016,14 +1725,13 @@ void RenderingSystem::UpdateGlobalTextures(const uint8 current_framebuffer_index
 	_GlobalRenderData._GlobalTexturesLock.Unlock();
 }
 
-/*
+/* 
 *	Updates the global materials.
 */
 void RenderingSystem::UpdateGlobalMaterials(const uint8 current_framebuffer_index) NOEXCEPT
 {
 	//Bind the current global material uniform buffer to the global render data table.
-	BindUniformBufferToRenderDataTable(3, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], _MaterialSystem.GetCurrentMaterialUnifomBuffer());
-	BindUniformBufferToRenderDataTable(2, 0, &_GlobalRenderData._RenderDataTables2[current_framebuffer_index], _MaterialSystem.GetCurrentMaterialUnifomBuffer());
+	BindUniformBufferToRenderDataTable(2, 0, &_GlobalRenderData._RenderDataTables[current_framebuffer_index], _MaterialSystem.GetCurrentMaterialUnifomBuffer());
 }
 
 /*

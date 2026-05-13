@@ -249,7 +249,7 @@ void GraphicsRenderPipeline::Initialize(const GraphicsRenderPipelineInitializePa
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts((_UsesInternalRenderDataTable || _UsesExternalRenderDataTable) ? 2 : 1);
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL_2));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
 
 	if (_UsesInternalRenderDataTable || _UsesExternalRenderDataTable)
 	{
@@ -398,7 +398,7 @@ void GraphicsRenderPipeline::Execute(const GraphicsRenderPipelineExecuteParamete
 	command_buffer->BindPipeline(this);
 
 	//Bind the render data table.
-	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable2());
+	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
 	if (_UsesInternalRenderDataTable)
 	{

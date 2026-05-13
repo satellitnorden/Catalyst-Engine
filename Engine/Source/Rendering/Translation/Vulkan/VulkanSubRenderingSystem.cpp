@@ -855,13 +855,22 @@ namespace VulkanSubRenderingSystemLogic
 void VulkanSubRenderingSystem::PreInitialize() NOEXCEPT
 {
 	//Initialize the Vulkan interface.
-	VulkanInterface::Instance->Initialize();
+	{
+		PROFILING_SCOPE("Initialize Vulkan Interface");
+		VulkanInterface::Instance->Initialize();
+	}
 
 	//Initialize the Vulkan frame data.
-	VulkanSubRenderingSystemData::_FrameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapchainImages());
+	{
+		PROFILING_SCOPE("Initialize Frame Data");
+		VulkanSubRenderingSystemData::_FrameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapchainImages());
+	}
 
 	//Set up the destruction queues.
-	VulkanSubRenderingSystemData::_DestructionQueues.Upsize<true>(GetNumberOfFramebuffers());
+	{
+		PROFILING_SCOPE("Initialize Destruction Queue");
+		VulkanSubRenderingSystemData::_DestructionQueues.Upsize<true>(GetNumberOfFramebuffers());
+	}
 }
 
 /*

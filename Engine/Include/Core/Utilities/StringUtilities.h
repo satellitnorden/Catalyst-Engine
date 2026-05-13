@@ -91,6 +91,11 @@ public:
 	*/
 	FORCE_INLINE static constexpr NO_DISCARD uint64 StringLength(const char *RESTRICT string) NOEXCEPT
 	{
+		if (!string)
+		{
+			return 0;
+		}
+
 		uint64 length{ 0 };
 
 		while (*string++)

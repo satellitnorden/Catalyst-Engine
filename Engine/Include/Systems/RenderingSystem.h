@@ -17,7 +17,6 @@
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 #include <Rendering/Native/DebugRenderingSystem.h>
 #endif
-#include <Rendering/Native/DynamicUniformData.h>
 #include <Rendering/Native/GlobalRenderData.h>
 #include <Rendering/Native/IrradianceSystem.h>
 #include <Rendering/Native/LightingSystem.h>
@@ -187,19 +186,6 @@ public:
 	*	Returns the current surface transform rotation matrix.
 	*/
 	Matrix4x4 GetCurrentSurfaceTransformRotationMatrix() const NOEXCEPT;
-
-	/*
-	*	Returns the given render target.
-	*/
-	RenderTargetHandle GetRenderTarget(const RenderTarget render_target) NOEXCEPT;
-
-	/*
-	*	Returns a sampler with the given sampler properties.
-	*/
-	SamplerHandle GetSampler(const Sampler sampler) const NOEXCEPT
-	{
-		return _Samplers[UNDERLYING(sampler)];
-	}
 
 	/*
 	*	Returns the sampler with the given configuration.
@@ -544,14 +530,9 @@ public:
 	void TerminateRenderPass(RenderPass *const RESTRICT render_pass) const NOEXCEPT;
 
 	/*
-	*	Returns the global render data table.
-	*/
-	RenderDataTableHandle GetGlobalRenderDataTable() const NOEXCEPT;
-
-	/*
 	*	Returns the global render data table 2.
 	*/
-	RenderDataTableHandle GetGlobalRenderDataTable2() const NOEXCEPT;
+	RenderDataTableHandle GetGlobalRenderDataTable() const NOEXCEPT;
 
 	/*
 	*	Adds a texture to the global render data and returns it's index.
@@ -567,11 +548,6 @@ public:
 	*	Returns the given common render data table layout.
 	*/
 	RenderDataTableLayoutHandle GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) const NOEXCEPT;
-
-	/*
-	*	Returns the given common render data table.
-	*/
-	RenderDataTableHandle GetCommonRenderDataTable(const CommonRenderDataTable common_render_data_table) const NOEXCEPT;
 
 	/*
 	*	Returns the render passes.
@@ -707,26 +683,14 @@ private:
 	//The cached samplers.
 	DynamicArray<CachedSampler> _CachedSamplers;
 
-	//Container for all render targets.
-	StaticArray<RenderTargetHandle, UNDERLYING(RenderTarget::NUMBER_OF_RENDER_TARGETS)> _RenderTargets;
-
-	//Container for all samplers.
-	StaticArray<SamplerHandle, UNDERLYING(Sampler::NumberOfSamplers)> _Samplers;
-
 	//Container for all common render data table layouts.
 	StaticArray<RenderDataTableLayoutHandle, UNDERLYING(CommonRenderDataTableLayout::NUMBER_OF_COMMON_RENDER_DATA_TABLE_LAYOUTS)> _CommonRenderDataTableLayouts;
-
-	//Container for all common render data tables.
-	StaticArray<RenderDataTableHandle, UNDERLYING(CommonRenderDataTable::NUMBER_OF_COMMON_RENDER_DATA_TABLES)> _CommonRenderDataTables;
 
 	//The default texture 2D.
 	Texture2DHandle _DefaultTexture2D;
 
 	//The default texture cube.
 	TextureCubeHandle _DefaultTextureCube;
-
-	//The dynamic uniform data.
-	DynamicUniformData _DynamicUniformData;
 
 	//The shared render target manager.
 	SharedRenderTargetManager _SharedRenderTargetManager;
@@ -772,17 +736,8 @@ private:
 	//Container for all the render passes.
 	DynamicArray<RenderPass *RESTRICT> _RenderPasses;
 
-	//The current blue noise texture index.
-	uint8 _CurrentBlueNoiseTextureIndex{ 0 };
-
-	//The Hammersley hemisphere samples uniform buffer.
-	BufferHandle _HammersleyHemisphereSamplesUniformBuffer;
-
 	//The previous camera world transform.
 	WorldTransform _PreviousCameraWorldTransform;
-
-	//The current camera world transform
-	WorldTransform _CurrentCameraWorldTransform;
 
 	//Denotes if the rendering system is currently taking a screenshot.
 	bool _IsTakingScreenshot{ false };
@@ -798,24 +753,9 @@ private:
 	void PreInitializeGlobalRenderData() NOEXCEPT;
 
 	/*
-	*	Initializes all render targets.
-	*/
-	void InitializeRenderTargets() NOEXCEPT;
-
-	/*
-	*	Initializes all samplers.
-	*/
-	void InitializeSamplers() NOEXCEPT;
-
-	/*
 	*	Initializes all common render data table layouts.
 	*/
 	void InitializeCommonRenderDataTableLayouts() NOEXCEPT;
-
-	/*
-	*	Initializes all common render data tables.
-	*/
-	void InitializeCommonRenderDataTables() NOEXCEPT;
 
 	/*
 	*	Initializes the default textures.
@@ -833,19 +773,9 @@ private:
 	void PostInitializeGlobalRenderData() NOEXCEPT;
 
 	/*
-	*	Post-initializes the common render data tables.
-	*/
-	void PostInitializeCommonRenderDataTables() NOEXCEPT;
-
-	/*
 	*	Updates the global render data.
 	*/
 	void UpdateGlobalRenderData() NOEXCEPT;
-
-	/*
-	*	Updates the global uniform data
-	*/
-	void UpdateGlobalUniformData(const uint8 current_framebuffer_index) NOEXCEPT;
 
 	/*
 	*	Updates the global textures.

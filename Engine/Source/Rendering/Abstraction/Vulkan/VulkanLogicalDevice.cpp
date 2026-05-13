@@ -5,6 +5,9 @@
 //Core.
 #include <Core/Containers/Map.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Rendering.
 #include <Rendering/Abstraction/Vulkan/VulkanInterface.h>
 #include <Rendering/Abstraction/Vulkan/VulkanPlatform.h>
@@ -18,41 +21,66 @@
 void VulkanLogicalDevice::Initialize() NOEXCEPT
 {
 	//Find the queue family indices.
-	FindQueueFamilyIndices();
+	{
+		PROFILING_SCOPE("Find Queue Family Indices");
+		FindQueueFamilyIndices();
+	}
 
 	//Create the device queue create info.
 	DynamicArray<VkDeviceQueueCreateInfo> deviceQueueCreateInfos;
-	CreateDeviceQueueCreateInfos(deviceQueueCreateInfos);
+	
+	{
+		PROFILING_SCOPE("Create Device Queue Create Infos");
+		CreateDeviceQueueCreateInfos(deviceQueueCreateInfos);
+	}
 
 	//Create the physical device features.
 	VkPhysicalDeviceFeatures physicalDeviceFeatures;
-	CreatePhysicalDeviceFeatures(physicalDeviceFeatures);
+	
+	{
+		PROFILING_SCOPE("Create Physical Device Features");
+		CreatePhysicalDeviceFeatures(physicalDeviceFeatures);
+	}
 
 	//Create the device create info.
 	DynamicArray<const char *const RESTRICT> extensions;
 
-	VulkanPlatform::RequiredLogicalDeviceExtensions(&extensions);
-
-	extensions.Emplace(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
-
-	if (VulkanInterface::Instance->GetPhysicalDevice().HasMultiviewSupport())
 	{
-		extensions.Emplace(VK_KHR_MULTIVIEW_EXTENSION_NAME);
-	}
+		PROFILING_SCOPE("Gather Extensions");
 
-	if (VulkanInterface::Instance->GetPhysicalDevice().HasRayTracingSupport())
-	{
-		extensions.Emplace(VK_NV_RAY_TRACING_EXTENSION_NAME);
+		VulkanPlatform::RequiredLogicalDeviceExtensions(&extensions);
+
+		extensions.Emplace(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
+
+		if (VulkanInterface::Instance->GetPhysicalDevice().HasMultiviewSupport())
+		{
+			extensions.Emplace(VK_KHR_MULTIVIEW_EXTENSION_NAME);
+		}
+
+		if (VulkanInterface::Instance->GetPhysicalDevice().HasRayTracingSupport())
+		{
+			extensions.Emplace(VK_NV_RAY_TRACING_EXTENSION_NAME);
+		}
 	}
 
 	VkDeviceCreateInfo deviceCreateInfo;
-	CreateDeviceCreateInfo(deviceCreateInfo, deviceQueueCreateInfos, extensions, &physicalDeviceFeatures);
+
+	{
+		PROFILING_SCOPE("Create Device Create Info");
+		CreateDeviceCreateInfo(deviceCreateInfo, deviceQueueCreateInfos, extensions, &physicalDeviceFeatures);
+	}
 
 	//Create the logical device!
-	VULKAN_ERROR_CHECK(vkCreateDevice(VulkanInterface::Instance->GetPhysicalDevice().Get(), &deviceCreateInfo, nullptr, &_VulkanLogicalDevice));
+	{
+		PROFILING_SCOPE("vkCreateDevice");
+		VULKAN_ERROR_CHECK(vkCreateDevice(VulkanInterface::Instance->GetPhysicalDevice().Get(), &deviceCreateInfo, nullptr, &_VulkanLogicalDevice));
+	}
 
 	//Retrieve the queues.
-	RetrieveQueues();
+	{
+		PROFILING_SCOPE("Retrieve Queues");
+		RetrieveQueues();
+	}
 }
 
 /*

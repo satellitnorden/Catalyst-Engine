@@ -6,6 +6,9 @@
 #include <Concurrency/ScopedLock.h>
 #include <Concurrency/Spinlock.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Rendering.
 #include <Rendering/Abstraction/Vulkan/VulkanMemoryAllocator.h>
 #include <Rendering/Abstraction/Vulkan/VulkanPlatform.h>
@@ -26,7 +29,10 @@ void VulkanInterface::Initialize() NOEXCEPT
 #endif
 
 	//Initialize the Vulkan instance.
-	_VulkanInstance.Initialize();
+	{
+		PROFILING_SCOPE("Initialize Vulkan Instance");
+		_VulkanInstance.Initialize();
+	}
 
 #if VULKAN_DEBUGGING && !defined(CATALYST_PLATFORM_ANDROID) && !defined(CATALYST_PLATFORM_OCULUS_QUEST)
 	//Initialize the Vulkan error reporting.
@@ -34,25 +40,43 @@ void VulkanInterface::Initialize() NOEXCEPT
 #endif
 
 	//Initialize the Vulkan surface.
-	_VulkanSurface.Initialize();
+	{
+		PROFILING_SCOPE("Initialize Vulkan Surface");
+		_VulkanSurface.Initialize();
+	}
 
 	//Initialize the Vulkan physical device.
-	_VulkanPhysicalDevice.Initialize();
+	{
+		PROFILING_SCOPE("Initialize Vulkan Physical Device");
+		_VulkanPhysicalDevice.Initialize();
+	}
 
 	//Initialize the Vulkan logical device.
-	_VulkanLogicalDevice.Initialize();
+	{
+		PROFILING_SCOPE("Initialize Vulkan Logical Device");
+		_VulkanLogicalDevice.Initialize();
+	}
 
 	//Tell the platform that the logical device has been created.
 	VulkanPlatform::OnLogicalDeviceCreated();
 
 	//Create the Vulkan memory allocator.
-	CreateVulkanMemoryAllocator();
+	{
+		PROFILING_SCOPE("Create Vulkan Memory Allocator");
+		CreateVulkanMemoryAllocator();
+	}
 
 	//Initialize the Vulkan swap chain.
-	_VulkanSwapchain.Initialize();
+	{
+		PROFILING_SCOPE("Initialize Vulkan Swapchain");
+		_VulkanSwapchain.Initialize();
+	}
 
 	//Initialize the Vulkan descriptor pool.
-	_VulkanDescriptorPool.Initialize();
+	{
+		PROFILING_SCOPE("Initialize Vulkan Descriptor Pool");
+		_VulkanDescriptorPool.Initialize();
+	}
 }
 
 /*

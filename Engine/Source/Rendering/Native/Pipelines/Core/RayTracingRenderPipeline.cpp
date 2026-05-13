@@ -240,7 +240,7 @@ void RayTracingRenderPipeline::Initialize(const RayTracingRenderPipelineParamete
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(_UsesRenderDataTable ? 3 : 2);
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL_2));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GLOBAL));
 
 	if (_UsesRenderDataTable)
 	{
@@ -312,7 +312,7 @@ void RayTracingRenderPipeline::Execute() NOEXCEPT
 	command_buffer->BindPipeline(this);
 
 	//Bind the render data table.
-	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable2());
+	command_buffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
 	if (_UsesRenderDataTable)
 	{

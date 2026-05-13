@@ -6,6 +6,9 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/Containers/StaticArray.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Rendering.
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>
 #include <Rendering/Abstraction/Vulkan/VulkanPlatform.h>
@@ -32,14 +35,25 @@ void VulkanInstance::Initialize() NOEXCEPT
 {
 	//Create the application info.
 	VkApplicationInfo application_info;
-	CreateApplicationInfo(application_info);
+	
+	{
+		PROFILING_SCOPE("Create Application Info");
+		CreateApplicationInfo(application_info);
+	}
 
 	//Create the instance create info.
 	VkInstanceCreateInfo instance_create_info;
-	CreateInstanceCreateInfo(instance_create_info, application_info);
+	
+	{
+		PROFILING_SCOPE("Create Instance Create Info");
+		CreateInstanceCreateInfo(instance_create_info, application_info);
+	}
 
 	//Create the instance!
-	VULKAN_ERROR_CHECK(vkCreateInstance(&instance_create_info, nullptr, &_VulkanInstance));
+	{
+		PROFILING_SCOPE("vkCreateInstance");
+		VULKAN_ERROR_CHECK(vkCreateInstance(&instance_create_info, nullptr, &_VulkanInstance));
+	}
 }
 
 /*

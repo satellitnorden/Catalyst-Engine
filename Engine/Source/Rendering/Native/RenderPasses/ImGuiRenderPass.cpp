@@ -116,7 +116,7 @@ void ImGuiRenderPass::PreRecord(CommandBuffer *const RESTRICT frame_command_buff
 	frame_command_buffer->BindPipeline(&_ImGuiPipeline);
 
 	//Bind the render data table.
-	frame_command_buffer->BindRenderDataTable(&_ImGuiPipeline, 0, RenderingSystem::Instance->GetGlobalRenderDataTable2());
+	frame_command_buffer->BindRenderDataTable(&_ImGuiPipeline, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
 	//Draw ImGui.
 	frame_command_buffer->DrawImGui(&_ImGuiPipeline);

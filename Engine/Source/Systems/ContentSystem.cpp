@@ -336,6 +336,8 @@ RECOMPILE:
 */
 void ContentSystem::LoadAssets(const char *const RESTRICT directory_path) NOEXCEPT
 {
+	PROFILING_SCOPE("ContentSystem::LoadAssets");
+
 	//Iterate over the items in the directory.
 	for (const auto &entry : std::filesystem::directory_iterator(std::string(directory_path)))
 	{
@@ -479,6 +481,9 @@ void ContentSystem::LoadAsset(const char *const RESTRICT file_path) NOEXCEPT
 */
 void ContentSystem::LoadAssetCollection(const char *const RESTRICT file_path) NOEXCEPT
 {
+	PROFILING_SCOPE("ContentSystem::LoadAssetCollection");
+
+	//Remember the start time.
 	TimePoint start_time;
 
 	//Open the input file.
