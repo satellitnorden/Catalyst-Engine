@@ -1,8 +1,12 @@
 //Header file.
 #include <Audio/Effects/General/CLAPPlugin.h>
 
+//Profiling.
+#include <Profiling/Profiling.h>
+
 //Systems.
 #include <Systems/LogSystem.h>
+#include <Systems/TaskSystem.h>
 
 //Third party.
 #include <ThirdParty/CLAP/ext/draft/resource-directory.h>
@@ -510,10 +514,12 @@ CLAPPlugin::~CLAPPlugin() NOEXCEPT
 }
 
 /*
-*	Initializes this CLAP plugin.. Returns if it succeeded.
+*	Initializes this CLAP plugin.
 */
-NO_DISCARD bool CLAPPlugin::Initialize(const char *const RESTRICT plugin_file_path) NOEXCEPT
+void CLAPPlugin::Initialize(const char *const RESTRICT plugin_file_path) NOEXCEPT
 {
+	PROFILING_SCOPE("CLAPPlugin::Initialize");
+
 	//Load the dynamic library.
 	if (!_DynamicLibrary.Load(plugin_file_path))
 	{
@@ -521,7 +527,7 @@ NO_DISCARD bool CLAPPlugin::Initialize(const char *const RESTRICT plugin_file_pa
 
 		Terminate();
 
-		return false;
+		return;
 	}
 
 	//Retrieve the entry.
@@ -533,7 +539,7 @@ NO_DISCARD bool CLAPPlugin::Initialize(const char *const RESTRICT plugin_file_pa
 
 		Terminate();
 
-		return false;
+		return;
 	}
 
 	//Initialize the entry.
@@ -543,7 +549,7 @@ NO_DISCARD bool CLAPPlugin::Initialize(const char *const RESTRICT plugin_file_pa
 
 		Terminate();
 
-		return false;
+		return;
 	}
 
 	if (!_Entry->init(plugin_file_path))
@@ -552,7 +558,7 @@ NO_DISCARD bool CLAPPlugin::Initialize(const char *const RESTRICT plugin_file_pa
 
 		Terminate();
 
-		return false;
+		return;
 	}
 
 	//Set up the host.
@@ -589,139 +595,34 @@ NO_DISCARD bool CLAPPlugin::Initialize(const char *const RESTRICT plugin_file_pa
 
 		Terminate();
 
-		return false;
+		return;
 	}
 
-	const clap_plugin_factory *const RESTRICT factory{ static_cast<const clap_plugin_factory *const RESTRICT>(_Entry->get_factory(CLAP_PLUGIN_FACTORY_ID)) };
+	_Factory = static_cast<const clap_plugin_factory *const RESTRICT>(_Entry->get_factory(CLAP_PLUGIN_FACTORY_ID));
 
-	if (!factory)
+	if (!_Factory)
 	{
-		ASSERT(false, "Could not retrieve CLAP entry!");
+		ASSERT(false, "Could not retrieve CLAP factory!");
 
 		Terminate();
 
-		return false;
+		return;
 	}
 
-	//Enumerate the plugins.
-	const uint32 plugin_count{ factory->get_plugin_count(factory) };
+	//Set the plugin file path.
+	_PluginFilePath = plugin_file_path;
 
-	if (plugin_count != 1)
+	//Set up the initialization task.
+	_InitializationTask._Function = [](void *const RESTRICT arguments)
 	{
-		ASSERT(false, "Could not retrieve CLAP entry!");
+		CLAPPlugin *const RESTRICT _host{ static_cast<CLAPPlugin *const RESTRICT>(arguments) };
+		_host->InitializeInternal(_host->_PluginFilePath.Data());
+	};
+	_InitializationTask._Arguments = this;
+	_InitializationTask._ExecutableOnSameThread = false;
 
-		Terminate();
-
-		return false;
-	}
-
-	//Retrieve the plugin descriptor.
-	const clap_plugin_descriptor_t *const RESTRICT plugin_descriptor{ factory->get_plugin_descriptor(factory, 0) };
-
-	//Create the plugin!
-	_Plugin = factory->create_plugin(factory, &_Host, plugin_descriptor->id);
-
-	//Initialize the plugin.
-	if (!_Plugin->init(_Plugin))
-	{
-		ASSERT(false, "Could not retrieve CLAP entry!");
-
-		Terminate();
-
-		return false;
-	}
-
-#if SHOW_GUI_ON_STARTUP
-	{
-		_GUI._Extension = static_cast<const clap_plugin_gui_t *const RESTRICT>(_Plugin->get_extension(_Plugin, CLAP_EXT_GUI));
-
-		if (_GUI._Extension)
-		{
-			if (_GUI._Extension->is_api_supported(_Plugin, CLAP_WINDOW_API_WIN32, false))
-			{
-				if (_GUI._Extension->create(_Plugin, CLAP_WINDOW_API_WIN32, false))
-				{
-					uint32_t width;
-					uint32_t height;
-
-					if (!_GUI._Extension->get_size(_Plugin, &width, &height))
-					{
-						ASSERT(false, "Couldn't get size!");
-					}
-
-					_GUI._Window = static_cast<HWND>(CatalystPlatform::CreatePlatformWindow("Catalyst Engine CLAP Window", width, height, false));
-
-					{
-						clap_window_t clap_window;
-
-						clap_window.api = CLAP_WINDOW_API_WIN32;
-						clap_window.win32 = _GUI._Window;
-
-						if (!_GUI._Extension->set_parent(_Plugin, &clap_window))
-						{
-							ASSERT(false, "Couldn't set parent!");
-						}
-					}
-
-					if (!_GUI._Extension->show(_Plugin))
-					{
-						ASSERT(false, "Couldn't show!");
-					}
-				}
-			}
-		}
-	}
-#endif
-
-	//Activate the plugin.
-	if (!_Plugin->activate(_Plugin, static_cast<float64>(_SampleRate), 1, 4096))
-	{
-		ASSERT(false, "Could not retrieve CLAP entry!");
-
-		Terminate();
-
-		return false;
-	}
-
-	//Add the request to start processing.
-	{
-		AudioThreadRequest request;
-
-		request._Type = AudioThreadRequest::Type::START_PROCESSING;
-
-		AddAudioThreadRequest(request);
-	}
-
-	//Retrieve the parameters.
-	const clap_plugin_params *const RESTRICT parameters{ static_cast<const clap_plugin_params *const RESTRICT>(_Plugin->get_extension(_Plugin, CLAP_EXT_PARAMS)) };
-
-	if (parameters)
-	{
-		//Fill in the parameters.
-		const uint32 parameter_count{ parameters->count(_Plugin) };
-
-		_Parameters.Reserve(parameter_count);
-
-		for (uint32 parameter_index{ 0 }; parameter_index < parameter_count; ++parameter_index)
-		{
-			clap_param_info_t parameter_info;
-			parameters->get_info(_Plugin, parameter_index, &parameter_info);
-
-			_Parameters.Emplace();
-			Parameter &new_parameter{ _Parameters.Back() };
-
-			new_parameter._Name = parameter_info.name;
-			new_parameter._Identifier = HashString(new_parameter._Name.Data());
-			new_parameter._ID = parameter_info.id;
-			new_parameter._Cookie = parameter_info.cookie;
-			new_parameter._MinimumValue = parameter_info.min_value;
-			new_parameter._MaximumValue = parameter_info.max_value;
-			new_parameter._DefaultValue = parameter_info.default_value;
-		}
-	}
-
-	//Initialization succeeded!
-	return true;
+	//Execute the task!
+	TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, &_InitializationTask);
 }
 
 /*
@@ -729,6 +630,9 @@ NO_DISCARD bool CLAPPlugin::Initialize(const char *const RESTRICT plugin_file_pa
 */
 void CLAPPlugin::Terminate() NOEXCEPT
 {
+	//Wait for the initialization task to be executed.
+	_InitializationTask.Wait<WaitMode::YIELD>();
+
 	//Terminate the plugin.
 	if (_Plugin)
 	{
@@ -790,18 +694,31 @@ void CLAPPlugin::MainThreadUpdate() NOEXCEPT
 					break;
 				}
 
+				case MainThreadRequest::Type::FINALIZE_PLUGIN:
+				{
+					FinalizePlugin();
+
+					break;
+				}
+
 				case MainThreadRequest::Type::UPDATE_PLUGIN:
 				{
-					_Plugin->on_main_thread(_Plugin);
+					if (_PluginReady.IsSet())
+					{
+						_Plugin->on_main_thread(_Plugin);
+					}
 
 					break;
 				}
 
 				case MainThreadRequest::Type::SHOW_GUI:
 				{
-					if (_GUI._Extension)
+					if (_PluginReady.IsSet())
 					{
-						_GUI._Extension->show(_Plugin);
+						if (_GUI._Extension)
+						{
+							_GUI._Extension->show(_Plugin);
+						}
 					}
 
 					break;
@@ -809,7 +726,13 @@ void CLAPPlugin::MainThreadUpdate() NOEXCEPT
 
 				case MainThreadRequest::Type::HIDE_GUI:
 				{
-
+					if (_PluginReady.IsSet())
+					{
+						if (_GUI._Extension)
+						{
+							_GUI._Extension->hide(_Plugin);
+						}
+					}
 
 					break;
 				}
@@ -839,6 +762,17 @@ void CLAPPlugin::Process
 	const uint32 number_of_samples
 ) NOEXCEPT
 {
+	//Ensure the plugin is ready.
+	if (!_PluginReady.IsSet())
+	{
+		for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
+		{
+			Memory::Copy(outputs->At(channel_index).Data(), inputs.At(channel_index).Data(), sizeof(float32) * number_of_samples);
+		}
+
+		return;
+	}
+
 	//If we don't have a plugin, just copy inputs into outputs and be done with it.
 	if (!_Plugin)
 	{
@@ -870,6 +804,44 @@ void CLAPPlugin::Process
 				case AudioThreadRequest::Type::START_PROCESSING:
 				{
 					_Plugin->start_processing(_Plugin);
+
+					break;
+				}
+
+				case AudioThreadRequest::Type::SET_PARAMETER:
+				{
+					bool found_parameter{ false };
+
+					for (const Parameter &parameter : _Parameters)
+					{
+						if (parameter._Identifier == _request._SetParameterData._Identifier)
+						{
+							_InputEvents.Emplace();
+							Event &input_event{ _InputEvents.Back() };
+
+							input_event._ParameterValue.header.size = static_cast<uint32_t>(sizeof(clap_event_param_value_t));
+							input_event._ParameterValue.header.time = 0;
+							input_event._ParameterValue.header.space_id = 0; //TODO: Figure out what this does?
+							input_event._ParameterValue.header.type = CLAP_EVENT_PARAM_VALUE;
+							input_event._ParameterValue.header.flags = 0; //TODO: Figure out if this should have any flag?
+
+							input_event._ParameterValue.param_id = parameter._ID;
+							input_event._ParameterValue.cookie = parameter._Cookie;
+
+							input_event._ParameterValue.note_id = -1;
+							input_event._ParameterValue.port_index = -1;
+							input_event._ParameterValue.channel = -1;
+							input_event._ParameterValue.key = -1;
+
+							input_event._ParameterValue.value = _request._SetParameterData._Value;
+
+							found_parameter = true;
+
+							break;
+						}
+					}
+
+					ASSERT(found_parameter, "Couldn't find parameter!");
 
 					break;
 				}
@@ -1053,32 +1025,165 @@ void CLAPPlugin::AddAudioThreadRequest(const AudioThreadRequest request) NOEXCEP
 */
 void CLAPPlugin::SetParameter(const HashString identifier, const float64 value) NOEXCEPT
 {
-	for (const Parameter &parameter : _Parameters)
+	//Add the audio thread request.
 	{
-		if (parameter._Identifier == identifier)
+		AudioThreadRequest request;
+
+		request._Type = AudioThreadRequest::Type::SET_PARAMETER;
+		request._SetParameterData._Identifier = identifier;
+		request._SetParameterData._Value = value;
+
+		AddAudioThreadRequest(request);
+	}
+}
+
+/*
+*	Initializes internally.
+*/
+void CLAPPlugin::InitializeInternal(const char *const RESTRICT plugin_file_path) NOEXCEPT
+{
+	PROFILING_SCOPE("CLAPPlugin::InitializeInternal");
+
+	//Enumerate the plugins.
+	const uint32 plugin_count{ _Factory->get_plugin_count(_Factory) };
+
+	if (plugin_count != 1)
+	{
+		ASSERT(false, "Could not retrieve CLAP entry!");
+
+		Terminate();
+
+		return;
+	}
+
+	//Retrieve the plugin descriptor.
+	const clap_plugin_descriptor_t *const RESTRICT plugin_descriptor{ _Factory->get_plugin_descriptor(_Factory, 0) };
+
+	//Create the plugin!
+	_Plugin = _Factory->create_plugin(_Factory, &_Host, plugin_descriptor->id);
+
+	//Add the main thread request to finalize the plugin.
+	CLAPPlugin::MainThreadRequest request;
+
+	request._Type = CLAPPlugin::MainThreadRequest::Type::FINALIZE_PLUGIN;
+
+	AddMainThreadRequest(request);
+}
+
+/*
+*	Finalizes the plugin.
+*/
+void CLAPPlugin::FinalizePlugin() NOEXCEPT
+{
+	PROFILING_SCOPE("CLAPPlugin::FinalizePlugin");
+
+	//Initialize the plugin.
+	{
+		PROFILING_SCOPE("_Plugin->init");
+
+		if (!_Plugin->init(_Plugin))
 		{
-			_InputEvents.Emplace();
-			Event &input_event{ _InputEvents.Back() };
+			ASSERT(false, "Could not retrieve CLAP entry!");
 
-			input_event._ParameterValue.header.size = static_cast<uint32_t>(sizeof(clap_event_param_value_t));
-			input_event._ParameterValue.header.time = 0;
-			input_event._ParameterValue.header.space_id = 0; //TODO: Figure out what this does?
-			input_event._ParameterValue.header.type = CLAP_EVENT_PARAM_VALUE;
-			input_event._ParameterValue.header.flags = 0; //TODO: Figure out if this should have any flag?
-
-			input_event._ParameterValue.param_id = parameter._ID;
-			input_event._ParameterValue.cookie = parameter._Cookie;
-
-			input_event._ParameterValue.note_id = -1;
-			input_event._ParameterValue.port_index = -1;
-			input_event._ParameterValue.channel = -1;
-			input_event._ParameterValue.key = -1;
-
-			input_event._ParameterValue.value = value;
+			Terminate();
 
 			return;
 		}
 	}
 
-	ASSERT(false, "Couldn't find parameter!");
+#if SHOW_GUI_ON_STARTUP
+	{
+		_GUI._Extension = static_cast<const clap_plugin_gui_t* const RESTRICT>(_Plugin->get_extension(_Plugin, CLAP_EXT_GUI));
+
+		if (_GUI._Extension)
+		{
+			if (_GUI._Extension->is_api_supported(_Plugin, CLAP_WINDOW_API_WIN32, false))
+			{
+				if (_GUI._Extension->create(_Plugin, CLAP_WINDOW_API_WIN32, false))
+				{
+					uint32_t width;
+					uint32_t height;
+
+					if (!_GUI._Extension->get_size(_Plugin, &width, &height))
+					{
+						ASSERT(false, "Couldn't get size!");
+					}
+
+					_GUI._Window = static_cast<HWND>(CatalystPlatform::CreatePlatformWindow("Catalyst Engine CLAP Window", width, height, false));
+
+					{
+						clap_window_t clap_window;
+
+						clap_window.api = CLAP_WINDOW_API_WIN32;
+						clap_window.win32 = _GUI._Window;
+
+						if (!_GUI._Extension->set_parent(_Plugin, &clap_window))
+						{
+							ASSERT(false, "Couldn't set parent!");
+						}
+					}
+
+					if (!_GUI._Extension->show(_Plugin))
+					{
+						ASSERT(false, "Couldn't show!");
+					}
+				}
+			}
+		}
+	}
+#endif
+
+	//Activate the plugin.
+	{
+		PROFILING_SCOPE("_Plugin-activate");
+
+		if (!_Plugin->activate(_Plugin, static_cast<float64>(_SampleRate), 1, 4096))
+		{
+			ASSERT(false, "Could not retrieve CLAP entry!");
+
+			Terminate();
+
+			return;
+		}
+	}
+
+	//Add the request to start processing.
+	{
+		AudioThreadRequest request;
+
+		request._Type = AudioThreadRequest::Type::START_PROCESSING;
+
+		AddAudioThreadRequest(request);
+	}
+
+	//Retrieve the parameters.
+	const clap_plugin_params *const RESTRICT parameters{ static_cast<const clap_plugin_params *const RESTRICT>(_Plugin->get_extension(_Plugin, CLAP_EXT_PARAMS)) };
+
+	if (parameters)
+	{
+		//Fill in the parameters.
+		const uint32 parameter_count{ parameters->count(_Plugin) };
+
+		_Parameters.Reserve(parameter_count);
+
+		for (uint32 parameter_index{ 0 }; parameter_index < parameter_count; ++parameter_index)
+		{
+			clap_param_info_t parameter_info;
+			parameters->get_info(_Plugin, parameter_index, &parameter_info);
+
+			_Parameters.Emplace();
+			Parameter &new_parameter{ _Parameters.Back() };
+
+			new_parameter._Name = parameter_info.name;
+			new_parameter._Identifier = HashString(new_parameter._Name.Data());
+			new_parameter._ID = parameter_info.id;
+			new_parameter._Cookie = parameter_info.cookie;
+			new_parameter._MinimumValue = parameter_info.min_value;
+			new_parameter._MaximumValue = parameter_info.max_value;
+			new_parameter._DefaultValue = parameter_info.default_value;
+		}
+	}
+
+	//The plugin is now ready.
+	_PluginReady.Set();
 }

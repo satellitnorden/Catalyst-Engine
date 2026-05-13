@@ -10,7 +10,9 @@
 #include <Audio/Effects/Core/AudioEffect.h>
 
 //Concurrency.
+#include <Concurrency/AtomicFlag.h>
 #include <Concurrency/AtomicQueue.h>
+#include <Concurrency/Task.h>
 
 //Third party.
 #include <ThirdParty/CLAP/clap.h>
@@ -36,6 +38,7 @@ public:
 		{
 			NONE,
 
+			FINALIZE_PLUGIN,
 			UPDATE_PLUGIN,
 			SHOW_GUI,
 			HIDE_GUI
@@ -43,19 +46,6 @@ public:
 
 		//The type.
 		Type _Type{ Type::NONE };
-
-		union
-		{
-			struct
-			{
-				clap_id _Identifier;
-			} _AddTimerData;
-
-			struct
-			{
-				clap_id _Identifier;
-			} _RemoveTimerData;
-		};
 	};
 
 	/*
@@ -71,11 +61,33 @@ public:
 		{
 			NONE,
 
-			START_PROCESSING
+			START_PROCESSING,
+			SET_PARAMETER
 		};
 
 		//The type.
 		Type _Type{ Type::NONE };
+
+		//The data.
+		union
+		{
+			struct
+			{
+				//The identifier.
+				HashString _Identifier;
+
+				//The value.
+				float64 _Value;
+			} _SetParameterData;
+		};
+
+		/*
+		*	Default constructor.
+		*/
+		FORCE_INLINE AudioThreadRequest() NOEXCEPT
+		{
+			Memory::Set(this, 0, sizeof(AudioThreadRequest));
+		}
 
 	};
 
@@ -90,9 +102,9 @@ public:
 	~CLAPPlugin() NOEXCEPT;
 
 	/*
-	*	Initializes this CLAP plugin. Returns if it succeeded.
+	*	Initializes this CLAP plugin.
 	*/
-	NO_DISCARD bool Initialize(const char *const RESTRICT plugin_file_path) NOEXCEPT;
+	void Initialize(const char *const RESTRICT plugin_file_path) NOEXCEPT;
 
 	/*
 	*	Terminates this CLAP plugin.
@@ -208,11 +220,23 @@ private:
 
 	};
 
+	//The plugin file path.
+	DynamicString _PluginFilePath;
+
+	//Denotes whether or not this plugin is ready.
+	AtomicFlag _PluginReady;
+
+	//The initialization task.
+	Task _InitializationTask;
+
 	//The dynamic library.
 	DynamicLibrary _DynamicLibrary;
 
 	//The entry.
 	const clap_plugin_entry *RESTRICT _Entry{ nullptr };
+
+	//The factory.
+	const clap_plugin_factory *RESTRICT _Factory{ nullptr };
 
 	//The host.
 	clap_host_t _Host;
@@ -243,6 +267,16 @@ private:
 
 	//The GUI.
 	GUI _GUI;
+
+	/*
+	*	Initializes internally.
+	*/
+	void InitializeInternal(const char *const RESTRICT plugin_file_path) NOEXCEPT;
+
+	/*
+	*	Finalizes the plugin.
+	*/
+	void FinalizePlugin() NOEXCEPT;
 
 
 };
