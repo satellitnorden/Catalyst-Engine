@@ -75,6 +75,14 @@ uint8 OpenGLSubRenderingSystem::GetCurrentFramebufferIndex() const NOEXCEPT
 }
 
 /*
+*	Returns the current swapchain index.
+*/
+uint8 OpenGLSubRenderingSystem::GetCurrentSwapchainIndex() const NOEXCEPT
+{
+	return 0;
+}
+
+/*
 *	Returns the current surface transform.
 */
 SurfaceTransform OpenGLSubRenderingSystem::GetCurrentSurfaceTransform() const NOEXCEPT

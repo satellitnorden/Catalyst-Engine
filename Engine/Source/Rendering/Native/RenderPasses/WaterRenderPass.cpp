@@ -21,12 +21,6 @@ WaterRenderPass::WaterRenderPass() NOEXCEPT
 		WaterRenderPass::Instance->Initialize();
 	});
 
-	//Set the pre-record function.
-	SetPreRecordFunction([](CommandBuffer *const RESTRICT command_buffer)
-	{
-		WaterRenderPass::Instance->PreRecord(command_buffer);
-	});
-
 	//Set the execution function.
 	SetExecutionFunction([]()
 	{
@@ -52,11 +46,22 @@ void WaterRenderPass::Initialize() NOEXCEPT
 	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_SceneRenderTarget);
 
 	//Add the pipelines.
-	SetNumberOfPipelines(1);
+	SetNumberOfPipelines(2);
 
+	AddPipeline(&_CopyRenderPipeline);
 	AddPipeline(&_WaterRenderPipeline);
 
 	//Initialize all pipelines.
+	{
+		GraphicsRenderPipelineInitializeParameters parameters;
+
+		parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE));
+		parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), _SceneRenderTarget);
+		parameters._RenderResolution = RenderingSystem::Instance->GetScaledResolution(0);
+
+		_CopyRenderPipeline.Initialize(parameters);
+	}
+
 	{
 		GraphicsRenderPipelineInitializeParameters parameters;
 
@@ -67,25 +72,12 @@ void WaterRenderPass::Initialize() NOEXCEPT
 }
 
 /*
-*	Pre-record.
-*/
-void WaterRenderPass::PreRecord(CommandBuffer *const RESTRICT command_buffer) NOEXCEPT
-{
-	//Blit the scene features 1 render target.
-	command_buffer->BlitImage
-	(
-		nullptr,
-		RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE),
-		_SceneRenderTarget
-	);
-}
-
-/*
 *	Executes this render pass.
 */
 void WaterRenderPass::Execute() NOEXCEPT
 {	
 	//Execute all pipelines.
+	_CopyRenderPipeline.Execute();
 	_WaterRenderPipeline.Execute();
 }
 
@@ -95,5 +87,6 @@ void WaterRenderPass::Execute() NOEXCEPT
 void WaterRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines.
+	_CopyRenderPipeline.Terminate();
 	_WaterRenderPipeline.Terminate();
 }

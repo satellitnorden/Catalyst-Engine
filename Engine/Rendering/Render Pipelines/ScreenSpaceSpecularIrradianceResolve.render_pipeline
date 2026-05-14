@@ -68,9 +68,9 @@ Fragment
     vec3 specular_irradiance = vec3(0.0f);
     float weight = 0.0f;
     
-    for (int Y = -1; Y <= 1; ++Y)
+    for (int Y = -2; Y <= 2; ++Y)
     {
-        for (int X = -1; X <= 1; ++X)
+        for (int X = -2; X <= 2; ++X)
         {
             vec2 sample_coordinate = InScreenCoordinate + vec2(float(X), float(Y)) * INVERSE_HALF_MAIN_RESOLUTION;
 

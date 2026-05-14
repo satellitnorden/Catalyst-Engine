@@ -612,7 +612,15 @@ NO_DISCARD HashString RenderPipelineAssetCompiler::AssetTypeIdentifier() const N
 */
 NO_DISCARD uint64 RenderPipelineAssetCompiler::CurrentVersion() const NOEXCEPT
 {
-	return 1;
+	enum class Version : uint64
+	{
+		BASE,
+		MARK_STORAGE_BUFFERS_AS_READ_ONLY,
+
+		CURRENT_VERSION,
+	};
+
+	return static_cast<uint64>(Version::CURRENT_VERSION);
 }
 
 /*
@@ -2950,13 +2958,13 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 			for (const char *const RESTRICT _hit_group : HIT_GROUPS)
 			{
-				sprintf_s(buffer, "layout (set = 2, binding = %u) buffer %s_VERTEX_DATA_BUFFER { vec4 %s_VERTEX_DATA[]; } %s_VERTEX_BUFFERS[];", current_binding++, _hit_group, _hit_group, _hit_group);
+				sprintf_s(buffer, "layout (set = 2, binding = %u) readonly buffer %s_VERTEX_DATA_BUFFER { vec4 %s_VERTEX_DATA[]; } %s_VERTEX_BUFFERS[];", current_binding++, _hit_group, _hit_group, _hit_group);
 				glsl_lines->Emplace(buffer);
 
-				sprintf_s(buffer, "layout (set = 2, binding = %u) buffer %s_INDEX_DATA_BUFFER { uint %s_INDEX_DATA[]; } %s_INDEX_BUFFERS[];", current_binding++, _hit_group, _hit_group, _hit_group);
+				sprintf_s(buffer, "layout (set = 2, binding = %u) readonly buffer %s_INDEX_DATA_BUFFER { uint %s_INDEX_DATA[]; } %s_INDEX_BUFFERS[];", current_binding++, _hit_group, _hit_group, _hit_group);
 				glsl_lines->Emplace(buffer);
 
-				sprintf_s(buffer, "layout (set = 2, binding = %u) buffer %s_MATERIAL_BUFFER { layout (offset = 0) uvec4[] %s_MATERIAL_INDICES; };", current_binding++, _hit_group, _hit_group);
+				sprintf_s(buffer, "layout (set = 2, binding = %u) readonly buffer %s_MATERIAL_BUFFER { layout (offset = 0) uvec4[] %s_MATERIAL_INDICES; };", current_binding++, _hit_group, _hit_group);
 				glsl_lines->Emplace(buffer);
 			}
 
@@ -3018,7 +3026,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 				glsl_lines->Emplace("\t");
 
-				glsl_lines->Emplace("\thit_vertex_information._Position = gl_ObjectToWorldNV * vec4(hit_vertex_information._Normal, 1.0f);");
+				glsl_lines->Emplace("\thit_vertex_information._Position = gl_ObjectToWorldNV * vec4(hit_vertex_information._Position, 1.0f);");
 				glsl_lines->Emplace("\t");
 
 				glsl_lines->Emplace("\thit_vertex_information._Normal = ");
@@ -3291,7 +3299,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 				//Insert the header.
 				char header[128];
-				sprintf_s(header, "layout (std430, set = 1, binding = %u) buffer %s", current_binding_index++, buffer_name.Data());
+				sprintf_s(header, "layout (std430, set = 1, binding = %u) readonly buffer %s", current_binding_index++, buffer_name.Data());
 
 				glsl_lines.Emplace(header);
 

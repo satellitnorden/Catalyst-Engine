@@ -57,6 +57,11 @@ public:
 	NO_DISCARD uint8 GetCurrentFramebufferIndex() const NOEXCEPT override;
 
 	/*
+	*	Returns the current swapchain index.
+	*/
+	NO_DISCARD uint8 GetCurrentSwapchainIndex() const NOEXCEPT override;
+
+	/*
 	*	Returns the current surface transform.
 	*/
 	NO_DISCARD SurfaceTransform GetCurrentSurfaceTransform() const NOEXCEPT override;

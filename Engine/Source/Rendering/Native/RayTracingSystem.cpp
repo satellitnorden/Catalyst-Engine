@@ -338,12 +338,12 @@ NO_DISCARD RayTracingHitGroup *const RESTRICT RayTracingSystem::GetHitGroup(cons
 void RayTracingSystem::CreateRenderDataTableLayout() NOEXCEPT
 {
 	//Define constants.
-	constexpr uint32 MAXIMUM_NUMBER_OF_RAY_TRACED_MESHES{ 1'024 * 4 }; //TODO: Figure out a way to remove this.
+	constexpr uint32 MAXIMUM_NUMBER_OF_RAY_TRACED_MESHES{ 1'024 * 16 }; //TODO: Figure out a way to remove this.
 
 	//Create the render data table layout.
 	DynamicArray<RenderDataTableLayoutBinding> bindings;
 
-	bindings.Emplace(0, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::RAY_MISS);
+	bindings.Emplace(0, RenderDataTableLayoutBinding::Type::AccelerationStructure, 1, ShaderStage::RAY_ANY_HIT | ShaderStage::RAY_CLOSEST_HIT | ShaderStage::RAY_GENERATION | ShaderStage::RAY_MISS);
 
 	for (const RayTracingHitGroup &hit_group : _HitGroups)
 	{

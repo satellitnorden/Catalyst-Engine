@@ -45,7 +45,7 @@
 #include <ThirdParty/stb_image.h>
 #include <ThirdParty/stb_image_resize.h>
 #include <ThirdParty/stb_truetype/stb_truetype.h>
-#include <ThirdParty/vulkan/shaderc/shaderc.h>
+#include <vulkan/shaderc/shaderc.h>
 
 //STL.
 #include <filesystem>

@@ -15,11 +15,12 @@
 namespace VulkanDescriptorPoolConstants
 {
 	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_SETS{ 1'024 * 2 };
+	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_ACCELERATION_STRUCTURES{ 4 };
 	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_COMBINED_IMAGE_SAMPLERS{ 8'192 };
 	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_SAMPLED_IMAGES{ 32'768 };
-	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_SAMPLERS{ 32 };
-	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_UNIFORM_BUFFERS{ 256 };
-	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_STORAGE_BUFFERS{ 16 };
+	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_SAMPLERS{ 64 };
+	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_UNIFORM_BUFFERS{ 512 };
+	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_STORAGE_BUFFERS{ 262'144 };
 	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_STORAGE_IMAGES{ 32 };
 }
 
@@ -82,7 +83,17 @@ void VulkanDescriptorPool::FreeDescriptorSet(VkDescriptorSet descriptorSet) cons
 */
 void VulkanDescriptorPool::CreateDescriptorPoolSizes(DynamicArray<VkDescriptorPoolSize> &descriptorPoolSizes) const NOEXCEPT
 {
-	descriptorPoolSizes.Reserve(4);
+	descriptorPoolSizes.Reserve(7);
+
+	if (VulkanInterface::Instance->GetPhysicalDevice().HasRayTracingSupport())
+	{
+		VkDescriptorPoolSize acceleration_structure_descriptor_pool_size;
+
+		acceleration_structure_descriptor_pool_size.type = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV;
+		acceleration_structure_descriptor_pool_size.descriptorCount = VulkanDescriptorPoolConstants::VULKAN_DESCRIPTOR_POOL_MAXIMUM_ACCELERATION_STRUCTURES;
+
+		descriptorPoolSizes.Emplace(acceleration_structure_descriptor_pool_size);
+	}
 
 	VkDescriptorPoolSize combinedImageSamplerDescriptorPoolSize;
 

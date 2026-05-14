@@ -40,8 +40,8 @@ private:
 	//The diffuse irradiance temporal buffers.
 	StaticArray<RenderTargetHandle, 2> _DiffuseIrradianceTemporalBuffers;
 
-	//The current temporal buffer index.
-	uint8 _CurrentTemporalBufferIndex{ 0 };
+	//The current diffuse irradiance temporal buffer index.
+	uint8 _CurrentDiffuseIrradianceTemporalBufferIndex{ 0 };
 
 	//The ray traced diffuse irradiance pipeline.
 	RayTracingRenderPipeline _RayTracedDiffuseIrradiancePipeline{ HashString("RayTracedDiffuseIrradiance") };

@@ -58,7 +58,8 @@ void RayTracingRenderPipeline::Initialize(const RayTracingRenderPipelineParamete
 		(
 			_RenderPipelineAsset->_CommonData._Bindings,
 			shader_stages,
-			&_RenderDataTableLayout
+			&_RenderDataTableLayout,
+			&_StorageBufferIncludes
 		);
 
 		//Create the render data tables.
@@ -317,6 +318,18 @@ void RayTracingRenderPipeline::Execute() NOEXCEPT
 	if (_UsesRenderDataTable)
 	{
 		RenderDataTableHandle &current_render_data_table{ _RenderDataTables[RenderingSystem::Instance->GetCurrentFramebufferIndex()] };
+
+		//Storage buffers might be re-created to grow/shrink capacity, so re-bind them.
+		for (const Pair<HashString, uint32> &storage_buffer_include : _StorageBufferIncludes)
+		{
+			RenderingSystem::Instance->BindStorageBufferToRenderDataTable
+			(
+				storage_buffer_include._Second,
+				0,
+				&current_render_data_table,
+				RenderingSystem::Instance->GetBufferManager()->GetStorageBuffer(storage_buffer_include._First, RenderingSystem::Instance->GetCurrentFramebufferIndex())
+			);
+		}
 
 		command_buffer->BindRenderDataTable(this, 1, current_render_data_table);
 	}

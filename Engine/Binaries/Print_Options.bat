@@ -1,3 +1,0 @@
-glslangValidator.exe
-
-pause

@@ -252,7 +252,7 @@ void IrradianceRenderPass::Execute() NOEXCEPT
 			{
 				for (uint64 i{ 0 }, size{ _DiffuseIrradianceTemporalDenoisingPipelines.Size() }; i < size; ++i)
 				{
-					if (i == _CurrentTemporalBufferIndex)
+					if (i == _CurrentDiffuseIrradianceTemporalBufferIndex)
 					{
 						_DiffuseIrradianceTemporalDenoisingPipelines[i].Execute();
 					}
@@ -264,7 +264,7 @@ void IrradianceRenderPass::Execute() NOEXCEPT
 				}
 
 				//Update the current buffer index.
-				_CurrentTemporalBufferIndex = _CurrentTemporalBufferIndex == _DiffuseIrradianceTemporalDenoisingPipelines.Size() - 1 ? 0 : _CurrentTemporalBufferIndex + 1;
+				_CurrentDiffuseIrradianceTemporalBufferIndex = _CurrentDiffuseIrradianceTemporalBufferIndex == _DiffuseIrradianceTemporalDenoisingPipelines.Size() - 1 ? 0 : _CurrentDiffuseIrradianceTemporalBufferIndex + 1;
 
 				_PassthroughPipeline.Execute();
 			}

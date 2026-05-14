@@ -21,12 +21,6 @@ ToneMappingRenderPass::ToneMappingRenderPass() NOEXCEPT
 		ToneMappingRenderPass::Instance->Initialize();
 	});
 
-	//Set the pre-record function.
-	SetPreRecordFunction([](CommandBuffer* const RESTRICT command_buffer)
-	{
-		ToneMappingRenderPass::Instance->PreRecord(command_buffer);
-	});
-
 	//Set the execution function.
 	SetExecutionFunction([]()
 	{
@@ -49,25 +43,22 @@ void ToneMappingRenderPass::Initialize() NOEXCEPT
 	ResetRenderPass();
 
 	//Add the pipelines.
-	SetNumberOfPipelines(1);
+	SetNumberOfPipelines(2);
+	AddPipeline(&_CopyPipeline);
 	AddPipeline(&_ToneMappingPipeline);
 
 	//Initialize all pipelines.
-	_ToneMappingPipeline.Initialize();
-}
+	{
+		GraphicsRenderPipelineInitializeParameters parameters;
 
-/*
-*	Pre-record.
-*/
-void ToneMappingRenderPass::PreRecord(CommandBuffer *const RESTRICT command_buffer) NOEXCEPT
-{
-	//Blit the scene.
-	command_buffer->BlitImage
-	(
-		nullptr,
-		RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE),
-		RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::PREVIOUS_SCENE)
-	);
+		parameters._InputRenderTargets.Emplace(HashString("InputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::SCENE));
+		parameters._OutputRenderTargets.Emplace(HashString("OutputRenderTarget"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(SharedRenderTarget::PREVIOUS_SCENE));
+		parameters._RenderResolution = RenderingSystem::Instance->GetScaledResolution(0);
+
+		_CopyPipeline.Initialize(parameters);
+	}
+
+	_ToneMappingPipeline.Initialize();
 }
 
 /*
@@ -76,6 +67,7 @@ void ToneMappingRenderPass::PreRecord(CommandBuffer *const RESTRICT command_buff
 void ToneMappingRenderPass::Execute() NOEXCEPT
 {
 	//Execute all pipelines.
+	_CopyPipeline.Execute();
 	_ToneMappingPipeline.Execute();
 }
 
@@ -85,5 +77,6 @@ void ToneMappingRenderPass::Execute() NOEXCEPT
 void ToneMappingRenderPass::Terminate() NOEXCEPT
 {
 	//Terminate all pipelines.
+	_CopyPipeline.Terminate();
 	_ToneMappingPipeline.Terminate();
 }

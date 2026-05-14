@@ -67,6 +67,11 @@ public:
 	*/
 	RESTRICTED VulkanQueue *const RESTRICT GetQueue(const QueueType queueType) NOEXCEPT { return _Queues[UNDERLYING(queueType)]; }
 
+	/*
+	*	Waits for this device to become idle.
+	*/
+	void WaitIdle() const NOEXCEPT;
+
 private:
 
 	//The underlying Vulkan logical device.

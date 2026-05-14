@@ -67,6 +67,11 @@ public:
 	NO_DISCARD uint8 GetCurrentFramebufferIndex() const NOEXCEPT override;
 
 	/*
+	*	Returns the current swapchain index.
+	*/
+	NO_DISCARD uint8 GetCurrentSwapchainIndex() const NOEXCEPT override;
+
+	/*
 	*	Returns the current surface transform.
 	*/
 	NO_DISCARD SurfaceTransform GetCurrentSurfaceTransform() const NOEXCEPT override;
@@ -306,5 +311,13 @@ public:
 	*	Ends a frame.
 	*/
 	void EndFrame(const CommandBuffer *const RESTRICT frame_command_buffer) NOEXCEPT override;
+
+private:
+
+	//Denotes whether or not we have rendered the first frame.
+	bool _HasRenderedFirstFrame{ false };
+
+	//The current frame index.
+	uint32 _CurrentFrameIndex{ 0 };
 
 };

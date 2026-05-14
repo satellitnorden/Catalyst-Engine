@@ -52,10 +52,12 @@ void VulkanLogicalDevice::Initialize() NOEXCEPT
 
 		extensions.Emplace(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
 
+#if 0
 		if (VulkanInterface::Instance->GetPhysicalDevice().HasMultiviewSupport())
 		{
 			extensions.Emplace(VK_KHR_MULTIVIEW_EXTENSION_NAME);
 		}
+#endif
 
 		if (VulkanInterface::Instance->GetPhysicalDevice().HasRayTracingSupport())
 		{
@@ -139,17 +141,7 @@ void VulkanLogicalDevice::CreatePhysicalDeviceFeatures(VkPhysicalDeviceFeatures 
 	physicalDeviceFeatures.fullDrawIndexUint32 = VK_FALSE;
 	physicalDeviceFeatures.imageCubeArray = VK_FALSE;
 	physicalDeviceFeatures.independentBlend = VK_FALSE;
-
-	if (VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceFeatures().geometryShader == VK_TRUE)
-	{
-		physicalDeviceFeatures.geometryShader = VK_TRUE;
-	}
-
-	else
-	{
-		physicalDeviceFeatures.geometryShader = VK_FALSE;
-	}
-
+	physicalDeviceFeatures.geometryShader = VK_FALSE;
 	physicalDeviceFeatures.tessellationShader = VK_FALSE;
 	physicalDeviceFeatures.sampleRateShading = VK_FALSE;
 	physicalDeviceFeatures.dualSrcBlend = VK_FALSE;
@@ -158,23 +150,13 @@ void VulkanLogicalDevice::CreatePhysicalDeviceFeatures(VkPhysicalDeviceFeatures 
 	physicalDeviceFeatures.drawIndirectFirstInstance = VK_FALSE;
 	physicalDeviceFeatures.depthClamp = VK_FALSE;
 	physicalDeviceFeatures.depthBiasClamp = VK_FALSE;
-	physicalDeviceFeatures.fillModeNonSolid = VK_FALSE;
+	physicalDeviceFeatures.fillModeNonSolid = VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceFeatures().fillModeNonSolid;
 	physicalDeviceFeatures.depthBounds = VK_FALSE;
 	physicalDeviceFeatures.wideLines = VK_FALSE;
 	physicalDeviceFeatures.largePoints = VK_FALSE;
 	physicalDeviceFeatures.alphaToOne = VK_FALSE;
 	physicalDeviceFeatures.multiViewport = VK_FALSE;
-
-	if (VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceFeatures().samplerAnisotropy == VK_TRUE)
-	{
-		physicalDeviceFeatures.samplerAnisotropy = VK_TRUE;
-	}
-	
-	else
-	{
-		physicalDeviceFeatures.samplerAnisotropy = VK_FALSE;
-	}
-
+	physicalDeviceFeatures.samplerAnisotropy = VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceFeatures().samplerAnisotropy;
 	physicalDeviceFeatures.textureCompressionETC2 = VK_FALSE;
 	physicalDeviceFeatures.textureCompressionASTC_LDR = VK_FALSE;
 	physicalDeviceFeatures.textureCompressionBC = VK_FALSE;
@@ -237,33 +219,11 @@ void VulkanLogicalDevice::CreatePhysicalDeviceFeatures(VkPhysicalDeviceFeatures 
 */
 void VulkanLogicalDevice::CreateDeviceCreateInfo(VkDeviceCreateInfo &deviceCreateInfo, const DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos, const DynamicArray<const char *const RESTRICT> &requiredExtensions, const VkPhysicalDeviceFeatures *RESTRICT enabledFeatures) const NOEXCEPT
 {
-	static VkPhysicalDeviceDescriptorIndexingFeaturesEXT extension;
+	static VkPhysicalDeviceDescriptorIndexingFeaturesEXT PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
+	static VkPhysicalDeviceVulkan13Features VULKAN_1_3_FEATURES;
 
-	extension.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT;
-	extension.pNext = nullptr;
-	extension.shaderInputAttachmentArrayDynamicIndexing = VK_FALSE;
-	extension.shaderUniformTexelBufferArrayDynamicIndexing = VK_FALSE;
-	extension.shaderStorageTexelBufferArrayDynamicIndexing = VK_FALSE;
-	extension.shaderUniformBufferArrayNonUniformIndexing = VK_FALSE;
-	extension.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
-	extension.shaderStorageBufferArrayNonUniformIndexing = VK_FALSE;
-	extension.shaderStorageImageArrayNonUniformIndexing = VK_FALSE;
-	extension.shaderInputAttachmentArrayNonUniformIndexing = VK_FALSE;
-	extension.shaderUniformTexelBufferArrayNonUniformIndexing = VK_FALSE;
-	extension.shaderStorageTexelBufferArrayNonUniformIndexing = VK_FALSE;
-	extension.descriptorBindingUniformBufferUpdateAfterBind = VK_FALSE;
-	extension.descriptorBindingSampledImageUpdateAfterBind = VK_FALSE;
-	extension.descriptorBindingStorageImageUpdateAfterBind = VK_FALSE;
-	extension.descriptorBindingStorageBufferUpdateAfterBind = VK_FALSE;
-	extension.descriptorBindingUniformTexelBufferUpdateAfterBind = VK_FALSE;
-	extension.descriptorBindingStorageTexelBufferUpdateAfterBind = VK_FALSE;
-	extension.descriptorBindingPartiallyBound = VK_FALSE;
-	extension.descriptorBindingVariableDescriptorCount = VK_FALSE;
-	extension.runtimeDescriptorArray = VK_TRUE;
-
-	//Define the required extensions.
 	deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-	deviceCreateInfo.pNext = &extension;
+	deviceCreateInfo.pNext = &PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
 	deviceCreateInfo.flags = 0;
 	deviceCreateInfo.queueCreateInfoCount = static_cast<uint32>(deviceQueueCreateInfos.Size());
 	deviceCreateInfo.pQueueCreateInfos = deviceQueueCreateInfos.Data();
@@ -272,6 +232,35 @@ void VulkanLogicalDevice::CreateDeviceCreateInfo(VkDeviceCreateInfo &deviceCreat
 	deviceCreateInfo.enabledExtensionCount = static_cast<uint32>(requiredExtensions.Size());
 	deviceCreateInfo.ppEnabledExtensionNames = (const char *const *) requiredExtensions.Data();
 	deviceCreateInfo.pEnabledFeatures = enabledFeatures;
+
+	PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES = { };
+
+	PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT;
+	PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES.pNext = &VULKAN_1_3_FEATURES;
+	PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES.shaderInputAttachmentArrayDynamicIndexing = VK_FALSE;
+	PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES.shaderUniformTexelBufferArrayDynamicIndexing = VK_FALSE;
+	PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES.shaderStorageTexelBufferArrayDynamicIndexing = VK_FALSE;
+	PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES.shaderUniformBufferArrayNonUniformIndexing = VK_FALSE;
+	PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
+	PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES.shaderStorageBufferArrayNonUniformIndexing = VK_FALSE;
+	PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES.shaderStorageImageArrayNonUniformIndexing = VK_FALSE;
+	PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES.shaderInputAttachmentArrayNonUniformIndexing = VK_FALSE;
+	PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES.shaderUniformTexelBufferArrayNonUniformIndexing = VK_FALSE;
+	PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES.shaderStorageTexelBufferArrayNonUniformIndexing = VK_FALSE;
+	PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES.descriptorBindingUniformBufferUpdateAfterBind = VK_FALSE;
+	PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES.descriptorBindingSampledImageUpdateAfterBind = VK_FALSE;
+	PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES.descriptorBindingStorageImageUpdateAfterBind = VK_FALSE;
+	PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES.descriptorBindingStorageBufferUpdateAfterBind = VK_FALSE;
+	PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES.descriptorBindingUniformTexelBufferUpdateAfterBind = VK_FALSE;
+	PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES.descriptorBindingStorageTexelBufferUpdateAfterBind = VK_FALSE;
+	PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES.descriptorBindingPartiallyBound = VK_FALSE;
+	PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES.descriptorBindingVariableDescriptorCount = VK_FALSE;
+	PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES.runtimeDescriptorArray = VK_TRUE;
+
+	VULKAN_1_3_FEATURES = { };
+
+	VULKAN_1_3_FEATURES.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
+	VULKAN_1_3_FEATURES.shaderDemoteToHelperInvocation = VK_TRUE;
 }
 
 /*
@@ -521,5 +510,13 @@ void VulkanLogicalDevice::ReleaseQueues() NOEXCEPT
 	{
 		Memory::Free(_Queues[UNDERLYING(QueueType::ASYNC_TRANSFER)]);
 	}
+}
+
+/*
+*	Waits for this device to become idle.
+*/
+void VulkanLogicalDevice::WaitIdle() const NOEXCEPT
+{
+	VULKAN_ERROR_CHECK(vkDeviceWaitIdle(_VulkanLogicalDevice));
 }
 #endif

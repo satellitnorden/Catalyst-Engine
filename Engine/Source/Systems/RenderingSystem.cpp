@@ -883,6 +883,14 @@ NO_DISCARD uint8 RenderingSystem::GetCurrentFramebufferIndex() const NOEXCEPT
 }
 
 /*
+*	Returns the current swapchain index.
+*/
+NO_DISCARD uint8 RenderingSystem::GetCurrentSwapchainIndex() const NOEXCEPT
+{
+	return _SubRenderingSystem->GetCurrentSwapchainIndex();
+}
+
+/*
 *	Returns the current surface transform.
 */
 NO_DISCARD SurfaceTransform RenderingSystem::GetCurrentSurfaceTransform() const NOEXCEPT

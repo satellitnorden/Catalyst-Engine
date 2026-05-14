@@ -31,6 +31,9 @@ private:
 	//The scene render target.
 	RenderTargetHandle _SceneRenderTarget;
 
+	//The copy render pipeline.
+	GraphicsRenderPipeline _CopyRenderPipeline{ HashString("Copy") };
+
 	//The water render pipeline.
 	GraphicsRenderPipeline _WaterRenderPipeline{ HashString("Water") };
 
@@ -38,11 +41,6 @@ private:
 	*	Initializes this render pass.
 	*/
 	void Initialize() NOEXCEPT;
-
-	/*
-	*	Pre-record.
-	*/
-	void PreRecord(CommandBuffer *const RESTRICT command_buffer) NOEXCEPT;
 
 	/*
 	*	Executes this render pass.

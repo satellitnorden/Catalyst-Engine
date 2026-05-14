@@ -5,7 +5,7 @@
 #include <Systems/LogSystem.h>
 
 //Third party.
-#include <ThirdParty/vulkan/shaderc/shaderc.h>
+#include <vulkan/shaderc/shaderc.h>
 
 /*
 *	Compiles a GLSL shader of the given shader stage with the given lines.
@@ -127,6 +127,12 @@ NO_DISCARD bool GLSLCompilation::Compile(const CompileParameters &parameters) NO
 #else
 	shaderc_compile_options_set_optimization_level(options, shaderc_optimization_level::shaderc_optimization_level_performance);
 #endif
+
+	//Set the target environment.
+	shaderc_compile_options_set_target_env(options, shaderc_target_env::shaderc_target_env_vulkan, shaderc_env_version::shaderc_env_version_vulkan_1_4);
+
+	//Set warnings as errors.
+	shaderc_compile_options_set_warnings_as_errors(options);
 
 	//Compile!
 	shaderc_compilation_result_t result{ shaderc_compile_into_spv(compiler, shader_source.Data(), shader_source.Size(), shader_kind, parameters._InputFilePath, "main", options) };

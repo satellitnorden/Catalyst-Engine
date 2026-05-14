@@ -71,4 +71,7 @@ private:
 	//The compute render targets.
 	DynamicArray<RenderTargetHandle> _ComputeRenderTargets;
 
+	//The storage buffer includes.
+	DynamicArray<Pair<HashString, uint32>> _StorageBufferIncludes;
+
 };

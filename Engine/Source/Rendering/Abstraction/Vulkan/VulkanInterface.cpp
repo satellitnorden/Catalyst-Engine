@@ -920,7 +920,7 @@ void VulkanInterface::CreateVulkanMemoryAllocator() NOEXCEPT
 #endif
 
 #if defined(CATALYST_PLATFORM_WINDOWS)
-	info.vulkanApiVersion = VK_API_VERSION_1_1;
+	info.vulkanApiVersion = VK_API_VERSION_1_4;
 #endif
 
 	info.pTypeExternalMemoryHandleTypes = nullptr;

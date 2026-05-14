@@ -70,8 +70,8 @@ Fragment
     //Calculate the color.
     vec3 color = vec3(0.0f, 0.0f, 0.0f);
     
-    float inner_color_weight = float(editor_metadata._PixelIsSelected && any_neighboring_pixel_not_selected);
-    float outer_color_weight = float(!editor_metadata._PixelIsSelected && any_neighboring_pixel_selected);
+    float inner_color_weight = (editor_metadata._PixelIsSelected && any_neighboring_pixel_not_selected) ? 1.0f : 0.0f;
+    float outer_color_weight = (!editor_metadata._PixelIsSelected && any_neighboring_pixel_selected) ? 1.0f : 0.0f;
 
     color += vec3(1.0f, 1.0f, 1.0f) * 4.0f * inner_color_weight;
 

@@ -1,0 +1,34 @@
+//Declare input render targets.
+InputRenderTarget(InputRenderTarget /* Identifier */, NEAREST /* Magnification Filter */, NEAREST /* Mipmap Mode */, CLAMP_TO_EDGE /* Address Mode */);
+
+//Declare output render targets.
+OutputRenderTarget(OutputRenderTarget);
+
+//Declare render resolution.
+RenderResolution(MAIN_FULL);
+
+//Set the load/store operators.
+ColorLoadOperator(DONT_CARE);
+ColorStoreOperator(STORE);
+
+//Set the topology.
+Topology(TRIANGLE_FAN);
+
+//Subscribe to input streams.
+SubscribeToInputStream(Viewport);
+
+//The vertex shader.
+IncludeCommonVertexShader(ViewportScreenCoordinate);
+
+//The fragment shader.
+Fragment
+{
+    //Declare input parameters.
+    InputParameter(vec2, InTextureCoordinate);
+
+    //Sample the input texture.
+    vec4 input_texture_sample = texture(InputRenderTarget, InTextureCoordinate);
+
+    //Write the fragment.
+    OutputFragment(OutputRenderTarget, input_texture_sample);
+}

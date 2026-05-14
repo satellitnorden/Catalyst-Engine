@@ -92,6 +92,11 @@ public:
 	virtual NO_DISCARD uint8 GetCurrentFramebufferIndex() const NOEXCEPT = 0;
 
 	/*
+	*	Returns the current swapchain index.
+	*/
+	virtual NO_DISCARD uint8 GetCurrentSwapchainIndex() const NOEXCEPT = 0;
+
+	/*
 	*	Returns the current surface transform.
 	*/
 	virtual NO_DISCARD SurfaceTransform GetCurrentSurfaceTransform() const NOEXCEPT = 0;

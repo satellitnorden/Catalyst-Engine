@@ -41,7 +41,7 @@ void CommandBuffer::Begin(const Pipeline *const RESTRICT pipeline) NOEXCEPT
 			const VulkanGraphicsPipelineData *const RESTRICT pipeline_data{ static_cast<const VulkanGraphicsPipelineData *const RESTRICT>(static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->GetData()) };
 
 			//Begin the command buffer.
-			reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipeline_data->_RenderPass->Get(), 0, static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->IsRenderingDirectlyToScreen() ? pipeline_data->_FrameBuffers[RenderingSystem::Instance->GetCurrentFramebufferIndex()]->Get() : pipeline_data->_FrameBuffers[0]->Get());
+			reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipeline_data->_RenderPass->Get(), 0, static_cast<const GraphicsPipeline *const RESTRICT>(pipeline)->IsRenderingDirectlyToScreen() ? pipeline_data->_FrameBuffers[RenderingSystem::Instance->GetCurrentSwapchainIndex()]->Get() : pipeline_data->_FrameBuffers[0]->Get());
 		}
 
 		else if (pipeline->GetType() == Pipeline::Type::RAY_TRACING)
@@ -146,14 +146,17 @@ void CommandBuffer::BindVertexBuffer(const Pipeline *const RESTRICT pipeline, co
 */
 void CommandBuffer::BlitImage(const Pipeline *const RESTRICT pipeline, const OpaqueHandle source, const OpaqueHandle target) NOEXCEPT
 {
-	VulkanImage *const RESTRICT source_image{ static_cast<VulkanImage* const RESTRICT>(source) };
-	VulkanImage *const RESTRICT target_image{ static_cast<VulkanImage* const RESTRICT>(target) };
+	//Cache the images.
+	VulkanImage *const RESTRICT source_image{ static_cast<VulkanImage *const RESTRICT>(source) };
+	VulkanImage *const RESTRICT target_image{ static_cast<VulkanImage *const RESTRICT>(target) };
 
+	//Do some sanity checking.
 	ASSERT(source_image->GetExtent().width == target_image->GetExtent().width, "Mismatching width!");
 	ASSERT(source_image->GetExtent().height == target_image->GetExtent().height, "Mismatching height!");
 	ASSERT(source_image->GetExtent().depth == target_image->GetExtent().depth, "Mismatching depth!");
 
-	static_cast<VulkanCommandBuffer* const RESTRICT>(_CommandBufferData)->CommandBlitImage(source_image->GetImage(), target_image->GetImage(), VkExtent2D(source_image->GetExtent().width, source_image->GetExtent().height));
+	//Perform the blit.
+	static_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandBlitImage(source_image->GetImage(), target_image->GetImage(), VkExtent2D(source_image->GetExtent().width, source_image->GetExtent().height));
 }
 
 /*
@@ -170,7 +173,7 @@ void CommandBuffer::ClearDepthStencilImage(const OpaqueHandle image) NOEXCEPT
 
 		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 		barrier.pNext = nullptr;
-		barrier.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+		barrier.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 		barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 
 		barrier.oldLayout = _image->GetImageLayout();
@@ -189,7 +192,7 @@ void CommandBuffer::ClearDepthStencilImage(const OpaqueHandle image) NOEXCEPT
 		vkCmdPipelineBarrier
 		(
 			command_buffer,
-			VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
+			VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
 			VK_PIPELINE_STAGE_TRANSFER_BIT,
 			0,
 			0,
@@ -234,7 +237,7 @@ void CommandBuffer::ClearDepthStencilImage(const OpaqueHandle image) NOEXCEPT
 		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 		barrier.pNext = nullptr;
 		barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-		barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+		barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
 		barrier.oldLayout = VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 		barrier.newLayout = _image->GetImageLayout();
@@ -253,7 +256,7 @@ void CommandBuffer::ClearDepthStencilImage(const OpaqueHandle image) NOEXCEPT
 		(
 			command_buffer,
 			VK_PIPELINE_STAGE_TRANSFER_BIT,
-			VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+			VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
 			0,
 			0,
 			nullptr,
@@ -279,7 +282,7 @@ void CommandBuffer::ClearColorImage(const OpaqueHandle image) NOEXCEPT
 
 		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 		barrier.pNext = nullptr;
-		barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+		barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 		barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 
 		barrier.oldLayout = _image->GetImageLayout();
@@ -341,7 +344,7 @@ void CommandBuffer::ClearColorImage(const OpaqueHandle image) NOEXCEPT
 		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 		barrier.pNext = nullptr;
 		barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-		barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+		barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
 		barrier.oldLayout = VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 		barrier.newLayout = _image->GetImageLayout();
@@ -384,7 +387,7 @@ void CommandBuffer::ClearColorImage(const OpaqueHandle image) NOEXCEPT
 
 				barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 				barrier.pNext = nullptr;
-				barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+				barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 				barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 
 				barrier.oldLayout = VkImageLayout::VK_IMAGE_LAYOUT_GENERAL;
@@ -446,7 +449,7 @@ void CommandBuffer::ClearColorImage(const OpaqueHandle image) NOEXCEPT
 				barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 				barrier.pNext = nullptr;
 				barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-				barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+				barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
 				barrier.oldLayout = VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 				barrier.newLayout = VkImageLayout::VK_IMAGE_LAYOUT_GENERAL;
@@ -549,7 +552,7 @@ void CommandBuffer::ExecuteCommands(const Pipeline *const RESTRICT pipeline, con
 			clear_color,
 			depth_value,
 			pipeline_data->_RenderPass->Get(),
-			pipeline_data->_FrameBuffers[pipeline_data->_RenderToScreeen ? RenderingSystem::Instance->GetCurrentFramebufferIndex() : 0]->Get(),
+			pipeline_data->_FrameBuffers[pipeline_data->_RenderToScreeen ? RenderingSystem::Instance->GetCurrentSwapchainIndex() : 0]->Get(),
 			pipeline_data->_RenderToScreeen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : pipeline_data->_Extent,
 			VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS,
 			pipeline_data->_NumberOfAttachments
@@ -561,7 +564,7 @@ void CommandBuffer::ExecuteCommands(const Pipeline *const RESTRICT pipeline, con
 			reinterpret_cast<VulkanCommandBuffer *const RESTRICT>(_CommandBufferData)->CommandBeginRenderPass
 			(
 			pipeline_data->_RenderPass->Get(),
-			pipeline_data->_FrameBuffers[pipeline_data->_RenderToScreeen ? RenderingSystem::Instance->GetCurrentFramebufferIndex() : 0]->Get(),
+			pipeline_data->_FrameBuffers[pipeline_data->_RenderToScreeen ? RenderingSystem::Instance->GetCurrentSwapchainIndex() : 0]->Get(),
 			pipeline_data->_RenderToScreeen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : pipeline_data->_Extent,
 			VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS
 			);

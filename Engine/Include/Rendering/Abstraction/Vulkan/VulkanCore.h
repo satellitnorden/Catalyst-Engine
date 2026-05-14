@@ -41,7 +41,7 @@
 #endif
 #if defined(CATALYST_PLATFORM_WINDOWS)
 	#include <Platform/Windows/CatalystPlatformWindows.h> //Included here for the undefine stuff.
-	#include <ThirdParty/vulkan/vulkan.h>
+	#include <vulkan/vulkan.h>
 #endif
 
 /*

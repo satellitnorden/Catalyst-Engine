@@ -28,6 +28,9 @@ public:
 
 private:
 
+	//The copy pipeline.
+	GraphicsRenderPipeline _CopyPipeline{ HashString("Copy") };
+
 	//The tone mapping pipeline.
 	GraphicsRenderPipeline _ToneMappingPipeline{ HashString("ToneMapping") };
 
@@ -35,11 +38,6 @@ private:
 	*	Initializes this render pass.
 	*/
 	void Initialize() NOEXCEPT;
-
-	/*
-	*	Pre-record.
-	*/
-	void PreRecord(CommandBuffer *const RESTRICT command_buffer) NOEXCEPT;
 
 	/*
 	*	Executes this render pass.

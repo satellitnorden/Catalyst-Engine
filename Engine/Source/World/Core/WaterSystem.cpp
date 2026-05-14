@@ -38,9 +38,18 @@ void WaterSystem::RenderUpdate() NOEXCEPT
 	Vector2<float32> wind_direction{ WorldSystem::Instance->GetWindSystem()->GetWindDirection()._X , WorldSystem::Instance->GetWindSystem()->GetWindDirection()._Z };
 	wind_direction.Rotate(BaseMathConstants::PI);
 
+	//Calculate the offsets.
+	Vector2<float32> offsets[4];
+
+	offsets[0] = wind_direction * delta_time * BaseMathConstants::QUARTER_PI * SCALE;
+	offsets[1] = wind_direction * delta_time * BaseMathConstants::PHI * SCALE;
+	offsets[2] = wind_direction * delta_time * BaseMathConstants::EULERS_NUMBER * SCALE;
+	offsets[3] = wind_direction * delta_time * (BaseMathConstants::PI + BaseMathConstants::HALF_PI) * SCALE;
+
 	//Update the water uniform data.
-	_WaterUniformData._Offsets[0] += wind_direction * delta_time * BaseMathConstants::QUARTER_PI * SCALE;
-	_WaterUniformData._Offsets[1] += wind_direction * delta_time * BaseMathConstants::PHI * SCALE;
-	_WaterUniformData._Offsets[2] += wind_direction * delta_time * BaseMathConstants::EULERS_NUMBER * SCALE;
-	_WaterUniformData._Offsets[3] += wind_direction * delta_time * (BaseMathConstants::PI + BaseMathConstants::HALF_PI) * SCALE;
+	for (uint8 offset_index{ 0 }; offset_index < 4; ++offset_index)
+	{
+		_WaterUniformData._Offsets[offset_index]._X += offsets[offset_index]._X;
+		_WaterUniformData._Offsets[offset_index]._Y += offsets[offset_index]._Y;
+	}
 }

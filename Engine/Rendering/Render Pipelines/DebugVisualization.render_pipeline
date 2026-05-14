@@ -36,7 +36,7 @@ Fragment
     #define MODE_AMBIENT_OCCLUSION (8)
     #define MODE_EMISSIVE (9)
     #define MODE_DIFFUSE_IRRADIANCE (10)
-    #define MODE_SPECULAR_IRRADIANCE (12)
+    #define MODE_SPECULAR_IRRADIANCE (11)
 
     //Declare input parameters.
     InputParameter(vec2, InScreenCoordinate);

@@ -177,7 +177,17 @@ void VulkanGraphicsPipeline::CreatePipelineRasterizationStateCreateInfo(VkPipeli
 	pipelineRasterizationStateCreateInfo.flags = 0;
 	pipelineRasterizationStateCreateInfo.depthClampEnable = VK_FALSE;
 	pipelineRasterizationStateCreateInfo.rasterizerDiscardEnable = VK_FALSE;
-	pipelineRasterizationStateCreateInfo.polygonMode = vulkanPipelineCreationParameters._PolygonMode;
+
+	if (vulkanPipelineCreationParameters._PolygonMode != VkPolygonMode::VK_POLYGON_MODE_FILL && !VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceFeatures().fillModeNonSolid)
+	{
+		pipelineRasterizationStateCreateInfo.polygonMode = VkPolygonMode::VK_POLYGON_MODE_FILL;
+	}
+
+	else
+	{
+		pipelineRasterizationStateCreateInfo.polygonMode = vulkanPipelineCreationParameters._PolygonMode;
+	}
+
 	pipelineRasterizationStateCreateInfo.cullMode = vulkanPipelineCreationParameters._CullMode;
 	pipelineRasterizationStateCreateInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;
 	pipelineRasterizationStateCreateInfo.depthBiasEnable = VK_FALSE;

@@ -20,7 +20,13 @@
 //Define the validation layers.
 namespace
 {
+#define CRASH_DIAGNOSTIC (0)
+
+#if CRASH_DIAGNOSTIC
+	constexpr StaticArray<const char *const RESTRICT, 2> WANTED_VALIDATION_LAYERS{ "VK_LAYER_KHRONOS_validation", "VK_LAYER_LUNARG_crash_diagnostic" };
+#else
 	constexpr StaticArray<const char *const RESTRICT, 1> WANTED_VALIDATION_LAYERS{ "VK_LAYER_KHRONOS_validation" };
+#endif
 	DynamicArray<const char *const RESTRICT> ENABLED_VALIDATION_LAYERS;
 }
 #endif
@@ -82,7 +88,7 @@ void VulkanInstance::CreateApplicationInfo(VkApplicationInfo &applicationInfo) c
 #endif
 
 #if defined(CATALYST_PLATFORM_WINDOWS)
-	applicationInfo.apiVersion = VK_API_VERSION_1_1;
+	applicationInfo.apiVersion = VK_API_VERSION_1_4;
 #endif
 }
 
@@ -91,8 +97,16 @@ void VulkanInstance::CreateApplicationInfo(VkApplicationInfo &applicationInfo) c
 */
 void VulkanInstance::CreateInstanceCreateInfo(VkInstanceCreateInfo &createInstanceInfo, const VkApplicationInfo &applicationInfo) const NOEXCEPT
 {
+#if VULKAN_DEBUGGING
+	static VkValidationFeaturesEXT VALIDATION_FEATURES_EXTENSION;
+#endif
+
 	createInstanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+#if VULKAN_DEBUGGING
+	createInstanceInfo.pNext = &VALIDATION_FEATURES_EXTENSION;
+#else
 	createInstanceInfo.pNext = nullptr;
+#endif
 	createInstanceInfo.flags = 0;
 	createInstanceInfo.pApplicationInfo = &applicationInfo;
 
@@ -136,5 +150,21 @@ void VulkanInstance::CreateInstanceCreateInfo(VkInstanceCreateInfo &createInstan
 
 	createInstanceInfo.enabledExtensionCount = static_cast<uint32>(extensions.Size());
 	createInstanceInfo.ppEnabledExtensionNames = (const char *const *) extensions.Data();
+
+#if VULKAN_DEBUGGING
+	static VkValidationFeatureEnableEXT VALIDATION_FEATURES_ENABLED[]
+	{
+		VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_EXT,
+		VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_RESERVE_BINDING_SLOT_EXT,
+		VK_VALIDATION_FEATURE_ENABLE_BEST_PRACTICES_EXT,
+		VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT
+	};
+
+	VALIDATION_FEATURES_EXTENSION = { };
+	VALIDATION_FEATURES_EXTENSION.sType = VkStructureType::VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT;
+	VALIDATION_FEATURES_EXTENSION.pNext = nullptr;
+	VALIDATION_FEATURES_EXTENSION.enabledValidationFeatureCount = ARRAY_LENGTH(VALIDATION_FEATURES_ENABLED);
+	VALIDATION_FEATURES_EXTENSION.pEnabledValidationFeatures = VALIDATION_FEATURES_ENABLED;
+#endif
 }
 #endif

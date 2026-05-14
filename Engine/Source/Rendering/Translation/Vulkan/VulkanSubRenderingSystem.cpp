@@ -1025,6 +1025,14 @@ uint8 VulkanSubRenderingSystem::GetNumberOfFramebuffers() const NOEXCEPT
 */
 uint8 VulkanSubRenderingSystem::GetCurrentFramebufferIndex() const NOEXCEPT
 {
+	return _CurrentFrameIndex;
+}
+
+/*
+*	Returns the current swapchain index.
+*/
+NO_DISCARD uint8 VulkanSubRenderingSystem::GetCurrentSwapchainIndex() const NOEXCEPT
+{
 	return VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex();
 }
 
@@ -2095,25 +2103,24 @@ void VulkanSubRenderingSystem::TakeImmediateScreenshot(const char *const RESTRIC
 */
 void VulkanSubRenderingSystem::BeginFrame() NOEXCEPT
 {
+	//Update the current frame index.
+	if (_HasRenderedFirstFrame)
+	{
+		_CurrentFrameIndex = (_CurrentFrameIndex + 1) % GetNumberOfFramebuffers();
+	}
+
+	//Set the current frame index.
+	{
+		PROFILING_SCOPE("VulkanSubRenderingSystem_SetCurrentFrameIndex");
+
+		VulkanSubRenderingSystemData::_FrameData.SetCurrentFrameIndex(_CurrentFrameIndex);
+	}
+
 	//Begin the frame for the platform.
 	{
 		PROFILING_SCOPE("VulkanSubRenderingSystem_BeginFrame");
 
 		VulkanPlatform::BeginFrame();
-	}
-
-	//Pre-update the Vulkan interface.
-	{
-		PROFILING_SCOPE("VulkanSubRenderingSystem_VulkanInterface_PreUpdate");
-
-		VulkanInterface::Instance->PreUpdate(VulkanSubRenderingSystemData::_FrameData.GetImageAvailableSemaphore());
-	}
-
-	//Set the current frame.
-	{
-		PROFILING_SCOPE("VulkanSubRenderingSystem_SetCurrentFrame");
-
-		VulkanSubRenderingSystemData::_FrameData.SetCurrentFrame(VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex());
 	}
 
 	//Wait for the current fence to finish.
@@ -2128,6 +2135,20 @@ void VulkanSubRenderingSystem::BeginFrame() NOEXCEPT
 		PROFILING_SCOPE("VulkanSubRenderingSystem_ResetCurrentFence");
 
 		VulkanSubRenderingSystemData::_FrameData.GetCurrentFence()->Reset();
+	}
+
+	//Pre-update the Vulkan interface.
+	{
+		PROFILING_SCOPE("VulkanSubRenderingSystem_VulkanInterface_PreUpdate");
+
+		VulkanInterface::Instance->PreUpdate(VulkanSubRenderingSystemData::_FrameData.GetImageAvailableSemaphore());
+	}
+
+	//Set the current swapchain index.
+	{
+		PROFILING_SCOPE("VulkanSubRenderingSystem_SetCurrentSwapchainIndex");
+
+		VulkanSubRenderingSystemData::_FrameData.SetCurrentSwapchainIndex(GetCurrentSwapchainIndex());
 	}
 
 	//Process the destruction queue.
@@ -2159,5 +2180,8 @@ void VulkanSubRenderingSystem::EndFrame(const CommandBuffer *const RESTRICT fram
 
 	//Post-update the Vulkan interface.
 	VulkanInterface::Instance->PostUpdate(VulkanSubRenderingSystemData::_FrameData.GetRenderFinishedSemaphore());
+
+	//We have now rendered the first frame.
+	_HasRenderedFirstFrame = true;
 }
 #endif

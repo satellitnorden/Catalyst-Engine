@@ -33,7 +33,7 @@ private:
 	public:
 
 		//The offsets
-		StaticArray<Vector2<float32>, 4> _Offsets;
+		StaticArray<Vector4<float32>, 4> _Offsets;
 
 	};
 

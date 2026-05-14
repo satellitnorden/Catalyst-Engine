@@ -40,7 +40,11 @@ namespace VulkanAccelerationStructureLogic
 		acceleration_structure_memory_requirements_info.accelerationStructure = acceleration_structure;
 		acceleration_structure_memory_requirements_info.type = VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_OBJECT_NV;
 
-		VkMemoryRequirements2 _memory_requirements;
+		VkMemoryRequirements2 _memory_requirements{ };
+
+		_memory_requirements.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2;
+		_memory_requirements.pNext = nullptr;
+
 		vkGetAccelerationStructureMemoryRequirementsNV(VulkanInterface::Instance->GetLogicalDevice().Get(), &acceleration_structure_memory_requirements_info, &_memory_requirements);
 
 		*memory_requirements = _memory_requirements.memoryRequirements;
@@ -59,7 +63,11 @@ namespace VulkanAccelerationStructureLogic
 		acceleration_structure_memory_requirements_info.accelerationStructure = acceleration_structure;
 		acceleration_structure_memory_requirements_info.type = VK_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_TYPE_BUILD_SCRATCH_NV;
 
-		VkMemoryRequirements2 _memory_requirements;
+		VkMemoryRequirements2 _memory_requirements{ };
+
+		_memory_requirements.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2;
+		_memory_requirements.pNext = nullptr;
+
 		vkGetAccelerationStructureMemoryRequirementsNV(VulkanInterface::Instance->GetLogicalDevice().Get(), &acceleration_structure_memory_requirements_info, &_memory_requirements);
 
 		*memory_requirements = _memory_requirements.memoryRequirements;
