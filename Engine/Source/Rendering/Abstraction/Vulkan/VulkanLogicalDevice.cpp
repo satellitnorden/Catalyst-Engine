@@ -163,17 +163,7 @@ void VulkanLogicalDevice::CreatePhysicalDeviceFeatures(VkPhysicalDeviceFeatures 
 	physicalDeviceFeatures.occlusionQueryPrecise = VK_FALSE;
 	physicalDeviceFeatures.pipelineStatisticsQuery = VK_FALSE;
 	physicalDeviceFeatures.vertexPipelineStoresAndAtomics = VK_FALSE;
-
-    if (VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceFeatures().fragmentStoresAndAtomics == VK_TRUE)
-    {
-        physicalDeviceFeatures.fragmentStoresAndAtomics = VK_TRUE;
-    }
-
-    else
-    {
-        physicalDeviceFeatures.fragmentStoresAndAtomics = VK_FALSE;
-    }
-
+	physicalDeviceFeatures.fragmentStoresAndAtomics = VK_FALSE;
 	physicalDeviceFeatures.shaderTessellationAndGeometryPointSize = VK_FALSE;
 	physicalDeviceFeatures.shaderImageGatherExtended = VK_FALSE;
 

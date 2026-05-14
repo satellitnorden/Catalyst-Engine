@@ -21,6 +21,14 @@ class RenderPass
 public:
 
 	/*
+	*	Returns whether or not this render pass is initialized.
+	*/
+	bool IsInitialized() const NOEXCEPT
+	{
+		return _Initialized;
+	}
+
+	/*
 	*	Returns whether or not this render pass is enabled.
 	*/
 	bool IsEnabled() const NOEXCEPT
@@ -91,6 +99,14 @@ protected:
 	*	Resets this render pass.
 	*/
 	void ResetRenderPass() NOEXCEPT;
+
+	/*
+	*	Ses whether or not this render pass is initialized.
+	*/
+	void SetInitialized(const bool initialized) NOEXCEPT
+	{
+		_Initialized = initialized;
+	}
 
 	/*
 	*	Ses whether or not this render pass is enabled.
@@ -167,6 +183,9 @@ protected:
 #endif
 
 private:
+
+	//Denotes whether or not this render pass is initialized.
+	bool _Initialized{ false };
 
 	//Denotes if this render pass is enabled or not.
 	bool _Enabled{ true };

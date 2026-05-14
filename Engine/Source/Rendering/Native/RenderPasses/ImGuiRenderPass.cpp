@@ -95,7 +95,16 @@ void ImGuiRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_ImGuiPipeline);
 
 	//Initialize all pipelines.
-	_ImGuiPipeline.Initialize();
+	{
+		GraphicsRenderPipelineInitializeParameters parameters;
+
+		if (_RenderDirectlyToScreen)
+		{
+			parameters._RenderDirectlyToScreen = _RenderDirectlyToScreen;
+		}
+
+		_ImGuiPipeline.Initialize(parameters);
+	}
 }
 
 /*

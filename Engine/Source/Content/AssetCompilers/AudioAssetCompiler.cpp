@@ -290,4 +290,19 @@ void AudioAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCE
 	data.Upsize<false>(load_data->_Asset->_AudioStream.GetDataSize());
 	load_data->_StreamArchive->Read(data.Data(), load_data->_Asset->_AudioStream.GetDataSize(), &stream_archive_position);
 	load_data->_Asset->_AudioStream.SetDataInternal(std::move(data));
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Update the total CPU/GPU memory.
+	{
+		uint64 cpu_memory{ 0 };
+
+		cpu_memory += sizeof(uint32); //Sample Rate
+		cpu_memory += sizeof(uint8); //Number Of Channels
+		cpu_memory += sizeof(Audio::Format); //Format
+		cpu_memory += sizeof(uint32); //Number Of Samples
+		cpu_memory += load_data->_Asset->_AudioStream.GetDataSize(); //Data
+
+		_TotalCPUMemory.FetchAdd(cpu_memory);
+	}
+#endif
 }

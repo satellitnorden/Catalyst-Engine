@@ -4,6 +4,9 @@
 //Profiling.
 #include <Profiling/Profiling.h>
 
+//Rendering.
+#include <Rendering/Native/RenderPasses/ImGuiRenderPass.h>
+
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #if !defined(CATALYST_CONFIGURATION_FINAL)
@@ -105,7 +108,7 @@ void InputSystem::Update(const UpdatePhase phase) NOEXCEPT
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Let the ImGui system know input is available.
-	if (RenderingSystem::Instance->GetCurrentRenderingPath() != RenderingPath::CUSTOM)
+	if (ImGuiRenderPass::Instance->IsInitialized())
 	{
 		ImGuiSystem::Instance->OnInputAvailable();
 	}

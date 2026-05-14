@@ -29,6 +29,14 @@ public:
 	ImGuiRenderPass() NOEXCEPT;
 
 	/*
+	*	Sets whether or not to render directly to the screen.
+	*/
+	FORCE_INLINE void SetRenderDirectlyToScreen(const bool value) NOEXCEPT
+	{
+		_RenderDirectlyToScreen = value;
+	}
+
+	/*
 	*	Returns the pipeline.
 	*/
 	FORCE_INLINE RESTRICTED NO_DISCARD GraphicsRenderPipeline *const RESTRICT GetPipeline() NOEXCEPT
@@ -37,6 +45,9 @@ public:
 	}
 
 private:
+
+	//Denotes whether or not to render directly to screen.
+	bool _RenderDirectlyToScreen{ false };
 
 	//The ImGui pipeline.
 	GraphicsRenderPipeline _ImGuiPipeline{ HashString("ImGui") };

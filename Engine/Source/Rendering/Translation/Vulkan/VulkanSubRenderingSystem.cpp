@@ -893,7 +893,7 @@ void VulkanSubRenderingSystem::Initialize() NOEXCEPT
 void VulkanSubRenderingSystem::PostInitialize() NOEXCEPT
 {
 #if !defined(CATALYST_CONFIGURATION_FINAL)
-	if (RenderingSystem::Instance->GetCurrentRenderingPath() != RenderingPath::CUSTOM)
+	if (ImGuiRenderPass::Instance->IsInitialized())
 	{
 		//Set up ImGui for Vulkan.
 		{
@@ -940,7 +940,7 @@ void VulkanSubRenderingSystem::Terminate() NOEXCEPT
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Shut down ImGui.
-	if (RenderingSystem::Instance->GetCurrentRenderingPath() != RenderingPath::CUSTOM)
+	if (ImGuiRenderPass::Instance->IsInitialized())
 	{
 		ImGui_ImplVulkan_Shutdown();
 	}

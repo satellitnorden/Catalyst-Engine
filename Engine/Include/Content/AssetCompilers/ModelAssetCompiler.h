@@ -60,7 +60,7 @@ public:
 	/*
 	*	Statistics. Returns if the retrieval succeeded.
 	*/
-	FORCE_INLINE NO_DISCARD bool GetStatistics(Statistics *const RESTRICT statistics) NOEXCEPT
+	FORCE_INLINE NO_DISCARD bool GetStatistics(Statistics *const RESTRICT statistics) NOEXCEPT override
 	{
 		statistics->_AssetTypeName = "Model";
 		statistics->_TotalCPUMemory = _TotalCPUMemory.Load();

@@ -2,6 +2,9 @@
 //Header file.
 #include <Systems/DebugSystem.h>
 
+//Rendering.
+#include <Rendering/Native/RenderPasses/ImGuiRenderPass.h>
+
 //Systems.
 #include <Systems/ImGuiSystem.h>
 #include <Systems/InputSystem.h>
@@ -18,7 +21,7 @@
 */
 void DebugSystem::Update(const UpdatePhase phase) NOEXCEPT
 {
-	if (RenderingSystem::Instance->GetCurrentRenderingPath() == RenderingPath::CUSTOM)
+	if (!ImGuiRenderPass::Instance->IsInitialized())
 	{
 		return;
 	}

@@ -261,4 +261,15 @@ void RawDataAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEX
 	//Read the data.
 	load_data->_Asset->_Data.Upsize<false>(data_size);
 	load_data->_StreamArchive->Read(load_data->_Asset->_Data.Data(), data_size, &stream_archive_position);
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Update the total CPU/GPU memory.
+	{
+		uint64 cpu_memory{ 0 };
+
+		cpu_memory += data_size; //Data
+
+		_TotalCPUMemory.FetchAdd(cpu_memory);
+	}
+#endif
 }
