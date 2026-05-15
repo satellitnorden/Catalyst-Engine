@@ -70,6 +70,15 @@ private:
 	//The screen space specular irradiance data render target
 	RenderTargetHandle _ScreenSpaceSpecularIrradianceDataRenderTarget;
 
+	//The intermediate specular irradiance render target.
+	RenderTargetHandle _IntermediateSpecularIrradianceRenderTarget;
+
+	//The specular irradiance temporal buffers.
+	StaticArray<RenderTargetHandle, 2> _SpecularIrradianceTemporalBuffers;
+
+	//The current specular irradiance temporal buffer index.
+	uint8 _CurrentSpecularIrradianceTemporalBufferIndex{ 0 };
+
 	//The screen space specular irradiance pipeline.
 	GraphicsRenderPipeline _ScreenSpaceSpecularIrradiance{ HashString("ScreenSpaceSpecularIrradiance") };
 
@@ -78,6 +87,13 @@ private:
 
 	//The ray traced specular irradiance pipeline.
 	RayTracingRenderPipeline _RayTracedSpecularIrradiancePipeline{ HashString("RayTracedSpecularIrradiance") };
+
+	//The specular irradiance temporal denoising pipelines.
+	StaticArray<GraphicsRenderPipeline, 2> _SpecularIrradianceTemporalDenoisingPipelines
+	{
+		GraphicsRenderPipeline(HashString("SpecularIrradianceTemporalDenoising")),
+		GraphicsRenderPipeline(HashString("SpecularIrradianceTemporalDenoising"))
+	};
 
 	/*
 	*	Initializes this render pass.

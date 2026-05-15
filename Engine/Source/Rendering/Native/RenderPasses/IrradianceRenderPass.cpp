@@ -114,6 +114,21 @@ void IrradianceRenderPass::Initialize() NOEXCEPT
 	//Create the screen space specular irradiance data render target.
 	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(1), TextureFormat::RG_FLOAT16, SampleCount::SAMPLE_COUNT_1, &_ScreenSpaceSpecularIrradianceDataRenderTarget);
 
+	//Create the intermediate specular irradiance data render target.
+	RenderingSystem::Instance->CreateRenderTarget(RenderingSystem::Instance->GetScaledResolution(0), TextureFormat::RGBA_FLOAT32, SampleCount::SAMPLE_COUNT_1, &_IntermediateSpecularIrradianceRenderTarget);
+
+	//Create the specular irradiance temporal buffers.
+	for (RenderTargetHandle &temporal_buffer : _SpecularIrradianceTemporalBuffers)
+	{
+		RenderingSystem::Instance->CreateRenderTarget
+		(
+			RenderingSystem::Instance->GetScaledResolution(0),
+			TextureFormat::RGBA_FLOAT32,
+			SampleCount::SAMPLE_COUNT_1,
+			&temporal_buffer
+		);
+	}
+
 	//Add the pipelines.
 	SetNumberOfPipelines
 	(
@@ -122,6 +137,7 @@ void IrradianceRenderPass::Initialize() NOEXCEPT
 		+ 1
 		+ _DiffuseIrradianceSpatialDenoisingPipelines.Size()
 		+ 3
+		+ _SpecularIrradianceTemporalDenoisingPipelines.Size()
 	);
 
 	AddPipeline(&_RayTracedDiffuseIrradiancePipeline);
@@ -141,6 +157,11 @@ void IrradianceRenderPass::Initialize() NOEXCEPT
 	AddPipeline(&_ScreenSpaceSpecularIrradiance);
 	AddPipeline(&_ScreenSpaceSpecularIrradianceResolve);
 	AddPipeline(&_RayTracedSpecularIrradiancePipeline);
+
+	for (GraphicsRenderPipeline &pipeline : _SpecularIrradianceTemporalDenoisingPipelines)
+	{
+		AddPipeline(&pipeline);
+	}
 
 	//Initialize all pipelines.
 	_RayTracedDiffuseIrradiancePipeline.Initialize();
@@ -209,11 +230,34 @@ void IrradianceRenderPass::Initialize() NOEXCEPT
 		GraphicsRenderPipelineInitializeParameters parameters;
 
 		parameters._InputRenderTargets.Emplace(HashString("SpecularIrradianceData"), _ScreenSpaceSpecularIrradianceDataRenderTarget);
+		parameters._OutputRenderTargets.Emplace(HashString("SpecularIrradiance"), _IntermediateSpecularIrradianceRenderTarget);
 
 		_ScreenSpaceSpecularIrradianceResolve.Initialize(parameters);
 	}
 
 	_RayTracedSpecularIrradiancePipeline.Initialize();
+
+	{
+		GraphicsRenderPipelineInitializeParameters parameters;
+
+		parameters._InputRenderTargets.Emplace(HashString("PreviousTemporalBuffer"), _SpecularIrradianceTemporalBuffers[0]);
+		parameters._InputRenderTargets.Emplace(HashString("InputSpecularIrradiance"), _IntermediateSpecularIrradianceRenderTarget);
+		parameters._OutputRenderTargets.Emplace(HashString("CurrentTemporalBuffer"), _SpecularIrradianceTemporalBuffers[1]);
+		parameters._OutputRenderTargets.Emplace(HashString("OutputSpecularIrradiance"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(HashString("SpecularIrradiance")));
+
+		_SpecularIrradianceTemporalDenoisingPipelines[0].Initialize(parameters);
+	}
+
+	{
+		GraphicsRenderPipelineInitializeParameters parameters;
+
+		parameters._InputRenderTargets.Emplace(HashString("PreviousTemporalBuffer"), _SpecularIrradianceTemporalBuffers[1]);
+		parameters._InputRenderTargets.Emplace(HashString("InputSpecularIrradiance"), _IntermediateSpecularIrradianceRenderTarget);
+		parameters._OutputRenderTargets.Emplace(HashString("CurrentTemporalBuffer"), _SpecularIrradianceTemporalBuffers[0]);
+		parameters._OutputRenderTargets.Emplace(HashString("OutputSpecularIrradiance"), RenderingSystem::Instance->GetSharedRenderTargetManager()->GetSharedRenderTarget(HashString("SpecularIrradiance")));
+
+		_SpecularIrradianceTemporalDenoisingPipelines[1].Initialize(parameters);
+	}
 }
 
 /*
@@ -325,6 +369,11 @@ void IrradianceRenderPass::Execute() NOEXCEPT
 			_ScreenSpaceSpecularIrradianceResolve.SetIncludeInRender(false);
 			_RayTracedSpecularIrradiancePipeline.SetIncludeInRender(false);
 
+			for (GraphicsRenderPipeline &pipeline : _SpecularIrradianceTemporalDenoisingPipelines)
+			{
+				pipeline.SetIncludeInRender(true);
+			}
+
 			break;
 		}
 
@@ -337,6 +386,22 @@ void IrradianceRenderPass::Execute() NOEXCEPT
 			_ScreenSpaceSpecularIrradianceResolve.Execute();
 
 			_RayTracedSpecularIrradiancePipeline.SetIncludeInRender(false);
+			
+			for (uint64 i{ 0 }, size{ _SpecularIrradianceTemporalDenoisingPipelines.Size() }; i < size; ++i)
+			{
+				if (i == _CurrentSpecularIrradianceTemporalBufferIndex)
+				{
+					_SpecularIrradianceTemporalDenoisingPipelines[i].Execute();
+				}
+
+				else
+				{
+					_SpecularIrradianceTemporalDenoisingPipelines[i].SetIncludeInRender(false);
+				}
+			}
+
+			//Update the current buffer index.
+			_CurrentSpecularIrradianceTemporalBufferIndex = _CurrentSpecularIrradianceTemporalBufferIndex == _SpecularIrradianceTemporalDenoisingPipelines.Size() - 1 ? 0 : _CurrentSpecularIrradianceTemporalBufferIndex + 1;
 
 			break;
 		}
@@ -347,6 +412,22 @@ void IrradianceRenderPass::Execute() NOEXCEPT
 			_ScreenSpaceSpecularIrradianceResolve.SetIncludeInRender(false);
 
 			_RayTracedSpecularIrradiancePipeline.Execute();
+
+			for (uint64 i{ 0 }, size{ _SpecularIrradianceTemporalDenoisingPipelines.Size() }; i < size; ++i)
+			{
+				if (i == _CurrentSpecularIrradianceTemporalBufferIndex)
+				{
+					_SpecularIrradianceTemporalDenoisingPipelines[i].Execute();
+				}
+
+				else
+				{
+					_SpecularIrradianceTemporalDenoisingPipelines[i].SetIncludeInRender(false);
+				}
+			}
+
+			//Update the current buffer index.
+			_CurrentSpecularIrradianceTemporalBufferIndex = _CurrentSpecularIrradianceTemporalBufferIndex == _SpecularIrradianceTemporalDenoisingPipelines.Size() - 1 ? 0 : _CurrentSpecularIrradianceTemporalBufferIndex + 1;
 
 			break;
 		}
@@ -383,4 +464,9 @@ void IrradianceRenderPass::Terminate() NOEXCEPT
 	_ScreenSpaceSpecularIrradiance.Terminate();
 	_ScreenSpaceSpecularIrradianceResolve.Terminate();
 	_RayTracedSpecularIrradiancePipeline.Terminate();
+
+	for (GraphicsRenderPipeline &pipeline : _SpecularIrradianceTemporalDenoisingPipelines)
+	{
+		pipeline.Terminate();
+	}
 }

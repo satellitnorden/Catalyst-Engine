@@ -75,7 +75,7 @@ void VulkanDescriptorPool::FreeDescriptorSet(VkDescriptorSet descriptorSet) cons
 	SCOPED_LOCK(_Lock);
 
 	//Free the Vulkan descriptor set.
-	vkFreeDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanDescriptorPool, 1, &descriptorSet);
+	VULKAN_ERROR_CHECK(vkFreeDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanDescriptorPool, 1, &descriptorSet));
 }
 
 /*
