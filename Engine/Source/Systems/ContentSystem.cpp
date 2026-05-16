@@ -175,94 +175,7 @@ void ContentSystem::RegisterOnAssetCompiledCallback(OnAssetCompiledCallback call
 */
 bool ContentSystem::CompileEngine() NOEXCEPT
 {
-	//Cache the start time.
-	const TimePoint start_time;
-
-	//Call PreCompile() on all asset compilers.
-	for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())
-	{
-		asset_compiler->PreCompile(CompilationDomain::ENGINE);
-	}
-
-	//Compile!
-	CompileResult compile_result;
-
-RECOMPILE:
-
-	//Always reset '_TriggerCompile'.
-	compile_result._TriggerRecompile = false;
-
-	{
-		//Set up the content cache.
-		ContentCache content_cache;
-
-		char content_cache_file_path[MAXIMUM_FILE_PATH_LENGTH];
-		sprintf_s(content_cache_file_path, "%s\\ContentCache.json", ENGINE_COMPILED);
-		content_cache.Read(content_cache_file_path);
-
-		//Compile assets.
-		CompileAssetsInDirectory(CompilationDomain::ENGINE, &content_cache, ENGINE_ASSETS, nullptr, &compile_result);
-		CompileAssetsInDirectory(CompilationDomain::ENGINE, &content_cache, ENGINE_RENDERING, nullptr, &compile_result);
-
-		//Write the content cache.
-		content_cache.Write(content_cache_file_path);
-	}
-
-	//Wait for all the compile data to finish.
-	while (!_CompileData.Empty())
-	{
-		for (uint64 compile_data_index{ 0 }; compile_data_index < _CompileData.Size();)
-		{
-			//Cache the compile data.
-			CompileData *const RESTRICT compile_data{ _CompileData[compile_data_index] };
-
-			//Is the compile finished?
-			if (compile_data->_Task.IsExecuted())
-			{
-				//Deallocate the compile data.
-				_CompileDataAllocator.Free(compile_data);
-
-				//Remove the compile data.
-				_CompileData.EraseAt<false>(compile_data_index);
-
-				LOG_INFORMATION("Number of compiles left: %llu", _CompileData.Size());
-			}
-
-			else
-			{
-				++compile_data_index;
-			}
-		}
-
-		if (!_CompileData.Empty())
-		{
-			TaskSystem::Instance->DoWork(Task::Priority::LOW);
-		}
-	}
-
-	//Call PostCompile() on all asset compilers.
-	for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())
-	{
-		asset_compiler->PostCompile(CompilationDomain::ENGINE);
-	}
-
-	//Recompile, if requested.
-	if (compile_result._TriggerRecompile)
-	{
-		goto RECOMPILE;
-	}
-
-	//Create asset collections if new assets were compiled.
-	if (compile_result._NewAssetsCompiled)
-	{
-		PROFILING_SCOPE("ContentSystem::CreateAssetCollections");
-
-		CreateAssetCollections(ENGINE_COMPILED, nullptr);
-	}
-
-	LOG_INFORMATION("ContentSystem::CompileEngine took %f seconds.", start_time.GetSecondsSince());
-
-	return compile_result._NewAssetsCompiled;
+	return CompileInternal(CompilationDomain::ENGINE);
 }
 
 /*
@@ -271,94 +184,7 @@ RECOMPILE:
 */
 bool ContentSystem::CompileGame() NOEXCEPT
 {
-	//Cache the start time.
-	const TimePoint start_time;
-
-	//Call PreCompile() on all asset compilers.
-	for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())
-	{
-		asset_compiler->PreCompile(CompilationDomain::GAME);
-	}
-	
-	//Compile!
-	CompileResult compile_result;
-
-RECOMPILE:
-
-	//Always reset '_TriggerCompile'.
-	compile_result._TriggerRecompile = false;
-
-	{
-		//Set up the content cache.
-		ContentCache content_cache;
-
-		char content_cache_file_path[MAXIMUM_FILE_PATH_LENGTH];
-		sprintf_s(content_cache_file_path, "%s\\ContentCache.json", GAME_COMPILED);
-		content_cache.Read(content_cache_file_path);
-
-		//Compile assets.
-		CompileAssetsInDirectory(CompilationDomain::GAME, &content_cache, GAME_ASSETS, nullptr, &compile_result);
-		CompileAssetsInDirectory(CompilationDomain::GAME, &content_cache, GAME_RENDERING, nullptr, &compile_result);
-
-		//Write the content cache.
-		content_cache.Write(content_cache_file_path);
-	}
-
-	//Wait for all the compile data to finish.
-	while (!_CompileData.Empty())
-	{
-		for (uint64 compile_data_index{ 0 }; compile_data_index < _CompileData.Size();)
-		{
-			//Cache the compile data.
-			CompileData *const RESTRICT compile_data{ _CompileData[compile_data_index] };
-
-			//Is the compile finished?
-			if (compile_data->_Task.IsExecuted())
-			{
-				//Deallocate the compile data.
-				_CompileDataAllocator.Free(compile_data);
-
-				//Remove the compile data.
-				_CompileData.EraseAt<false>(compile_data_index);
-
-				LOG_INFORMATION("Number of compiles left: %llu", _CompileData.Size());
-			}
-
-			else
-			{
-				++compile_data_index;
-			}
-		}
-
-		if (!_CompileData.Empty())
-		{
-			TaskSystem::Instance->DoWork(Task::Priority::LOW);
-		}
-	}
-
-	//Call PostCompile() on all asset compilers.
-	for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())
-	{
-		asset_compiler->PostCompile(CompilationDomain::GAME);
-	}
-
-	//Recompile, if requested.
-	if (compile_result._TriggerRecompile)
-	{
-		goto RECOMPILE;
-	}
-
-	//Create asset collections if new assets were compiled.
-	if (compile_result._NewAssetsCompiled)
-	{
-		PROFILING_SCOPE("ContentSystem::CreateAssetCollections");
-
-		CreateAssetCollections(GAME_COMPILED, nullptr);
-	}
-
-	LOG_INFORMATION("ContentSystem::CompileGame took %f seconds.", start_time.GetSecondsSince());
-
-	return compile_result._NewAssetsCompiled;
+	return CompileInternal(CompilationDomain::GAME);
 }
 #endif
 
@@ -521,6 +347,142 @@ void ContentSystem::LoadAssetCollection(const char *const RESTRICT file_path) NO
 }
 
 /*
+*	Compiles internally.
+*	Returns if new content was compiled.
+*/
+NO_DISCARD bool ContentSystem::CompileInternal(const CompilationDomain compilation_domain) NOEXCEPT
+{
+	//Cache the start time.
+	const TimePoint start_time;
+
+	//Cache the directories.
+	const char *RESTRICT domain_name{ nullptr };
+	const char *RESTRICT assets_directory{ nullptr };
+	const char *RESTRICT rendering_directory{ nullptr };
+	const char *RESTRICT compiled_directory{ nullptr };
+
+	switch (compilation_domain)
+	{
+		case CompilationDomain::ENGINE:
+		{
+			domain_name = "engine";
+			assets_directory = ENGINE_ASSETS;
+			rendering_directory = ENGINE_RENDERING;
+			compiled_directory = ENGINE_COMPILED;
+
+			break;
+		}
+
+		case CompilationDomain::GAME:
+		{
+			domain_name = "game";
+			assets_directory = GAME_ASSETS;
+			rendering_directory = GAME_RENDERING;
+			compiled_directory = GAME_COMPILED;
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	//Call PreCompile() on all asset compilers.
+	for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())
+	{
+		asset_compiler->PreCompile(compilation_domain);
+	}
+
+	//Compile!
+	CompileResult compile_result;
+
+RECOMPILE:
+	//Set up the content cache.
+	ContentCache content_cache;
+
+	char content_cache_file_path[MAXIMUM_FILE_PATH_LENGTH];
+	sprintf_s(content_cache_file_path, "%s\\ContentCache.json", compiled_directory);
+	content_cache.Read(content_cache_file_path);
+
+	//Always reset '_TriggerCompile'.
+	compile_result._TriggerRecompile = false;
+
+	//Compile assets.
+	CompileAssetsInDirectory(compilation_domain, &content_cache, assets_directory, nullptr, &compile_result);
+	CompileAssetsInDirectory(compilation_domain, &content_cache, rendering_directory, nullptr, &compile_result);
+
+	//Wait for all the compile data to finish.
+	while (!_CompileData.Empty())
+	{
+		for (uint64 compile_data_index{ 0 }; compile_data_index < _CompileData.Size();)
+		{
+			//Cache the compile data.
+			CompileData *const RESTRICT compile_data{ _CompileData[compile_data_index] };
+
+			//Is the compile finished?
+			if (compile_data->_Task.IsExecuted())
+			{
+				//Update the content cache entry.
+				ContentCache::Entry *const RESTRICT content_cache_entry{ content_cache.GetEntry(compile_data->_Context._FilePath.Data()) };
+				content_cache_entry->Update(compile_data->_AssetCompiler->CurrentVersion(), compile_data->_Context._Dependencies);
+
+				//Destroy the compile data.
+				compile_data->~CompileData();
+
+				//Deallocate the compile data.
+				_CompileDataAllocator.Free(compile_data);
+
+				//Remove the compile data.
+				_CompileData.EraseAt<false>(compile_data_index);
+
+				LOG_INFORMATION("Number of %s compiles left: %llu", domain_name, _CompileData.Size());
+			}
+
+			else
+			{
+				++compile_data_index;
+			}
+		}
+
+		if (!_CompileData.Empty())
+		{
+			TaskSystem::Instance->DoWork(Task::Priority::LOW);
+		}
+	}
+
+	//Call PostCompile() on all asset compilers.
+	for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())
+	{
+		asset_compiler->PostCompile(compilation_domain);
+	}
+
+	//Write the content cache.
+	content_cache.Write(content_cache_file_path);
+
+	//Recompile, if requested.
+	if (compile_result._TriggerRecompile)
+	{
+		goto RECOMPILE;
+	}
+
+	//Create asset collections if new assets were compiled.
+	if (compile_result._NewAssetsCompiled)
+	{
+		PROFILING_SCOPE("ContentSystem::CreateAssetCollections");
+
+		CreateAssetCollections(compiled_directory, nullptr);
+	}
+
+	LOG_INFORMATION("Compiling content for %s took %f seconds.", domain_name, start_time.GetSecondsSince());
+
+	return compile_result._NewAssetsCompiled;
+}
+
+/*
 *	Compiles assets in the given directory.
 */
 void ContentSystem::CompileAssetsInDirectory
@@ -637,9 +599,6 @@ void ContentSystem::CompileAssetsInDirectory
 
 		//Add the compile data.
 		_CompileData.Emplace(compile_data);
-
-		//Update the content cache entry.
-		content_cache_entry->Update(asset_compiler->CurrentVersion());
 
 		//New asset was compiled!
 		compile_result->_NewAssetsCompiled = true;

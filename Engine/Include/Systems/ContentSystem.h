@@ -186,6 +186,12 @@ private:
 	DynamicArray<OnAssetCompiledCallback> _OnAssetCompiledCallbacks;
 
 	/*
+	*	Compiles internally.
+	*	Returns if new content was compiled.
+	*/
+	NO_DISCARD bool CompileInternal(const CompilationDomain compilation_domain) NOEXCEPT;
+
+	/*
 	*	Compiles assets in the given directory.
 	*/
 	void CompileAssetsInDirectory

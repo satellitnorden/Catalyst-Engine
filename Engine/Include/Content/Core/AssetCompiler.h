@@ -71,6 +71,9 @@ public:
 		//The name.
 		StaticString<64> _Name;
 
+		//The dependencies.
+		mutable DynamicArray<StaticString<MAXIMUM_FILE_PATH_LENGTH>> _Dependencies;
+
 	};
 
 	/*

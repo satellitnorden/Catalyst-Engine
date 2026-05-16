@@ -262,434 +262,2118 @@
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\AmbientOcclusionApplication.render_pipeline",
             "Identifier": 14500419535390927717,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Noise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\AmbientOcclusionSpatialDenoising.render_pipeline",
             "Identifier": 14228678639922067319,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Math.shader_function_library",
+                    "LastChangedTime": 13403342326
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\AmbientOcclusionTemporalDenoising.render_pipeline",
             "Identifier": 17082721662433267822,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\AnimatedModel.render_pipeline",
             "Identifier": 1949184280200088697,
-            "Version": 2,
-            "LastChangedTime": 13388404729
+            "Version": 3,
+            "LastChangedTime": 13388404729,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Storage Buffer Definitions\\AnimationBoneTransforms.storage_buffer_definition",
+                    "LastChangedTime": 13388404729
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\BloomApplication.render_pipeline",
             "Identifier": 5037289947012187488,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\PostProcessing.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\BloomDownsample.render_pipeline",
             "Identifier": 4635011794156970262,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\BloomUpsample.render_pipeline",
             "Identifier": 17238783144421471021,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\ClearShadowMap.render_pipeline",
             "Identifier": 18408837004179346465,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\Viewport.common_shader",
+                    "LastChangedTime": 13422787608
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\Copy.render_pipeline",
             "Identifier": 16472822125012586214,
-            "Version": 2,
-            "LastChangedTime": 13423221449
+            "Version": 3,
+            "LastChangedTime": 13423221449,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\DebugRenderCircle.render_pipeline",
             "Identifier": 13911655236828878865,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Math.shader_function_library",
+                    "LastChangedTime": 13403342326
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\DebugRenderRectangle.render_pipeline",
             "Identifier": 16733735165406150017,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Math.shader_function_library",
+                    "LastChangedTime": 13403342326
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\DebugVisualization.render_pipeline",
             "Identifier": 11523926475907526880,
-            "Version": 2,
-            "LastChangedTime": 13423228397
+            "Version": 3,
+            "LastChangedTime": 13423228397,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\DiffuseIrradianceSpatialDenoising.render_pipeline",
             "Identifier": 201226432486799298,
-            "Version": 2,
-            "LastChangedTime": 13386795852
+            "Version": 3,
+            "LastChangedTime": 13386795852,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\DiffuseIrradianceTemporalDenoising.render_pipeline",
             "Identifier": 7659932732617930684,
-            "Version": 2,
-            "LastChangedTime": 13387238313
+            "Version": 3,
+            "LastChangedTime": 13387238313,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\DirectLighting.render_pipeline",
             "Identifier": 4199003009747345993,
-            "Version": 2,
-            "LastChangedTime": 13423304912
+            "Version": 3,
+            "LastChangedTime": 13423304912,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\RenderingConfiguration.uniform_buffer_definition",
+                    "LastChangedTime": 13404511941
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\World.uniform_buffer_definition",
+                    "LastChangedTime": 13403304005
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Storage Buffer Definitions\\Lighting.storage_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Lighting.shader_function_library",
+                    "LastChangedTime": 13371857017
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Noise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\PhysicallyBasedLighting.shader_function_library",
+                    "LastChangedTime": 13423422236
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\RenderingConfiguration.shader_function_library",
+                    "LastChangedTime": 13404511967
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\EditorSelectedOutline.render_pipeline",
             "Identifier": 8213655196689444319,
-            "Version": 2,
-            "LastChangedTime": 13423181532
+            "Version": 3,
+            "LastChangedTime": 13423181532,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Editor.shader_function_library",
+                    "LastChangedTime": 13372595419
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\FastApproximateAntiAliasing.render_pipeline",
             "Identifier": 17077313956936858468,
-            "Version": 2,
-            "LastChangedTime": 13377267820
+            "Version": 3,
+            "LastChangedTime": 13377267820,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\PostProcess.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\Grass.render_pipeline",
             "Identifier": 17842877795977267050,
-            "Version": 2,
-            "LastChangedTime": 13403434523
+            "Version": 3,
+            "LastChangedTime": 13403434523,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Wind.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Grass.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Math.shader_function_library",
+                    "LastChangedTime": 13403342326
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Noise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Wind.shader_function_library",
+                    "LastChangedTime": 13403874243
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\HorizonBasedAmbientOcclusion.render_pipeline",
             "Identifier": 3811750831986157771,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\HammersleyHemisphereSamples.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\BlueNoise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Math.shader_function_library",
+                    "LastChangedTime": 13403342326
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Noise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\ImGui.render_pipeline",
             "Identifier": 16243807180063771676,
-            "Version": 2,
-            "LastChangedTime": 13404569818
+            "Version": 3,
+            "LastChangedTime": 13404569818,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\IndirectLighting.render_pipeline",
             "Identifier": 7349416357118431885,
-            "Version": 2,
-            "LastChangedTime": 13380049939
+            "Version": 3,
+            "LastChangedTime": 13380049939,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\RenderingConfiguration.uniform_buffer_definition",
+                    "LastChangedTime": 13404511941
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\World.uniform_buffer_definition",
+                    "LastChangedTime": 13403304005
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Noise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\PhysicallyBasedLighting.shader_function_library",
+                    "LastChangedTime": 13423422236
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\RenderingConfiguration.shader_function_library",
+                    "LastChangedTime": 13404511967
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\World.shader_function_library",
+                    "LastChangedTime": 13386797839
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\InstancedImpostorColor.render_pipeline",
             "Identifier": 10002648568027356629,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\InstancedImpostorDepth.render_pipeline",
             "Identifier": 6611545607300707817,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Noise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\InstancedModelColorDoubleSided.render_pipeline",
             "Identifier": 8661486991564123457,
-            "Version": 2,
-            "LastChangedTime": 13403342997
+            "Version": 3,
+            "LastChangedTime": 13403342997,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Wind.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Math.shader_function_library",
+                    "LastChangedTime": 13403342326
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Model.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Wind.shader_function_library",
+                    "LastChangedTime": 13403874243
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\InstancedModelColorSingleSided.render_pipeline",
             "Identifier": 758219459245847083,
-            "Version": 2,
-            "LastChangedTime": 13403343012
+            "Version": 3,
+            "LastChangedTime": 13403343012,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Wind.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Math.shader_function_library",
+                    "LastChangedTime": 13403342326
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Model.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Wind.shader_function_library",
+                    "LastChangedTime": 13403874243
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\InstancedModelDepthDoubleSided.render_pipeline",
             "Identifier": 10635920110425759847,
-            "Version": 2,
-            "LastChangedTime": 13403343023
+            "Version": 3,
+            "LastChangedTime": 13403343023,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Wind.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Math.shader_function_library",
+                    "LastChangedTime": 13403342326
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Model.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Noise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Wind.shader_function_library",
+                    "LastChangedTime": 13403874243
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\InstancedModelDepthSingleSided.render_pipeline",
             "Identifier": 17058923141756410385,
-            "Version": 2,
-            "LastChangedTime": 13403343032
+            "Version": 3,
+            "LastChangedTime": 13403343032,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Wind.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Math.shader_function_library",
+                    "LastChangedTime": 13403342326
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Model.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Noise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Wind.shader_function_library",
+                    "LastChangedTime": 13403874243
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\LuminanceSharpen.render_pipeline",
             "Identifier": 15763390925780738818,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\PostProcess.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\MaskedModelColorDoubleSided.render_pipeline",
             "Identifier": 7240087076986554058,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\MaskedModelColorSingleSided.render_pipeline",
             "Identifier": 3159985874493984876,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\MaskedModelDepthDoubleSided.render_pipeline",
             "Identifier": 7597940418064447272,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\MaskedModelDepthSingleSided.render_pipeline",
             "Identifier": 17240504636815642778,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\MaskedModelShadowMap.render_pipeline",
             "Identifier": 2256427219670902783,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Storage Buffer Definitions\\ShadowMapping.storage_buffer_definition",
+                    "LastChangedTime": 13361726148
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\ModelEditorMetadata.render_pipeline",
             "Identifier": 10685476251685677193,
-            "Version": 2,
-            "LastChangedTime": 13372595729
+            "Version": 3,
+            "LastChangedTime": 13372595729,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\MotionBlur.render_pipeline",
             "Identifier": 17945251381195517395,
-            "Version": 2,
-            "LastChangedTime": 13386725155
+            "Version": 3,
+            "LastChangedTime": 13386725155,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\PostProcessing.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\BlueNoise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\OnlyLighting.render_pipeline",
             "Identifier": 2713996135700395848,
-            "Version": 2,
-            "LastChangedTime": 13395312412
+            "Version": 3,
+            "LastChangedTime": 13395312412,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\OpaqueModelDoubleSided.render_pipeline",
             "Identifier": 12299497425523697173,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\OpaqueModelShadowMap.render_pipeline",
             "Identifier": 11162765120027459273,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Storage Buffer Definitions\\ShadowMapping.storage_buffer_definition",
+                    "LastChangedTime": 13361726148
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\OpaqueModelSingleSided.render_pipeline",
             "Identifier": 14670997231138390064,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\Particles.render_pipeline",
             "Identifier": 7692755483259811846,
-            "Version": 2,
-            "LastChangedTime": 13386963394
+            "Version": 3,
+            "LastChangedTime": 13386963394,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Storage Buffer Definitions\\Particles.storage_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Math.shader_function_library",
+                    "LastChangedTime": 13403342326
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Noise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\Passthrough.render_pipeline",
             "Identifier": 10420986742175131573,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\PassthroughHalf.render_pipeline",
             "Identifier": 12686438156847732984,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\PlaneEditorMetadata.render_pipeline",
             "Identifier": 3092109791416388270,
-            "Version": 2,
-            "LastChangedTime": 13373021279
+            "Version": 3,
+            "LastChangedTime": 13373021279,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\PlayerSpawnMarker.render_pipeline",
             "Identifier": 15470305329760705624,
-            "Version": 2,
-            "LastChangedTime": 13372605624
+            "Version": 3,
+            "LastChangedTime": 13372605624,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\PostProcess.render_pipeline",
             "Identifier": 5087569557639025584,
-            "Version": 2,
-            "LastChangedTime": 13422979766
+            "Version": 3,
+            "LastChangedTime": 13422979766,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\PostProcessing.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\BlueNoise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Noise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\PostProcess.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\RayTracedDiffuseIrradiance.render_pipeline",
             "Identifier": 17982080587787115290,
-            "Version": 2,
-            "LastChangedTime": 13423230793
+            "Version": 3,
+            "LastChangedTime": 13423230793,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\HammersleyHemisphereSamples.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Irradiance.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\World.uniform_buffer_definition",
+                    "LastChangedTime": 13403304005
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Storage Buffer Definitions\\Lighting.storage_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\BlueNoise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Lighting.shader_function_library",
+                    "LastChangedTime": 13371857017
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Math.shader_function_library",
+                    "LastChangedTime": 13403342326
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\PhysicallyBasedLighting.shader_function_library",
+                    "LastChangedTime": 13423422236
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\World.shader_function_library",
+                    "LastChangedTime": 13386797839
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ModelRayClosestHit.common_shader",
+                    "LastChangedTime": 13423230790
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ModelRayClosestHit.common_shader",
+                    "LastChangedTime": 13423230790
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\RayTracedShadows.render_pipeline",
             "Identifier": 6040319613190649824,
-            "Version": 2,
-            "LastChangedTime": 13387153931
+            "Version": 3,
+            "LastChangedTime": 13387153931,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Storage Buffer Definitions\\Lighting.storage_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\BlueNoise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Lighting.shader_function_library",
+                    "LastChangedTime": 13371857017
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\RayTracedSpecularIrradiance.render_pipeline",
             "Identifier": 14732745580422677487,
-            "Version": 2,
-            "LastChangedTime": 13380050111
+            "Version": 3,
+            "LastChangedTime": 13380050111,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\HammersleyHemisphereSamples.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Irradiance.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\World.uniform_buffer_definition",
+                    "LastChangedTime": 13403304005
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Storage Buffer Definitions\\Lighting.storage_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\BlueNoise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Lighting.shader_function_library",
+                    "LastChangedTime": 13371857017
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Math.shader_function_library",
+                    "LastChangedTime": 13403342326
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\PhysicallyBasedLighting.shader_function_library",
+                    "LastChangedTime": 13423422236
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\World.shader_function_library",
+                    "LastChangedTime": 13386797839
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ModelRayClosestHit.common_shader",
+                    "LastChangedTime": 13423230790
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ModelRayClosestHit.common_shader",
+                    "LastChangedTime": 13423230790
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\RayTracedVolumetricLighting.render_pipeline",
             "Identifier": 7963574040608997128,
-            "Version": 2,
-            "LastChangedTime": 13403304005
+            "Version": 3,
+            "LastChangedTime": 13403304005,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\World.uniform_buffer_definition",
+                    "LastChangedTime": 13403304005
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Storage Buffer Definitions\\Lighting.storage_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\BlueNoise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Lighting.shader_function_library",
+                    "LastChangedTime": 13371857017
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Noise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\RenderingConfiguration.shader_function_library",
+                    "LastChangedTime": 13404511967
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\VolumetricLighting.shader_function_library",
+                    "LastChangedTime": 13403304005
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\World.shader_function_library",
+                    "LastChangedTime": 13386797839
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\SceneFeaturesDownsample.render_pipeline",
             "Identifier": 390844007336610530,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\Screen.render_pipeline",
             "Identifier": 8658087075303955589,
-            "Version": 2,
-            "LastChangedTime": 13423182806
+            "Version": 3,
+            "LastChangedTime": 13423182806,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\ScreenshotAccumulation.render_pipeline",
             "Identifier": 11901675155612013838,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\ScreenSpaceAmbientOcclusion.render_pipeline",
             "Identifier": 15217987821582359771,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\HammersleyHemisphereSamples.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\BlueNoise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Math.shader_function_library",
+                    "LastChangedTime": 13403342326
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Noise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\ScreenSpaceSpecularIrradiance.render_pipeline",
             "Identifier": 11772902777625164810,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\World.uniform_buffer_definition",
+                    "LastChangedTime": 13403304005
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\BlueNoise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Geometry.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\RayTracing.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\World.shader_function_library",
+                    "LastChangedTime": 13386797839
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\ScreenSpaceSpecularIrradianceResolve.render_pipeline",
             "Identifier": 18179871245297794045,
-            "Version": 2,
-            "LastChangedTime": 13423309272
+            "Version": 3,
+            "LastChangedTime": 13423309272,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\World.uniform_buffer_definition",
+                    "LastChangedTime": 13403304005
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\BlueNoise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Geometry.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\PhysicallyBasedLighting.shader_function_library",
+                    "LastChangedTime": 13423422236
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\RayTracing.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\World.shader_function_library",
+                    "LastChangedTime": 13386797839
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\ShadowMapResolve.render_pipeline",
             "Identifier": 5776613479728388007,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Storage Buffer Definitions\\ShadowMapping.storage_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\BlueNoise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\ShadowsSpatialDenoising.render_pipeline",
             "Identifier": 4386003151194515252,
-            "Version": 2,
-            "LastChangedTime": 13386706745
+            "Version": 3,
+            "LastChangedTime": 13386706745,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Math.shader_function_library",
+                    "LastChangedTime": 13403342326
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\Sky.render_pipeline",
             "Identifier": 7467886382108734792,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\World.uniform_buffer_definition",
+                    "LastChangedTime": 13403304005
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\World.shader_function_library",
+                    "LastChangedTime": 13386797839
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\SpecularIrradianceTemporalDenoising.render_pipeline",
             "Identifier": 3258225248631209808,
-            "Version": 2,
-            "LastChangedTime": 13423309374
+            "Version": 3,
+            "LastChangedTime": 13423309374,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Temporal.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\StaticModelWireframe.render_pipeline",
             "Identifier": 1867667525248306517,
-            "Version": 2,
-            "LastChangedTime": 13403259327
+            "Version": 3,
+            "LastChangedTime": 13403259327,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\TemporalAntiAliasing.render_pipeline",
             "Identifier": 4721467706331406391,
-            "Version": 2,
-            "LastChangedTime": 13378317033
+            "Version": 3,
+            "LastChangedTime": 13378317033,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Temporal.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\Terrain.render_pipeline",
             "Identifier": 8483119183608672829,
-            "Version": 2,
-            "LastChangedTime": 13423336471
+            "Version": 3,
+            "LastChangedTime": 13423336471,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Math.shader_function_library",
+                    "LastChangedTime": 13403342326
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Noise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Terrain.shader_function_library",
+                    "LastChangedTime": 13423336469
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\TerrainWireframe.render_pipeline",
             "Identifier": 5153681120042433895,
-            "Version": 2,
-            "LastChangedTime": 13403259328
+            "Version": 3,
+            "LastChangedTime": 13403259328,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Math.shader_function_library",
+                    "LastChangedTime": 13403342326
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Noise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Terrain.shader_function_library",
+                    "LastChangedTime": 13423336469
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\ToneMapping.render_pipeline",
             "Identifier": 9412567843588086822,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\PostProcessing.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\BlueNoise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\ToneMapping.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\UI.render_pipeline",
             "Identifier": 16435931295455023610,
-            "Version": 2,
-            "LastChangedTime": 13410703873
+            "Version": 3,
+            "LastChangedTime": 13410703873,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Storage Buffer Definitions\\UI.storage_buffer_definition",
+                    "LastChangedTime": 13410540673
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\UI.shader_function_library",
+                    "LastChangedTime": 13410625436
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\UserInterface3DBackground.render_pipeline",
             "Identifier": 16224956258991981774,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\Velocity.render_pipeline",
             "Identifier": 13515012836984858273,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\VolumetricLighting.render_pipeline",
             "Identifier": 9497482407306605523,
-            "Version": 2,
-            "LastChangedTime": 13361726148
+            "Version": 3,
+            "LastChangedTime": 13361726148,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\RenderingConfiguration.uniform_buffer_definition",
+                    "LastChangedTime": 13404511941
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\World.uniform_buffer_definition",
+                    "LastChangedTime": 13403304005
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Storage Buffer Definitions\\Lighting.storage_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\BlueNoise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Lighting.shader_function_library",
+                    "LastChangedTime": 13371857017
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Noise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\RenderingConfiguration.shader_function_library",
+                    "LastChangedTime": 13404511967
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\VolumetricLighting.shader_function_library",
+                    "LastChangedTime": 13403304005
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\VolumetricLightingApplication.render_pipeline",
             "Identifier": 13014465593797796923,
-            "Version": 2,
-            "LastChangedTime": 13403304005
+            "Version": 3,
+            "LastChangedTime": 13403304005,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Noise.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\VolumetricLightingSpatialDenoising.render_pipeline",
             "Identifier": 4938923088083624485,
-            "Version": 2,
-            "LastChangedTime": 13403304005
+            "Version": 3,
+            "LastChangedTime": 13403304005,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\VolumetricLightingTemporalDenoising.render_pipeline",
             "Identifier": 4717382556200734441,
-            "Version": 2,
-            "LastChangedTime": 13403304005
+            "Version": 3,
+            "LastChangedTime": 13403304005,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Temporal.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Common Shaders\\ViewportScreenCoordinate.common_shader",
+                    "LastChangedTime": 13422787611
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\Water.render_pipeline",
             "Identifier": 17443458988127805498,
-            "Version": 2,
-            "LastChangedTime": 13422891357
+            "Version": 3,
+            "LastChangedTime": 13422891357,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
+                    "LastChangedTime": 13403342371
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Camera.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\Water.uniform_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\World.uniform_buffer_definition",
+                    "LastChangedTime": 13403304005
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Storage Buffer Definitions\\Lighting.storage_buffer_definition",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Camera.shader_function_library",
+                    "LastChangedTime": 13361726148
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\Lighting.shader_function_library",
+                    "LastChangedTime": 13371857017
+                },
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\WaterSimulation.shader_function_library",
+                    "LastChangedTime": 13403304005
+                }
+            ]
         }
     ]
 }

@@ -84,6 +84,7 @@ private:
 	*/
 	void ResolveInclude
 	(
+		const CompileContext &compile_context,
 		const DynamicString &current_line,
 		const char *const RESTRICT extension,
 		const char *const RESTRICT sub_folder,
@@ -95,7 +96,7 @@ private:
 	/*
 	*	Resolves includes.
 	*/
-	void ResolveIncludes(DynamicArray<DynamicString> *const RESTRICT lines) NOEXCEPT;
+	void ResolveIncludes(const CompileContext &compile_context, DynamicArray<DynamicString> *const RESTRICT lines) NOEXCEPT;
 
 	/*
 	*	Consumes settings.

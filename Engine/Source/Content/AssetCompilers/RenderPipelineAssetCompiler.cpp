@@ -616,6 +616,7 @@ NO_DISCARD uint64 RenderPipelineAssetCompiler::CurrentVersion() const NOEXCEPT
 	{
 		BASE,
 		MARK_STORAGE_BUFFERS_AS_READ_ONLY,
+		ADDED_DEPENDENCIES,
 
 		CURRENT_VERSION,
 	};
@@ -657,11 +658,14 @@ void RenderPipelineAssetCompiler::Compile(const CompileContext &compile_context)
 	//Start with the global render data.
 	RetrieveLines(ENGINE_RENDERING_PATH "\\Global Render Data\\GlobalRenderData.global_render_data", &lines);
 
+	//Add the dependency to the global render data.
+	compile_context._Dependencies.Emplace(ENGINE_RENDERING_PATH "\\Global Render Data\\GlobalRenderData.global_render_data");
+
 	//Then add in the lines from the file.
 	RetrieveLines(compile_context._FilePath.Data(), &lines);
 
 	//Resolve includes.
-	ResolveIncludes(&lines);
+	ResolveIncludes(compile_context, &lines);
 
 	//Strip comments.
 	StripComments(&lines);
@@ -1172,6 +1176,7 @@ NO_DISCARD bool RenderPipelineAssetCompiler::SearchForFile
 */
 void RenderPipelineAssetCompiler::ResolveInclude
 (
+	const CompileContext &compile_context,
 	const DynamicString &current_line,
 	const char *const RESTRICT extension,
 	const char *const RESTRICT sub_folder,
@@ -1246,12 +1251,15 @@ void RenderPipelineAssetCompiler::ResolveInclude
 	{
 		lines->At(current_line_index + include_index) = include_lines.At(include_index);
 	}
+
+	//Add the dependency.
+	compile_context._Dependencies.Emplace(file_path);
 }
 
 /*
 *	Resolves includes.
 */
-void RenderPipelineAssetCompiler::ResolveIncludes(DynamicArray<DynamicString> *const RESTRICT lines) NOEXCEPT
+void RenderPipelineAssetCompiler::ResolveIncludes(const CompileContext &compile_context, DynamicArray<DynamicString> *const RESTRICT lines) NOEXCEPT
 {
 	//Iterate over all lines.
 	for (uint64 current_line_index{ 0 }; current_line_index < lines->Size();)
@@ -1264,6 +1272,7 @@ void RenderPipelineAssetCompiler::ResolveIncludes(DynamicArray<DynamicString> *c
 		{
 			ResolveInclude
 			(
+				compile_context,
 				current_line,
 				"common_shader",
 				"Common Shaders",
@@ -1278,6 +1287,7 @@ void RenderPipelineAssetCompiler::ResolveIncludes(DynamicArray<DynamicString> *c
 		{
 			ResolveInclude
 			(
+				compile_context,
 				current_line,
 				"common_shader",
 				"Common Shaders",
@@ -1292,6 +1302,7 @@ void RenderPipelineAssetCompiler::ResolveIncludes(DynamicArray<DynamicString> *c
 		{
 			ResolveInclude
 			(
+				compile_context,
 				current_line,
 				"shader_function_library",
 				"Shader Function Libraries",
@@ -1305,6 +1316,7 @@ void RenderPipelineAssetCompiler::ResolveIncludes(DynamicArray<DynamicString> *c
 		{
 			ResolveInclude
 			(
+				compile_context,
 				current_line,
 				"storage_buffer_definition",
 				"Storage Buffer Definitions",
@@ -1318,6 +1330,7 @@ void RenderPipelineAssetCompiler::ResolveIncludes(DynamicArray<DynamicString> *c
 		{
 			ResolveInclude
 			(
+				compile_context,
 				current_line,
 				"uniform_buffer_definition",
 				"Uniform Buffer Definitions",

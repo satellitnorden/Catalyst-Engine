@@ -27,6 +27,22 @@ public:
 
 	public:
 
+		/*
+		*	Dependency class definition.
+		*/
+		class Dependency final
+		{
+
+		public:
+
+			//The file path.
+			StaticString<MAXIMUM_FILE_PATH_LENGTH> _FilePath;
+
+			//The last changed time.
+			uint64 _LastChangedTime;
+
+		};
+
 		//The file path.
 		StaticString<MAXIMUM_FILE_PATH_LENGTH> _FilePath;
 
@@ -38,6 +54,9 @@ public:
 
 		//The last changed time.
 		uint64 _LastChangedTime;
+
+		//The dependencies.
+		DynamicArray<Dependency> _Dependencies;
 
 		/*
 		*	Returns if this entry needs a compile.
@@ -68,6 +87,15 @@ public:
 				return true;
 			}
 
+			//If any of the dependencies last changed time differs, it needs a compile.
+			for (const Dependency &dependency : _Dependencies)
+			{
+				if (dependency._LastChangedTime != File::LastChangedTime(dependency._FilePath.Data()))
+				{
+					return true;
+				}
+			}
+
 			//Otherwise, it doesn't need a compile!
 			return false;
 		}
@@ -75,13 +103,26 @@ public:
 		/*
 		*	Updates this entry.
 		*/
-		FORCE_INLINE void Update(const uint64 current_version) NOEXCEPT
+		FORCE_INLINE void Update(const uint64 current_version, const DynamicArray<StaticString<MAXIMUM_FILE_PATH_LENGTH>> &dependencies) NOEXCEPT
 		{
 			//Set the version.
 			_Version = current_version;
 
 			//Set the last changed time.
 			_LastChangedTime = File::LastChangedTime(_FilePath.Data());
+
+			//Set the dependencies.
+			_Dependencies.Clear();
+			_Dependencies.Reserve(dependencies.Size());
+
+			for (const StaticString<MAXIMUM_FILE_PATH_LENGTH> &dependency : dependencies)
+			{
+				_Dependencies.Emplace();
+				Dependency &new_dependency{ _Dependencies.Back() };
+
+				new_dependency._FilePath = dependency;
+				new_dependency._LastChangedTime = File::LastChangedTime(dependency.Data());
+			}
 		}
 
 	};
@@ -140,6 +181,25 @@ public:
 
 			//Read the last changed time.
 			new_entry._LastChangedTime = entry_entry["LastChangedTime"].get<uint64>();
+
+			//Read the dependencies.
+			if (entry_entry.contains("Dependencies"))
+			{
+				const nlohmann::ordered_json &dependencies_entry{ entry_entry["Dependencies"] };
+
+				for (const nlohmann::ordered_json &dependency_entry : dependencies_entry)
+				{
+					//Add the new dependency.
+					new_entry._Dependencies.Emplace();
+					Entry::Dependency &new_dependency{ new_entry._Dependencies.Back() };
+
+					//Read the file path.
+					new_dependency._FilePath = dependency_entry["FilePath"].get<std::string>().c_str();
+
+					//Read the last changed time.
+					new_dependency._LastChangedTime = dependency_entry["LastChangedTime"].get<uint64>();
+				}
+			}
 		}
 	}
 
@@ -210,6 +270,27 @@ public:
 
 			//Set the last changed time.
 			entry_entry["LastChangedTime"] = entry._LastChangedTime;
+
+			//Write the dependencies.
+			if (!entry._Dependencies.Empty())
+			{
+				nlohmann::ordered_json &dependencies_entry{ entry_entry["Dependencies"] };
+
+				for (const Entry::Dependency &dependency : entry._Dependencies)
+				{
+					//Set up the dependency entry.
+					nlohmann::ordered_json dependency_entry;
+
+					//Set the file path.
+					dependency_entry["FilePath"] = dependency._FilePath.Data();
+
+					//Set the last changed time.
+					dependency_entry["LastChangedTime"] = dependency._LastChangedTime;
+
+					//Add the dependency entry.
+					dependencies_entry.emplace_back(dependency_entry);
+				}
+			}
 
 			//Add the entry entry.
 			entries_entry.emplace_back(entry_entry);
