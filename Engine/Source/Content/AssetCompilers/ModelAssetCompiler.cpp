@@ -15,7 +15,6 @@
 #include <Systems/LogSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
-#include <Systems/TaskSystem.h>
 
 //STL.
 #include <fstream>
@@ -85,100 +84,7 @@ NO_DISCARD uint64 ModelAssetCompiler::CurrentVersion() const NOEXCEPT
 */
 void ModelAssetCompiler::Compile(const CompileContext &compile_context) NOEXCEPT
 {
-	//Set up the compile data.
-	CompileData *const RESTRICT compile_data{ new (_CompileDataAllocator.Allocate()) CompileData() };
-
-	//Set the collection.
-	compile_data->_Collection = compile_context._Collection;
-
-	//Set the file path.
-	compile_data->_FilePath = compile_context._FilePath;
-
-	//Set the name.
-	compile_data->_Name = compile_context._Name;
-
-	//Set the compilation domain.
-	compile_data->_CompilationDomain = compile_context._CompilationDomain;
-
-	//Set up the task.
-	Task *const RESTRICT task{ static_cast<Task *const RESTRICT>(compile_context._TaskAllocator->Allocate()) };
-
-	task->_Function = [](void *const RESTRICT arguments)
-	{
-		ModelAssetCompiler::Instance->CompileInternal(static_cast<CompileData *const RESTRICT>(arguments));
-	};
-	task->_Arguments = compile_data;
-	task->_ExecutableOnSameThread = false;
-
-	//Execute the task!
-	TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, task);
-
-	//Add the task to the list.
-	compile_context._Tasks->Emplace(task);
-}
-
-/*
-*	Loads a single asset with the given load context.
-*/
-NO_DISCARD Asset *const RESTRICT ModelAssetCompiler::Load(const LoadContext &load_context) NOEXCEPT
-{
-	//Allocate the asset.
-	ModelAsset *const RESTRICT new_asset{ new (_AssetAllocator.Allocate()) ModelAsset() };
-
-	//Set up the load data.
-	LoadData *const RESTRICT load_data{ new (_LoadDataAllocator.Allocate()) LoadData() };
-
-	load_data->_StreamArchivePosition = load_context._StreamArchivePosition;
-	load_data->_StreamArchive = load_context._StreamArchive;
-	load_data->_Asset = new_asset;
-
-	//Set up the task.
-	Task *const RESTRICT task{ static_cast<Task *const RESTRICT>(load_context._TaskAllocator->Allocate()) };
-
-	task->_Function = [](void *const RESTRICT arguments)
-	{
-		ModelAssetCompiler::Instance->LoadInternal(static_cast<LoadData *const RESTRICT>(arguments));
-	};
-	task->_Arguments = load_data;
-	task->_ExecutableOnSameThread = false;
-
-	//Execute the task!
-	TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, task);
-
-	//Add the task to the list.
-	load_context._Tasks->Emplace(task);
-
-	//Return the new asset!
-	return new_asset;
-}
-
-/*
-*	Runs after load.
-*/
-void ModelAssetCompiler::PostLoad() NOEXCEPT
-{
-	Optional<PostLinkData> post_link_data{ _PostLinkQueue.Pop() };
-
-	while (post_link_data.Valid())
-	{
-		for (uint64 mesh_index{ 0 }; mesh_index < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++mesh_index)
-		{
-			if (post_link_data.Get()._DefaultMaterials[mesh_index])
-			{
-				post_link_data.Get()._Asset->_DefaultMaterials[mesh_index] = ContentSystem::Instance->GetAsset<MaterialAsset>(post_link_data.Get()._DefaultMaterials[mesh_index]);
-			}
-		}
-
-		post_link_data = _PostLinkQueue.Pop();
-	}
-}
-
-/*
-*	Compiles internally.
-*/
-void ModelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data) NOEXCEPT
-{
-	PROFILING_SCOPE("ModelAssetCompiler::CompileInternal");
+	PROFILING_SCOPE("ModelAssetCompiler::Compile");
 
 	//Set up the parameters.
 	ModelParameters parameters;
@@ -189,7 +95,7 @@ void ModelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 	parameters._QuixelTransformation = false;
 
 	//Open the input file.
-	std::ifstream input_file{ compile_data->_FilePath.Data() };
+	std::ifstream input_file{ compile_context._FilePath.Data() };
 
 	//Iterate over the lines and fill in the parameters.
 	{
@@ -317,14 +223,14 @@ void ModelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 	//Determine the collection directory.
 	char collection_directory_path[MAXIMUM_FILE_PATH_LENGTH];
 
-	if (compile_data->_Collection)
+	if (compile_context._Collection)
 	{
-		sprintf_s(collection_directory_path, "%s\\COLLECTION %s", GetCompiledDirectoryPath(compile_data->_CompilationDomain), compile_data->_Collection.Data());
+		sprintf_s(collection_directory_path, "%s\\COLLECTION %s", GetCompiledDirectoryPath(compile_context._CompilationDomain), compile_context._Collection.Data());
 	}
 
 	else
 	{
-		sprintf_s(collection_directory_path, "%s\\COLLECTION Default", GetCompiledDirectoryPath(compile_data->_CompilationDomain));
+		sprintf_s(collection_directory_path, "%s\\COLLECTION Default", GetCompiledDirectoryPath(compile_context._CompilationDomain));
 	}
 
 	//Create the compiled directory, if it doesn't exist.
@@ -336,16 +242,16 @@ void ModelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 
 	//Create the compiled directory, if it doesn't exist.
 	File::CreateDirectory(directory_path);
-	
+
 	//Determine the output file path.
 	char output_file_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(output_file_path, "%s\\%s.ca", directory_path, compile_data->_Name.Data());
+	sprintf_s(output_file_path, "%s\\%s.ca", directory_path, compile_context._Name.Data());
 
 	//Open the output file.
 	BinaryOutputFile output_file{ output_file_path };
 
 	//Write the asset header to the file.
-	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_data->_Name.Data()), compile_data->_Name.Data() };
+	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_context._Name.Data()), compile_context._Name.Data() };
 	output_file.Write(&asset_header, sizeof(AssetHeader));
 
 	//Set up all of the model files and the collision model file.
@@ -383,7 +289,7 @@ void ModelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 		{
 			for (ModelFile::Mesh &mesh : model_file._Meshes)
 			{
-				for (Vertex& vertex : mesh._Vertices)
+				for (Vertex &vertex : mesh._Vertices)
 				{
 					axis_aligned_bounding_box.Expand(vertex._Position);
 				}
@@ -481,30 +387,33 @@ void ModelAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_dat
 }
 
 /*
-*	Loads internally.
+*	Loads a single asset with the given load context.
 */
-void ModelAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCEPT
+void ModelAssetCompiler::Load(const LoadContext &load_context) NOEXCEPT
 {
-	PROFILING_SCOPE("ModelAssetCompiler::LoadInternal");
+	PROFILING_SCOPE("ModelAssetCompiler::Load");
+
+	//Allocate the asset.
+	ModelAsset *const RESTRICT new_asset{ static_cast<ModelAsset *const RESTRICT>(load_context._Asset) };
 
 	//Set up the post link data.
 	PostLinkData post_link_data;
 
-	post_link_data._Asset = load_data->_Asset;
+	post_link_data._Asset = new_asset;
 
 	//Read the data.
-	uint64 stream_archive_position{ load_data->_StreamArchivePosition };
+	uint64 stream_archive_position{ load_context._StreamArchivePosition };
 
 	//Read the axis aligned bounding box.
-	load_data->_StreamArchive->Read(&load_data->_Asset->_ModelSpaceAxisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox3D), &stream_archive_position);
+	load_context._StreamArchive->Read(&new_asset->_ModelSpaceAxisAlignedBoundingBox, sizeof(AxisAlignedBoundingBox3D), &stream_archive_position);
 
 	//Read the number of meshes.
 	uint64 number_of_meshes;
-	load_data->_StreamArchive->Read(&number_of_meshes, sizeof(uint64), &stream_archive_position);
+	load_context._StreamArchive->Read(&number_of_meshes, sizeof(uint64), &stream_archive_position);
 
 	//Read the number of level of details.
 	uint64 number_of_level_of_details;
-	load_data->_StreamArchive->Read(&number_of_level_of_details, sizeof(uint64), &stream_archive_position);
+	load_context._StreamArchive->Read(&number_of_level_of_details, sizeof(uint64), &stream_archive_position);
 
 	//Set up the vertices/indices.
 	DynamicArray<DynamicArray<DynamicArray<Vertex>>> vertices;
@@ -522,43 +431,43 @@ void ModelAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCE
 		{
 			//Read the number of vertices.
 			uint64 number_of_vertices;
-			load_data->_StreamArchive->Read(&number_of_vertices, sizeof(uint64), &stream_archive_position);
+			load_context._StreamArchive->Read(&number_of_vertices, sizeof(uint64), &stream_archive_position);
 
 			//Read the vertices.
 			vertices[mesh_index][j].Upsize<false>(number_of_vertices);
-			load_data->_StreamArchive->Read(vertices[mesh_index][j].Data(), sizeof(Vertex) * number_of_vertices, &stream_archive_position);
+			load_context._StreamArchive->Read(vertices[mesh_index][j].Data(), sizeof(Vertex) * number_of_vertices, &stream_archive_position);
 
 			//Read the number of indices.
 			uint64 number_of_indices;
-			load_data->_StreamArchive->Read(&number_of_indices, sizeof(uint64), &stream_archive_position);
+			load_context._StreamArchive->Read(&number_of_indices, sizeof(uint64), &stream_archive_position);
 
 			//Read the indices.
 			indices[mesh_index][j].Upsize<false>(number_of_indices);
-			load_data->_StreamArchive->Read(indices[mesh_index][j].Data(), sizeof(uint32) * number_of_indices, &stream_archive_position);
+			load_context._StreamArchive->Read(indices[mesh_index][j].Data(), sizeof(uint32) * number_of_indices, &stream_archive_position);
 		}
 	}
 
 	//Read the default materials.
-	load_data->_StreamArchive->Read(post_link_data._DefaultMaterials.Data(), sizeof(HashString) * RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL, &stream_archive_position);
+	load_context._StreamArchive->Read(post_link_data._DefaultMaterials.Data(), sizeof(HashString) * RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL, &stream_archive_position);
 
 	//Set up the collision model data.
 	CollisionModelData collision_model_data;
 
 	//Read if there exists a collision model.
 	bool collision_model_exists;
-	load_data->_StreamArchive->Read(&collision_model_exists, sizeof(bool), &stream_archive_position);
+	load_context._StreamArchive->Read(&collision_model_exists, sizeof(bool), &stream_archive_position);
 
 	//Read the collision model data.
 	if (collision_model_exists)
 	{
-		load_data->_StreamArchive->Read(&collision_model_data._Type, sizeof(CollisionModelData::Type), &stream_archive_position);
+		load_context._StreamArchive->Read(&collision_model_data._Type, sizeof(CollisionModelData::Type), &stream_archive_position);
 
 		uint64 collision_model_data_size;
-		load_data->_StreamArchive->Read(&collision_model_data_size, sizeof(uint64), &stream_archive_position);
+		load_context._StreamArchive->Read(&collision_model_data_size, sizeof(uint64), &stream_archive_position);
 
 		collision_model_data._Data.Upsize<false>(collision_model_data_size);
 
-		load_data->_StreamArchive->Read(collision_model_data._Data.Data(), collision_model_data_size, &stream_archive_position);
+		load_context._StreamArchive->Read(collision_model_data._Data.Data(), collision_model_data_size, &stream_archive_position);
 	}
 
 	else
@@ -567,51 +476,51 @@ void ModelAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCE
 	}
 
 	//Create the meshes.
-	load_data->_Asset->_Meshes.Upsize<true>(number_of_meshes);
+	new_asset->_Meshes.Upsize<true>(number_of_meshes);
 
 	for (uint64 mesh_index{ 0 }; mesh_index < number_of_meshes; ++mesh_index)
 	{
-		load_data->_Asset->_Meshes[mesh_index]._MeshLevelOfDetails.Upsize<true>(number_of_level_of_details);
+		new_asset->_Meshes[mesh_index]._MeshLevelOfDetails.Upsize<true>(number_of_level_of_details);
 
 		for (uint64 level_of_detail_index{ 0 }; level_of_detail_index < number_of_level_of_details; ++level_of_detail_index)
 		{
 			//Copy the vertices/indices.
-			load_data->_Asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._Vertices = std::move(vertices[mesh_index][level_of_detail_index]);
-			load_data->_Asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._Indices = std::move(indices[mesh_index][level_of_detail_index]);
+			new_asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._Vertices = std::move(vertices[mesh_index][level_of_detail_index]);
+			new_asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._Indices = std::move(indices[mesh_index][level_of_detail_index]);
 
 			//Create the buffers.
 			{
-				const void *const RESTRICT data_chunks[]{ load_data->_Asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._Vertices.Data() };
-				const uint64 data_sizes[]{ sizeof(Vertex) * load_data->_Asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._Vertices.Size() };
-				RenderingSystem::Instance->CreateBuffer(data_sizes[0], BufferUsage::StorageBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &load_data->_Asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._VertexBuffer);
-				RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &load_data->_Asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._VertexBuffer);
+				const void *const RESTRICT data_chunks[]{ new_asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._Vertices.Data() };
+				const uint64 data_sizes[]{ sizeof(Vertex) * new_asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._Vertices.Size() };
+				RenderingSystem::Instance->CreateBuffer(data_sizes[0], BufferUsage::StorageBuffer | BufferUsage::VertexBuffer, MemoryProperty::DeviceLocal, &new_asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._VertexBuffer);
+				RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &new_asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._VertexBuffer);
 			}
 
 			{
-				const void *const RESTRICT data_chunks[]{ load_data->_Asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._Indices.Data() };
-				const uint64 data_sizes[]{ sizeof(uint32) * load_data->_Asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._Indices.Size() };
-				RenderingSystem::Instance->CreateBuffer(data_sizes[0], BufferUsage::IndexBuffer | BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &load_data->_Asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._IndexBuffer);
-				RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &load_data->_Asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._IndexBuffer);
+				const void *const RESTRICT data_chunks[]{ new_asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._Indices.Data() };
+				const uint64 data_sizes[]{ sizeof(uint32) * new_asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._Indices.Size() };
+				RenderingSystem::Instance->CreateBuffer(data_sizes[0], BufferUsage::IndexBuffer | BufferUsage::StorageBuffer, MemoryProperty::DeviceLocal, &new_asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._IndexBuffer);
+				RenderingSystem::Instance->UploadDataToBuffer(data_chunks, data_sizes, 1, &new_asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._IndexBuffer);
 			}
 
 			//Write the index count.
-			load_data->_Asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._IndexCount = static_cast<uint32>(load_data->_Asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._Indices.Size());
+			new_asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._IndexCount = static_cast<uint32>(new_asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._Indices.Size());
 		}
 	}
 
 	//Create the collision model, if there is one.
 	if (collision_model_data._Type != CollisionModelData::Type::NONE)
 	{
-		PhysicsSystem::Instance->CreateCollisionModel(collision_model_data, &load_data->_Asset->_CollisionModel);
+		PhysicsSystem::Instance->CreateCollisionModel(collision_model_data, &new_asset->_CollisionModel);
 	}
 
 	else
 	{
-		load_data->_Asset->_CollisionModel = nullptr;
+		new_asset->_CollisionModel = nullptr;
 	}
 
 	//Read the level of detail multiplier.
-	load_data->_StreamArchive->Read(&load_data->_Asset->_LevelOfDetailMultiplier, sizeof(float32), &stream_archive_position);
+	load_context._StreamArchive->Read(&new_asset->_LevelOfDetailMultiplier, sizeof(float32), &stream_archive_position);
 
 	//Add the post link data to the post link queue.
 	_PostLinkQueue.Push(post_link_data);
@@ -628,8 +537,8 @@ void ModelAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCE
 		{
 			for (uint64 level_of_detail_index{ 0 }; level_of_detail_index < number_of_level_of_details; ++level_of_detail_index)
 			{
-				const uint64 vertices_size{ sizeof(Vertex) * load_data->_Asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._Vertices.Size() };
-				const uint64 indices_size{ sizeof(uint32) * load_data->_Asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._Indices.Size() };
+				const uint64 vertices_size{ sizeof(Vertex) * new_asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._Vertices.Size() };
+				const uint64 indices_size{ sizeof(uint32) * new_asset->_Meshes[mesh_index]._MeshLevelOfDetails[level_of_detail_index]._Indices.Size() };
 
 				cpu_memory += vertices_size;
 				cpu_memory += indices_size;
@@ -650,4 +559,25 @@ void ModelAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCE
 		_TotalGPUMemory.FetchAdd(gpu_memory);
 	}
 #endif
+}
+
+/*
+*	Runs after load.
+*/
+void ModelAssetCompiler::PostLoad() NOEXCEPT
+{
+	Optional<PostLinkData> post_link_data{ _PostLinkQueue.Pop() };
+
+	while (post_link_data.Valid())
+	{
+		for (uint64 mesh_index{ 0 }; mesh_index < RenderingConstants::MAXIMUM_NUMBER_OF_MESHES_PER_MODEL; ++mesh_index)
+		{
+			if (post_link_data.Get()._DefaultMaterials[mesh_index])
+			{
+				post_link_data.Get()._Asset->_DefaultMaterials[mesh_index] = ContentSystem::Instance->GetAsset<MaterialAsset>(post_link_data.Get()._DefaultMaterials[mesh_index]);
+			}
+		}
+
+		post_link_data = _PostLinkQueue.Pop();
+	}
 }

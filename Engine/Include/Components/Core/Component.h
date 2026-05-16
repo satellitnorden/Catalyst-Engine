@@ -207,6 +207,16 @@ protected:
 	) NOEXCEPT;
 
 	/*
+	*	Adds an editable audio asset field.
+	*/
+	void AddEditableAudioAssetField
+	(
+		const char *const RESTRICT name,
+		const uint64 initialization_data_offset,
+		const uint64 instance_data_offset
+	) NOEXCEPT;
+
+	/*
 	*	Adds an editable material asset field.
 	*/
 	void AddEditableMaterialAssetField
@@ -220,16 +230,6 @@ protected:
 	*	Adds an editable model asset field.
 	*/
 	void AddEditableModelAssetField
-	(
-		const char *const RESTRICT name,
-		const uint64 initialization_data_offset,
-		const uint64 instance_data_offset
-	) NOEXCEPT;
-
-	/*
-	*	Adds an editable sound asset field.
-	*/
-	void AddEditableSoundAssetField
 	(
 		const char *const RESTRICT name,
 		const uint64 initialization_data_offset,

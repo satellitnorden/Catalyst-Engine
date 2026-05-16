@@ -20,7 +20,6 @@
 #include <Content/AssetCompilers/RawDataAssetCompiler.h>
 #include <Content/AssetCompilers/RenderPipelineAssetCompiler.h>
 #include <Content/AssetCompilers/SettingsAssetCompiler.h>
-#include <Content/AssetCompilers/SoundAssetCompiler.h>
 #include <Content/AssetCompilers/Texture2DAssetCompiler.h>
 #include <Content/AssetCompilers/TextureCubeAssetCompiler.h>
 
@@ -78,7 +77,6 @@ void ContentSystem::Initialize() NOEXCEPT
 	RegisterAssetCompiler(RawDataAssetCompiler::Instance);
 	RegisterAssetCompiler(RenderPipelineAssetCompiler::Instance);
 	RegisterAssetCompiler(SettingsAssetCompiler::Instance);
-	RegisterAssetCompiler(SoundAssetCompiler::Instance);
 	RegisterAssetCompiler(Texture2DAssetCompiler::Instance);
 	RegisterAssetCompiler(TextureCubeAssetCompiler::Instance);
 
@@ -207,23 +205,37 @@ RECOMPILE:
 		content_cache.Write(content_cache_file_path);
 	}
 
-	//Wait for all tasks to finish.
-	bool all_tasks_finished{ _Tasks.Empty() };
-
-	while (!all_tasks_finished)
+	//Wait for all the compile data to finish.
+	while (!_CompileData.Empty())
 	{
-		TaskSystem::Instance->DoWork(Task::Priority::LOW);
-
-		all_tasks_finished = true;
-
-		for (const Task *const RESTRICT task : _Tasks)
+		for (uint64 compile_data_index{ 0 }; compile_data_index < _CompileData.Size();)
 		{
-			all_tasks_finished &= task->IsExecuted();
+			//Cache the compile data.
+			CompileData *const RESTRICT compile_data{ _CompileData[compile_data_index] };
+
+			//Is the compile finished?
+			if (compile_data->_Task.IsExecuted())
+			{
+				//Deallocate the compile data.
+				_CompileDataAllocator.Free(compile_data);
+
+				//Remove the compile data.
+				_CompileData.EraseAt<false>(compile_data_index);
+
+				LOG_INFORMATION("Number of compiles left: %llu", _CompileData.Size());
+			}
+
+			else
+			{
+				++compile_data_index;
+			}
+		}
+
+		if (!_CompileData.Empty())
+		{
+			TaskSystem::Instance->DoWork(Task::Priority::LOW);
 		}
 	}
-
-	//Clear the tasks.
-	_Tasks.Clear();
 
 	//Call PostCompile() on all asset compilers.
 	for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())
@@ -287,23 +299,37 @@ RECOMPILE:
 		content_cache.Write(content_cache_file_path);
 	}
 
-	//Wait for all tasks to finish.
-	bool all_tasks_finished{ _Tasks.Empty() };
-
-	while (!all_tasks_finished)
+	//Wait for all the compile data to finish.
+	while (!_CompileData.Empty())
 	{
-		TaskSystem::Instance->DoWork(Task::Priority::LOW);
-
-		all_tasks_finished = true;
-
-		for (const Task *const RESTRICT task : _Tasks)
+		for (uint64 compile_data_index{ 0 }; compile_data_index < _CompileData.Size();)
 		{
-			all_tasks_finished &= task->IsExecuted();
+			//Cache the compile data.
+			CompileData *const RESTRICT compile_data{ _CompileData[compile_data_index] };
+
+			//Is the compile finished?
+			if (compile_data->_Task.IsExecuted())
+			{
+				//Deallocate the compile data.
+				_CompileDataAllocator.Free(compile_data);
+
+				//Remove the compile data.
+				_CompileData.EraseAt<false>(compile_data_index);
+
+				LOG_INFORMATION("Number of compiles left: %llu", _CompileData.Size());
+			}
+
+			else
+			{
+				++compile_data_index;
+			}
+		}
+
+		if (!_CompileData.Empty())
+		{
+			TaskSystem::Instance->DoWork(Task::Priority::LOW);
 		}
 	}
-
-	//Clear the tasks.
-	_Tasks.Clear();
 
 	//Call PostCompile() on all asset compilers.
 	for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())
@@ -330,151 +356,6 @@ RECOMPILE:
 	return compile_result._NewAssetsCompiled;
 }
 #endif
-
-/*
-*	Loads assets from the given directory path.
-*/
-void ContentSystem::LoadAssets(const char *const RESTRICT directory_path) NOEXCEPT
-{
-	PROFILING_SCOPE("ContentSystem::LoadAssets");
-
-	//Iterate over the items in the directory.
-	for (const auto &entry : std::filesystem::directory_iterator(std::string(directory_path)))
-	{
-		//Cache the file path.
-		const std::string file_path{ entry.path().string() };
-
-		//Scan recursively if this is a directory.
-		if (entry.is_directory())
-		{
-			LoadAssets(file_path.c_str());
-
-			continue;
-		}
-
-		//Retrieve the file extension.
-		const File::Extension file_extension{ File::GetExtension(file_path.c_str()) };
-
-		//Is this an asset?
-		if (file_extension == File::Extension::CA)
-		{
-			LoadAsset(file_path.c_str());
-		}
-
-		//Is this an asset collection?
-		else if (file_extension == File::Extension::CAC)
-		{
-			LoadAssetCollection(file_path.c_str());
-		}
-	}
-
-	//Call PostLoad() on all asset compilers.
-	for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())
-	{
-		asset_compiler->PostLoad();
-	}
-}
-
-/*
-*	Load a single asset from the given file path.
-*/
-void ContentSystem::LoadAsset(const char *const RESTRICT file_path) NOEXCEPT
-{
-	//Open the input file.
-	BinaryInputFile input_file{ file_path };
-
-	//Load the file into a stream archive.
-	StreamArchive stream_archive;
-
-	{
-		PROFILING_SCOPE("ContentSystem::LoadAsset::CreateStreamArchive");
-
-		{
-			PROFILING_SCOPE("ContentSystem::LoadAsset::AllocateStreamArchive");
-			stream_archive.Resize(input_file.Size());
-		}
-
-		{
-			PROFILING_SCOPE("ContentSystem::LoadAsset::ReadStreamArchive");
-
-			stream_archive.SetMode(StreamArchive::Mode::READ);
-
-			if (input_file.IsMapped())
-			{
-				stream_archive.SetData(static_cast<byte *const RESTRICT>(const_cast<void *const RESTRICT>(input_file.GetMappedData())), input_file.Size());
-			}
-			
-			else
-			{
-				input_file.Read(stream_archive.Data(), input_file.Size());
-			}
-		}
-	}
-
-	//Set up the stream archive position.
-	uint64 stream_archive_position{ 0 };
-
-	//Read the asset header.
-	AssetHeader asset_header;
-	stream_archive.Read(&asset_header, sizeof(AssetHeader), &stream_archive_position);
-
-	//Find the asset compiler for this asset type.
-	AssetCompiler *RESTRICT asset_compiler;
-
-	{
-		AssetCompiler *const RESTRICT *const RESTRICT _asset_compiler{ _AssetCompilers.Find(asset_header._AssetTypeIdentifier) };
-		asset_compiler = _asset_compiler ? *_asset_compiler : nullptr;
-	}
-
-	//Couldn't find an asset compiler, ignore!
-	if (!asset_compiler)
-	{
-		ASSERT(false, "Couldn't find asset compiler!");
-
-		return;
-	}
-
-	//Set up the load context.
-	AssetCompiler::LoadContext load_context;
-
-	load_context._StreamArchive = &stream_archive;
-	load_context._StreamArchivePosition = stream_archive_position;
-	load_context._TaskAllocator = &_TaskAllocator;
-	load_context._Tasks = &_Tasks;
-	load_context._Asset = nullptr;
-
-	//Load!
-	Asset *const RESTRICT new_asset{ asset_compiler->Load(load_context) };
-
-	//Copy the asset header.
-	Memory::Copy(&new_asset->_Header, &asset_header, sizeof(AssetHeader));
-
-	//Add it to the list of assets.
-	HashTable<HashString, Asset *RESTRICT> *const RESTRICT assets{ _Assets.Find(asset_compiler->AssetTypeIdentifier()) };
-
-	assets->Add(asset_header._AssetIdentifier, new_asset);
-
-	//Wait for all tasks to finish.
-	bool all_tasks_finished{ _Tasks.Empty() };
-
-	while (!all_tasks_finished)
-	{
-		TaskSystem::Instance->DoWork(Task::Priority::LOW);
-
-		all_tasks_finished = true;
-
-		for (const Task *const RESTRICT task : _Tasks)
-		{
-			all_tasks_finished &= task->IsExecuted();
-		}
-	}
-
-	//Clear the tasks.
-	_Tasks.Clear();
-
-	//Close the input file.
-	input_file.Close();
-}
 
 /*
 *	Load a single asset collection from the given file path.
@@ -552,57 +433,75 @@ void ContentSystem::LoadAssetCollection(const char *const RESTRICT file_path) NO
 			continue;
 		}
 
+		//Allocate the load data.
+		LoadData *const RESTRICT load_data{ new (_LoadDataAllocator.Allocate()) LoadData() };
+
+		//Set the asset compiler.
+		load_data->_AssetCompiler = asset_compiler;
+
 		//Set up the load context.
-		AssetCompiler::LoadContext load_context;
-
-		load_context._StreamArchive = &stream_archive;
-		load_context._StreamArchivePosition = stream_archive_position;
-		load_context._TaskAllocator = &_TaskAllocator;
-		load_context._Tasks = &_Tasks;
-		load_context._Asset = nullptr;
-
-		//Load!
-		Asset *const RESTRICT new_asset{ asset_compiler->Load(load_context) };
+		load_data->_Context._StreamArchive = &stream_archive;
+		load_data->_Context._StreamArchivePosition = stream_archive_position;
+		load_data->_Context._Asset = asset_compiler->AllocateAsset();
 
 		//Copy the asset header.
-		Memory::Copy(&new_asset->_Header, &asset_header, sizeof(AssetHeader));
+		Memory::Copy(&load_data->_Context._Asset->_Header, &asset_header, sizeof(AssetHeader));
 
-		//Add it to the list of assets.
-		HashTable<HashString, Asset *RESTRICT> *const RESTRICT assets{ _Assets.Find(asset_compiler->AssetTypeIdentifier()) };
+		//Set up the task.
+		load_data->_Task._Function = [](void *const RESTRICT arguments)
+		{
+			LoadData *const RESTRICT load_data{ static_cast<LoadData *const RESTRICT>(arguments) };
 
-		assets->Add(asset_header._AssetIdentifier, new_asset);
+			load_data->_AssetCompiler->Load(load_data->_Context);
+		};
+		load_data->_Task._Arguments = load_data;
+		load_data->_Task._ExecutableOnSameThread = false;
+
+		//Execute the task!
+		TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, &load_data->_Task);
+
+		//Add the load data.
+		_LoadData.Emplace(load_data);
 
 		//Advance the stream archive position.
 		stream_archive_position = original_stream_archive_position + file_size + sizeof(uint64);
 	}
 
-	//Wait for all tasks to finish.
-	uint64 number_of_tasks_left{ _Tasks.Size() };
-
-	while (number_of_tasks_left > 0)
+	//Wait for all the load data to finish.
+	while (!_LoadData.Empty())
 	{
-		uint64 _number_of_tasks_left{ 0 };
-
-		TaskSystem::Instance->DoWork(Task::Priority::LOW);
-
-		for (const Task *const RESTRICT task : _Tasks)
+		for (uint64 load_data_index{ 0 }; load_data_index < _LoadData.Size();)
 		{
-			if (!task->IsExecuted())
+			//Cache the load data.
+			LoadData *const RESTRICT load_data{ _LoadData[load_data_index] };
+
+			//Is the load finished?
+			if (load_data->_Task.IsExecuted())
 			{
-				++_number_of_tasks_left;
+				//Add it to the list of assets.
+				HashTable<HashString, Asset *RESTRICT> *const RESTRICT assets{ _Assets.Find(load_data->_AssetCompiler->AssetTypeIdentifier()) };
+				assets->Add(load_data->_Context._Asset->_Header._AssetIdentifier, load_data->_Context._Asset);
+
+				//Deallocate the load data.
+				_LoadDataAllocator.Free(load_data);
+
+				//Remove the load data.
+				_LoadData.EraseAt<false>(load_data_index);
+
+				LOG_INFORMATION("Number of loads left: %llu", _LoadData.Size());
+			}
+
+			else
+			{
+				++load_data_index;
 			}
 		}
 
-		if (number_of_tasks_left != _number_of_tasks_left)
+		if (!_LoadData.Empty())
 		{
-			number_of_tasks_left = _number_of_tasks_left;
-
-			LOG_INFORMATION("Number of ascynhronous load tasks left: %llu", number_of_tasks_left);
+			TaskSystem::Instance->DoWork(Task::Priority::LOW);
 		}
 	}
-
-	//Clear the tasks.
-	_Tasks.Clear();
 
 	//Call PostLoad() on all asset compilers.
 	for (AssetCompiler *const RESTRICT asset_compiler : _AssetCompilers.ValueIterator())
@@ -709,35 +608,33 @@ void ContentSystem::CompileAssetsInDirectory
 
 		LOG_INFORMATION("Compiling %s", file_path.data());
 
+		//Allocate the compile data.
+		CompileData *const RESTRICT compile_data{ new (_CompileDataAllocator.Allocate()) CompileData() };
+
+		//Set the asset compiler.
+		compile_data->_AssetCompiler = asset_compiler;
+
 		//Set up the compile context.
-		AssetCompiler::CompileContext compile_context;
+		compile_data->_Context._CompilationDomain = compilation_domain;
+		compile_data->_Context._Collection = collection;
+		compile_data->_Context._FilePath = file_path.c_str();
+		compile_data->_Context._Name = name.c_str();
 
-		compile_context._CompilationDomain = compilation_domain;
-		compile_context._Collection = collection;
-		compile_context._FilePath = file_path.c_str();
-		compile_context._Name = name.c_str();
-		compile_context._ContentCache = content_cache;
-		compile_context._TaskAllocator = &_TaskAllocator;
-		compile_context._Tasks = &_Tasks;
-
-		//Compile!
-		asset_compiler->Compile(compile_context);
-
-#if 0 //Force single-threaded compiles.
+		//Set up the task.
+		compile_data->_Task._Function = [](void *const RESTRICT arguments)
 		{
-			bool all_done{ _Tasks.Empty() };
+			CompileData *const RESTRICT compile_data{ static_cast<CompileData *const RESTRICT>(arguments) };
 
-			while (!all_done)
-			{
-				all_done = true;
+			compile_data->_AssetCompiler->Compile(compile_data->_Context);
+		};
+		compile_data->_Task._Arguments = compile_data;
+		compile_data->_Task._ExecutableOnSameThread = false;
 
-				for (Task *const RESTRICT task : _Tasks)
-				{
-					all_done &= task->IsExecuted();
-				}
-			}
-		}
-#endif
+		//Execute the task!
+		TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, &compile_data->_Task);
+
+		//Add the compile data.
+		_CompileData.Emplace(compile_data);
 
 		//Update the entry.
 		content_cache->UpdateEntry(identifier, asset_compiler->CurrentVersion(), last_write_time);
@@ -754,7 +651,7 @@ void ContentSystem::CompileAssetsInDirectory
 		//Call any callbacks for when an asset is compiled.
 		for (OnAssetCompiledCallback callback : _OnAssetCompiledCallbacks)
 		{
-			asset_compiler->_TriggerRecompile |= callback(asset_compiler->AssetTypeIdentifier(), file_path.c_str());
+			compile_result->_TriggerRecompile |= callback(asset_compiler->AssetTypeIdentifier(), file_path.c_str());
 		}
 	}
 }

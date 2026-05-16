@@ -11,9 +11,9 @@
 #include <Content/Core/AssetPointer.h>
 #include <Content/Assets/AnimatedModelAsset.h>
 #include <Content/Assets/AnimationAsset.h>
+#include <Content/Assets/AudioAsset.h>
 #include <Content/Assets/MaterialAsset.h>
 #include <Content/Assets/ModelAsset.h>
-#include <Content/Assets/SoundAsset.h>
 
 //Math.
 #include <Math/General/EulerAngles.h>
@@ -430,6 +430,15 @@ namespace EntitySerialization
 								break;
 							}
 
+							case ComponentEditableField::Type::AUDIO_ASSET:
+							{
+								const HashString asset_identifier{ editable_field_entry.get<std::string>().c_str() };
+
+								stream_archive->Write(&asset_identifier, sizeof(HashString));
+
+								break;
+							}
+
 							case ComponentEditableField::Type::MATERIAL_ASSET:
 							{
 								const HashString asset_identifier{ editable_field_entry.get<std::string>().c_str() };
@@ -440,15 +449,6 @@ namespace EntitySerialization
 							}
 
 							case ComponentEditableField::Type::MODEL_ASSET:
-							{
-								const HashString asset_identifier{ editable_field_entry.get<std::string>().c_str() };
-
-								stream_archive->Write(&asset_identifier, sizeof(HashString));
-
-								break;
-							}
-
-							case ComponentEditableField::Type::SOUND_ASSET:
 							{
 								const HashString asset_identifier{ editable_field_entry.get<std::string>().c_str() };
 
@@ -735,6 +735,16 @@ namespace EntitySerialization
 						break;
 					}
 
+					case ComponentEditableField::Type::AUDIO_ASSET:
+					{
+						HashString data;
+						stream_archive.Read(&data, sizeof(HashString), stream_archive_position);
+
+						*reinterpret_cast<AssetPointer<AudioAsset> *const RESTRICT>(AdvancePointer(component_configuration, editable_field->_InitializationDataOffset)) = ContentSystem::Instance->GetAsset<AudioAsset>(data);
+
+						break;
+					}
+
 					case ComponentEditableField::Type::MATERIAL_ASSET:
 					{
 						HashString data;
@@ -751,16 +761,6 @@ namespace EntitySerialization
 						stream_archive.Read(&data, sizeof(HashString), stream_archive_position);
 
 						*reinterpret_cast<AssetPointer<ModelAsset> *const RESTRICT>(AdvancePointer(component_configuration, editable_field->_InitializationDataOffset)) = ContentSystem::Instance->GetAsset<ModelAsset>(data);
-
-						break;
-					}
-
-					case ComponentEditableField::Type::SOUND_ASSET:
-					{
-						HashString data;
-						stream_archive.Read(&data, sizeof(HashString), stream_archive_position);
-
-						*reinterpret_cast<AssetPointer<SoundAsset> *const RESTRICT>(AdvancePointer(component_configuration, editable_field->_InitializationDataOffset)) = ContentSystem::Instance->GetAsset<SoundAsset>(data);
 
 						break;
 					}

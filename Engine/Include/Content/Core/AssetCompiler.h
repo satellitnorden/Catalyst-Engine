@@ -5,9 +5,7 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/Containers/StreamArchive.h>
 #include <Core/General/HashString.h>
-
-//Concurrency.
-#include <Concurrency/Task.h>
+#include <Core/General/StaticString.h>
 
 //Content.
 #include <Content/Core/ContentCore.h>
@@ -17,7 +15,6 @@
 
 //Forward declarations.
 class Asset;
-class ContentCache;
 
 /*
 *	Base class for compilers that handle a specific asset.
@@ -37,9 +34,21 @@ public:
 		NONE = 0,
 
 		/*
-		*	Makes this disregard whether or not a file has changed, and always compile.
+		*	Foces this asset compiler to compile single threaded.
+		*	Can be useful if some work needs to happen on the main thread, or if the asset compiler handles it's own concurrency.
 		*/
-		ALWAYS_COMPILE = BIT(0)
+		COMPILE_SINGLE_THREADED = BIT(0),
+
+		/*
+		*	Foces this asset compiler to load single threaded.
+		*	Can be useful if some work needs to happen on the main thread, or if the asset compiler handles it's own concurrency.
+		*/
+		LOAD_SINGLE_THREADED = BIT(1),
+
+		/*
+		*	Makes this disregard whether or not an asset has changed, and always compile.
+		*/
+		ALWAYS_COMPILE = BIT(2)
 	};
 
 	/*
@@ -54,22 +63,13 @@ public:
 		CompilationDomain _CompilationDomain;
 
 		//The collection.
-		const char *RESTRICT _Collection;
+		StaticString<64> _Collection;
 
 		//The file path.
-		const char *RESTRICT _FilePath;
+		StaticString<MAXIMUM_FILE_PATH_LENGTH> _FilePath;
 
 		//The name.
-		const char *RESTRICT _Name;
-
-		//The content cache.
-		ContentCache *RESTRICT _ContentCache;
-
-		//The task allocator.
-		PoolAllocator<sizeof(Task)> *RESTRICT _TaskAllocator;
-
-		//The tasks.
-		DynamicArray<Task *RESTRICT> *RESTRICT _Tasks;
+		StaticString<64> _Name;
 
 	};
 
@@ -86,12 +86,6 @@ public:
 
 		//The stream archive position.
 		uint64 _StreamArchivePosition;
-
-		//The task allocator.
-		PoolAllocator<sizeof(Task)> *RESTRICT _TaskAllocator;
-
-		//The tasks.
-		DynamicArray<Task *RESTRICT> *RESTRICT _Tasks;
 
 		//The asset. Only set if the asset is being reloaded.
 		Asset *RESTRICT _Asset;
@@ -160,9 +154,14 @@ public:
 	}
 
 	/*
+	*	Allocates an asset.
+	*/
+	virtual Asset *const RESTRICT AllocateAsset() NOEXCEPT = 0;
+
+	/*
 	*	Loads a single asset with the given load context.
 	*/
-	virtual NO_DISCARD Asset *const RESTRICT Load(const LoadContext &load_context) NOEXCEPT = 0;
+	virtual void Load(const LoadContext &load_context) NOEXCEPT = 0;
 
 	/*
 	*	Runs after load.

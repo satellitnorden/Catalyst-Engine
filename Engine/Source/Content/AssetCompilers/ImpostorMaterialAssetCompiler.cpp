@@ -21,9 +21,7 @@
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
-
-//Systems.
-#include <Systems/TaskSystem.h>
+#include <Rendering/Native/Resolution.h>
 
 //STL.
 #include <fstream>
@@ -95,53 +93,8 @@ NO_DISCARD uint64 ImpostorMaterialAssetCompiler::CurrentVersion() const NOEXCEPT
 */
 void ImpostorMaterialAssetCompiler::Compile(const CompileContext &compile_context) NOEXCEPT
 {
-	//Set up the compile data.
-	CompileData *const RESTRICT compile_data{ new (_CompileDataAllocator.Allocate()) CompileData() };
+	PROFILING_SCOPE("ImpostorMaterialAssetCompiler::Compile");
 
-	//Set the collection.
-	compile_data->_Collection = compile_context._Collection;
-
-	//Set the file path.
-	compile_data->_FilePath = compile_context._FilePath;
-
-	//Set the name.
-	compile_data->_Name = compile_context._Name;
-
-	//Set the compilation domain.
-	compile_data->_CompilationDomain = compile_context._CompilationDomain;
-
-	//Set up the task.
-	Task *const RESTRICT task{ static_cast<Task *const RESTRICT>(compile_context._TaskAllocator->Allocate()) };
-
-	task->_Function = [](void *const RESTRICT arguments)
-	{
-		ImpostorMaterialAssetCompiler::Instance->CompileInternal(static_cast<CompileData *const RESTRICT>(arguments));
-	};
-	task->_Arguments = compile_data;
-	task->_ExecutableOnSameThread = false;
-
-	//Execute the task!
-	TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, task);
-
-	//Add the task to the list.
-	compile_context._Tasks->Emplace(task);
-}
-
-/*
-*	Loads a single asset with the given load context.
-*/
-NO_DISCARD Asset *const RESTRICT ImpostorMaterialAssetCompiler::Load(const LoadContext &load_context) NOEXCEPT
-{
-	ASSERT(false, "This asset compiler should load no assets of it's own!");
-
-	return nullptr;
-}
-
-/*
-*	Compiles internally.
-*/
-void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data) NOEXCEPT
-{
 	class SignedDistanceFieldData final
 	{
 
@@ -158,8 +111,6 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 
 	};
 
-	PROFILING_SCOPE("ImpostorMaterialAssetCompiler::CompileInternal");
-
 	//Set up the parameters.
 	ImpostorMaterialParameters parameters;
 
@@ -167,7 +118,7 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 	parameters._SuperSample = 0;
 
 	//Open the input file.
-	std::ifstream input_file{ compile_data->_FilePath.Data() };
+	std::ifstream input_file{ compile_context._FilePath.Data() };
 
 	//Iterate over the lines and fill in the parameters.
 	{
@@ -487,7 +438,7 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 
 	//Load the model.
 	ModelFile model;
-	
+
 	if (!FBXReader::Read(parameters._Model.Data(), &model))
 	{
 		ASSERT(false, "Couldn't read %s!", parameters._Model.Data());
@@ -667,7 +618,7 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 
 						//Sample the normal map.
 						Vector3<float32> normal_map_sample;
-						
+
 						{
 							Vector4<float32> _normal_map_sample{ parameters._NormalMapTextures[intersected_mesh_index].Sample(intersected_texture_coordinate, AddressMode::REPEAT) };
 
@@ -675,7 +626,7 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 							normal_map_sample._Y = _normal_map_sample._Y;
 							normal_map_sample._Z = _normal_map_sample._Z;
 						}
-						
+
 						//Re-scale the normal map sample.
 						normal_map_sample._X = normal_map_sample._X * 2.0f - 1.0f;
 						normal_map_sample._Y = normal_map_sample._Y * 2.0f - 1.0f;
@@ -796,7 +747,7 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 		//Determine the directory.
 		char directory_path[MAXIMUM_FILE_PATH_LENGTH];
 
-		sprintf_s(directory_path, "%s\\ImpostorTextures", GetSourceDirectoryPath(compile_data->_CompilationDomain));
+		sprintf_s(directory_path, "%s\\ImpostorTextures", GetSourceDirectoryPath(compile_context._CompilationDomain));
 
 		//Create the directory, if it doesn't exist.
 		File::CreateDirectory(directory_path);
@@ -804,12 +755,12 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 		//Write the albedo/thickness texture.
 		{
 			char file_buffer[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(file_buffer, "%s\\%s_Albedo.png", directory_path, compile_data->_Name.Data());
+			sprintf_s(file_buffer, "%s\\%s_Albedo.png", directory_path, compile_context._Name.Data());
 
 			PNGWriter::Write(impostor_albedo_texture, file_buffer);
 
 			char asset_buffer[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(asset_buffer, "%s\\%s_AlbedoThickness.Texture2D", parameters._Output.Data(), compile_data->_Name.Data());
+			sprintf_s(asset_buffer, "%s\\%s_AlbedoThickness.Texture2D", parameters._Output.Data(), compile_context._Name.Data());
 
 			std::ofstream asset_file{ asset_buffer };
 
@@ -828,12 +779,12 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 		//Write the normal map texture.
 		{
 			char file_buffer[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(file_buffer, "%s\\%s_NormalMap.png", directory_path, compile_data->_Name.Data());
+			sprintf_s(file_buffer, "%s\\%s_NormalMap.png", directory_path, compile_context._Name.Data());
 
 			PNGWriter::Write(impostor_normal_map_texture, file_buffer);
 
 			char asset_buffer[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(asset_buffer, "%s\\%s_NormalMapDisplacement.Texture2D", parameters._Output.Data(), compile_data->_Name.Data());
+			sprintf_s(asset_buffer, "%s\\%s_NormalMapDisplacement.Texture2D", parameters._Output.Data(), compile_context._Name.Data());
 
 			std::ofstream asset_file{ asset_buffer };
 
@@ -851,12 +802,12 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 		//Write the material properties texture.
 		{
 			char file_buffer[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(file_buffer, "%s\\%s_MaterialProperties.png", directory_path, compile_data->_Name.Data());
+			sprintf_s(file_buffer, "%s\\%s_MaterialProperties.png", directory_path, compile_context._Name.Data());
 
 			PNGWriter::Write(impostor_material_properties_texture, file_buffer);
 
 			char asset_buffer[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(asset_buffer, "%s\\%s_MaterialProperties.Texture2D", parameters._Output.Data(), compile_data->_Name.Data());
+			sprintf_s(asset_buffer, "%s\\%s_MaterialProperties.Texture2D", parameters._Output.Data(), compile_context._Name.Data());
 
 			std::ofstream asset_file{ asset_buffer };
 
@@ -874,12 +825,12 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 		//Write the opacity texture.
 		{
 			char file_buffer[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(file_buffer, "%s\\%s_Opacity.png", directory_path, compile_data->_Name.Data());
+			sprintf_s(file_buffer, "%s\\%s_Opacity.png", directory_path, compile_context._Name.Data());
 
 			PNGWriter::Write(impostor_opacity_texture, file_buffer);
 
 			char asset_buffer[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(asset_buffer, "%s\\%s_Opacity.Texture2D", parameters._Output.Data(), compile_data->_Name.Data());
+			sprintf_s(asset_buffer, "%s\\%s_Opacity.Texture2D", parameters._Output.Data(), compile_context._Name.Data());
 
 			std::ofstream asset_file{ asset_buffer };
 
@@ -899,15 +850,15 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 	//Write the material file.
 	{
 		char asset_buffer[MAXIMUM_FILE_PATH_LENGTH];
-		sprintf_s(asset_buffer, "%s\\%s.Material", parameters._Output.Data(), compile_data->_Name.Data());
+		sprintf_s(asset_buffer, "%s\\%s.Material", parameters._Output.Data(), compile_context._Name.Data());
 
 		std::ofstream asset_file{ asset_buffer };
 
 		asset_file << "Type(MASKED);" << std::endl;
-		asset_file << "AlbedoThicknessTexture(" << compile_data->_Name.Data() << "_AlbedoThickness);" << std::endl;
-		asset_file << "NormalMapDisplacementTexture(" << compile_data->_Name.Data() << "_NormalMapDisplacement);" << std::endl;
-		asset_file << "MaterialPropertiesTexture(" << compile_data->_Name.Data() << "_MaterialProperties);" << std::endl;
-		asset_file << "OpacityTexture(" << compile_data->_Name.Data() << "_Opacity);" << std::endl;
+		asset_file << "AlbedoThicknessTexture(" << compile_context._Name.Data() << "_AlbedoThickness);" << std::endl;
+		asset_file << "NormalMapDisplacementTexture(" << compile_context._Name.Data() << "_NormalMapDisplacement);" << std::endl;
+		asset_file << "MaterialPropertiesTexture(" << compile_context._Name.Data() << "_MaterialProperties);" << std::endl;
+		asset_file << "OpacityTexture(" << compile_context._Name.Data() << "_Opacity);" << std::endl;
 
 		asset_file.close();
 	}
@@ -935,7 +886,7 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 
 	//Create the compiled directory, if it doesn't exist.
 	File::CreateDirectory(directory_path);
-	
+
 	//Determine the output file path.
 	char output_file_path[MAXIMUM_FILE_PATH_LENGTH];
 	sprintf_s(output_file_path, "%s\\%s.ca", directory_path, compile_data->_Name.Data());
@@ -953,4 +904,12 @@ void ImpostorMaterialAssetCompiler::CompileInternal(CompileData *const RESTRICT 
 	//Close the output file.
 	output_file.Close();
 	*/
+}
+
+/*
+*	Loads a single asset with the given load context.
+*/
+void ImpostorMaterialAssetCompiler::Load(const LoadContext &load_context) NOEXCEPT
+{
+	ASSERT(false, "This asset compiler should load no assets of it's own!");
 }

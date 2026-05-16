@@ -2,7 +2,6 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/General/DynamicString.h>
 
 //Content.
 #include <Content/Core/AssetCompiler.h>
@@ -42,40 +41,17 @@ public:
 	void Compile(const CompileContext &compile_context) NOEXCEPT override;
 
 	/*
+	*	Allocates an asset.
+	*/
+	Asset *const RESTRICT AllocateAsset() NOEXCEPT override
+	{
+		ASSERT(false, "This asset compiler doesn't load assets!");
+		return nullptr;
+	}
+
+	/*
 	*	Loads a single asset with the given load context.
 	*/
-	NO_DISCARD Asset *const RESTRICT Load(const LoadContext &load_context) NOEXCEPT override;
-
-private:
-
-	/*
-	*	Compile data class definition.
-	*/
-	class CompileData final
-	{
-
-	public:
-
-		//The collection.
-		DynamicString _Collection;
-
-		//The file path.
-		DynamicString _FilePath;
-
-		//The name.
-		DynamicString _Name;
-
-		//The compilation domain.
-		CompilationDomain _CompilationDomain;
-
-	};
-
-	//The compile data allocator.
-	PoolAllocator<sizeof(CompileData)> _CompileDataAllocator;
-
-	/*
-	*	Compiles internally.
-	*/
-	void CompileInternal(CompileData *const RESTRICT compile_data) NOEXCEPT;
+	void Load(const LoadContext &load_context) NOEXCEPT override;
 
 };

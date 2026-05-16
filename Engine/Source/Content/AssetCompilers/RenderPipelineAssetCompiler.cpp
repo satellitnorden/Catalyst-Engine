@@ -628,86 +628,8 @@ NO_DISCARD uint64 RenderPipelineAssetCompiler::CurrentVersion() const NOEXCEPT
 */
 void RenderPipelineAssetCompiler::Compile(const CompileContext &compile_context) NOEXCEPT
 {
-	//Set up the compile data.
-	CompileData *const RESTRICT compile_data{ new (_CompileDataAllocator.Allocate()) CompileData() };
+	PROFILING_SCOPE("RenderPipelineAssetCompiler::Compile");
 
-	//Set the collection.
-	compile_data->_Collection = compile_context._Collection;
-
-	//Set the file path.
-	compile_data->_FilePath = compile_context._FilePath;
-
-	//Set the name.
-	compile_data->_Name = compile_context._Name;
-
-	//Set the compilation domain.
-	compile_data->_CompilationDomain = compile_context._CompilationDomain;
-
-#if COMPILE_SINGLE_THREADED
-	CompileInternal(compile_data);
-#else
-	//Set up the task.
-	Task *const RESTRICT task{ static_cast<Task *const RESTRICT>(compile_context._TaskAllocator->Allocate()) };
-
-	task->_Function = [](void *const RESTRICT arguments)
-	{
-		RenderPipelineAssetCompiler::Instance->CompileInternal(static_cast<CompileData *const RESTRICT>(arguments));
-	};
-	task->_Arguments = compile_data;
-	task->_ExecutableOnSameThread = false;
-
-	//Execute the task!
-	TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, task);
-
-	//Add the task to the list.
-	compile_context._Tasks->Emplace(task);
-#endif
-}
-
-/*
-*	Loads a single asset with the given load context.
-*/
-NO_DISCARD Asset *const RESTRICT RenderPipelineAssetCompiler::Load(const LoadContext &load_context) NOEXCEPT
-{
-	//Allocate the asset.
-	RenderPipelineAsset *const RESTRICT new_asset{ new (_AssetAllocator.Allocate()) RenderPipelineAsset() };
-
-	//Set up the load data.
-	LoadData *const RESTRICT load_data{ new (_LoadDataAllocator.Allocate()) LoadData() };
-
-	load_data->_StreamArchivePosition = load_context._StreamArchivePosition;
-	load_data->_StreamArchive = load_context._StreamArchive;
-	load_data->_Asset = new_asset;
-
-#if LOAD_SINGLE_THREADED
-	LoadInternal(load_data);
-#else
-	//Set up the task.
-	Task *const RESTRICT task{ static_cast<Task *const RESTRICT>(load_context._TaskAllocator->Allocate()) };
-
-	task->_Function = [](void *const RESTRICT arguments)
-	{
-		RenderPipelineAssetCompiler::Instance->LoadInternal(static_cast<LoadData *const RESTRICT>(arguments));
-	};
-	task->_Arguments = load_data;
-	task->_ExecutableOnSameThread = false;
-
-	//Execute the task!
-	TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, task);
-
-	//Add the task to the list.
-	load_context._Tasks->Emplace(task);
-#endif
-
-	//Return the new asset!
-	return new_asset;
-}
-
-/*
-*	Compiles internally.
-*/
-void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data) NOEXCEPT
-{
 	//Define constants.
 	constexpr auto WriteShaderData
 	{
@@ -723,8 +645,6 @@ void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT co
 		}
 	};
 
-	PROFILING_SCOPE("RenderPipelineAssetCompiler::CompileInternal");
-
 	//We should be able to store everything directly in an asset and then serialize that.
 	RenderPipelineAsset asset;
 
@@ -738,7 +658,7 @@ void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT co
 	RetrieveLines(ENGINE_RENDERING_PATH "\\Global Render Data\\GlobalRenderData.global_render_data", &lines);
 
 	//Then add in the lines from the file.
-	RetrieveLines(compile_data->_FilePath.Data(), &lines);
+	RetrieveLines(compile_context._FilePath.Data(), &lines);
 
 	//Resolve includes.
 	ResolveIncludes(&lines);
@@ -754,19 +674,19 @@ void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT co
 	SplitShaderStages(lines, &shader_stages);
 
 	//Compile the GLSL shaders.
-	CompileGLSLShaders(*compile_data, &extra_data, shader_stages);
+	CompileGLSLShaders(compile_context, &extra_data, shader_stages);
 
 	//Determine the collection directory.
 	char collection_directory_path[MAXIMUM_FILE_PATH_LENGTH];
 
-	if (compile_data->_Collection)
+	if (compile_context._Collection)
 	{
-		sprintf_s(collection_directory_path, "%s\\COLLECTION %s", GetCompiledDirectoryPath(compile_data->_CompilationDomain), compile_data->_Collection.Data());
+		sprintf_s(collection_directory_path, "%s\\COLLECTION %s", GetCompiledDirectoryPath(compile_context._CompilationDomain), compile_context._Collection.Data());
 	}
 
 	else
 	{
-		sprintf_s(collection_directory_path, "%s\\COLLECTION Base", GetCompiledDirectoryPath(compile_data->_CompilationDomain));
+		sprintf_s(collection_directory_path, "%s\\COLLECTION Base", GetCompiledDirectoryPath(compile_context._CompilationDomain));
 	}
 
 	//Create the compiled directory, if it doesn't exist.
@@ -781,13 +701,13 @@ void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT co
 
 	//Determine the output file path.
 	char output_file_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(output_file_path, "%s\\%s.ca", directory_path, compile_data->_Name.Data());
+	sprintf_s(output_file_path, "%s\\%s.ca", directory_path, compile_context._Name.Data());
 
 	//Open the output file.
 	BinaryOutputFile output_file{ output_file_path };
 
 	//Write the asset header to the file.
-	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_data->_Name.Data()), compile_data->_Name.Data() };
+	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_context._Name.Data()), compile_context._Name.Data() };
 	output_file.Write(&asset_header, sizeof(AssetHeader));
 
 	//Write the common data.
@@ -965,10 +885,12 @@ void RenderPipelineAssetCompiler::CompileInternal(CompileData *const RESTRICT co
 }
 
 /*
-*	Loads internally.
+*	Loads a single asset with the given load context.
 */
-void RenderPipelineAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCEPT
+void RenderPipelineAssetCompiler::Load(const LoadContext &load_context) NOEXCEPT
 {
+	PROFILING_SCOPE("RenderPipelineAssetCompiler::Load");
+
 	//Define constants.
 	constexpr auto ReadShader
 	{
@@ -992,37 +914,38 @@ void RenderPipelineAssetCompiler::LoadInternal(LoadData *const RESTRICT load_dat
 		}
 	};
 
-	PROFILING_SCOPE("RenderPipelineAssetCompiler::LoadInternal");
+	//Allocate the asset.
+	RenderPipelineAsset *const RESTRICT new_asset{ static_cast<RenderPipelineAsset *const RESTRICT>(load_context._Asset) };
 
 	//Read the data.
-	uint64 stream_archive_position{ load_data->_StreamArchivePosition };
+	uint64 stream_archive_position{ load_context._StreamArchivePosition };
 
 	//Read the common data.
 	{
 		//Read the bindings.
 		{
 			uint64 number_of_bindings;
-			load_data->_StreamArchive->Read(&number_of_bindings, sizeof(uint64), &stream_archive_position);
+			load_context._StreamArchive->Read(&number_of_bindings, sizeof(uint64), &stream_archive_position);
 
 			if (number_of_bindings > 0)
 			{
-				load_data->_Asset->_CommonData._Bindings.Upsize<false>(number_of_bindings);
-				load_data->_StreamArchive->Read(load_data->_Asset->_CommonData._Bindings.Data(), number_of_bindings * sizeof(RenderPipelineAsset::Binding), &stream_archive_position);
+				new_asset->_CommonData._Bindings.Upsize<false>(number_of_bindings);
+				load_context._StreamArchive->Read(new_asset->_CommonData._Bindings.Data(), number_of_bindings * sizeof(RenderPipelineAsset::Binding), &stream_archive_position);
 			}
 		}
 
 		//Read the number of external textures.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_CommonData._NumberOfExternalTextures, sizeof(uint32), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_CommonData._NumberOfExternalTextures, sizeof(uint32), &stream_archive_position);
 
 		//Read the input stream subscriptions.
 		{
 			uint64 number_of_input_stream_subscriptions;
-			load_data->_StreamArchive->Read(&number_of_input_stream_subscriptions, sizeof(uint64), &stream_archive_position);
+			load_context._StreamArchive->Read(&number_of_input_stream_subscriptions, sizeof(uint64), &stream_archive_position);
 
 			if (number_of_input_stream_subscriptions > 0)
 			{
-				load_data->_Asset->_CommonData._InputStreamSubscriptions.Upsize<false>(number_of_input_stream_subscriptions);
-				load_data->_StreamArchive->Read(load_data->_Asset->_CommonData._InputStreamSubscriptions.Data(), number_of_input_stream_subscriptions * sizeof(HashString), &stream_archive_position);
+				new_asset->_CommonData._InputStreamSubscriptions.Upsize<false>(number_of_input_stream_subscriptions);
+				load_context._StreamArchive->Read(new_asset->_CommonData._InputStreamSubscriptions.Data(), number_of_input_stream_subscriptions * sizeof(HashString), &stream_archive_position);
 			}
 		}
 	}
@@ -1030,125 +953,125 @@ void RenderPipelineAssetCompiler::LoadInternal(LoadData *const RESTRICT load_dat
 	//Read the compute data.
 	{
 		//Read the shader.
-		ReadShader(load_data->_StreamArchive, &stream_archive_position, ShaderStage::COMPUTE, &load_data->_Asset->_ComputeData._Shader);
+		ReadShader(load_context._StreamArchive, &stream_archive_position, ShaderStage::COMPUTE, &new_asset->_ComputeData._Shader);
 	}
 
 	//Read the graphics data.
 	{
 		//Read the vertex shader.
-		ReadShader(load_data->_StreamArchive, &stream_archive_position, ShaderStage::VERTEX, &load_data->_Asset->_GraphicsData._VertexShader);
+		ReadShader(load_context._StreamArchive, &stream_archive_position, ShaderStage::VERTEX, &new_asset->_GraphicsData._VertexShader);
 
 		//Read the fragment shader.
-		ReadShader(load_data->_StreamArchive, &stream_archive_position, ShaderStage::FRAGMENT, &load_data->_Asset->_GraphicsData._FragmentShader);
+		ReadShader(load_context._StreamArchive, &stream_archive_position, ShaderStage::FRAGMENT, &new_asset->_GraphicsData._FragmentShader);
 
 		//Read the topology.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._Topology, sizeof(Topology), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._Topology, sizeof(Topology), &stream_archive_position);
 
 		//Read the polygon mode.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._PolygonMode, sizeof(PolygonMode), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._PolygonMode, sizeof(PolygonMode), &stream_archive_position);
 
 		//Read the depth/stencil load operator.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._DepthStencilLoadOperator, sizeof(AttachmentLoadOperator), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._DepthStencilLoadOperator, sizeof(AttachmentLoadOperator), &stream_archive_position);
 
 		//Read the depth/stencil store operator.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._DepthStencilLoadOperator, sizeof(AttachmentStoreOperator), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._DepthStencilLoadOperator, sizeof(AttachmentStoreOperator), &stream_archive_position);
 
 		//Read the color load operator.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._ColorLoadOperator, sizeof(AttachmentLoadOperator), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._ColorLoadOperator, sizeof(AttachmentLoadOperator), &stream_archive_position);
 
 		//Read the color store operator.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._ColorStoreOperator, sizeof(AttachmentStoreOperator), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._ColorStoreOperator, sizeof(AttachmentStoreOperator), &stream_archive_position);
 
 		//Read whether or not the depth test is enabled.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._DepthTestEnabled, sizeof(bool), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._DepthTestEnabled, sizeof(bool), &stream_archive_position);
 
 		//Read whether or not the stencil test is enabled.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._StencilTestEnabled, sizeof(bool), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._StencilTestEnabled, sizeof(bool), &stream_archive_position);
 
 		//Read whether or not depth write is enabled.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._DepthWriteEnabled, sizeof(bool), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._DepthWriteEnabled, sizeof(bool), &stream_archive_position);
 
 		//Read the depth compare operator.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._DepthCompareOperator, sizeof(CompareOperator), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._DepthCompareOperator, sizeof(CompareOperator), &stream_archive_position);
 
 		//Read the stencil compare operator.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._StencilCompareOperator, sizeof(CompareOperator), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._StencilCompareOperator, sizeof(CompareOperator), &stream_archive_position);
 
 		//Read the stencil fail operator.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._StencilFailOperator, sizeof(StencilOperator), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._StencilFailOperator, sizeof(StencilOperator), &stream_archive_position);
 
 		//Read the stencil pass operator.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._StencilPassOperator, sizeof(StencilOperator), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._StencilPassOperator, sizeof(StencilOperator), &stream_archive_position);
 
 		//Read the stencil depth fail operator.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._StencilDepthFailOperator, sizeof(StencilOperator), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._StencilDepthFailOperator, sizeof(StencilOperator), &stream_archive_position);
 
 		//Read the stencil reference mask.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._StencilReferenceMask, sizeof(uint32), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._StencilReferenceMask, sizeof(uint32), &stream_archive_position);
 
 		//Read the stencil compare mask.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._StencilCompareMask, sizeof(uint32), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._StencilCompareMask, sizeof(uint32), &stream_archive_position);
 
 		//Read the stencil write mask.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._StencilWriteMask, sizeof(uint32), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._StencilWriteMask, sizeof(uint32), &stream_archive_position);
 
 		//Read the render resolution.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._RenderResolution, sizeof(HashString), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._RenderResolution, sizeof(HashString), &stream_archive_position);
 
 		//Read the depth buffer.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._DepthBuffer, sizeof(HashString), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._DepthBuffer, sizeof(HashString), &stream_archive_position);
 
 		//Read the output render targets.
 		{
 			uint64 number_of_output_render_targets{ 0 };
-			load_data->_StreamArchive->Read(&number_of_output_render_targets, sizeof(uint64), &stream_archive_position);
+			load_context._StreamArchive->Read(&number_of_output_render_targets, sizeof(uint64), &stream_archive_position);
 
 			if (number_of_output_render_targets)
 			{
-				load_data->_Asset->_GraphicsData._OutputRenderTargets.Upsize<false>(number_of_output_render_targets);
-				load_data->_StreamArchive->Read(load_data->_Asset->_GraphicsData._OutputRenderTargets.Data(), number_of_output_render_targets * sizeof(HashString), &stream_archive_position);
+				new_asset->_GraphicsData._OutputRenderTargets.Upsize<false>(number_of_output_render_targets);
+				load_context._StreamArchive->Read(new_asset->_GraphicsData._OutputRenderTargets.Data(), number_of_output_render_targets * sizeof(HashString), &stream_archive_position);
 			}
 		}
 
 		//Read whether or not blend is enabled.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._BlendEnabled, sizeof(bool), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._BlendEnabled, sizeof(bool), &stream_archive_position);
 
 		//Read the blend color source factor.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._BlendColorSourceFactor, sizeof(BlendFactor), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._BlendColorSourceFactor, sizeof(BlendFactor), &stream_archive_position);
 
 		//Read the blend color destination factor.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._BlendColorDestinationFactor, sizeof(BlendFactor), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._BlendColorDestinationFactor, sizeof(BlendFactor), &stream_archive_position);
 
 		//Read the blend color operator.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._BlendColorOperator, sizeof(BlendOperator), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._BlendColorOperator, sizeof(BlendOperator), &stream_archive_position);
 
 		//Read the blend alpha source factor.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._BlendAlphaSourceFactor, sizeof(BlendFactor), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._BlendAlphaSourceFactor, sizeof(BlendFactor), &stream_archive_position);
 
 		//Read the blend alpha destination factor.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._BlendAlphaDestinationFactor, sizeof(BlendFactor), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._BlendAlphaDestinationFactor, sizeof(BlendFactor), &stream_archive_position);
 
 		//Read the blend alpha operator.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_GraphicsData._BlendAlphaOperator, sizeof(BlendOperator), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_GraphicsData._BlendAlphaOperator, sizeof(BlendOperator), &stream_archive_position);
 	}
 
 	//Read the ray tracing data.
 	{
 		//Read the ray generation shader.
-		ReadShader(load_data->_StreamArchive, &stream_archive_position, ShaderStage::RAY_GENERATION, &load_data->_Asset->_RayTracingData._RayGenerationShader);
+		ReadShader(load_context._StreamArchive, &stream_archive_position, ShaderStage::RAY_GENERATION, &new_asset->_RayTracingData._RayGenerationShader);
 
 		//Read the ray miss shaders.
 		{
 			uint64 number_of_miss_shaders{ 0 };
-			load_data->_StreamArchive->Read(&number_of_miss_shaders, sizeof(uint64), &stream_archive_position);
+			load_context._StreamArchive->Read(&number_of_miss_shaders, sizeof(uint64), &stream_archive_position);
 
 			if (number_of_miss_shaders > 0)
 			{
-				load_data->_Asset->_RayTracingData._RayMissShaders.Upsize<false>(number_of_miss_shaders);
+				new_asset->_RayTracingData._RayMissShaders.Upsize<false>(number_of_miss_shaders);
 
-				for (ShaderHandle &miss_shader : load_data->_Asset->_RayTracingData._RayMissShaders)
+				for (ShaderHandle &miss_shader : new_asset->_RayTracingData._RayMissShaders)
 				{
-					ReadShader(load_data->_StreamArchive, &stream_archive_position, ShaderStage::RAY_MISS, &miss_shader);
+					ReadShader(load_context._StreamArchive, &stream_archive_position, ShaderStage::RAY_MISS, &miss_shader);
 				}
 			}
 		}
@@ -1156,17 +1079,17 @@ void RenderPipelineAssetCompiler::LoadInternal(LoadData *const RESTRICT load_dat
 		//Read the hit groups.
 		{
 			uint64 number_of_hit_groups{ 0 };
-			load_data->_StreamArchive->Read(&number_of_hit_groups, sizeof(uint64), &stream_archive_position);
+			load_context._StreamArchive->Read(&number_of_hit_groups, sizeof(uint64), &stream_archive_position);
 
 			if (number_of_hit_groups > 0)
 			{
-				load_data->_Asset->_RayTracingData._HitGroups.Upsize<false>(number_of_hit_groups);
+				new_asset->_RayTracingData._HitGroups.Upsize<false>(number_of_hit_groups);
 
-				for (RenderPipelineAsset::RayTracingData::HitGroup &hit_group : load_data->_Asset->_RayTracingData._HitGroups)
+				for (RenderPipelineAsset::RayTracingData::HitGroup &hit_group : new_asset->_RayTracingData._HitGroups)
 				{
-					load_data->_StreamArchive->Read(&hit_group._Identifier, sizeof(HashString), &stream_archive_position);
-					ReadShader(load_data->_StreamArchive, &stream_archive_position, ShaderStage::RAY_CLOSEST_HIT, &hit_group._RayClosestHitShader);
-					ReadShader(load_data->_StreamArchive, &stream_archive_position, ShaderStage::RAY_ANY_HIT, &hit_group._RayAnyHitShader);
+					load_context._StreamArchive->Read(&hit_group._Identifier, sizeof(HashString), &stream_archive_position);
+					ReadShader(load_context._StreamArchive, &stream_archive_position, ShaderStage::RAY_CLOSEST_HIT, &hit_group._RayClosestHitShader);
+					ReadShader(load_context._StreamArchive, &stream_archive_position, ShaderStage::RAY_ANY_HIT, &hit_group._RayAnyHitShader);
 				}
 			}
 		}
@@ -2932,7 +2855,7 @@ void RenderPipelineAssetCompiler::SplitShaderStages(const DynamicArray<DynamicSt
 */
 void RenderPipelineAssetCompiler::CompileGLSLShaders
 (
-	const CompileData &compile_data,
+	const CompileContext &compile_context,
 	ExtraData *const RESTRICT extra_data,
 	const DynamicArray<ShaderStageLines> &shader_stages
 ) NOEXCEPT
@@ -4329,7 +4252,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 			std::filesystem::create_directories("RenderPipelineAssetCompiler GLSL Shaders");
 
 			//Figure out the file name.
-			std::string file_name{ compile_data._FilePath.Data() };
+			std::string file_name{ compile_context._FilePath.Data() };
 			file_name = file_name.substr(file_name.find_last_of('\\') + 1);
 			file_name = file_name.substr(0, file_name.find_last_of('.'));
 

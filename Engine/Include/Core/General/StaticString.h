@@ -24,9 +24,17 @@ public:
 	*/
 	FORCE_INLINE constexpr StaticString(const char *const RESTRICT string) NOEXCEPT
 	{
-		const uint64 string_length{ StringUtilities::StringLength(string) };
-
-		Memory::Copy(_Data.Data(), string, string_length + 1);
+		if (string)
+		{
+			const uint64 string_length{ StringUtilities::StringLength(string) };
+			ASSERT((string_length + 1) < SIZE, "String too large!");
+			Memory::Copy(_Data.Data(), string, string_length + 1);
+		}
+	
+		else
+		{
+			_Data[0] = '\0';
+		}
 	}
 	
 	/*

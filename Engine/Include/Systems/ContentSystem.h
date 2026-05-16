@@ -5,6 +5,9 @@
 #include <Core/Containers/HashTable.h>
 #include <Core/General/HashString.h>
 
+//Concurrency.
+#include <Concurrency/Task.h>
+
 //Content.
 #include <Content/Core/ContentCore.h>
 #include <Content/Core/Asset.h>
@@ -72,16 +75,6 @@ public:
 #endif
 
 	/*
-	*	Loads assets from the given directory path.
-	*/
-	void LoadAssets(const char *const RESTRICT directory_path) NOEXCEPT;
-
-	/*
-	*	Load a single asset from the given file path.
-	*/
-	void LoadAsset(const char *const RESTRICT file_path) NOEXCEPT;
-
-	/*
 	*	Load a single asset collection from the given file path.
 	*/
 	void LoadAssetCollection(const char *const RESTRICT file_path) NOEXCEPT;
@@ -118,6 +111,44 @@ public:
 private:
 
 	/*
+	*	Compile data class definition.
+	*/
+	class CompileData final
+	{
+
+	public:
+
+		//The asset compiler.
+		AssetCompiler *RESTRICT _AssetCompiler;
+
+		//The context.
+		AssetCompiler::CompileContext _Context;
+
+		//The task.
+		Task _Task;
+
+	};
+
+	/*
+	*	Load data class definition.
+	*/
+	class LoadData final
+	{
+
+	public:
+
+		//The asset compiler.
+		AssetCompiler *RESTRICT _AssetCompiler;
+
+		//The context.
+		AssetCompiler::LoadContext _Context;
+
+		//The task.
+		Task _Task;
+
+	};
+
+	/*
 	*	Compile result class definition.
 	*/
 	class CompileResult final
@@ -136,11 +167,17 @@ private:
 	//The asset compilers.
 	HashTable<HashString, AssetCompiler *const RESTRICT> _AssetCompilers;
 
-	//The task allocator.
-	PoolAllocator<sizeof(Task)> _TaskAllocator;
+	//The compile data allocator.
+	PoolAllocator<sizeof(CompileData)> _CompileDataAllocator;
 
-	//The tasks.
-	DynamicArray<Task *RESTRICT> _Tasks;
+	//The compile data.
+	DynamicArray<CompileData *RESTRICT> _CompileData;
+
+	//The load data allocator.
+	PoolAllocator<sizeof(LoadData)> _LoadDataAllocator;
+
+	//The load data.
+	DynamicArray<LoadData *RESTRICT> _LoadData;
 
 	//The assets. Divided up into asset types.
 	HashTable<HashString, HashTable<HashString, Asset *RESTRICT>> _Assets;

@@ -6,9 +6,6 @@
 //Audio.
 #include <Audio/AudioStream.h>
 
-//Content.
-#include <Content/Assets/SoundAsset.h>
-
 //File.
 #include <File/Core/BinaryInputFile.h>
 
@@ -268,68 +265,6 @@ public:
 
 		//The read was successful. (:
 		return true;
-	}
-
-	/*
-	*	Reads the sound asset at the given file path. Returns if the read was succesful.
-	*/
-	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file, SoundAsset *const RESTRICT asset) NOEXCEPT
-	{
-#if 1
-		AudioStream audio_stream;
-
-		if (!Read(file, &audio_stream))
-		{
-			return false;
-		}
-
-		asset->_SampleRate = static_cast<float32>(audio_stream.GetSampleRate());
-		asset->_NumberOfChannels = audio_stream.GetNumberOfChannels();
-
-		asset->_Samples.Upsize<true>(asset->_NumberOfChannels);
-
-		for (uint8 channel_index{ 0 }; channel_index < asset->_NumberOfChannels; ++channel_index)
-		{
-			asset->_Samples[channel_index].Reserve(audio_stream.GetNumberOfSamples());
-
-			for (uint32 sample_index{ 0 }; sample_index < audio_stream.GetNumberOfSamples(); ++sample_index)
-			{
-				const float32 sample{ audio_stream.Sample(channel_index, sample_index) };
-
-				asset->_Samples[channel_index].Emplace(static_cast<int16>(sample * static_cast<float32>(INT16_MAXIMUM)));
-			}
-		}
-
-		//The read was successful.
-		return true;
-#else
-		AudioFile<float32> audio_file;
-
-		if (audio_file.load(file))
-		{
-			asset->_SampleRate = static_cast<float32>(audio_file.getSampleRate());
-			asset->_NumberOfChannels = static_cast<uint8>(audio_file.getNumChannels());
-
-			asset->_Samples.Upsize<true>(asset->_NumberOfChannels);
-
-			for (uint64 i{ 0 }, size{ asset->_Samples.Size() }; i < size; ++i)
-			{
-				asset->_Samples[i].Reserve(audio_file.samples[i].size());
-
-				for (const float32 sample : audio_file.samples[i])
-				{
-					asset->_Samples[i].Emplace(static_cast<int16>(sample * static_cast<float32>(INT16_MAXIMUM)));
-				}
-			}
-
-			return true;
-		}
-
-		else
-		{
-			return false;
-		}
-#endif
 	}
 
 	/*

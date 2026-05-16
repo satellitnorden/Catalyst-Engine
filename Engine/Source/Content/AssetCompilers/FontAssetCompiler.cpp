@@ -15,7 +15,6 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
-#include <Systems/TaskSystem.h>
 
 //Third party.
 #include <ThirdParty/stb_truetype/stb_truetype.h>
@@ -67,79 +66,7 @@ NO_DISCARD uint64 FontAssetCompiler::CurrentVersion() const NOEXCEPT
 */
 void FontAssetCompiler::Compile(const CompileContext &compile_context) NOEXCEPT
 {
-	//Set up the compile data.
-	CompileData *const RESTRICT compile_data{ new (_CompileDataAllocator.Allocate()) CompileData() };
-
-	//Set the collection.
-	compile_data->_Collection = compile_context._Collection;
-
-	//Set the file path.
-	compile_data->_FilePath = compile_context._FilePath;
-
-	//Set the name.
-	compile_data->_Name = compile_context._Name;
-
-	//Set the compilation domain.
-	compile_data->_CompilationDomain = compile_context._CompilationDomain;
-
-	//Set up the task.
-	Task *const RESTRICT task{ static_cast<Task *const RESTRICT>(compile_context._TaskAllocator->Allocate()) };
-
-	task->_Function = [](void *const RESTRICT arguments)
-	{
-		FontAssetCompiler::Instance->CompileInternal(static_cast<CompileData *const RESTRICT>(arguments));
-	};
-	task->_Arguments = compile_data;
-	task->_ExecutableOnSameThread = false;
-
-	//Execute the task!
-	TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, task);
-
-	//Add the task to the list.
-	compile_context._Tasks->Emplace(task);
-}
-
-/*
-*	Loads a single asset with the given load context.
-*/
-NO_DISCARD Asset *const RESTRICT FontAssetCompiler::Load(const LoadContext &load_context) NOEXCEPT
-{
-	//Allocate the asset.
-	FontAsset *const RESTRICT new_asset{ new (_AssetAllocator.Allocate()) FontAsset() };
-
-	//Set up the load data.
-	LoadData *const RESTRICT load_data{ new (_LoadDataAllocator.Allocate()) LoadData() };
-
-	load_data->_StreamArchivePosition = load_context._StreamArchivePosition;
-	load_data->_StreamArchive = load_context._StreamArchive;
-	load_data->_Asset = new_asset;
-
-	//Set up the task.
-	Task *const RESTRICT task{ static_cast<Task *const RESTRICT>(load_context._TaskAllocator->Allocate()) };
-
-	task->_Function = [](void *const RESTRICT arguments)
-	{
-		FontAssetCompiler::Instance->LoadInternal(static_cast<LoadData *const RESTRICT>(arguments));
-	};
-	task->_Arguments = load_data;
-	task->_ExecutableOnSameThread = false;
-
-	//Execute the task!
-	TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, task);
-
-	//Add the task to the list.
-	load_context._Tasks->Emplace(task);
-
-	//Return the new asset!
-	return new_asset;
-}
-
-/*
-*	Compiles internally.
-*/
-void FontAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data) NOEXCEPT
-{
-	PROFILING_SCOPE("FontAssetCompiler::CompileInternal");
+	PROFILING_SCOPE("FontAssetCompiler::Compile");
 
 	//Define constants.
 	constexpr uint32 PADDING{ 8 };
@@ -149,7 +76,7 @@ void FontAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data
 	FontParameters parameters;
 
 	//Open the input file.
-	std::ifstream input_file{ compile_data->_FilePath.Data() };
+	std::ifstream input_file{ compile_context._FilePath.Data() };
 
 	//Iterate over the lines and fill in the parameters.
 	{
@@ -193,14 +120,14 @@ void FontAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data
 	//Determine the collection directory.
 	char collection_directory_path[MAXIMUM_FILE_PATH_LENGTH];
 
-	if (compile_data->_Collection)
+	if (compile_context._Collection)
 	{
-		sprintf_s(collection_directory_path, "%s\\COLLECTION %s", GetCompiledDirectoryPath(compile_data->_CompilationDomain), compile_data->_Collection.Data());
+		sprintf_s(collection_directory_path, "%s\\COLLECTION %s", GetCompiledDirectoryPath(compile_context._CompilationDomain), compile_context._Collection.Data());
 	}
 
 	else
 	{
-		sprintf_s(collection_directory_path, "%s\\COLLECTION Default", GetCompiledDirectoryPath(compile_data->_CompilationDomain));
+		sprintf_s(collection_directory_path, "%s\\COLLECTION Default", GetCompiledDirectoryPath(compile_context._CompilationDomain));
 	}
 
 	//Create the compiled directory, if it doesn't exist.
@@ -215,17 +142,17 @@ void FontAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data
 
 	//Determine the output file path.
 	char output_file_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(output_file_path, "%s\\%s.ca", directory_path, compile_data->_Name.Data());
+	sprintf_s(output_file_path, "%s\\%s.ca", directory_path, compile_context._Name.Data());
 
 	//Open the output file.
 	BinaryOutputFile output_file{ output_file_path };
 
 	//Write the asset header to the file.
-	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_data->_Name.Data()), compile_data->_Name.Data() };
+	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_context._Name.Data()), compile_context._Name.Data() };
 	output_file.Write(&asset_header, sizeof(AssetHeader));
 
 	//Open the font file.
-	BinaryInputFile font_file{ parameters._File.Data()};
+	BinaryInputFile font_file{ parameters._File.Data() };
 
 	//Create the buffer.
 	byte *const RESTRICT buffer{ static_cast<byte *const RESTRICT>(Memory::Allocate(font_file.Size())) };
@@ -416,33 +343,36 @@ void FontAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data
 }
 
 /*
-*	Loads internally.
+*	Loads a single asset with the given load context.
 */
-void FontAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCEPT
+void FontAssetCompiler::Load(const LoadContext &load_context) NOEXCEPT
 {
-	PROFILING_SCOPE("FontAssetCompiler::LoadInternal");
+	PROFILING_SCOPE("FontAssetCompiler::Load");
+
+	//Allocate the asset.
+	FontAsset *const RESTRICT new_asset{ static_cast<FontAsset *const RESTRICT>(load_context._Asset) };
 
 	//Read the data.
-	uint64 stream_archive_position{ load_data->_StreamArchivePosition };
+	uint64 stream_archive_position{ load_context._StreamArchivePosition };
 
 	//Read all characters.
 	for (int8 i{ 0 }; i < FontAsset::NUMBER_OF_CHARACTER_DESCRIPTIONS; ++i)
 	{
 		//Read the character description.
-		load_data->_StreamArchive->Read(&load_data->_Asset->_CharacterDescriptions[i], sizeof(FontAsset::CharacterDescription), &stream_archive_position);
+		load_context._StreamArchive->Read(&new_asset->_CharacterDescriptions[i], sizeof(FontAsset::CharacterDescription), &stream_archive_position);
 	}
 
 	//Read the texture width.
 	uint32 texture_width;
-	load_data->_StreamArchive->Read(&texture_width, sizeof(uint32), &stream_archive_position);
+	load_context._StreamArchive->Read(&texture_width, sizeof(uint32), &stream_archive_position);
 
 	//Read the master texture height.
 	uint32 texture_height;
-	load_data->_StreamArchive->Read(&texture_height, sizeof(uint32), &stream_archive_position);
+	load_context._StreamArchive->Read(&texture_height, sizeof(uint32), &stream_archive_position);
 
 	//Read the number of mipmap levels.
 	uint8 number_of_mipmap_levels;
-	load_data->_StreamArchive->Read(&number_of_mipmap_levels, sizeof(uint8), &stream_archive_position);
+	load_context._StreamArchive->Read(&number_of_mipmap_levels, sizeof(uint8), &stream_archive_position);
 
 	//Read the texture data.
 	DynamicArray<DynamicArray<byte>> texture_data;
@@ -455,41 +385,41 @@ void FontAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCEP
 
 		texture_data[i].Upsize<false>(mip_width * mip_height);
 
-		load_data->_StreamArchive->Read(texture_data[i].Data(), mip_width * mip_height, &stream_archive_position);
+		load_context._StreamArchive->Read(texture_data[i].Data(), mip_width * mip_height, &stream_archive_position);
 	}
 
 	//Create the texture.
 	Texture2DHandle texture;
 	RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(texture_data, texture_width, texture_height, 1), TextureFormat::R_UINT8, TextureUsage::NONE, false), &texture);
 
-	load_data->_Asset->_MasterTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(texture);
+	new_asset->_MasterTextureIndex = RenderingSystem::Instance->AddTextureToGlobalRenderData(texture);
 
 	//Calculate the default height.
-	load_data->_Asset->_DefaultHeight = FLOAT32_MAXIMUM;
+	new_asset->_DefaultHeight = FLOAT32_MAXIMUM;
 
 	for (uint8 i{ 0 }; i < FontAsset::NUMBER_OF_CHARACTER_DESCRIPTIONS; ++i)
 	{
-		if (load_data->_Asset->_CharacterDescriptions[i]._Size._Y != 0.0f
+		if (new_asset->_CharacterDescriptions[i]._Size._Y != 0.0f
 			&& ((i >= 'A' && i <= 'Z')
-				|| (i >= 'a' && i <= 'z')))
+			|| (i >= 'a' && i <= 'z')))
 		{
-			load_data->_Asset->_DefaultHeight = BaseMath::Minimum<float32>(load_data->_Asset->_DefaultHeight, load_data->_Asset->_CharacterDescriptions[i]._Size._Y);
+			new_asset->_DefaultHeight = BaseMath::Minimum<float32>(new_asset->_DefaultHeight, new_asset->_CharacterDescriptions[i]._Size._Y);
 		}
 	}
 
-	if (load_data->_Asset->_DefaultHeight == FLOAT32_MAXIMUM)
+	if (new_asset->_DefaultHeight == FLOAT32_MAXIMUM)
 	{
 		ASSERT(false, "This shouldn't happen...");
 
-		load_data->_Asset->_DefaultHeight = 0.0f;
+		new_asset->_DefaultHeight = 0.0f;
 
 		float32 number_of_valid_characters{ 0.0f };
 
 		for (uint8 i{ 0 }; i < FontAsset::NUMBER_OF_CHARACTER_DESCRIPTIONS; ++i)
 		{
-			if (load_data->_Asset->_CharacterDescriptions[i]._Size._Y != 0.0f)
+			if (new_asset->_CharacterDescriptions[i]._Size._Y != 0.0f)
 			{
-				load_data->_Asset->_DefaultHeight += load_data->_Asset->_CharacterDescriptions[i]._Size._Y;
+				new_asset->_DefaultHeight += new_asset->_CharacterDescriptions[i]._Size._Y;
 
 				++number_of_valid_characters;
 			}
@@ -497,14 +427,14 @@ void FontAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCEP
 
 		if (number_of_valid_characters > 0.0f)
 		{
-			load_data->_Asset->_DefaultHeight /= number_of_valid_characters;
+			new_asset->_DefaultHeight /= number_of_valid_characters;
 		}
 
 		else
 		{
 			ASSERT(false, "This shouldn't happen...");
 
-			load_data->_Asset->_DefaultHeight = 0.1f;
+			new_asset->_DefaultHeight = 0.1f;
 		}
 	}
 }

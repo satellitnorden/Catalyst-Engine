@@ -16,7 +16,6 @@
 #include <Systems/ContentSystem.h>
 #include <Systems/LogSystem.h>
 #include <Systems/RenderingSystem.h>
-#include <Systems/TaskSystem.h>
 
 //Third party.
 #include <ThirdParty/stb_image.h>
@@ -87,85 +86,11 @@ NO_DISCARD uint64 TextureCubeAssetCompiler::CurrentVersion() const NOEXCEPT
 */
 void TextureCubeAssetCompiler::Compile(const CompileContext &compile_context) NOEXCEPT
 {
-	//Set up the compile data.
-	CompileData *const RESTRICT compile_data{ new (_CompileDataAllocator.Allocate()) CompileData() };
+	PROFILING_SCOPE("TextureCubeAssetCompiler::Compile");
 
-	//Set the collection.
-	compile_data->_Collection = compile_context._Collection;
-
-	//Set the file path.
-	compile_data->_FilePath = compile_context._FilePath;
-
-	//Set the name.
-	compile_data->_Name = compile_context._Name;
-
-	//Set the compilation domain.
-	compile_data->_CompilationDomain = compile_context._CompilationDomain;
-
-	//Set up the task.
-	Task *const RESTRICT task{ static_cast<Task *const RESTRICT>(compile_context._TaskAllocator->Allocate()) };
-
-	task->_Function = [](void *const RESTRICT arguments)
-	{
-		TextureCubeAssetCompiler::Instance->CompileInternal(static_cast<CompileData *const RESTRICT>(arguments));
-	};
-	task->_Arguments = compile_data;
-	task->_ExecutableOnSameThread = false;
-
-	//Execute the task!
-	TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, task);
-
-	//Add the task to the list.
-	compile_context._Tasks->Emplace(task);
-}
-
-/*
-*	Loads a single asset with the given load context.
-*/
-NO_DISCARD Asset *const RESTRICT TextureCubeAssetCompiler::Load(const LoadContext &load_context) NOEXCEPT
-{
-	//Allocate the asset.
-	TextureCubeAsset *const RESTRICT new_asset{ new (_AssetAllocator.Allocate()) TextureCubeAsset() };
-
-	//Set up the load data.
-	LoadData *const RESTRICT load_data{ new (_LoadDataAllocator.Allocate()) LoadData() };
-
-	load_data->_StreamArchivePosition = load_context._StreamArchivePosition;
-	load_data->_StreamArchive = load_context._StreamArchive;
-	load_data->_Asset = new_asset;
-
-	//Set up the task.
-	Task *const RESTRICT task{ static_cast<Task *const RESTRICT>(load_context._TaskAllocator->Allocate()) };
-
-	task->_Function = [](void *const RESTRICT arguments)
-	{
-		TextureCubeAssetCompiler::Instance->LoadInternal(static_cast<LoadData *const RESTRICT>(arguments));
-	};
-	task->_Arguments = load_data;
-	task->_ExecutableOnSameThread = false;
-
-	//Execute the task!
-	TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, task);
-
-	//Add the task to the list.
-	load_context._Tasks->Emplace(task);
-
-	//Return the new asset!
-	return new_asset;
-}
-
-#define GATHER_SAMPLES (0)
-
-/*
-*	Compiles internally.
-*/
-void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data) NOEXCEPT
-{
 	//Define constants.
 	constexpr uint8 MIP_LEVELS{ 9 };
 	constexpr uint32 NUMBER_OF_SAMPLES{ 1024 };
-
-	PROFILING_SCOPE("TextureCubeAssetCompiler::CompileInternal");
 
 	//Set up the parameters.
 	TextureCubeParameters parameters;
@@ -174,7 +99,7 @@ void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compi
 	parameters._Resolution = 1'024;
 
 	//Open the input file.
-	std::ifstream input_file{ compile_data->_FilePath.Data() };
+	std::ifstream input_file{ compile_context._FilePath.Data() };
 
 	//Iterate over the lines and fill in the parameters.
 	{
@@ -245,7 +170,7 @@ void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compi
 	{
 		//Load the HDR texture.
 		int32 width, height, number_of_channels;
-		float32* const RESTRICT data{ stbi_loadf(parameters._File.Data(), &width, &height, &number_of_channels, STBI_rgb_alpha) };
+		float32 *const RESTRICT data{ stbi_loadf(parameters._File.Data(), &width, &height, &number_of_channels, STBI_rgb_alpha) };
 
 		//Initialize the HDR texture.
 		hdr_texture.Initialize(static_cast<uint32>(width), static_cast<uint32>(height));
@@ -268,7 +193,7 @@ void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compi
 		//Initialize the mip texture.
 		mip_chain[mip_level].Initialize(mip_resolution);
 
-#if GATHER_SAMPLES
+#if 0 //'GATHER_SAMPLES' old experiment
 		//Calculate the diffuse weight.
 		const float32 diffuse_weight{ static_cast<float32>(mip_level) / static_cast<float32>(MIP_LEVELS - 1) };
 
@@ -293,13 +218,13 @@ void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compi
 
 					switch (face_index)
 					{
-						case 0: base_direction = Vector3<float32>(-1.0f, BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._X)); break; //Front.
-						case 1: base_direction = Vector3<float32>(1.0f, BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), BaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X)); break; //Back.
-						case 2: base_direction = Vector3<float32>(BaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X), -1.0f, BaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._Y)); break; //Up.
-						case 3: base_direction = Vector3<float32>(BaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X), 1.0f, BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y)); break; //Down.
-						case 4: base_direction = Vector3<float32>(BaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X), BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), -1.0f); break; //Right.
-						case 5: base_direction = Vector3<float32>(BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._X), BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), 1.0f); break; //Left.
-						default: CRASH(); break;
+					case 0: base_direction = Vector3<float32>(-1.0f, BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._X)); break; //Front.
+					case 1: base_direction = Vector3<float32>(1.0f, BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), BaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X)); break; //Back.
+					case 2: base_direction = Vector3<float32>(BaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X), -1.0f, BaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._Y)); break; //Up.
+					case 3: base_direction = Vector3<float32>(BaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X), 1.0f, BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y)); break; //Down.
+					case 4: base_direction = Vector3<float32>(BaseMath::LinearlyInterpolate(1.0f, -1.0f, normalized_coordinate._X), BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), -1.0f); break; //Right.
+					case 5: base_direction = Vector3<float32>(BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._X), BaseMath::LinearlyInterpolate(-1.0f, 1.0f, normalized_coordinate._Y), 1.0f); break; //Left.
+					default: CRASH(); break;
 					}
 
 					base_direction.Normalize();
@@ -320,7 +245,7 @@ void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compi
 							const float32 cos_theta{ 1.0f - coordinate._X };
 							const float32 sin_theta{ BaseMath::SquareRoot(1.0f - cos_theta * cos_theta) };
 
-							sample_direction =  Vector3<float32>(BaseMath::Cosine(phi) * sin_theta, BaseMath::Sine(phi) * sin_theta, cos_theta);
+							sample_direction = Vector3<float32>(BaseMath::Cosine(phi) * sin_theta, BaseMath::Sine(phi) * sin_theta, cos_theta);
 						}
 
 						//Flip the sample direction, if necessary.
@@ -331,7 +256,7 @@ void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compi
 
 						//Modify the sample direction based on how diffuse it is.
 						sample_direction = Vector3<float32>::Normalize(BaseMath::LinearlyInterpolate(base_direction, sample_direction, diffuse_weight));
-					
+
 						//Calculate the sample weight.
 						const float32 sample_weight{ BaseMath::Maximum<float32>(Vector3<float32>::DotProduct(base_direction, sample_direction), 0.0f) };
 
@@ -404,7 +329,7 @@ void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compi
 
 						mip_chain[mip_level].At(face_index, X, Y) = total;
 					}
-					
+
 					else
 					{
 						//Calculate the normalized coordintace.
@@ -441,11 +366,11 @@ void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compi
 
 	//Sewt up the base texture.
 	TextureCube base_texture;
-	
+
 	{
 		//Load the HDR texture.
 		int32 width, height, number_of_channels;
-		float32 *const RESTRICT data{ stbi_loadf(parameters._File.Data(), &width, &height, &number_of_channels, STBI_rgb_alpha)};
+		float32 *const RESTRICT data{ stbi_loadf(parameters._File.Data(), &width, &height, &number_of_channels, STBI_rgb_alpha) };
 
 		//Wrap the data into a texture 2D for easier manipulation.
 		Texture2D<Vector4<float32>> hdr_texture{ static_cast<uint32>(width), static_cast<uint32>(height) };
@@ -501,14 +426,14 @@ void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compi
 	//Determine the collection directory.
 	char collection_directory_path[MAXIMUM_FILE_PATH_LENGTH];
 
-	if (compile_data->_Collection)
+	if (compile_context._Collection)
 	{
-		sprintf_s(collection_directory_path, "%s\\COLLECTION %s", GetCompiledDirectoryPath(compile_data->_CompilationDomain), compile_data->_Collection.Data());
+		sprintf_s(collection_directory_path, "%s\\COLLECTION %s", GetCompiledDirectoryPath(compile_context._CompilationDomain), compile_context._Collection.Data());
 	}
 
 	else
 	{
-		sprintf_s(collection_directory_path, "%s\\COLLECTION Default", GetCompiledDirectoryPath(compile_data->_CompilationDomain));
+		sprintf_s(collection_directory_path, "%s\\COLLECTION Default", GetCompiledDirectoryPath(compile_context._CompilationDomain));
 	}
 
 	//Create the compiled directory, if it doesn't exist.
@@ -520,16 +445,16 @@ void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compi
 
 	//Create the compiled directory, if it doesn't exist.
 	File::CreateDirectory(directory_path);
-	
+
 	//Determine the output file path.
 	char output_file_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(output_file_path, "%s\\%s.ca", directory_path, compile_data->_Name.Data());
+	sprintf_s(output_file_path, "%s\\%s.ca", directory_path, compile_context._Name.Data());
 
 	//Open the output file.
 	BinaryOutputFile output_file{ output_file_path };
 
 	//Write the asset header to the file.
-	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_data->_Name.Data()), compile_data->_Name.Data() };
+	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_context._Name.Data()), compile_context._Name.Data() };
 	output_file.Write(&asset_header, sizeof(AssetHeader));
 
 	//Write the resolution to the file.
@@ -555,22 +480,25 @@ void TextureCubeAssetCompiler::CompileInternal(CompileData *const RESTRICT compi
 }
 
 /*
-*	Loads internally.
+*	Loads a single asset with the given load context.
 */
-void TextureCubeAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCEPT
+void TextureCubeAssetCompiler::Load(const LoadContext &load_context) NOEXCEPT
 {
-	PROFILING_SCOPE("TextureCubeAssetCompiler::LoadInternal");
+	PROFILING_SCOPE("TextureCubeAssetCompiler::Load");
+
+	//Allocate the asset.
+	TextureCubeAsset *const RESTRICT new_asset{ static_cast<TextureCubeAsset *const RESTRICT>(load_context._Asset) };
 
 	//Read the data.
-	uint64 stream_archive_position{ load_data->_StreamArchivePosition };
+	uint64 stream_archive_position{ load_context._StreamArchivePosition };
 
 	//Read the resolution.
 	uint32 resolution;
-	load_data->_StreamArchive->Read(&resolution, sizeof(uint32), &stream_archive_position);
+	load_context._StreamArchive->Read(&resolution, sizeof(uint32), &stream_archive_position);
 
 	//Read the number of mip levels.
 	uint8 mip_levels;
-	load_data->_StreamArchive->Read(&mip_levels, sizeof(uint8), &stream_archive_position);
+	load_context._StreamArchive->Read(&mip_levels, sizeof(uint8), &stream_archive_position);
 
 	//Read the data.
 	DynamicArray<DynamicArray<float32>> data;
@@ -582,15 +510,15 @@ void TextureCubeAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) 
 		//Read the data.
 		const uint64 number_of_elements{ (resolution >> i) * (resolution >> i) * 4 * 6 };
 		data[i].Upsize<false>(number_of_elements);
-		load_data->_StreamArchive->Read(data[i].Data(), number_of_elements * sizeof(float32), &stream_archive_position);
+		load_context._StreamArchive->Read(data[i].Data(), number_of_elements * sizeof(float32), &stream_archive_position);
 	}
 
 	//Initialize the texture data.
-	load_data->_Asset->_TextureCube.Initialize(resolution, data[0]);
+	new_asset->_TextureCube.Initialize(resolution, data[0]);
 
 	//Set the number of mip levels.
-	load_data->_Asset->_MipLevels = mip_levels;
+	new_asset->_MipLevels = mip_levels;
 
 	//Create the texture cube handle.
-	RenderingSystem::Instance->CreateTextureCube(resolution, data, &load_data->_Asset->_TextureCubeHandle);
+	RenderingSystem::Instance->CreateTextureCube(resolution, data, &new_asset->_TextureCubeHandle);
 }

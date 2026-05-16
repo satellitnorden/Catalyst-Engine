@@ -25,7 +25,6 @@
 //Systems.
 #include <Systems/LogSystem.h>
 #include <Systems/RenderingSystem.h>
-#include <Systems/TaskSystem.h>
 
 //STL.
 #include <fstream>
@@ -162,93 +161,7 @@ NO_DISCARD uint64 Texture2DAssetCompiler::CurrentVersion() const NOEXCEPT
 */
 void Texture2DAssetCompiler::Compile(const CompileContext &compile_context) NOEXCEPT
 {
-	//Set up the compile data.
-	CompileData *const RESTRICT compile_data{ new (_CompileDataAllocator.Allocate()) CompileData() };
-
-	//Set the collection.
-	compile_data->_Collection = compile_context._Collection;
-
-	//Set the file path.
-	compile_data->_FilePath = compile_context._FilePath;
-
-	//Set the name.
-	compile_data->_Name = compile_context._Name;
-
-	//Set the compilation domain.
-	compile_data->_CompilationDomain = compile_context._CompilationDomain;
-
-	//Set up the task.
-	Task *const RESTRICT task{ static_cast<Task *const RESTRICT>(compile_context._TaskAllocator->Allocate()) };
-
-	task->_Function = [](void *const RESTRICT arguments)
-	{
-		Texture2DAssetCompiler::Instance->CompileInternal(static_cast<CompileData *const RESTRICT>(arguments));
-	};
-	task->_Arguments = compile_data;
-	task->_ExecutableOnSameThread = false;
-
-	//Execute the task!
-	TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, task);
-
-	//Add the task to the list.
-	compile_context._Tasks->Emplace(task);
-}
-
-#define ASYNC_LOAD (1)
-
-/*
-*	Loads a single asset with the given load context.
-*/
-NO_DISCARD Asset *const RESTRICT Texture2DAssetCompiler::Load(const LoadContext &load_context) NOEXCEPT
-{
-	//Allocate the asset.
-	Texture2DAsset *const RESTRICT new_asset{ new (_AssetAllocator.Allocate()) Texture2DAsset() };
-
-#if ASYNC_LOAD
-	//Set up the load data.
-	LoadData *const RESTRICT load_data{ new (_LoadDataAllocator.Allocate()) LoadData() };
-
-	load_data->_StreamArchivePosition = load_context._StreamArchivePosition;
-	load_data->_StreamArchive = load_context._StreamArchive;
-	load_data->_Asset = new_asset;
-
-	//Set up the task.
-	Task *const RESTRICT task{ static_cast<Task *const RESTRICT>(load_context._TaskAllocator->Allocate()) };
-
-	task->_Function = [](void *const RESTRICT arguments)
-	{
-		Texture2DAssetCompiler::Instance->LoadInternal(static_cast<LoadData*const RESTRICT>(arguments));
-	};
-	task->_Arguments = load_data;
-	task->_ExecutableOnSameThread = false;
-
-	//Execute the task!
-	TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, task);
-
-	//Add the task to the list.
-	load_context._Tasks->Emplace(task);
-#else
-	//Set up the load data.
-	Texture2DLoadData load_data;
-
-	load_data._StreamArchivePosition = load_context._StreamArchivePosition;
-	load_data._StreamArchive = load_context._StreamArchive;
-	load_data._Asset = new_asset;
-
-	//Load!
-	LoadInternal(&load_data);
-#endif
-
-	//Return the new asset!
-	return new_asset;
-}
-
-/*
-*	Compiles internally.
-*/
-void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile_data) NOEXCEPT
-{
-	PROFILING_SCOPE("Texture2DAssetCompiler::CompileInternal");
+	PROFILING_SCOPE("Texture2DAssetCompiler::Compile");
 
 	//Set up the parameters.
 	Texture2DParameters parameters;
@@ -265,11 +178,11 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 	parameters._NormalizeChannels[3] = false;
 
 	//Open the input file.
-	std::ifstream input_file{ compile_data->_FilePath.Data() };
+	std::ifstream input_file{ compile_context._FilePath.Data() };
 
 	//Iterate over the lines and fill in the parameters.
 	{
-		PROFILING_SCOPE("Texture2DAssetCompiler::CompileInternal - Parse input file");
+		PROFILING_SCOPE("Texture2DAssetCompiler::Compile - Parse input file");
 
 		StaticArray<DynamicString, 8> arguments;
 		std::string current_line;
@@ -390,7 +303,7 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 
 					ASSERT(number_of_arguments == 3, "ChannelMapping() needs three arguments!");
 
-					Texture2DChannelMapping* RESTRICT channel_mapping{ nullptr };
+					Texture2DChannelMapping *RESTRICT channel_mapping{ nullptr };
 
 					if (arguments[0] == "RED")
 					{
@@ -753,7 +666,7 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 	StaticArray<Texture2D<Vector4<float32>>, 4> input_textures;
 
 	{
-		PROFILING_SCOPE("Texture2DAssetCompiler::CompileInternal - Read input textures");
+		PROFILING_SCOPE("Texture2DAssetCompiler::Compile - Read input textures");
 
 		if (parameters._File1)
 		{
@@ -900,7 +813,7 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 	Texture2D<Vector4<float32>> composite_texture{ width, height };
 
 	{
-		PROFILING_SCOPE("Texture2DAssetCompiler::CompileInternal - Create composite texture");
+		PROFILING_SCOPE("Texture2DAssetCompiler::Compile - Create composite texture");
 
 		for (uint32 Y{ 0 }; Y < composite_texture.GetHeight(); ++Y)
 		{
@@ -936,7 +849,7 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 	//Apply gamma correction, if desired.
 	if (parameters._ApplyGammaCorrection)
 	{
-		PROFILING_SCOPE("Texture2DAssetCompiler::CompileInternal - Apply gamma correction");
+		PROFILING_SCOPE("Texture2DAssetCompiler::Compile - Apply gamma correction");
 
 		for (uint32 Y{ 0 }; Y < composite_texture.GetHeight(); ++Y)
 		{
@@ -995,7 +908,7 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 		{
 			for (uint32 X{ 0 }; X < composite_texture.GetWidth(); ++X)
 			{
-				Vector4<float32>& texel{ composite_texture.At(X, Y) };
+				Vector4<float32> &texel{ composite_texture.At(X, Y) };
 
 				for (uint8 i{ 0 }; i < 3; ++i)
 				{
@@ -1024,7 +937,7 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 	Vector4<float32> average_value;
 
 	{
-		PROFILING_SCOPE("Texture2DAssetCompiler::CompileInternal - Calculate average value");
+		PROFILING_SCOPE("Texture2DAssetCompiler::Compile - Calculate average value");
 
 		//Calculate the average value with higher precision.
 		Vector4<float64> _average_value{ 0.0, 0.0, 0.0, 0.0 };
@@ -1048,13 +961,13 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 			average_value[i] = static_cast<float32>(_average_value[i]);
 		}
 	}
-	
+
 	//Generate the mip chain.
 	DynamicArray<Texture2D<Vector4<float32>>> mip_chain;
 
 	if (parameters._MipmapGenerationMode != MipmapGenerationMode::NONE)
 	{
-		PROFILING_SCOPE("Texture2DAssetCompiler::CompileInternal - Generate mip chain");
+		PROFILING_SCOPE("Texture2DAssetCompiler::Compile - Generate mip chain");
 
 		RenderingUtilities::GenerateMipChain(composite_texture, parameters._MipmapGenerationMode, &mip_chain);
 	}
@@ -1070,7 +983,7 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 	output_textures.Reserve(mip_chain.Size() - parameters._BaseMipLevel);
 
 	{
-		PROFILING_SCOPE("Texture2DAssetCompiler::CompileInternal - Create output textures");
+		PROFILING_SCOPE("Texture2DAssetCompiler::Compile - Create output textures");
 
 		for (uint64 mip_index{ parameters._BaseMipLevel }; mip_index < mip_chain.Size(); ++mip_index)
 		{
@@ -1097,7 +1010,7 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 	output_data.Reserve(output_textures.Size());
 
 	{
-		PROFILING_SCOPE("Texture2DAssetCompiler::CompileInternal - Create output data");
+		PROFILING_SCOPE("Texture2DAssetCompiler::Compile - Create output data");
 
 		for (uint64 mip_index{ 0 }; mip_index < output_textures.Size(); ++mip_index)
 		{
@@ -1130,14 +1043,14 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 	//Determine the collection directory.
 	char collection_directory_path[MAXIMUM_FILE_PATH_LENGTH];
 
-	if (compile_data->_Collection)
+	if (compile_context._Collection)
 	{
-		sprintf_s(collection_directory_path, "%s\\COLLECTION %s", GetCompiledDirectoryPath(compile_data->_CompilationDomain), compile_data->_Collection.Data());
+		sprintf_s(collection_directory_path, "%s\\COLLECTION %s", GetCompiledDirectoryPath(compile_context._CompilationDomain), compile_context._Collection.Data());
 	}
 
 	else
 	{
-		sprintf_s(collection_directory_path, "%s\\COLLECTION Default", GetCompiledDirectoryPath(compile_data->_CompilationDomain));
+		sprintf_s(collection_directory_path, "%s\\COLLECTION Default", GetCompiledDirectoryPath(compile_context._CompilationDomain));
 	}
 
 	//Create the compiled directory, if it doesn't exist.
@@ -1152,13 +1065,13 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 
 	//Determine the output file path.
 	char output_file_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(output_file_path, "%s\\%s.ca", directory_path, compile_data->_Name.Data());
+	sprintf_s(output_file_path, "%s\\%s.ca", directory_path, compile_context._Name.Data());
 
 	//Open the output file.
 	BinaryOutputFile output_file{ output_file_path };
 
 	//Write the asset header to the file.
-	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_data->_Name.Data()), compile_data->_Name.Data()};
+	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_context._Name.Data()), compile_context._Name.Data() };
 	output_file.Write(&asset_header, sizeof(AssetHeader));
 
 	//Write the average value.
@@ -1188,31 +1101,34 @@ void Texture2DAssetCompiler::CompileInternal(CompileData *const RESTRICT compile
 }
 
 /*
-*	Loads internally.
+*	Loads a single asset with the given load context.
 */
-void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NOEXCEPT
+void Texture2DAssetCompiler::Load(const LoadContext &load_context) NOEXCEPT
 {
-	PROFILING_SCOPE("Texture2DAssetCompiler::LoadInternal");
+	PROFILING_SCOPE("Texture2DAssetCompiler::Load");
+
+	//Allocate the asset.
+	Texture2DAsset *const RESTRICT new_asset{ static_cast<Texture2DAsset *const RESTRICT>(load_context._Asset) };
 
 	//Read the data.
-	uint64 stream_archive_position{ load_data->_StreamArchivePosition };
+	uint64 stream_archive_position{ load_context._StreamArchivePosition };
 
 	//Read the average value.
-	load_data->_StreamArchive->Read(&load_data->_Asset->_AverageValue, sizeof(Vector4<float32>), &stream_archive_position);
+	load_context._StreamArchive->Read(&new_asset->_AverageValue, sizeof(Vector4<float32>), &stream_archive_position);
 
 	//Read the number of mip levels.
 	uint8 number_of_mip_levels;
-	load_data->_StreamArchive->Read(&number_of_mip_levels, sizeof(uint8), &stream_archive_position);
+	load_context._StreamArchive->Read(&number_of_mip_levels, sizeof(uint8), &stream_archive_position);
 
 	//Read the width/height.
 	uint32 width;
-	load_data->_StreamArchive->Read(&width, sizeof(uint32), &stream_archive_position);
+	load_context._StreamArchive->Read(&width, sizeof(uint32), &stream_archive_position);
 
 	uint32 height;
-	load_data->_StreamArchive->Read(&height, sizeof(uint32), &stream_archive_position);
+	load_context._StreamArchive->Read(&height, sizeof(uint32), &stream_archive_position);
 
 	//Read the compression.
-	load_data->_StreamArchive->Read(&load_data->_Asset->_Compression, sizeof(TextureCompression), &stream_archive_position);
+	load_context._StreamArchive->Read(&new_asset->_Compression, sizeof(TextureCompression), &stream_archive_position);
 
 	//Read the data.
 	DynamicArray<DynamicArray<byte>> data;
@@ -1226,7 +1142,7 @@ void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 	{
 		const uint32 mip_width{ width >> mip_index };
 		const uint32 mip_height{ height >> mip_index };
-		const uint64 mip_size{ (width >> mip_index) * (height >> mip_index) * sizeof(Vector4<byte>) / load_data->_Asset->_Compression.CompressionRatio() };
+		const uint64 mip_size{ (width >> mip_index) * (height >> mip_index) * sizeof(Vector4<byte>) / new_asset->_Compression.CompressionRatio() };
 
 		if (mip_index < number_of_mip_levels - 1)
 		{
@@ -1241,7 +1157,7 @@ void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 		{
 			data.Emplace();
 			data.Back().Upsize<false>(mip_size);
-			load_data->_StreamArchive->Read(data.Back().Data(), mip_size, &stream_archive_position);
+			load_context._StreamArchive->Read(data.Back().Data(), mip_size, &stream_archive_position);
 		}
 	}
 #else
@@ -1249,18 +1165,18 @@ void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 	{
 		const uint32 mip_width{ width >> mip_index };
 		const uint32 mip_height{ height >> mip_index };
-		const uint64 mip_size{ (width >> mip_index) * (height >> mip_index) * sizeof(Vector4<byte>) / load_data->_Asset->_Compression.CompressionRatio() };
+		const uint64 mip_size{ (width >> mip_index) * (height >> mip_index) * sizeof(Vector4<byte>) / new_asset->_Compression.CompressionRatio() };
 
 		data.Emplace();
 		data.Back().Upsize<false>(mip_size);
-		load_data->_StreamArchive->Read(data.Back().Data(), mip_size, &stream_archive_position);
+		load_context._StreamArchive->Read(data.Back().Data(), mip_size, &stream_archive_position);
 	}
 #endif
 
 	//Figure out the texture format.
 	TextureFormat texture_format;
 
-	switch (load_data->_Asset->_Compression._Mode)
+	switch (new_asset->_Compression._Mode)
 	{
 		case TextureCompression::Mode::NONE:
 		{
@@ -1303,24 +1219,24 @@ void Texture2DAssetCompiler::LoadInternal(LoadData *const RESTRICT load_data) NO
 				TextureUsage::NONE,
 				false
 			),
-			&load_data->_Asset->_Texture2DHandle
+			&new_asset->_Texture2DHandle
 		);
 	}
 
 	//Add the texture to global render data.
-	load_data->_Asset->_Index = RenderingSystem::Instance->AddTextureToGlobalRenderData(load_data->_Asset->_Texture2DHandle, load_data->_Asset->_AverageValue);
+	new_asset->_Index = RenderingSystem::Instance->AddTextureToGlobalRenderData(new_asset->_Texture2DHandle, new_asset->_AverageValue);
 
 	//Create the texture 2D.
-	load_data->_Asset->_Texture2D.Initialize(final_width, final_height);
+	new_asset->_Texture2D.Initialize(final_width, final_height);
 
-	if (load_data->_Asset->_Compression._Mode == TextureCompression::Mode::NONE)
+	if (new_asset->_Compression._Mode == TextureCompression::Mode::NONE)
 	{
-		Memory::Copy(load_data->_Asset->_Texture2D.Data(), data[0].Data(), final_width * final_height * sizeof(Vector4<byte>));
+		Memory::Copy(new_asset->_Texture2D.Data(), data[0].Data(), final_width * final_height * sizeof(Vector4<byte>));
 	}
-	
+
 	else
 	{
-		load_data->_Asset->_Compression.Decompress2D(data[0].Data(), final_width, final_height, reinterpret_cast<byte *const RESTRICT>(load_data->_Asset->_Texture2D.Data()));
+		new_asset->_Compression.Decompress2D(data[0].Data(), final_width, final_height, reinterpret_cast<byte *const RESTRICT>(new_asset->_Texture2D.Data()));
 	}
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
