@@ -3,22 +3,21 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
+#include <Core/General/StaticString.h>
 
 //File.
 #include <File/Core/File.h>
-#include <File/Core/BinaryInputFile.h>
-#include <File/Core/BinaryOutputFile.h>
 
-//STL.
-#include <filesystem>
+//Third party.
+#include <ThirdParty/json/json.hpp>
+
+//STD.
+#include <fstream>
 
 class ContentCache final
 {
 
 public:
-
-	//The current version.
-	constexpr static uint64 CURRENT_VERSION{ 1 };
 
 	/*
 	*	Entry class definition.
@@ -28,145 +27,218 @@ public:
 
 	public:
 
+		//The file path.
+		StaticString<MAXIMUM_FILE_PATH_LENGTH> _FilePath;
+
 		//The identifier.
 		uint64 _Identifier;
 
 		//The version.
 		uint64 _Version;
 
-		//The last write time.
-		std::filesystem::file_time_type _LastWriteTime;
+		//The last changed time.
+		uint64 _LastChangedTime;
+
+		/*
+		*	Returns if this entry needs a compile.
+		*/
+		FORCE_INLINE NO_DISCARD bool NeedsCompile(const uint64 current_version) const NOEXCEPT
+		{
+			//If the identifier is invalid, it needs a compile.
+			if (_Version == UINT64_MAXIMUM)
+			{
+				return true;
+			}
+
+			//If the last changed time is invalid, it needs a compile.
+			if (_LastChangedTime == UINT64_MAXIMUM)
+			{
+				return true;
+			}
+
+			//If the stored version differs, it needs a compile.
+			if (_Version != current_version)
+			{
+				return true;
+			}
+
+			//If the last changed time version differs, it needs a compile.
+			if (_LastChangedTime != File::LastChangedTime(_FilePath.Data()))
+			{
+				return true;
+			}
+
+			//Otherwise, it doesn't need a compile!
+			return false;
+		}
+
+		/*
+		*	Updates this entry.
+		*/
+		FORCE_INLINE void Update(const uint64 current_version) NOEXCEPT
+		{
+			//Set the version.
+			_Version = current_version;
+
+			//Set the last changed time.
+			_LastChangedTime = File::LastChangedTime(_FilePath.Data());
+		}
 
 	};
 
-	//The version.
-	uint64 _Version;
-
-	//The entries.
-	DynamicArray<Entry> _Entries;
-
 	/*
-	*	Default constructor.
+	*	Reads this content cache from the given file path.
 	*/
-	FORCE_INLINE ContentCache(const char *const RESTRICT file_path) NOEXCEPT
+	FORCE_INLINE void Read(const char *const RESTRICT file_path) NOEXCEPT
 	{
+		//If the file doesn't exist, abort.
 		if (!File::Exists(file_path))
 		{
 			return;
 		}
 
-		//Read the file.
-		BinaryInputFile file{ file_path };
+		//Read the JSON.
+		nlohmann::ordered_json json;
+
+		{
+			//Open the file.
+			std::ifstream file{ file_path };
+
+			//Read the JSON.
+			json << file;
+
+			//Close the file.
+			file.close();
+		}
 
 		//Read the version.
-		uint64 version;
-		file.Read(&version, sizeof(uint64));
+		const uint64 version{ json["Version"].get<uint64>() };
 
-		//If this is not the current version, disregard.
-		if (version != CURRENT_VERSION)
+		//Abort if it's not the correct version.
+		if (version != static_cast<uint64>(Version::CURRENT_VERSION))
 		{
-			file.Close();
-
 			return;
 		}
 
-		//Read the number of entries.
-		uint64 number_of_entries;
-		file.Read(&number_of_entries, sizeof(uint64));
-
-		_Entries.Upsize<false>(number_of_entries);
-
 		//Read the entries.
-		for (Entry &entry : _Entries)
-		{
-			file.Read(&entry, sizeof(Entry));
-		}
+		const nlohmann::ordered_json &entries_entry{ json["Entries"] };
 
-		//Close the file.
-		file.Close();
+		for (const nlohmann::ordered_json &entry_entry : entries_entry)
+		{
+			//Add the new entry.
+			_Entries.Emplace();
+			Entry &new_entry{ _Entries.Back() };
+
+			//Read the file path.
+			new_entry._FilePath = entry_entry["FilePath"].get<std::string>().c_str();
+
+			//Read the identifier.
+			new_entry._Identifier = entry_entry["Identifier"].get<uint64>();
+
+			//Read the version.
+			new_entry._Version = entry_entry["Version"].get<uint64>();
+
+			//Read the last changed time.
+			new_entry._LastChangedTime = entry_entry["LastChangedTime"].get<uint64>();
+		}
 	}
 
 	/*
-	*	Returns if the given identifier with the given last write time needs a recompile.
+	*	Returns the entry with the given file path.
 	*/
-	FORCE_INLINE NO_DISCARD bool NeedsRecompile(const uint64 identifier, const uint64 version, const std::filesystem::file_time_type last_write_time) NOEXCEPT
+	FORCE_INLINE NO_DISCARD Entry *const RESTRICT GetEntry(const char *const RESTRICT file_path) NOEXCEPT
 	{
-#if 0
-		return true;
-#else
+		//Calculate the identifier.
+		const uint64 identifier{ HashAlgorithms::MurmurHash64(file_path, StringUtilities::StringLength(file_path)) };
+
+		//Check if we have an already existing entry.
 		for (Entry &entry : _Entries)
 		{
 			if (entry._Identifier == identifier)
 			{
-				if (entry._Version != version)
-				{
-					return true;
-				}
-
-				else if (entry._LastWriteTime < last_write_time)
-				{
-					return true;
-				}
-
-				else
-				{
-					return false;
-				}
+				return &entry;
 			}
 		}
 
+		//Otherwise, add a new one and return that one.
 		_Entries.Emplace();
-		Entry &new_entry{ _Entries.Back() };
+		Entry &entry{ _Entries.Back() };
 
-		new_entry._Identifier = identifier;
-		new_entry._Version = version;
-		new_entry._LastWriteTime = last_write_time;
+		//Set the file path.
+		entry._FilePath = file_path;
 
-		return true;
-#endif
-	}
+		//Set the identifier.
+		entry._Identifier = identifier;
 
-	/*
-	*	Updates the entry with the given identifier.
-	*/
-	FORCE_INLINE void UpdateEntry(const uint64 identifier, const uint64 version, const std::filesystem::file_time_type last_write_time) NOEXCEPT
-	{
-		for (Entry &entry : _Entries)
-		{
-			if (entry._Identifier == identifier)
-			{
-				entry._Version = version;
-				entry._LastWriteTime = last_write_time;
+		//Set the version.
+		entry._Version = UINT64_MAXIMUM;
 
-				break;
-			}
-		}
+		//Set the last changed time.
+		entry._LastChangedTime = UINT64_MAXIMUM;
+
+		//Return the new entry!
+		return &entry;
 	}
 
 	/*
 	*	Writes this shader cache.
 	*/
-	FORCE_INLINE void Write(const char *const RESTRICT file_path) NOEXCEPT
+	FORCE_INLINE void Write(const char* const RESTRICT file_path) NOEXCEPT
 	{
-		//Open the file.
-		BinaryOutputFile file{ file_path };
+		//Set up the JSON.
+		nlohmann::ordered_json json;
 
 		//Write the version.
-		const uint64 version{ CURRENT_VERSION };
-		file.Write(&version, sizeof(uint64));
-
-		//Write the number of entries.
-		const uint64 number_of_entries{ _Entries.Size() };
-		file.Write(&number_of_entries, sizeof(uint64));
+		json["Version"] = static_cast<uint64>(Version::CURRENT_VERSION);
 
 		//Write the entries.
+		nlohmann::ordered_json &entries_entry{ json["Entries"] };
+
 		for (const Entry &entry : _Entries)
 		{
-			file.Write(&entry, sizeof(Entry));
+			//Set up the entry entry.
+			nlohmann::ordered_json entry_entry;
+
+			//Set the file path.
+			entry_entry["FilePath"] = entry._FilePath.Data();
+
+			//Set the identifier.
+			entry_entry["Identifier"] = entry._Identifier;
+
+			//Set the version.
+			entry_entry["Version"] = entry._Version;
+
+			//Set the last changed time.
+			entry_entry["LastChangedTime"] = entry._LastChangedTime;
+
+			//Add the entry entry.
+			entries_entry.emplace_back(entry_entry);
 		}
 
-		//Close the file.
-		file.Close();
+		//Write the JSON!
+		{
+			//Open the file.
+			std::ofstream file{ file_path };
+
+			//Write the JSON.
+			file << std::setw(4) << json;
+
+			//Close the file.
+			file.close();
+		}
 	}
+
+private:
+
+	//Enumeration covering all versions.
+	enum class Version : uint64
+	{
+		BASE,
+
+		CURRENT_VERSION
+	};
+
+	//The entries.
+	DynamicArray<Entry> _Entries;
 
 };

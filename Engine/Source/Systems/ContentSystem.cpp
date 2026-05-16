@@ -25,6 +25,7 @@
 
 //File.
 #include <File/Core/BinaryInputFile.h>
+#include <File/Core/BinaryOutputFile.h>
 
 //Profiling.
 #include <Profiling/Profiling.h>
@@ -193,9 +194,11 @@ RECOMPILE:
 
 	{
 		//Set up the content cache.
+		ContentCache content_cache;
+
 		char content_cache_file_path[MAXIMUM_FILE_PATH_LENGTH];
-		sprintf_s(content_cache_file_path, "%s\\ContentCache", ENGINE_COMPILED);
-		ContentCache content_cache{ content_cache_file_path };
+		sprintf_s(content_cache_file_path, "%s\\ContentCache.json", ENGINE_COMPILED);
+		content_cache.Read(content_cache_file_path);
 
 		//Compile assets.
 		CompileAssetsInDirectory(CompilationDomain::ENGINE, &content_cache, ENGINE_ASSETS, nullptr, &compile_result);
@@ -287,9 +290,11 @@ RECOMPILE:
 
 	{
 		//Set up the content cache.
+		ContentCache content_cache;
+
 		char content_cache_file_path[MAXIMUM_FILE_PATH_LENGTH];
-		sprintf_s(content_cache_file_path, "%s\\ContentCache", GAME_COMPILED);
-		ContentCache content_cache{ content_cache_file_path };
+		sprintf_s(content_cache_file_path, "%s\\ContentCache.json", GAME_COMPILED);
+		content_cache.Read(content_cache_file_path);
 
 		//Compile assets.
 		CompileAssetsInDirectory(CompilationDomain::GAME, &content_cache, GAME_ASSETS, nullptr, &compile_result);
@@ -564,26 +569,12 @@ void ContentSystem::CompileAssetsInDirectory
 		//Cache the file path string.
 		const std::string file_path{ entry.path().string() };
 
-		//Calculate the identifier.
-		const uint64 identifier{ HashAlgorithms::MurmurHash64(file_path.data(), sizeof(char) * file_path.length()) };
-
-		//Retrieve the last write time.
-		const std::filesystem::file_time_type last_write_time{ std::filesystem::last_write_time(file_path) };
-
 		//Figure out the extension.
 		std::string extension;
 
 		{
 			const size_t last_dot_position{ file_path.find_last_of(".") };
 			extension = file_path.substr(last_dot_position + 1, std::string::npos);
-		}
-
-		//Figure out the name.
-		std::string name;
-
-		{
-			const size_t last_slash_position{ file_path.find_last_of("\\") };
-			name = file_path.substr(last_slash_position + 1, file_path.length() - last_slash_position - strlen(extension.c_str()) - 2);
 		}
 
 		//Find the asset compiler for this file type.
@@ -600,13 +591,24 @@ void ContentSystem::CompileAssetsInDirectory
 			continue;
 		}
 
-		//Check if it needs a recompile.
-		if (!TEST_BIT(asset_compiler->_Flags, AssetCompiler::Flags::ALWAYS_COMPILE) && !content_cache->NeedsRecompile(identifier, asset_compiler->CurrentVersion(), last_write_time))
+		//Retrieve the content cache entry.
+		ContentCache::Entry *const RESTRICT content_cache_entry{ content_cache->GetEntry(file_path.c_str()) };
+
+		//Check if it needs aecompile.
+		if (!TEST_BIT(asset_compiler->_Flags, AssetCompiler::Flags::ALWAYS_COMPILE) && !content_cache_entry->NeedsCompile(asset_compiler->CurrentVersion()))
 		{
 			continue;
 		}
 
 		LOG_INFORMATION("Compiling %s", file_path.data());
+
+		//Figure out the name.
+		std::string name;
+
+		{
+			const size_t last_slash_position{ file_path.find_last_of("\\") };
+			name = file_path.substr(last_slash_position + 1, file_path.length() - last_slash_position - strlen(extension.c_str()) - 2);
+		}
 
 		//Allocate the compile data.
 		CompileData *const RESTRICT compile_data{ new (_CompileDataAllocator.Allocate()) CompileData() };
@@ -636,8 +638,8 @@ void ContentSystem::CompileAssetsInDirectory
 		//Add the compile data.
 		_CompileData.Emplace(compile_data);
 
-		//Update the entry.
-		content_cache->UpdateEntry(identifier, asset_compiler->CurrentVersion(), last_write_time);
+		//Update the content cache entry.
+		content_cache_entry->Update(asset_compiler->CurrentVersion());
 
 		//New asset was compiled!
 		compile_result->_NewAssetsCompiled = true;
