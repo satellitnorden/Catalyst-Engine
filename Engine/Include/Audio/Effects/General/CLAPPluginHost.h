@@ -20,7 +20,7 @@
 /*
 *	Audio effect that loads and manages a single .clap plugin.
 */
-class CLAPPlugin final : public AudioEffect
+class CLAPPluginHost final : public AudioEffect
 {
 
 public:
@@ -94,12 +94,12 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	CLAPPlugin() NOEXCEPT;
+	CLAPPluginHost() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~CLAPPlugin() NOEXCEPT;
+	~CLAPPluginHost() NOEXCEPT;
 
 	/*
 	*	Initializes this CLAP plugin.

@@ -1,5 +1,5 @@
 //Header file.
-#include <Audio/Effects/General/CLAPPlugin.h>
+#include <Audio/Effects/General/CLAPPluginHost.h>
 
 //Profiling.
 #include <Profiling/Profiling.h>
@@ -282,11 +282,11 @@ const void *get_extension(const clap_host *host, const char *extension_id)
 		};
 		GUI_EXTENSION.request_show = [](const clap_host_t *host) -> bool
 		{
-			CLAPPlugin *const RESTRICT _host{ static_cast<CLAPPlugin *const RESTRICT>(host->host_data) };
+			CLAPPluginHost *const RESTRICT _host{ static_cast<CLAPPluginHost *const RESTRICT>(host->host_data) };
 
-			CLAPPlugin::MainThreadRequest request;
+			CLAPPluginHost::MainThreadRequest request;
 
-			request._Type = CLAPPlugin::MainThreadRequest::Type::SHOW_GUI;
+			request._Type = CLAPPluginHost::MainThreadRequest::Type::SHOW_GUI;
 
 			_host->AddMainThreadRequest(request);
 
@@ -294,11 +294,11 @@ const void *get_extension(const clap_host *host, const char *extension_id)
 		};
 		GUI_EXTENSION.request_hide = [](const clap_host_t* host) -> bool
 		{
-			CLAPPlugin *const RESTRICT _host{ static_cast<CLAPPlugin *const RESTRICT>(host->host_data) };
+			CLAPPluginHost *const RESTRICT _host{ static_cast<CLAPPluginHost *const RESTRICT>(host->host_data) };
 
-			CLAPPlugin::MainThreadRequest request;
+			CLAPPluginHost::MainThreadRequest request;
 
-			request._Type = CLAPPlugin::MainThreadRequest::Type::HIDE_GUI;
+			request._Type = CLAPPluginHost::MainThreadRequest::Type::HIDE_GUI;
 
 			_host->AddMainThreadRequest(request);
 
@@ -498,7 +498,7 @@ const void *get_extension(const clap_host *host, const char *extension_id)
 /*
 *	Default constructor.
 */
-CLAPPlugin::CLAPPlugin() NOEXCEPT
+CLAPPluginHost::CLAPPluginHost() NOEXCEPT
 {
 	//Reset the process struct.
 	Memory::Set(&_Process, 0, sizeof(clap_process_t));
@@ -507,7 +507,7 @@ CLAPPlugin::CLAPPlugin() NOEXCEPT
 /*
 *	Default destructor.
 */
-CLAPPlugin::~CLAPPlugin() NOEXCEPT
+CLAPPluginHost::~CLAPPluginHost() NOEXCEPT
 {
 	//Terminate.
 	Terminate();
@@ -516,9 +516,9 @@ CLAPPlugin::~CLAPPlugin() NOEXCEPT
 /*
 *	Initializes this CLAP plugin.
 */
-void CLAPPlugin::Initialize(const char *const RESTRICT plugin_file_path) NOEXCEPT
+void CLAPPluginHost::Initialize(const char *const RESTRICT plugin_file_path) NOEXCEPT
 {
-	PROFILING_SCOPE("CLAPPlugin::Initialize");
+	PROFILING_SCOPE("CLAPPluginHost::Initialize");
 
 	//Load the dynamic library.
 	if (!_DynamicLibrary.Load(plugin_file_path))
@@ -579,11 +579,11 @@ void CLAPPlugin::Initialize(const char *const RESTRICT plugin_file_path) NOEXCEP
 	};
 	_Host.request_callback = [](const struct clap_host *host) -> void
 	{
-		CLAPPlugin *const RESTRICT _host{ static_cast<CLAPPlugin *const RESTRICT>(host->host_data) };
+		CLAPPluginHost *const RESTRICT _host{ static_cast<CLAPPluginHost *const RESTRICT>(host->host_data) };
 
-		CLAPPlugin::MainThreadRequest request;
+		CLAPPluginHost::MainThreadRequest request;
 
-		request._Type = CLAPPlugin::MainThreadRequest::Type::UPDATE_PLUGIN;
+		request._Type = CLAPPluginHost::MainThreadRequest::Type::UPDATE_PLUGIN;
 
 		_host->AddMainThreadRequest(request);
 	};
@@ -615,7 +615,7 @@ void CLAPPlugin::Initialize(const char *const RESTRICT plugin_file_path) NOEXCEP
 	//Set up the initialization task.
 	_InitializationTask._Function = [](void *const RESTRICT arguments)
 	{
-		CLAPPlugin *const RESTRICT _host{ static_cast<CLAPPlugin *const RESTRICT>(arguments) };
+		CLAPPluginHost *const RESTRICT _host{ static_cast<CLAPPluginHost *const RESTRICT>(arguments) };
 		_host->InitializeInternal(_host->_PluginFilePath.Data());
 	};
 	_InitializationTask._Arguments = this;
@@ -628,7 +628,7 @@ void CLAPPlugin::Initialize(const char *const RESTRICT plugin_file_path) NOEXCEP
 /*
 *	Terminates this CLAP plugin.
 */
-void CLAPPlugin::Terminate() NOEXCEPT
+void CLAPPluginHost::Terminate() NOEXCEPT
 {
 	//Wait for the initialization task to be executed.
 	_InitializationTask.Wait<WaitMode::YIELD>();
@@ -675,7 +675,7 @@ void CLAPPlugin::Terminate() NOEXCEPT
 /*
 *	Updates this audio effect on the main thread.
 */
-void CLAPPlugin::MainThreadUpdate() NOEXCEPT
+void CLAPPluginHost::MainThreadUpdate() NOEXCEPT
 {
 	//Process requests.
 	{
@@ -753,7 +753,7 @@ void CLAPPlugin::MainThreadUpdate() NOEXCEPT
 /*
 *	Callback for this audio effect to process the given buffer.
 */
-void CLAPPlugin::Process
+void CLAPPluginHost::Process
 (
 	const AudioProcessContext &context,
 	const DynamicArray<DynamicArray<float32>> &inputs,
@@ -1007,7 +1007,7 @@ void CLAPPlugin::Process
 /*
 *	Adds a main thread request.
 */
-void CLAPPlugin::AddMainThreadRequest(const MainThreadRequest request) NOEXCEPT
+void CLAPPluginHost::AddMainThreadRequest(const MainThreadRequest request) NOEXCEPT
 {
 	_MainThreadRequests.Push(request);
 }
@@ -1015,7 +1015,7 @@ void CLAPPlugin::AddMainThreadRequest(const MainThreadRequest request) NOEXCEPT
 /*
 *	Adds an audio thread request.
 */
-void CLAPPlugin::AddAudioThreadRequest(const AudioThreadRequest request) NOEXCEPT
+void CLAPPluginHost::AddAudioThreadRequest(const AudioThreadRequest request) NOEXCEPT
 {
 	_AudioThreadRequests.Push(request);
 }
@@ -1023,7 +1023,7 @@ void CLAPPlugin::AddAudioThreadRequest(const AudioThreadRequest request) NOEXCEP
 /*
 *	Sets a parameter with the given identifier to the given value.
 */
-void CLAPPlugin::SetParameter(const HashString identifier, const float64 value) NOEXCEPT
+void CLAPPluginHost::SetParameter(const HashString identifier, const float64 value) NOEXCEPT
 {
 	//Add the audio thread request.
 	{
@@ -1040,9 +1040,9 @@ void CLAPPlugin::SetParameter(const HashString identifier, const float64 value) 
 /*
 *	Initializes internally.
 */
-void CLAPPlugin::InitializeInternal(const char *const RESTRICT plugin_file_path) NOEXCEPT
+void CLAPPluginHost::InitializeInternal(const char *const RESTRICT plugin_file_path) NOEXCEPT
 {
-	PROFILING_SCOPE("CLAPPlugin::InitializeInternal");
+	PROFILING_SCOPE("CLAPPluginHost::InitializeInternal");
 
 	//Enumerate the plugins.
 	const uint32 plugin_count{ _Factory->get_plugin_count(_Factory) };
@@ -1063,9 +1063,9 @@ void CLAPPlugin::InitializeInternal(const char *const RESTRICT plugin_file_path)
 	_Plugin = _Factory->create_plugin(_Factory, &_Host, plugin_descriptor->id);
 
 	//Add the main thread request to finalize the plugin.
-	CLAPPlugin::MainThreadRequest request;
+	MainThreadRequest request;
 
-	request._Type = CLAPPlugin::MainThreadRequest::Type::FINALIZE_PLUGIN;
+	request._Type = MainThreadRequest::Type::FINALIZE_PLUGIN;
 
 	AddMainThreadRequest(request);
 }
@@ -1073,9 +1073,9 @@ void CLAPPlugin::InitializeInternal(const char *const RESTRICT plugin_file_path)
 /*
 *	Finalizes the plugin.
 */
-void CLAPPlugin::FinalizePlugin() NOEXCEPT
+void CLAPPluginHost::FinalizePlugin() NOEXCEPT
 {
-	PROFILING_SCOPE("CLAPPlugin::FinalizePlugin");
+	PROFILING_SCOPE("CLAPPluginHost::FinalizePlugin");
 
 	//Initialize the plugin.
 	{
