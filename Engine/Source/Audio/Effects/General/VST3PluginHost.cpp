@@ -245,6 +245,29 @@ VST3PluginHost::~VST3PluginHost() NOEXCEPT
 */
 void VST3PluginHost::Initialize(const char *const RESTRICT plugin_file_path) NOEXCEPT
 {
+	//Define constants.
+	constexpr auto ConvertString128
+	{
+		[](const Steinberg::Vst::String128 &input_string)
+		{
+			StaticString<128> output_string;
+
+			{
+				uint32 current_index{ 0 };
+
+				while (input_string[current_index] != '\0')
+				{
+					output_string[current_index] = static_cast<char>(input_string[current_index]);
+					++current_index;
+				}
+
+				output_string[current_index] = '\0';
+			}
+
+			return output_string;
+		}
+	};
+
 	//Cache the implementation.
 	VST3PluginHostImplementation *const RESTRICT implementation{ Implementation() };
 
@@ -377,27 +400,6 @@ void VST3PluginHost::Initialize(const char *const RESTRICT plugin_file_path) NOE
 				return;
 			}
 
-			/*
-			//Copy over the state from the audio effect component.
-			{
-				BitStream state;
-
-				if (implementation->_AudioEffectComponent->getState(&state) != Steinberg::kResultOk)
-				{
-					ASSERT(false, "Could not retrieve state from audio effect component!");
-					return;
-				}
-
-				result = implementation->_EditController->setComponentState(&state);
-
-				if (result != Steinberg::kResultOk && result != Steinberg::kNotImplemented)
-				{
-					ASSERT(false, "Could not set component state on edit controller with result: %s!", ResultString(result));
-					return;
-				}
-			}
-			*/
-
 			//Set up the parameters.
 			{
 				const int32 number_of_parameters{ implementation->_EditController->getParameterCount() };
@@ -416,7 +418,9 @@ void VST3PluginHost::Initialize(const char *const RESTRICT plugin_file_path) NOE
 					_Parameters.Emplace();
 					Parameter &new_parameter{ _Parameters.Back() };
 
-					//new_parameter._Name = parameter_info.title;
+					new_parameter._Identifier = parameter_info.id;
+					new_parameter._Name = ConvertString128(parameter_info.title);
+					new_parameter._DefaultNormalizedValue = parameter_info.defaultNormalizedValue;
 				}
 			}
 
@@ -615,7 +619,22 @@ void VST3PluginHost::Terminate() NOEXCEPT
 */
 void VST3PluginHost::SetParameter(const char *const RESTRICT name, const float64 value) NOEXCEPT
 {
+	//Cache the implementation.
+	VST3PluginHostImplementation *const RESTRICT implementation{ Implementation() };
 
+	//Find the parameter.
+	for (const Parameter &parameter : _Parameters)
+	{
+		if (parameter._Name == name)
+		{
+			//Set the value.
+			implementation->_EditController->setParamNormalized(parameter._Identifier, value);
+
+			return;
+		}
+	}
+
+	ASSERT(false, "Could not find parameter with name: '%s'", name);
 }
 
 /*

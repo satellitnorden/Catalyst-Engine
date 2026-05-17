@@ -46,6 +46,14 @@ public:
 	}
 
 	/*
+	*	Equality operator overload.
+	*/
+	FORCE_INLINE constexpr NO_DISCARD bool operator==(const char *const RESTRICT string) const NOEXCEPT
+	{
+		return StringUtilities::IsEqual(Data(), string);
+	}
+
+	/*
 	*	Subscript operator overload, const.
 	*/
 	FORCE_INLINE NO_DISCARD const char &operator[](const uint64 index) const NOEXCEPT

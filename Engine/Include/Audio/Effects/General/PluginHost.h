@@ -23,8 +23,14 @@ public:
 
 	public:
 
+		//The identifier.
+		uint32 _Identifier;
+
 		//The name.
 		StaticString<128> _Name;
+
+		//The default normalized value.
+		float64 _DefaultNormalizedValue;
 
 	};
 
