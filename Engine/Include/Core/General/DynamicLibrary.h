@@ -15,12 +15,20 @@ class DynamicLibrary final
 public:
 
 	/*
+	*	Returns if this dynamic library is loaded.
+	*/
+	FORCE_INLINE NO_DISCARD bool IsLoaded() const NOEXCEPT
+	{
+		return _Handle != nullptr;
+	}
+
+	/*
 	*	Loads this dynamic library.
 	*/
 	FORCE_INLINE NO_DISCARD bool Load(const char *const RESTRICT file_path) NOEXCEPT
 	{
 		//Unload the previous handle, if there is one.
-		if (_Handle)
+		if (IsLoaded())
 		{
 			Unload();
 		}
@@ -29,7 +37,7 @@ public:
 		_Handle = LoadLibraryA(file_path);
 
 		//Return if the load succeeded.
-		return _Handle != nullptr;
+		return IsLoaded();
 	}
 
 	/*
@@ -45,7 +53,7 @@ public:
 	*/
 	FORCE_INLINE void Unload() NOEXCEPT
 	{
-		if (!_Handle)
+		if (!IsLoaded())
 		{
 			return;
 		}
