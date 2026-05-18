@@ -3,121 +3,105 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Audio.
+#include <Audio/VST3/ReferenceCounting.h>
+
 //Third party.
 #include <VST3/pluginterfaces/base/ibstream.h>
 
-//STD.
-#include <atomic>
-
-/*
-*	Implementation of VST3 bit streams.
-*/
-class BitStream final : public Steinberg::IBStream
+namespace VST3
 {
 
-public:
-
 	/*
-	*	Queries an instance.
+	*	Implementation of VST3 bit streams.
 	*/
-	FORCE_INLINE Steinberg::tresult queryInterface(const Steinberg::TUID _iid, void **obj) override
+	class BitStream final : public Steinberg::IBStream
 	{
-		ASSERT(false, "Check if this ever happens!");
-		return Steinberg::kNoInterface;
-	}
 
-	/*
-	*	Queries an instance.
-	*/
-	FORCE_INLINE Steinberg::uint32 addRef() override
-	{
-		return ++_ReferenceCount;
-	}
+	public:
 
-	/*
-	*	Queries an instance.
-	*/
-	FORCE_INLINE Steinberg::uint32 release() override
-	{
-		const uint32 previous_reference_count{ _ReferenceCount.fetch_sub(1) };
+		VST3_REFERENCE_COUNTING();
 
-		ASSERT(previous_reference_count > 0, "Double release detected!");
-
-		return previous_reference_count > 0 ? previous_reference_count - 1 : 0;
-	}
-
-	/*
-	*	Reads.
-	*/
-	FORCE_INLINE Steinberg::tresult read(void *buffer, int32 numBytes, int32 *numBytesRead) override
-	{
-		ASSERT((_CurrentReadIndex + numBytes) <= _Buffer.Size(), "Reading out of bounds!");
-		Memory::Copy(buffer, &_Buffer[_CurrentReadIndex], numBytes);
-		_CurrentReadIndex += numBytes;
-		
-		if (numBytesRead)
+		/*
+		*	Queries an instance.
+		*/
+		FORCE_INLINE Steinberg::tresult queryInterface(const Steinberg::TUID _iid, void **obj) override
 		{
-			*numBytesRead = numBytes;
+			ASSERT(false, "Check if this ever happens!");
+			return Steinberg::kNoInterface;
 		}
 
-		return Steinberg::kResultOk;
-	}
-
-	/*
-	*	Writes.
-	*/
-	FORCE_INLINE Steinberg::tresult write(void *buffer, int32 numBytes, int32 *numBytesWritten) override
-	{
-		for (int32 byte_index{ 0 }; byte_index < numBytes; ++byte_index)
+		/*
+		*	Reads.
+		*/
+		FORCE_INLINE Steinberg::tresult read(void *buffer, int32 numBytes, int32 *numBytesRead) override
 		{
-			_Buffer.Emplace(static_cast<const byte *const RESTRICT>(buffer)[byte_index]);
-		}
+			ASSERT((_CurrentReadIndex + numBytes) <= _Buffer.Size(), "Reading out of bounds!");
+			Memory::Copy(buffer, &_Buffer[_CurrentReadIndex], numBytes);
+			_CurrentReadIndex += numBytes;
 
-		if (numBytesWritten)
-		{
-			*numBytesWritten = numBytes;
-		}
-
-		return Steinberg::kResultOk;
-	}
-
-	/*
-	*	Seeks.
-	*/
-	FORCE_INLINE Steinberg::tresult seek(int64 pos, int32 mode, int64 *result) override
-	{
-		switch (mode)
-		{
-			default:
+			if (numBytesRead)
 			{
-				ASSERT(false, "Implement case!");
-
-				break;
+				*numBytesRead = numBytes;
 			}
+
+			return Steinberg::kResultOk;
 		}
 
-		return Steinberg::kResultOk;
-	}
+		/*
+		*	Writes.
+		*/
+		FORCE_INLINE Steinberg::tresult write(void *buffer, int32 numBytes, int32* numBytesWritten) override
+		{
+			for (int32 byte_index{ 0 }; byte_index < numBytes; ++byte_index)
+			{
+				_Buffer.Emplace(static_cast<const byte *const RESTRICT>(buffer)[byte_index]);
+			}
 
-	/*
-	*	Telld.
-	*/
-	FORCE_INLINE Steinberg::tresult tell(int64 *pos) override
-	{
-		*pos = _CurrentReadIndex;
+			if (numBytesWritten)
+			{
+				*numBytesWritten = numBytes;
+			}
 
-		return Steinberg::kResultOk;
-	}
+			return Steinberg::kResultOk;
+		}
 
-private:
+		/*
+		*	Seeks.
+		*/
+		FORCE_INLINE Steinberg::tresult seek(int64 pos, int32 mode, int64 *result) override
+		{
+			switch (mode)
+			{
+				default:
+				{
+					ASSERT(false, "Implement case!");
 
-	//The reference count.
-	std::atomic<uint32> _ReferenceCount{ 1 };
+					break;
+				}
+			}
 
-	//The buffer.
-	DynamicArray<byte> _Buffer;
+			return Steinberg::kResultOk;
+		}
 
-	//The current write pointer.
-	uint64 _CurrentReadIndex{ 0 };
+		/*
+		*	Telld.
+		*/
+		FORCE_INLINE Steinberg::tresult tell(int64 *pos) override
+		{
+			*pos = _CurrentReadIndex;
 
-};
+			return Steinberg::kResultOk;
+		}
+
+	private:
+
+		//The buffer.
+		DynamicArray<byte> _Buffer;
+
+		//The current write pointer.
+		uint64 _CurrentReadIndex{ 0 };
+
+	};
+
+}

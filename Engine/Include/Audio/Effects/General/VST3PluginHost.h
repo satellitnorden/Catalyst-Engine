@@ -16,7 +16,7 @@ class VST3PluginHost final : public PluginHost
 public:
 
 	//Constants.
-	constexpr static uint64 IMPLEMENTATION_SIZE{ 96 };
+	constexpr static uint64 IMPLEMENTATION_SIZE{ 128 };
 
 	/*
 	*	Default constructor.
@@ -29,19 +29,29 @@ public:
 	~VST3PluginHost() NOEXCEPT;
 
 	/*
-	*	Initializes this VST3 plugin.
+	*	Initializes this plugin host. Returns if it succeeded.
 	*/
-	void Initialize(const char *const RESTRICT plugin_file_path) NOEXCEPT;
+	NO_DISCARD bool Initialize(const char *const RESTRICT plugin_file_path) NOEXCEPT override;
+
+	/*
+	*	Sets a parameter with the given identifier. Returns if it succeeded.
+	*/
+	NO_DISCARD bool SetParameter(const HashString identifier, const float64 value) NOEXCEPT override;
+
+	/*
+	*	Shows the UI. Returns if it succeeded.
+	*/
+	NO_DISCARD bool ShowUI() NOEXCEPT override;
+
+	/*
+	*	Hides the UI. Returns if it succeeded.
+	*/
+	NO_DISCARD bool HideUI() NOEXCEPT override;
 
 	/*
 	*	Terminates this VST3 plugin.
 	*/
 	void Terminate() NOEXCEPT;
-
-	/*
-	*	Sets a parameter with the given identifier to the given value.
-	*/
-	void SetParameter(const char *const RESTRICT name, const float64 value) NOEXCEPT;
 
 	/*
 	*	Callback for this audio effect to process the given buffer.
