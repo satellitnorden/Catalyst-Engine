@@ -76,17 +76,8 @@ namespace VST3
 				return Steinberg::kInvalidArgument;
 			}
 
-			//Move the window.
-			SetWindowPos
-			(
-				_FrameWindow,
-				nullptr,
-				0,
-				0,
-				newSize->getWidth(),
-				newSize->getHeight(),
-				SWP_NOMOVE | SWP_NOZORDER
-			);
+			//Set the window size.
+			CatalystPlatform::SetPlatformWindowSize(_FrameWindow, newSize->getWidth(), newSize->getHeight());
 
 			//The resize succeeded!
 			return Steinberg::kResultOk;
@@ -98,21 +89,30 @@ namespace VST3
 		FORCE_INLINE void CreateFrameWindow(const Steinberg::ViewRect &view_rect) NOEXCEPT
 		{
 			//Create the frame window.
-			_FrameWindow = static_cast<HWND>(CatalystPlatform::CreatePlatformWindow("VST3 Editor Host", view_rect.getWidth(), view_rect.getHeight(), false));
+			_FrameWindow = CatalystPlatform::CreatePlatformWindow("VST3 Editor Host", view_rect.getWidth(), view_rect.getHeight(), false);
 		}
 
 		/*
 		*	Returns the frame window.
 		*/
-		FORCE_INLINE NO_DISCARD HWND GetFrameWindow() const NOEXCEPT
+		FORCE_INLINE NO_DISCARD void *const RESTRICT GetFrameWindow() const NOEXCEPT
 		{
 			return _FrameWindow;
+		}
+
+		/*
+		*	Destroys the frame window.
+		*/
+		FORCE_INLINE void DestroyFrameWindow() NOEXCEPT
+		{
+			CatalystPlatform::DestroyPlayformWindow(_FrameWindow);
+			_FrameWindow = nullptr;
 		}
 
 	private:
 
 		//The frame window.
-		HWND _FrameWindow{ nullptr };
+		void *RESTRICT _FrameWindow{ nullptr };
 
 	};
 

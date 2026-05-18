@@ -38,6 +38,11 @@ public:
 	static void *const RESTRICT CreatePlatformWindow(const char *const RESTRICT name, const uint32 width, const uint32 height, const bool fullscreen) NOEXCEPT;
 
 	/*
+	*	Sets the size of a platform window.
+	*/
+	static void SetPlatformWindowSize(void *const RESTRICT window, const uint32 width, const uint32 height) NOEXCEPT;
+
+	/*
 	*	Destroys a platform window.
 	*/
 	static void DestroyPlayformWindow(void *const RESTRICT window) NOEXCEPT;

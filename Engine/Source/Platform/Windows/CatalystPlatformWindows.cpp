@@ -359,6 +359,23 @@ void *const RESTRICT CatalystPlatform::CreatePlatformWindow(const char *const RE
 }
 
 /*
+*	Sets the size of a platform window.
+*/
+void CatalystPlatform::SetPlatformWindowSize(void *const RESTRICT window, const uint32 width, const uint32 height) NOEXCEPT
+{
+	SetWindowPos
+	(
+		static_cast<HWND>(window),
+		nullptr,
+		0,
+		0,
+		width,
+		height,
+		SWP_NOMOVE | SWP_NOZORDER
+	);
+}
+
+/*
 *	Destroys a platform window.
 */
 void CatalystPlatform::DestroyPlayformWindow(void *const RESTRICT window) NOEXCEPT
@@ -542,11 +559,16 @@ void CatalystPlatform::PrintToOutput(const char *const RESTRICT format, ...) NOE
 	}
 
 	va_list variadic_arguments{ nullptr };
-	va_start(variadic_arguments, format_buffer);
+	va_start(variadic_arguments, format);
 
 	char buffer[4096];
 
-	vsprintf_s(buffer, format_buffer, variadic_arguments);
+	const int32 characters_needed{ vsnprintf(buffer, ARRAY_LENGTH(buffer), format, variadic_arguments) };
+
+	if (characters_needed > ARRAY_LENGTH(buffer))
+	{
+		int x = 0;
+	}
 
 	va_end(variadic_arguments);
 

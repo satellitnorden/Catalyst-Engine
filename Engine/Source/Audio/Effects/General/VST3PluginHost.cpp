@@ -420,7 +420,7 @@ NO_DISCARD bool VST3PluginHost::ShowUI() NOEXCEPT
 	//Cache the implementation.
 	VST3PluginHostImplementation *const RESTRICT implementation{ Implementation() };
 
-	//If we already have a view, then the UI is already showing.
+	//If we already have a view, then the UI is already shown.
 	if (implementation->_EditorView)
 	{
 		return true;
@@ -487,6 +487,28 @@ NO_DISCARD bool VST3PluginHost::HideUI() NOEXCEPT
 	//Cache the implementation.
 	VST3PluginHostImplementation *const RESTRICT implementation{ Implementation() };
 
+	//If we don't have a view, then the UI is already hidden.
+	if (!implementation->_EditorView)
+	{
+		return true;
+	}
+
+	//Remove the editor view.
+	if (implementation->_EditorView->removed() != Steinberg::kResultOk)
+	{
+		ASSERT(false, "Could not remove editor view!");
+		return false;
+	}
+
+	//Release the editor view.
+	implementation->_EditorView->release();
+
+	//Reset the editor view pointer.
+	implementation->_EditorView = nullptr;
+
+	//Destroy the frame window on the plug frame.
+	implementation->_PlugFrame.DestroyFrameWindow();
+
 	//TODO. (:
 	return true;
 }
@@ -498,6 +520,9 @@ void VST3PluginHost::Terminate() NOEXCEPT
 {
 	//Cache the implementation.
 	VST3PluginHostImplementation *const RESTRICT implementation{ Implementation() };
+
+	//Hide the UI.
+	HideUI();
 
 	//Stop processing on the audio processor.
 	if (implementation->_AudioProcessor)
