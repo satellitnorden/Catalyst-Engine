@@ -72,6 +72,12 @@ public:
 
 protected:
 
+	//Denotes if this plugin host is initialized.
+	bool _Initialized{ false };
+
+	//The plugin name.
+	StaticString<64> _PluginName;
+
 	//The parameters.
 	DynamicArray<Parameter> _Parameters;
 

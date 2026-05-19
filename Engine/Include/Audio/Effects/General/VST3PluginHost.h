@@ -16,7 +16,7 @@ class VST3PluginHost final : public PluginHost
 public:
 
 	//Constants.
-	constexpr static uint64 IMPLEMENTATION_SIZE{ 128 };
+	constexpr static uint64 IMPLEMENTATION_SIZE{ 152 };
 
 	/*
 	*	Default constructor.

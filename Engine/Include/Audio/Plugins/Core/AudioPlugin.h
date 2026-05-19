@@ -24,8 +24,8 @@
 //Sound.
 #include <Sound/SoundUtilities.h>
 
-//User interface.
-#include <UserInterface/UserInterfaceCore.h>
+//UI.
+#include <UI/Core/UI.h>
 
 /*
 *	This is a base class for audio plugins, meant to represent some generic processing unit that can be reused in different contexts.
@@ -416,7 +416,7 @@ public:
 			float32 _Size{ 16.0f };
 
 			//The horizontal alignment.
-			TextHorizontalAlignment _HorizontalAlignment{ TextHorizontalAlignment::CENTER };
+			UI::HorizontalAlignment _HorizontalAlignment{ UI::HorizontalAlignment::CENTER };
 		} _TextData;
 
 	};

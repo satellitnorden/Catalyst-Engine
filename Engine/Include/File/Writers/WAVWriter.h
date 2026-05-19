@@ -3,8 +3,8 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Content.
-#include <Content/Assets/SoundAsset.h>
+//Audio.
+#include <Audio/AudioStream.h>
 
 //File.
 #include <File/Core/BinaryOutputFile.h>
@@ -20,7 +20,7 @@ public:
 	/*
 	*	Writes the sound asset to the given file path. Returns if the write was succesful.
 	*/
-	FORCE_INLINE static NO_DISCARD bool Write(const char *const RESTRICT file_path, const SoundAsset &asset) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD bool Write(const char *const RESTRICT file_path, const AudioStream &audio_stream) NOEXCEPT
 	{
 #if 1 //Use Catalyst engine implementation.
 		//Define constants.
@@ -40,7 +40,7 @@ public:
 			};
 			output_file.Write(HEADER_CHUNK_1, sizeof(int8) * 4);
 
-			const int32 file_size_in_bytes{ 4 + 24 + 8 + (static_cast<int32>(asset._Samples[0].Size()) * (static_cast<int32>(asset._Samples.Size()) * BIT_DEPTH / 8)) };
+			const int32 file_size_in_bytes{ 4 + 24 + 8 + (static_cast<int32>(audio_stream.GetNumberOfSamples()) * (static_cast<int32>(audio_stream.GetNumberOfChannels()) * BIT_DEPTH / 8)) };
 			output_file.Write(&file_size_in_bytes, sizeof(int32));
 
 			constexpr int8 HEADER_CHUNK_2[]
@@ -70,10 +70,10 @@ public:
 			const int16 audio_format{ 1 };
 			output_file.Write(&audio_format, sizeof(int16));
 
-			const int16 number_of_channels{ static_cast<int16>(asset._Samples.Size()) };
+			const int16 number_of_channels{ static_cast<int16>(audio_stream.GetNumberOfChannels()) };
 			output_file.Write(&number_of_channels, sizeof(int16));
 
-			const int32 sample_rate{ static_cast<int32>(asset._SampleRate) };
+			const int32 sample_rate{ static_cast<int32>(audio_stream.GetSampleRate()) };
 			output_file.Write(&sample_rate, sizeof(int32));
 
 			const int32 number_of_bytes_per_second{ (number_of_channels * sample_rate * BIT_DEPTH) / 8 };
@@ -97,21 +97,25 @@ public:
 			};
 			output_file.Write(DATA_CHUNK_1, sizeof(int8) * 4);
 
-			const int32 data_chunk_size{ static_cast<int32>(asset._Samples[0].Size()) * (static_cast<int32>(asset._Samples.Size()) * BIT_DEPTH / 8) };
+			const int32 data_chunk_size{ static_cast<int32>(audio_stream.GetNumberOfSamples()) * (static_cast<int32>(audio_stream.GetNumberOfChannels()) * BIT_DEPTH / 8) };
 			output_file.Write(&data_chunk_size, sizeof(int32));
 
 			DynamicArray<int16> temporary_buffer;
-			temporary_buffer.Reserve(asset._Samples[0].Size() * asset._Samples.Size());
+			temporary_buffer.Reserve(audio_stream.GetNumberOfSamples() * audio_stream.GetNumberOfChannels());
 
-			for (uint64 sample_index{ 0 }; sample_index < asset._Samples[0].Size(); ++sample_index)
+			for (uint64 sample_index{ 0 }; sample_index < audio_stream.GetNumberOfSamples(); ++sample_index)
 			{
-				for (uint64 channel_index{ 0 }; channel_index < asset._Samples.Size(); ++channel_index)
+				for (uint64 channel_index{ 0 }; channel_index < audio_stream.GetNumberOfChannels(); ++channel_index)
 				{
 					switch (BIT_DEPTH)
 					{
 						case 16:
 						{
-							temporary_buffer.Emplace(asset._Samples[channel_index][sample_index]);
+							const float32 input_sample{ audio_stream.Sample(channel_index, sample_index) };
+							int16 output_sample;
+							Audio::ConvertToSample(Audio::Format::INTEGER_16_BIT, input_sample, &output_sample);
+
+							temporary_buffer.Emplace(output_sample);
 
 							break;
 						}
@@ -126,7 +130,7 @@ public:
 				}
 			}
 
-			output_file.Write(temporary_buffer.Data(), asset._Samples[0].Size() * asset._Samples.Size() * sizeof(int16));
+			output_file.Write(temporary_buffer.Data(), audio_stream.GetNumberOfSamples() * audio_stream.GetNumberOfChannels() * sizeof(int16));
 		}
 
 		//Close the output file.

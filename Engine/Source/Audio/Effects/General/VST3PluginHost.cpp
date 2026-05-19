@@ -32,23 +32,32 @@ class VST3PluginHostImplementation final
 
 public:
 
+	//The host application.
+	VST3::HostApplication _HostApplication;
+
+	//The plug frame.
+	VST3::PlugFrame _PlugFrame;
+
 	//The dynamic library.
 	DynamicLibrary _DynamicLibrary;
 
-	//The host application.
-	VST3::HostApplication _HostApplication;
+	//The plugin factory.
+	Steinberg::IPluginFactory *RESTRICT _PluginFactory{ nullptr };
 
 	//The audio effect component.
 	Steinberg::Vst::IComponent *RESTRICT _AudioEffectComponent{ nullptr };
 
-	//The audio processor component.
-	Steinberg::Vst::IAudioProcessor *RESTRICT _AudioProcessor{ nullptr };
+	//The component connection point.
+	Steinberg::Vst::IConnectionPoint *RESTRICT _ComponentConnectionPoint{ nullptr };
 
 	//The audio edit controller.
 	Steinberg::Vst::IEditController *RESTRICT _EditController{ nullptr };
 
-	//The plug frame.
-	VST3::PlugFrame _PlugFrame;
+	//The controller connection point.
+	Steinberg::Vst::IConnectionPoint *RESTRICT _ControllerConnectionPoint{ nullptr };
+
+	//The audio processor component.
+	Steinberg::Vst::IAudioProcessor *RESTRICT _AudioProcessor{ nullptr };
 
 	//The editor view.
 	Steinberg::IPlugView *RESTRICT _EditorView{ nullptr };
@@ -109,46 +118,56 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 	if (!get_plugin_factory_function)
 	{
 		ASSERT(false, "Could not retrieve \"GetPluginFactory()\" function!");
+		Terminate();
 		return false;
 	}
 
 	//Retrieve the plugin factory.
-	Steinberg::IPluginFactory *const RESTRICT plugin_factory{ get_plugin_factory_function() };
+	implementation->_PluginFactory = get_plugin_factory_function();
 
-	if (!plugin_factory)
+	if (!implementation->_PluginFactory)
 	{
 		ASSERT(false, "Could not retrieve plugin factory!");
+		Terminate();
 		return false;
 	}
 
 	//Retrieve the factory info.
 	Steinberg::PFactoryInfo factory_info;
 
-	if (plugin_factory->getFactoryInfo(&factory_info) != Steinberg::kResultOk)
+	if (implementation->_PluginFactory->getFactoryInfo(&factory_info) != Steinberg::kResultOk)
 	{
 		ASSERT(false, "Could not retrieve factory info!");
+		Terminate();
 		return false;
 	}
 
 	//Retrieve the number of classes.
-	const int32 number_of_classes{ plugin_factory->countClasses() };
+	const int32 number_of_classes{ implementation->_PluginFactory->countClasses() };
 
 	//Iterate over the classes.
+	bool found_audio_effect_class{ false };
+
 	for (int32 class_index{ 0 }; class_index < number_of_classes; ++class_index)
 	{
 		//Retrieve the class info.
 		Steinberg::PClassInfo class_info;
 
-		if (plugin_factory->getClassInfo(class_index, &class_info) != Steinberg::kResultOk)
+		if (implementation->_PluginFactory->getClassInfo(class_index, &class_info) != Steinberg::kResultOk)
 		{
 			ASSERT(false, "Could not retrieve class info!");
+			Terminate();
 			return false;
 		}
 
 		//Is this the audio effect class?
 		if (StringUtilities::IsEqual(class_info.category, kVstAudioEffectClass))
 		{
-			result = plugin_factory->createInstance
+			//Set the plugin name.
+			ASSERT(_PluginName.Size() >= ARRAY_LENGTH(class_info.name), "Not enough space to store the plugin name!");
+			Memory::Copy(_PluginName.Data(), class_info.name, _PluginName.Size());
+
+			result = implementation->_PluginFactory->createInstance
 			(
 				class_info.cid,
 				Steinberg::Vst::IComponent_iid,
@@ -158,6 +177,7 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 			if (result != Steinberg::kResultOk)
 			{
 				ASSERT(false, "Couldn't create audio effect component!");
+				Terminate();
 				return false;
 			}
 
@@ -165,15 +185,15 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 			if (implementation->_AudioEffectComponent->initialize(&implementation->_HostApplication) != Steinberg::kResultOk)
 			{
 				ASSERT(false, "Could not initialize audio effect component!");
+				Terminate();
 				return false;
 			}
 
 			//Create the component connection point.
-			Steinberg::Vst::IConnectionPoint *RESTRICT component_connection_point{ nullptr };
-
-			if (implementation->_AudioEffectComponent->queryInterface(Steinberg::Vst::IConnectionPoint_iid, reinterpret_cast<void**>(&component_connection_point)) != Steinberg::kResultOk)
+			if (implementation->_AudioEffectComponent->queryInterface(Steinberg::Vst::IConnectionPoint_iid, reinterpret_cast<void**>(&implementation->_ComponentConnectionPoint)) != Steinberg::kResultOk)
 			{
 				ASSERT(false, "Could not create component connection point!");
+				Terminate();
 				return false;
 			}
 
@@ -183,13 +203,15 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 			if (implementation->_AudioEffectComponent->getControllerClassId(controller_class_id) != Steinberg::kResultOk)
 			{
 				ASSERT(false, "Could not retrieve controller class ID from audio effect component!");
+				Terminate();
 				return false;
 			}
 
 			//Create the edit controller.
-			if (plugin_factory->createInstance(controller_class_id, Steinberg::Vst::IEditController_iid, reinterpret_cast<void**>(&implementation->_EditController)) != Steinberg::kResultOk)
+			if (implementation->_PluginFactory->createInstance(controller_class_id, Steinberg::Vst::IEditController_iid, reinterpret_cast<void**>(&implementation->_EditController)) != Steinberg::kResultOk)
 			{
 				ASSERT(false, "Could not create edit controller instance!");
+				Terminate();
 				return false;
 			}
 
@@ -197,28 +219,30 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 			if (implementation->_EditController->initialize(&implementation->_HostApplication) != Steinberg::kResultOk)
 			{
 				ASSERT(false, "Could not initialize edit controller!");
+				Terminate();
 				return false;
 			}
 
 			//Create the controller connection point.
-			Steinberg::Vst::IConnectionPoint *RESTRICT controller_connection_point{ nullptr };
-
-			if (implementation->_EditController->queryInterface(Steinberg::Vst::IConnectionPoint_iid, reinterpret_cast<void**>(&controller_connection_point)) != Steinberg::kResultOk)
+			if (implementation->_EditController->queryInterface(Steinberg::Vst::IConnectionPoint_iid, reinterpret_cast<void**>(&implementation->_ControllerConnectionPoint)) != Steinberg::kResultOk)
 			{
 				ASSERT(false, "Could not create controller connection point!");
+				Terminate();
 				return false;
 			}
 
 			//Connect the component and the controller.
-			if (component_connection_point->connect(controller_connection_point) != Steinberg::kResultOk)
+			if (implementation->_ComponentConnectionPoint->connect(implementation->_ControllerConnectionPoint) != Steinberg::kResultOk)
 			{
 				ASSERT(false, "Could not connect controller to component!");
+				Terminate();
 				return false;
 			}
 			
-			if (controller_connection_point->connect(component_connection_point) != Steinberg::kResultOk)
+			if (implementation->_ControllerConnectionPoint->connect(implementation->_ComponentConnectionPoint) != Steinberg::kResultOk)
 			{
 				ASSERT(false, "Could not connect component to controller!");
+				Terminate();
 				return false;
 			}
 
@@ -234,6 +258,7 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 					if (implementation->_EditController->getParameterInfo(parameter_index, parameter_info) != Steinberg::kResultOk)
 					{
 						ASSERT(false, "Could not retrieve parameter from edit controller at index %i", parameter_index);
+						Terminate();
 						return false;
 					}
 
@@ -264,11 +289,14 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 						ASSERT(false, "Could not retrieve bus info for input bus at index %i!", input_bus_index);
 					}
 
-					if (bus_info.channelCount == 2)
+					else
 					{
-						has_stereo_input = true;
+						if (bus_info.channelCount == 2)
+						{
+							has_stereo_input = true;
 
-						break;
+							break;
+						}
 					}
 				}
 
@@ -284,11 +312,14 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 						ASSERT(false, "Could not retrieve bus info for output bus at index %i!", output_bus_count);
 					}
 
-					if (bus_info.channelCount == 2)
+					else
 					{
-						has_stereo_output = true;
+						if (bus_info.channelCount == 2)
+						{
+							has_stereo_output = true;
 
-						break;
+							break;
+						}
 					}
 				}
 			}
@@ -296,6 +327,7 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 			if (!has_stereo_input || !has_stereo_output)
 			{
 				ASSERT(false, "We assume stereo input and output, handle this!");
+				Terminate();
 				return false;
 			}
 
@@ -309,6 +341,7 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 			if (result != Steinberg::kResultOk)
 			{
 				ASSERT(false, "Couldn't retrieve audio processor!");
+				Terminate();
 				return false;
 			}
 
@@ -320,6 +353,7 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 				if (implementation->_AudioProcessor->setBusArrangements(&INPUT_ARRANGEMENT, 1, &OUTPUT_ARRANGEMENT, 1) != Steinberg::kResultOk)
 				{
 					ASSERT(false, "Could not set bus arrangements on the audio processor!");
+					Terminate();
 					return false;
 				}
 			}
@@ -328,12 +362,22 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 			if (implementation->_AudioEffectComponent->activateBus(Steinberg::Vst::MediaTypes::kAudio, Steinberg::Vst::BusDirections::kInput, 0, true) != Steinberg::kResultOk)
 			{
 				ASSERT(false, "Could not activate input bus on audio effect component!");
+				Terminate();
 				return false;
 			}
 
 			if (implementation->_AudioEffectComponent->activateBus(Steinberg::Vst::MediaTypes::kAudio, Steinberg::Vst::BusDirections::kOutput, 0, true) != Steinberg::kResultOk)
 			{
 				ASSERT(false, "Could not activate output bus on audio effect component!");
+				Terminate();
+				return false;
+			}
+
+			//Activate the audio effect component.
+			if (implementation->_AudioEffectComponent->setActive(true) != Steinberg::kResultOk)
+			{
+				ASSERT(false, "Could not activate audio effect component!");
+				Terminate();
 				return false;
 			}
 
@@ -349,35 +393,41 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 				if (implementation->_AudioProcessor->setupProcessing(setup) != Steinberg::kResultOk)
 				{
 					ASSERT(false, "Could not setup processing on audio processor!");
+					Terminate();
 					return false;
 				}
-			}
-
-			//Activate the audio effect component.
-			if (implementation->_AudioEffectComponent->setActive(true) != Steinberg::kResultOk)
-			{
-				ASSERT(false, "Could not activate audio effect component!");
-				return false;
 			}
 
 			//Start processing the audio processor!
 			if (implementation->_AudioProcessor->setProcessing(true) != Steinberg::kResultOk)
 			{
 				ASSERT(false, "Could not start processing the audio processor!");
+				Terminate();
 				return false;
 			}
 
-			//Release the connection points.
-			component_connection_point->release();
-			controller_connection_point->release();
+			//We found the audio effect class!
+			found_audio_effect_class = true;
 
-			//We have not found the audio effect class, break. (:
+			//We have now found the audio effect class, break. (:
 			break;
 		}
 	}
 
-	//We successfully initialized this plugin host!
-	return true;
+	//If we didn't find the audio effect class, ensure we clean up properly.
+	if (!found_audio_effect_class)
+	{
+		Terminate();
+		return false;
+	}
+
+	else
+	{
+		//This plugin host is now initialized. (:
+		_Initialized = true;
+
+		return true;
+	}
 }
 
 /*
@@ -385,6 +435,12 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 */
 NO_DISCARD bool VST3PluginHost::SetParameter(const HashString identifier, const float64 value) NOEXCEPT
 {
+	//Can't set parameters if we're not initialized.
+	if (!_Initialized)
+	{
+		return false;
+	}
+
 	//Cache the implementation.
 	VST3PluginHostImplementation *const RESTRICT implementation{ Implementation() };
 
@@ -417,6 +473,12 @@ NO_DISCARD bool VST3PluginHost::SetParameter(const HashString identifier, const 
 */
 NO_DISCARD bool VST3PluginHost::ShowUI() NOEXCEPT
 {
+	//Can't show UI if we're not initialized.
+	if (!_Initialized)
+	{
+		return false;
+	}
+
 	//Cache the implementation.
 	VST3PluginHostImplementation *const RESTRICT implementation{ Implementation() };
 
@@ -439,6 +501,7 @@ NO_DISCARD bool VST3PluginHost::ShowUI() NOEXCEPT
 	if (implementation->_EditorView->isPlatformTypeSupported(Steinberg::kPlatformTypeHWND) != Steinberg::kResultOk)
 	{
 		ASSERT(false, "Plugin does not support this platform!");
+		HideUI();
 		return false;
 	}
 
@@ -446,6 +509,7 @@ NO_DISCARD bool VST3PluginHost::ShowUI() NOEXCEPT
 	if (implementation->_EditorView->setFrame(&implementation->_PlugFrame) != Steinberg::kResultOk)
 	{
 		ASSERT(false, "Could not set frame on editor view!");
+		HideUI();
 		return false;
 	}
 
@@ -455,6 +519,7 @@ NO_DISCARD bool VST3PluginHost::ShowUI() NOEXCEPT
 	if (implementation->_EditorView->getSize(&view_rect) != Steinberg::kResultOk)
 	{
 		ASSERT(false, "Could not receive view rect!");
+		HideUI();
 		return false;
 	}
 
@@ -462,16 +527,18 @@ NO_DISCARD bool VST3PluginHost::ShowUI() NOEXCEPT
 	if (view_rect.getWidth() == 0 || view_rect.getHeight() == 0)
 	{
 		ASSERT(false, "Editor view rect is 0!");
+		HideUI();
 		return false;
 	}
 
 	//Create the frame window.
-	implementation->_PlugFrame.CreateFrameWindow(view_rect);
+	implementation->_PlugFrame.CreateFrameWindow(_PluginName.Data(), view_rect);
 
 	//Attach the view.
 	if (implementation->_EditorView->attached(implementation->_PlugFrame.GetFrameWindow(), Steinberg::kPlatformTypeHWND) != Steinberg::kResultOk)
 	{
 		ASSERT(false, "Could not attach editor view!");
+		HideUI();
 		return false;
 	}
 
@@ -493,11 +560,16 @@ NO_DISCARD bool VST3PluginHost::HideUI() NOEXCEPT
 		return true;
 	}
 
+	//Set reset the frame on the editor view.
+	if (implementation->_EditorView->setFrame(nullptr) != Steinberg::kResultOk)
+	{
+		ASSERT(false, "Could not reset frame on editor view!");
+	}
+
 	//Remove the editor view.
 	if (implementation->_EditorView->removed() != Steinberg::kResultOk)
 	{
 		ASSERT(false, "Could not remove editor view!");
-		return false;
 	}
 
 	//Release the editor view.
@@ -523,6 +595,34 @@ void VST3PluginHost::Terminate() NOEXCEPT
 
 	//Hide the UI.
 	HideUI();
+
+	//Disconnect the connection points and release them.
+	if (implementation->_ComponentConnectionPoint && implementation->_ControllerConnectionPoint)
+	{
+		if (implementation->_ComponentConnectionPoint->disconnect(implementation->_ControllerConnectionPoint) != Steinberg::kResultOk)
+		{
+			ASSERT(false, "Could not disconnect component connection point from the controller connection point!");
+		}
+
+		if (implementation->_ControllerConnectionPoint->disconnect(implementation->_ComponentConnectionPoint) != Steinberg::kResultOk)
+		{
+			ASSERT(false, "Could not disconnect controller connection point from the component connection point!");
+		}
+	}
+
+	//Release the component connection point.
+	if (implementation->_ComponentConnectionPoint)
+	{
+		implementation->_ComponentConnectionPoint->release();
+		implementation->_ComponentConnectionPoint = nullptr;
+	}
+
+	//Release the controller connection point.
+	if (implementation->_ControllerConnectionPoint)
+	{
+		implementation->_ControllerConnectionPoint->release();
+		implementation->_ControllerConnectionPoint = nullptr;
+	}
 
 	//Stop processing on the audio processor.
 	if (implementation->_AudioProcessor)
@@ -569,11 +669,21 @@ void VST3PluginHost::Terminate() NOEXCEPT
 		implementation->_AudioEffectComponent = nullptr;
 	}
 
+	//Release the plugin factory.
+	if (implementation->_PluginFactory)
+	{
+		implementation->_PluginFactory->release();
+		implementation->_PluginFactory = nullptr;
+	}
+
 	//Unload the dynamic library.
 	if (implementation->_DynamicLibrary.IsLoaded())
 	{
 		implementation->_DynamicLibrary.Unload();
 	}
+
+	//This plugin host is no longer initialized.
+	_Initialized = false;
 }
 
 /*
@@ -588,6 +698,17 @@ void VST3PluginHost::Process
 	const uint32 number_of_samples
 ) NOEXCEPT
 {
+	//Can't process if we're not initialized.
+	if (!_Initialized)
+	{
+		for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
+		{
+			Memory::Copy(outputs->At(channel_index).Data(), inputs.At(channel_index).Data(), number_of_samples * sizeof(float32));
+		}
+
+		return;
+	}
+
 	//Do some sanity checking.
 	ASSERT(number_of_channels == 2, "This assumes we have stereo in/stereo out!");
 
@@ -608,7 +729,7 @@ void VST3PluginHost::Process
 	}
 
 	//Set up the process data.
-	Steinberg::Vst::ProcessData process_data;
+	Steinberg::Vst::ProcessData process_data{ };
 
 	process_data.processMode = Steinberg::Vst::ProcessModes::kRealtime;
 	process_data.symbolicSampleSize = Steinberg::Vst::SymbolicSampleSizes::kSample32;
@@ -622,7 +743,7 @@ void VST3PluginHost::Process
 		implementation->_InputBuffer.At(1).Data()
 	};
 
-	Steinberg::Vst::AudioBusBuffers input_buffers;
+	Steinberg::Vst::AudioBusBuffers input_buffers{ };
 
 	input_buffers.numChannels = 2;
 	input_buffers.silenceFlags = 0;
@@ -636,7 +757,7 @@ void VST3PluginHost::Process
 		implementation->_OutputBuffer.At(1).Data()
 	};
 
-	Steinberg::Vst::AudioBusBuffers output_buffers;
+	Steinberg::Vst::AudioBusBuffers output_buffers{ };
 
 	output_buffers.numChannels = 2;
 	output_buffers.silenceFlags = 0;

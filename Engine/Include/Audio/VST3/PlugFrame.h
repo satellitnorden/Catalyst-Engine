@@ -86,10 +86,10 @@ namespace VST3
 		/*
 		*	Creates the frame window.
 		*/
-		FORCE_INLINE void CreateFrameWindow(const Steinberg::ViewRect &view_rect) NOEXCEPT
+		FORCE_INLINE void CreateFrameWindow(const char *const RESTRICT name, const Steinberg::ViewRect &view_rect) NOEXCEPT
 		{
 			//Create the frame window.
-			_FrameWindow = CatalystPlatform::CreatePlatformWindow("VST3 Editor Host", view_rect.getWidth(), view_rect.getHeight(), false);
+			_FrameWindow = CatalystPlatform::CreatePlatformWindow(name, view_rect.getWidth(), view_rect.getHeight(), false);
 		}
 
 		/*
