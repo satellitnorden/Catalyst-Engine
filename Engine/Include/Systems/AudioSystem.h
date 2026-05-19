@@ -171,7 +171,7 @@ public:
 	/*
 	*	Stops the audio 2D with the given identifier.
 	*/
-	void StopAudio2D(const Audio::Identifier identifier) NOEXCEPT;
+	void StopAudio2D(const Audio::Identifier identifier, AtomicFlag *const RESTRICT request_complete_flag = nullptr) NOEXCEPT;
 
 	/*
 	*	Retrieves the audio time for the given identifier.
@@ -271,6 +271,9 @@ private:
 		{
 			//The identifier.
 			Audio::Identifier _Identifier;
+
+			//The request complete flag.
+			AtomicFlag *RESTRICT _RequestCompleteFlag;
 		} _StopAudio2DData;
 
 		//The mix buffer data.

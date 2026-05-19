@@ -30,4 +30,7 @@ public:
 	//The playback rate.
 	float32 _PlaybackRate{ 1.0f };
 
+	//Denotes whether or not to loop this audio.
+	bool _Loop{ false };
+
 };

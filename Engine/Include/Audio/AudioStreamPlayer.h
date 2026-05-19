@@ -82,6 +82,14 @@ public:
 	}
 
 	/*
+	*	Sets whether or not to loop the audio stream.
+	*/
+	FORCE_INLINE void SetLoop(const bool value) NOEXCEPT
+	{
+		_Loop = value;
+	}
+
+	/*
 	*	Samples this audio stream player.
 	*/
 	FORCE_INLINE NO_DISCARD float32 Sample(const uint8 channel_index) const NOEXCEPT
@@ -91,8 +99,8 @@ public:
 			return 0.0f;
 		}
 	
-		const uint32 index_0{ BaseMath::Minimum<uint32>(static_cast<uint32>(_CurrentSample), _AudioStream->GetNumberOfSamples() - 1) };
-		const uint32 index_1{ BaseMath::Minimum<uint32>(index_0 + 1, _AudioStream->GetNumberOfSamples() - 1) };
+		const uint32 index_0{ WrapIndex(static_cast<uint32>(_CurrentSample)) };
+		const uint32 index_1{ WrapIndex(index_0 + 1) };
 
 		return	BaseMath::LinearlyInterpolate(_AudioStream->Sample(channel_index, index_0), _AudioStream->Sample(channel_index, index_1), _CurrentFraction)
 				* _Gain
@@ -111,6 +119,11 @@ public:
 		{
 			++_CurrentSample;
 			_CurrentFraction -= 1.0f;
+		}
+
+		while (_Loop && _CurrentSample >= _AudioStream->GetNumberOfSamples())
+		{
+			_CurrentSample -= _AudioStream->GetNumberOfSamples();
 		}
 
 		_ADSREnvelope.Advance();
@@ -152,5 +165,21 @@ private:
 
 	//The current fraction.
 	float32 _CurrentFraction{ 0.0f };
+
+	//Denotes whether or not to loop the audio stream.
+	bool _Loop{ false };
+
+	/*
+	*	Wraps the given index.
+	*/
+	FORCE_INLINE NO_DISCARD uint32 WrapIndex(const uint32 index) const NOEXCEPT
+	{
+		uint32 result{ 0 };
+
+		result += (index - (_AudioStream->GetNumberOfSamples() * static_cast<uint32>(index >= _AudioStream->GetNumberOfSamples()))) * static_cast<uint32>(_Loop);
+		result += BaseMath::Minimum<uint32>(index, _AudioStream->GetNumberOfSamples() - 1) * static_cast<uint32>(!_Loop);
+
+		return result;
+	}
 
 };

@@ -220,13 +220,14 @@ Audio::Identifier AudioSystem::PlayAudio2D(const PlayAudio2DRequest &request) NO
 /*
 *	Stops the audio 2D with the given identifier.
 */
-void AudioSystem::StopAudio2D(const Audio::Identifier identifier) NOEXCEPT
+void AudioSystem::StopAudio2D(const Audio::Identifier identifier, AtomicFlag *const RESTRICT request_complete_flag) NOEXCEPT
 {
 	//Add the request.
 	Request _request;
 
 	_request._Type = Request::Type::STOP_AUDIO_2D;
 	_request._StopAudio2DData._Identifier = identifier;
+	_request._StopAudio2DData._RequestCompleteFlag = request_complete_flag;
 
 	_Requests.Push(_request);
 }
@@ -575,6 +576,8 @@ void AudioSystem::ProcessPlayAudio2DRequest(const Request &request) NOEXCEPT
 
 	new_playing_audio._Player.SetPlaybackRate(playback_rate);
 	new_playing_audio._Player.SetCurrentSample(static_cast<int64>(request._PlayAudio2DData._Request._StartTime * static_cast<float32>(request._PlayAudio2DData._Request._Asset->_AudioStream.GetSampleRate())));
+	new_playing_audio._Player.SetLoop(request._PlayAudio2DData._Request._Loop);
+	new_playing_audio._OnStoppedFlag = nullptr;
 }
 
 /*
@@ -589,10 +592,18 @@ void AudioSystem::ProcessStopAudio2DRequest(const Request &request) NOEXCEPT
 			if (playing_audio._Identifier == request._StopAudio2DData._Identifier)
 			{
 				playing_audio._Player.GetADSREnvelope()->SetRelease();
+				ASSERT(!playing_audio._OnStoppedFlag, "Playing audio already has an on stopped flag set, this will be overridden!");
+				playing_audio._OnStoppedFlag = request._StopAudio2DData._RequestCompleteFlag;
 
 				return;
 			}
 		}
+	}
+
+	//If we didn't find the audio, it has probably already stopped (or never started). Anyway, we set the request complete flag.
+	if (request._StopAudio2DData._RequestCompleteFlag)
+	{
+		request._StopAudio2DData._RequestCompleteFlag->Set();
 	}
 }
 
@@ -641,6 +652,11 @@ void AudioSystem::ProcessMixBufferRequest(const Request &request) NOEXCEPT
 
 				else
 				{
+					if (playing_audio[i]._OnStoppedFlag)
+					{
+						playing_audio[i]._OnStoppedFlag->Set();
+					}
+
 					playing_audio.EraseAt<false>(i);
 				}
 			}
