@@ -382,6 +382,9 @@ public:
 
 		struct
 		{
+			//Denotes whether or not to draw this switch.
+			bool _Draw{ true };
+
 			/*
 			*	The value.
 			*	The switch doesn't need to be hooked up to a parameter if this is set, in that case it will operate on this value instead.
