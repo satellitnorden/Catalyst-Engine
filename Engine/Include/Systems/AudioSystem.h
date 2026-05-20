@@ -164,6 +164,11 @@ public:
 	void AddEffectToAudioTrack(const Audio::Identifier identifier, AudioEffect *const RESTRICT effect) NOEXCEPT;
 
 	/*
+	*	Removes an effect from the track with the given identifier.
+	*/
+	void RemoveEffectFromAudioTrack(const Audio::Identifier identifier, AudioEffect *const RESTRICT effect) NOEXCEPT;
+
+	/*
 	*	Plays the given audio (in 2D). Returns an identifier for the played audio.
 	*/
 	Audio::Identifier PlayAudio2D(const PlayAudio2DRequest &request) NOEXCEPT;
@@ -219,6 +224,7 @@ private:
 			ADD_AUDIO_TRACK,
 			REMOVE_AUDIO_TRACK,
 			ADD_AUDIO_EFFECT_TO_TRACK,
+			REMOVE_AUDIO_EFFECT_FROM_TRACK,
 			PLAY_AUDIO_2D,
 			STOP_AUDIO_2D,
 			MIX_BUFFER,
@@ -255,6 +261,16 @@ private:
 			//The effect.
 			AudioEffect *RESTRICT _Effect;
 		} _AddAudioEffectToTrackData;
+
+		//The remove audio effect from track data.
+		struct
+		{
+			//The identifier.
+			Audio::Identifier _Identifier;
+
+			//The effect.
+			AudioEffect *RESTRICT _Effect;
+		} _RemoveAudioEffectFromTrackData;
 
 		//The play audio 2D data.
 		struct
@@ -401,6 +417,11 @@ private:
 	*	Processes an add audio effect to track request.
 	*/
 	void ProcessAddAudioEffectToTrackRequest(const Request &request) NOEXCEPT;
+
+	/*
+	*	Processes a remove audio effect from track request.
+	*/
+	void ProcessRemoveAudioEffectFromTrackRequest(const Request &request) NOEXCEPT;
 
 	/*
 	*	Processes a play audio 2D request.

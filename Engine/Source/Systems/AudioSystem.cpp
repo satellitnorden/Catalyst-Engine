@@ -201,6 +201,21 @@ void AudioSystem::AddEffectToAudioTrack(const Audio::Identifier identifier, Audi
 }
 
 /*
+*	Removes an effect from the track with the given identifier.
+*/
+void AudioSystem::RemoveEffectFromAudioTrack(const Audio::Identifier identifier, AudioEffect *const RESTRICT effect) NOEXCEPT
+{
+	//Add the request.
+	Request request;
+
+	request._Type = Request::Type::REMOVE_AUDIO_EFFECT_FROM_TRACK;
+	request._RemoveAudioEffectFromTrackData._Identifier = identifier;
+	request._RemoveAudioEffectFromTrackData._Effect = effect;
+
+	_Requests.Push(request);
+}
+
+/*
 *	Plays the given audio (in 2D).
 */
 Audio::Identifier AudioSystem::PlayAudio2D(const PlayAudio2DRequest &request) NOEXCEPT
@@ -436,6 +451,13 @@ NO_DISCARD bool AudioSystem::ProcessRequests() NOEXCEPT
 				break;
 			}
 
+			case Request::Type::REMOVE_AUDIO_EFFECT_FROM_TRACK:
+			{
+				ProcessRemoveAudioEffectFromTrackRequest(_request);
+
+				break;
+			}
+
 			case Request::Type::PLAY_AUDIO_2D:
 			{
 				ProcessPlayAudio2DRequest(_request);
@@ -520,6 +542,22 @@ void AudioSystem::ProcessAddAudioEffectToTrackRequest(const Request &request) NO
 		if (audio_track._Identifier == request._AddAudioEffectToTrackData._Identifier)
 		{
 			audio_track._Effects.Emplace(request._AddAudioEffectToTrackData._Effect);
+
+			break;
+		}
+	}
+}
+
+/*
+*	Processes a remove audio effect from track request.
+*/
+void AudioSystem::ProcessRemoveAudioEffectFromTrackRequest(const Request &request) NOEXCEPT
+{
+	for (AudioTrack &audio_track : _MixThreadAudioTracks)
+	{
+		if (audio_track._Identifier == request._RemoveAudioEffectFromTrackData._Identifier)
+		{
+			audio_track._Effects.Erase<true>(request._RemoveAudioEffectFromTrackData._Effect);
 
 			break;
 		}
