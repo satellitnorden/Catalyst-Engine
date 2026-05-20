@@ -36,13 +36,16 @@ namespace VST3
 		*/
 		FORCE_INLINE Steinberg::tresult read(void *buffer, int32 numBytes, int32 *numBytesRead) override
 		{
-			ASSERT((_CurrentReadIndex + numBytes) <= _Buffer.Size(), "Reading out of bounds!");
-			Memory::Copy(buffer, &_Buffer[_CurrentReadIndex], numBytes);
-			_CurrentReadIndex += numBytes;
+			ASSERT(_StreamArchive != nullptr, "This bit stream needs a stream archive!");
+
+			const uint64 number_of_available_bytes{ _StreamArchive->Size() - _StreamArchiveReadPosition };
+			const uint64 number_of_bytes_to_read{ BaseMath::Minimum<uint64>(numBytes, number_of_available_bytes) };
+
+			_StreamArchive->Read(buffer, number_of_bytes_to_read, &_StreamArchiveReadPosition);
 
 			if (numBytesRead)
 			{
-				*numBytesRead = numBytes;
+				*numBytesRead = number_of_bytes_to_read;
 			}
 
 			return Steinberg::kResultOk;
@@ -51,12 +54,11 @@ namespace VST3
 		/*
 		*	Writes.
 		*/
-		FORCE_INLINE Steinberg::tresult write(void *buffer, int32 numBytes, int32* numBytesWritten) override
+		FORCE_INLINE Steinberg::tresult write(void *buffer, int32 numBytes, int32 *numBytesWritten) override
 		{
-			for (int32 byte_index{ 0 }; byte_index < numBytes; ++byte_index)
-			{
-				_Buffer.Emplace(static_cast<const byte *const RESTRICT>(buffer)[byte_index]);
-			}
+			ASSERT(_StreamArchive != nullptr, "This bit stream needs a stream archive!");
+
+			_StreamArchive->Write(buffer, numBytes);
 
 			if (numBytesWritten)
 			{
@@ -73,15 +75,25 @@ namespace VST3
 		{
 			switch (mode)
 			{
+				case Steinberg::IBStream::IStreamSeekMode::kIBSeekSet:
+				{
+					_StreamArchiveReadPosition = static_cast<uint64>(pos);
+					
+					if (result)
+					{
+						*result = static_cast<int64>(_StreamArchiveReadPosition);
+					}
+
+					return Steinberg::kResultOk;
+				}
+
 				default:
 				{
 					ASSERT(false, "Implement case!");
 
-					break;
+					return Steinberg::kInternalError;
 				}
 			}
-
-			return Steinberg::kResultOk;
 		}
 
 		/*
@@ -89,18 +101,26 @@ namespace VST3
 		*/
 		FORCE_INLINE Steinberg::tresult tell(int64 *pos) override
 		{
-			*pos = _CurrentReadIndex;
+			*pos = _StreamArchiveReadPosition;
 
 			return Steinberg::kResultOk;
 		}
 
+		/*
+		*	Sets the stream archive.
+		*/
+		FORCE_INLINE void SetStreamArchive(StreamArchive *const RESTRICT stream_archive) NOEXCEPT
+		{
+			_StreamArchive = stream_archive;
+		}
+
 	private:
 
-		//The buffer.
-		DynamicArray<byte> _Buffer;
+		//The stream archive.
+		StreamArchive *RESTRICT _StreamArchive{ nullptr };
 
-		//The current write pointer.
-		uint64 _CurrentReadIndex{ 0 };
+		//The stream archive read position.
+		uint64 _StreamArchiveReadPosition{ 0 };
 
 	};
 

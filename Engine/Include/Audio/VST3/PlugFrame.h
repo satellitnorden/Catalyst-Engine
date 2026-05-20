@@ -84,6 +84,14 @@ namespace VST3
 		}
 
 		/*
+		*	Returns if this plug frame has a frame window.
+		*/
+		FORCE_INLINE NO_DISCARD bool HasFrameWindow() const NOEXCEPT
+		{
+			return _FrameWindow != nullptr && CatalystPlatform::IsPlatformWindowAlive(_FrameWindow);
+		}
+
+		/*
 		*	Creates the frame window.
 		*/
 		FORCE_INLINE void CreateFrameWindow(const char *const RESTRICT name, const Steinberg::ViewRect &view_rect) NOEXCEPT

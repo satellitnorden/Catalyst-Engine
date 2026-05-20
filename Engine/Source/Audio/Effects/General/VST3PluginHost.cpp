@@ -24,6 +24,10 @@
 //STD.
 #include <atomic>
 
+//Type aliases.
+using InitModuleProc = bool(*)();
+using ExitModuleProc = bool(*)();
+
 /*
 *	VST3 plugin host implementation class definition.
 */
@@ -112,6 +116,21 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 		return false;
 	}
 
+	//Retrieve the init module function.
+	InitModuleProc init_module_function{ static_cast<InitModuleProc>(implementation->_DynamicLibrary.GetSymbol("InitDll")) };
+
+	if (!init_module_function)
+	{
+		init_module_function = static_cast<InitModuleProc>(implementation->_DynamicLibrary.GetSymbol("ModuleEntry"));
+	}
+
+	if (init_module_function && !init_module_function())
+	{
+		ASSERT(false, "Could not initialize the module!");
+		Terminate();
+		return false;
+	}
+
 	//Retrieve the "GetPluginFactory()" function.
 	GetFactoryProc get_plugin_factory_function{ static_cast<GetFactoryProc>(implementation->_DynamicLibrary.GetSymbol("GetPluginFactory")) };
 
@@ -192,31 +211,20 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 			//Create the component connection point.
 			if (implementation->_AudioEffectComponent->queryInterface(Steinberg::Vst::IConnectionPoint_iid, reinterpret_cast<void**>(&implementation->_ComponentConnectionPoint)) != Steinberg::kResultOk)
 			{
-				ASSERT(false, "Could not create component connection point!");
-				Terminate();
-				return false;
-			}
-
-			//Retrieve the controller class ID.
-			Steinberg::TUID controller_class_id;
-
-			if (implementation->_AudioEffectComponent->getControllerClassId(controller_class_id) != Steinberg::kResultOk)
-			{
-				ASSERT(false, "Could not retrieve controller class ID from audio effect component!");
-				Terminate();
-				return false;
+				//Not every plugin exposes a connection point on the component, and that's okay - Still, set it to 'nullptr' in case the plugin did anything weird.
+				implementation->_ComponentConnectionPoint = nullptr;
 			}
 
 			//Create the edit controller.
-			if (implementation->_PluginFactory->createInstance(controller_class_id, Steinberg::Vst::IEditController_iid, reinterpret_cast<void**>(&implementation->_EditController)) != Steinberg::kResultOk)
+			if (!CreateEditController())
 			{
-				ASSERT(false, "Could not create edit controller instance!");
+				ASSERT(false, "Could not create edit controller!");
 				Terminate();
 				return false;
 			}
 
 			//Initialize the edit controller.
-			if (implementation->_EditController->initialize(&implementation->_HostApplication) != Steinberg::kResultOk)
+			if (!InitializeEditController())
 			{
 				ASSERT(false, "Could not initialize edit controller!");
 				Terminate();
@@ -226,24 +234,26 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 			//Create the controller connection point.
 			if (implementation->_EditController->queryInterface(Steinberg::Vst::IConnectionPoint_iid, reinterpret_cast<void**>(&implementation->_ControllerConnectionPoint)) != Steinberg::kResultOk)
 			{
-				ASSERT(false, "Could not create controller connection point!");
-				Terminate();
-				return false;
+				//Not every plugin exposes a connection point on the edit controller, and that's okay - Still, set it to 'nullptr' in case the plugin did anything weird.
+				implementation->_ControllerConnectionPoint = nullptr;
 			}
 
 			//Connect the component and the controller.
-			if (implementation->_ComponentConnectionPoint->connect(implementation->_ControllerConnectionPoint) != Steinberg::kResultOk)
+			if (implementation->_ComponentConnectionPoint && implementation->_ControllerConnectionPoint)
 			{
-				ASSERT(false, "Could not connect controller to component!");
-				Terminate();
-				return false;
-			}
-			
-			if (implementation->_ControllerConnectionPoint->connect(implementation->_ComponentConnectionPoint) != Steinberg::kResultOk)
-			{
-				ASSERT(false, "Could not connect component to controller!");
-				Terminate();
-				return false;
+				if (implementation->_ComponentConnectionPoint->connect(implementation->_ControllerConnectionPoint) != Steinberg::kResultOk)
+				{
+					ASSERT(false, "Could not connect controller to component!");
+					Terminate();
+					return false;
+				}
+
+				if (implementation->_ControllerConnectionPoint->connect(implementation->_ComponentConnectionPoint) != Steinberg::kResultOk)
+				{
+					ASSERT(false, "Could not connect component to controller!");
+					Terminate();
+					return false;
+				}
 			}
 
 			//Set up the parameters.
@@ -482,6 +492,12 @@ NO_DISCARD bool VST3PluginHost::ShowUI() NOEXCEPT
 	//Cache the implementation.
 	VST3PluginHostImplementation *const RESTRICT implementation{ Implementation() };
 
+	//If the plug frame no longer has a frame window (either by a 'HideUI()' call or the user closing the window manually, hide the UI so we can show it again.
+	if (!implementation->_PlugFrame.HasFrameWindow())
+	{
+		HideUI();
+	}
+
 	//If we already have a view, then the UI is already shown.
 	if (implementation->_EditorView)
 	{
@@ -586,6 +602,52 @@ NO_DISCARD bool VST3PluginHost::HideUI() NOEXCEPT
 }
 
 /*
+*	Returns the state. Returns if it succeeded.
+*/
+NO_DISCARD bool VST3PluginHost::GetState(StreamArchive *const RESTRICT stream_archive) NOEXCEPT
+{
+	//Cache the implementation.
+	VST3PluginHostImplementation *const RESTRICT implementation{ Implementation() };
+
+	//Can't retrieve the state if we're not initialized.
+	if (!_Initialized)
+	{
+		return false;
+	}
+
+	//Set up the bit stream.
+	VST3::BitStream bit_stream;
+
+	bit_stream.SetStreamArchive(stream_archive);
+
+	//Retrieve the component state.
+	return implementation->_AudioEffectComponent->getState(&bit_stream) == Steinberg::kResultOk;
+}
+
+/*
+*	Sets the state. Returns if it succeeded.
+*/
+NO_DISCARD bool VST3PluginHost::SetState(StreamArchive *const RESTRICT stream_archive) NOEXCEPT
+{
+	//Cache the implementation.
+	VST3PluginHostImplementation *const RESTRICT implementation{ Implementation() };
+
+	//Can't set the state if we're not initialized.
+	if (!_Initialized)
+	{
+		return false;
+	}
+
+	//Set up the bit stream.
+	VST3::BitStream bit_stream;
+
+	bit_stream.SetStreamArchive(stream_archive);
+
+	//Set the component state.
+	return implementation->_AudioEffectComponent->setState(&bit_stream) == Steinberg::kResultOk;
+}
+
+/*
 *	Terminates this VST3 plugin.
 */
 void VST3PluginHost::Terminate() NOEXCEPT
@@ -649,12 +711,16 @@ void VST3PluginHost::Terminate() NOEXCEPT
 		implementation->_AudioProcessor = nullptr;
 	}
 
-	//Release the edit controller.
-	if (implementation->_EditController)
+	//Terminate the edit controller.
+	if (!TerminateEditController())
 	{
-		implementation->_EditController->terminate();
-		implementation->_EditController->release();
-		implementation->_EditController = nullptr;
+		ASSERT(false, "Could not terminate edit controller!");
+	}
+
+	//Destroy the edit controller.
+	if (!DestroyEditController())
+	{
+		ASSERT(false, "Could not destroy the edit controller!");
 	}
 
 	//Release the audio effect component.
@@ -679,6 +745,20 @@ void VST3PluginHost::Terminate() NOEXCEPT
 	//Unload the dynamic library.
 	if (implementation->_DynamicLibrary.IsLoaded())
 	{
+		//Retrieve the exit module function.
+		ExitModuleProc exit_module_function{ static_cast<ExitModuleProc>(implementation->_DynamicLibrary.GetSymbol("ExitDll")) };
+
+		if (!exit_module_function)
+		{
+			exit_module_function = static_cast<ExitModuleProc>(implementation->_DynamicLibrary.GetSymbol("ModuleExit"));
+		}
+
+		if (exit_module_function && !exit_module_function())
+		{
+			ASSERT(false, "Could not exit the module!");
+		}
+
+		//Unload the dynamic library.
 		implementation->_DynamicLibrary.Unload();
 	}
 
@@ -790,4 +870,101 @@ void VST3PluginHost::Process
 NO_DISCARD VST3PluginHostImplementation *const RESTRICT VST3PluginHost::Implementation() NOEXCEPT
 {
 	return _Implementation.Get<VST3PluginHostImplementation>();
+}
+
+/*
+*	Creates the edit controller.
+*/
+NO_DISCARD bool VST3PluginHost::CreateEditController() NOEXCEPT
+{
+	//Cache the implementation.
+	VST3PluginHostImplementation *const RESTRICT implementation{ Implementation() };
+
+	//First, check if the component itsels is a controller.
+	if (implementation->_AudioEffectComponent->queryInterface(Steinberg::Vst::IEditController_iid, reinterpret_cast<void**>(&implementation->_EditController)) != Steinberg::kResultOk)
+	{
+		//Set the edit controller to 'nullptr' in case the plugin did something weird.
+		implementation->_EditController = nullptr;
+	}
+
+	//Second, check if the controller exposes a separate controller class that can be created.
+	if (!implementation->_EditController)
+	{
+		//Check if we can retrieve the controller class ID.
+		Steinberg::TUID controller_class_id;
+
+		if (implementation->_AudioEffectComponent->getControllerClassId(controller_class_id) == Steinberg::kResultOk)
+		{
+			//Create the edit controller.
+			if (implementation->_PluginFactory->createInstance(controller_class_id, Steinberg::Vst::IEditController_iid, reinterpret_cast<void**>(&implementation->_EditController)) != Steinberg::kResultOk)
+			{
+				//Set the edit controller to 'nullptr' in case the plugin did something weird.
+				implementation->_EditController = nullptr;
+			}
+		}
+	}
+
+	//Return if the edit controller was created.
+	return implementation->_EditController != nullptr;
+}
+
+/*
+*	Initializes the edit controller.
+*/
+NO_DISCARD bool VST3PluginHost::InitializeEditController() NOEXCEPT
+{
+	//Cache the implementation.
+	VST3PluginHostImplementation *const RESTRICT implementation{ Implementation() };
+
+	//If the audio effect component _is_ the edit controller, then it has already been initialized, so no need to do it here.
+	if (!VST3::Utilities::Compareobjects(implementation->_AudioEffectComponent, implementation->_EditController))
+	{
+		//Try to initialize the edit controller.
+		if (implementation->_EditController->initialize(&implementation->_HostApplication) != Steinberg::kResultOk)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+/*
+*	Terminates the edit controller.
+*/
+NO_DISCARD bool VST3PluginHost::TerminateEditController() NOEXCEPT
+{
+	//Cache the implementation.
+	VST3PluginHostImplementation *const RESTRICT implementation{ Implementation() };
+
+	//If the audio effect component _is_ the edit controller, then it will be terminate, so no need to do it here.
+	if (!VST3::Utilities::Compareobjects(implementation->_AudioEffectComponent, implementation->_EditController))
+	{
+		//Try to initialize the edit controller.
+		if (implementation->_EditController->terminate() != Steinberg::kResultOk)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+/*
+*	Destroys the edit controller.
+*/
+NO_DISCARD bool VST3PluginHost::DestroyEditController() NOEXCEPT
+{
+	//Cache the implementation.
+	VST3PluginHostImplementation *const RESTRICT implementation{ Implementation() };
+
+	//Destroy the edit controller.
+	if (implementation->_EditController)
+	{
+		implementation->_EditController->release();
+		implementation->_EditController = nullptr;
+	}
+
+	//There's nothing that can fail here really, so just return true.
+	return true;
 }

@@ -15,9 +15,43 @@ namespace VST3
 	{
 
 		/*
+		*	Compares two objects, and checks if they're the same object.
+		*/
+		template <typename TYPE_1, typename TYPE_2>
+		FORCE_INLINE static NO_DISCARD bool Compareobjects(TYPE_1* const RESTRICT object_1, TYPE_2* const RESTRICT object_2) NOEXCEPT
+		{
+			Steinberg::FUnknown *object_1_identity{ nullptr };
+			Steinberg::FUnknown *object_2_identity{ nullptr };
+
+			if (object_1->queryInterface(Steinberg::FUnknown_iid, reinterpret_cast<void**>(&object_1_identity)) != Steinberg::kResultOk)
+			{
+				return false;
+			}
+
+			if (object_2->queryInterface(Steinberg::FUnknown_iid, reinterpret_cast<void**>(&object_2_identity)) != Steinberg::kResultOk)
+			{
+				return false;
+			}
+
+			const bool result{ object_1_identity == object_2_identity };
+
+			if (object_1_identity)
+			{
+				object_1_identity->release();
+			}
+
+			if (object_2_identity)
+			{
+				object_2_identity->release();
+			}
+
+			return result;
+		}
+
+		/*
 		*	Converts a Steinberg::Vst::String128 to a StaticString<128>.
 		*/
-		FORCE_INLINE void ConvertString128(const Steinberg::Vst::String128 &input_string, StaticString<128> *const RESTRICT output_string) NOEXCEPT
+		FORCE_INLINE static void ConvertString128(const Steinberg::Vst::String128 &input_string, StaticString<128> *const RESTRICT output_string) NOEXCEPT
 		{
 			uint32 current_index{ 0 };
 
@@ -33,7 +67,7 @@ namespace VST3
 		/*
 		*	Returns the string for the given result.
 		*/
-		FORCE_INLINE constexpr NO_DISCARD const char *const RESTRICT ResultString(const Steinberg::tresult result) NOEXCEPT
+		FORCE_INLINE constexpr static NO_DISCARD const char *const RESTRICT ResultString(const Steinberg::tresult result) NOEXCEPT
 		{
 			switch (result)
 			{

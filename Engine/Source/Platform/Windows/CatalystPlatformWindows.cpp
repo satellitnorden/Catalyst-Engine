@@ -304,6 +304,14 @@ void CatalystPlatform::Terminate() NOEXCEPT
 }
 
 /*
+*	Returns if the given platform window is alive.
+*/
+NO_DISCARD bool CatalystPlatform::IsPlatformWindowAlive(void* const RESTRICT window) NOEXCEPT
+{
+	return IsWindow(static_cast<HWND>(window));
+}
+
+/*
 *	Creates a platform window with the given parameters.
 */
 void *const RESTRICT CatalystPlatform::CreatePlatformWindow(const char *const RESTRICT name, const uint32 width, const uint32 height, const bool fullscreen) NOEXCEPT

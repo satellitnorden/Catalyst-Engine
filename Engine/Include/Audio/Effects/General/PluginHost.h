@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/StreamArchive.h>
 #include <Core/General/HashString.h>
 #include <Core/General/StaticString.h>
 
@@ -68,6 +69,24 @@ public:
 	*	Hides the UI. Returns if it succeeded.
 	*/
 	virtual NO_DISCARD bool HideUI() NOEXCEPT = 0;
+
+	/*
+	*	Returns the state. Returns if it succeeded.
+	*/
+	virtual NO_DISCARD bool GetState(StreamArchive *const RESTRICT stream_archive) NOEXCEPT = 0;
+
+	/*
+	*	Sets the state. Returns if it succeeded.
+	*/
+	virtual NO_DISCARD bool SetState(StreamArchive *const RESTRICT stream_archive) NOEXCEPT = 0;
+
+	/*
+	*	Returns the plugin name.
+	*/
+	FORCE_INLINE NO_DISCARD const char *const RESTRICT GetPluginName() const NOEXCEPT
+	{
+		return _PluginName.Data();
+	}
 
 
 protected:

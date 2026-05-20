@@ -49,6 +49,16 @@ public:
 	NO_DISCARD bool HideUI() NOEXCEPT override;
 
 	/*
+	*	Returns the state. Returns if it succeeded.
+	*/
+	NO_DISCARD bool GetState(StreamArchive *const RESTRICT stream_archive) NOEXCEPT override;
+
+	/*
+	*	Sets the state. Returns if it succeeded.
+	*/
+	NO_DISCARD bool SetState(StreamArchive *const RESTRICT stream_archive) NOEXCEPT override;
+
+	/*
 	*	Terminates this VST3 plugin.
 	*/
 	void Terminate() NOEXCEPT;
@@ -74,5 +84,25 @@ private:
 	*	Returns the implementation.
 	*/
 	NO_DISCARD class VST3PluginHostImplementation *const RESTRICT Implementation() NOEXCEPT;
+
+	/*
+	*	Creates the edit controller.
+	*/
+	NO_DISCARD bool CreateEditController() NOEXCEPT;
+
+	/*
+	*	Initializes the edit controller.
+	*/
+	NO_DISCARD bool InitializeEditController() NOEXCEPT;
+
+	/*
+	*	Terminates the edit controller.
+	*/
+	NO_DISCARD bool TerminateEditController() NOEXCEPT;
+
+	/*
+	*	Destroys the edit controller.
+	*/
+	NO_DISCARD bool DestroyEditController() NOEXCEPT;
 
 };
