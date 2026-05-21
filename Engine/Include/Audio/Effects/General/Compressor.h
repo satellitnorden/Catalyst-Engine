@@ -37,6 +37,9 @@ public:
 	//The makeup.
 	float32 _Makeup{ DEFAULT_MAKEUP };
 
+	//The power.
+	bool _Power{ true };
+
 	/*
 	*	Default constructor.
 	*/
@@ -59,6 +62,17 @@ public:
 		const uint32 number_of_samples
 	) NOEXCEPT override
 	{
+		//If the power isn't on, copy the inputs into the outputs and move in.
+		if (!_Power)
+		{
+			for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
+			{
+				Memory::Copy(outputs->At(channel_index).Data(), inputs.At(channel_index).Data(), number_of_samples * sizeof(float32));
+			}
+
+			return;
+		}
+
 		//Reset if parameters changed.
 		if (_PreviousThreshold != _Threshold
 			|| _PreviousRatio != _Ratio

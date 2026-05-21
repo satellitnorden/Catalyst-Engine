@@ -42,6 +42,9 @@ public:
 	//The output.
 	float32 _Output{ 0.5f };
 
+	//The power.
+	bool _Power{ true };
+
 	/*
 	*	Default constructor.
 	*/
@@ -174,6 +177,17 @@ public:
 		const uint32 number_of_samples
 	) NOEXCEPT override
 	{
+		//If the power isn't on, copy the inputs into the outputs and move in.
+		if (!_Power)
+		{
+			for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
+			{
+				Memory::Copy(outputs->At(channel_index).Data(), inputs.At(channel_index).Data(), number_of_samples * sizeof(float32));
+			}
+
+			return;
+		}
+
 		//Apply the pre filters.
 		{
 			_PreFilters._PeakFilter1.Process(context, *outputs, outputs, number_of_channels, number_of_samples);

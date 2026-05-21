@@ -19,7 +19,10 @@ class NoiseGate final : public AudioEffect
 public:
 
 	//The threshold.
-	float32 _Threshold{ Audio::DecibelsToGain(-80.0f) };
+	float32 _Threshold{ Audio::DecibelsToGain(-96.0f) };
+
+	//The depth.
+	float32 _Depth{ Audio::DecibelsToGain(-96.0f) };
 
 	//The attack.
 	float32 _Attack{ 1.0f / 1'000.0f };
@@ -30,6 +33,9 @@ public:
 	//The release.
 	float32 _Release{ 10.0f / 1'000.0f };
 
+	//The power.
+	bool _Power{ true };
+
 	/*
 	*	Default constructor.
 	*/
@@ -37,9 +43,13 @@ public:
 	{
 		//Define constants.
 		constexpr float32 ENVELOPE_TIME{ 5.0f / 1'000.0f };
+		constexpr float32 GAIN_REDUCTION_TIME{ 10.0f / 1'000.0f };
 
 		//Calculate the envelope coefficient.
 		_EnvelopeCoefficient = std::exp(-1.0f / (ENVELOPE_TIME * _SampleRate));
+
+		//Calculate the gain reduction coefficient.
+		_GainReductionCoefficient = std::exp(-1.0f / (GAIN_REDUCTION_TIME * _SampleRate));
 	}
 
 	/*
@@ -54,11 +64,25 @@ public:
 		const uint32 number_of_samples
 	) NOEXCEPT override
 	{
+		//If the power isn't on, copy the inputs into the outputs and move in.
+		if (!_Power)
+		{
+			for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
+			{
+				Memory::Copy(outputs->At(channel_index).Data(), inputs.At(channel_index).Data(), number_of_samples * sizeof(float32));
+			}
+
+			return;
+		}
+
 		//Define constants.
 		constexpr float32 HYSTERESIS_MULTIPLIER{ 0.5f };
 
+		//Calculate the number of channels reciprocal.
+		const float32 number_of_channels_reciprocal{ 1.0f / static_cast<float32>(number_of_channels) };
+
 		//Define the gate floor.
-		const float32 gate_floor{ Audio::DecibelsToGain(-80.0f) };
+		const float32 gate_floor{ _Depth };
 
 		//Calculate the hold samples.
 		const uint32 hold_samples{ Audio::TimeToSamples(_Hold, _SampleRate) };
@@ -67,15 +91,18 @@ public:
 		const float32 attack_coefficient{ std::exp(-1.0f / (_Attack * _SampleRate)) };
 		const float32 release_coefficient{ std::exp(-1.0f / (_Release * _SampleRate)) };
 
-		//Iterate over the channels.
-		for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
+		//Process all samples.
+		for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
 		{
-			//Cache the state.
-			State &state{ _States[channel_index] };
+			//Calculate the lowest multiplier.
+			float32 average_multiplier{ 0.0f };
 
-			//Process all samples.
-			for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
+			//Iterate over the channels.
+			for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
 			{
+				//Cache the state.
+				State &state{ _States[channel_index] };
+
 				//Calculate the absolute input sample.
 				const float32 absolute_input_sample{ BaseMath::Absolute(inputs.At(channel_index).At(sample_index)) };
 
@@ -109,8 +136,25 @@ public:
 
 				//Apply the multiplier!
 				outputs->At(channel_index).At(sample_index) = inputs.At(channel_index).At(sample_index) * state._CurrentMultiplier;
+
+				//Update the average multiplier.
+				average_multiplier += state._CurrentMultiplier;
 			}
+
+			//Normalize the average multiplier.
+			average_multiplier *= number_of_channels_reciprocal;
+
+			//Update the gain reduction.
+			_GainReduction = _GainReduction * _GainReductionCoefficient + average_multiplier * (1.0f - _GainReductionCoefficient);
 		}
+	}
+
+	/*
+	*	Returns the gain reduction (in decibels).
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetGainReduction() const NOEXCEPT
+	{
+		return -Audio::GainToDecibels(_GainReduction);
 	}
 
 private:
@@ -140,8 +184,14 @@ private:
 	//The envelope coefficient.
 	float32 _EnvelopeCoefficient{ 0.0f };
 
+	//The gain reduction coefficient.
+	float32 _GainReductionCoefficient{ 0.0f };
+
 	//The states
 	StaticArray<State, 2> _States;
+
+	//The gain reduction.
+	float32 _GainReduction{ 0.0f };
 
 	/*
 	*	Calculates number of samples.
