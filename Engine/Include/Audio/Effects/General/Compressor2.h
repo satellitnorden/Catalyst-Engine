@@ -17,6 +17,7 @@ public:
 
 	//Constants.
 	constexpr static float32 DEFAULT_THRESHOLD{ 1.0f };
+	constexpr static float32 DEFAULT_KNEE{ 1.0f };
 	constexpr static float32 DEFAULT_RATIO{ 2.0f };
 	constexpr static float32 DEFAULT_ATTACK{ 20.0f / 1'000.0f };
 	constexpr static float32 DEFAULT_RELEASE{ 100.0f / 1'000.0f };
@@ -24,6 +25,9 @@ public:
 
 	//The threshold.
 	float32 _Threshold{ DEFAULT_THRESHOLD };
+
+	//The knee.
+	float32 _Knee{ DEFAULT_KNEE };
 
 	//The ratio.
 	float32 _Ratio{ DEFAULT_RATIO };
@@ -92,6 +96,12 @@ public:
 		//Calculate the threshold.
 		const float32 threshold{ Audio::GainToDecibels(_Threshold) };
 
+		//Calculate the knee.
+		const float32 knee{ Audio::GainToDecibels(_Knee) };
+
+		//Calculate the half knee.
+		const float32 knee_half{ knee * 0.5f };
+
 		//Process all samples.
 		for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
 		{
@@ -114,16 +124,7 @@ public:
 			const float32 gain{ Audio::GainToDecibels(_DetectorEnvelope) };
 
 			//Calculate the desired gain.
-			float32 desired_gain{ 0.0f };
-
-			if (gain > threshold)
-			{
-				const float32 over{ gain - threshold };
-				const float32 compressed{ over / _Ratio };
-				const float32 gain_change{ compressed - over };
-
-				desired_gain = gain_change;
-			}
+			const float32 desired_gain{ CalculateDesiredGain(gain, threshold, knee, knee_half) };
 
 			//Update the envelope state.
 			if (desired_gain < _EnvelopeState)
@@ -173,11 +174,29 @@ private:
 	float32 _GainReduction{ 0.0f };
 
 	/*
-	*	Calculates a coefficient with the given value.
+	*	Calculates the desired gain.
 	*/
-	FORCE_INLINE NO_DISCARD float32 CalculateCoefficient(const float32 value) NOEXCEPT
+	FORCE_INLINE NO_DISCARD float32 CalculateDesiredGain
+	(
+		const float32 input_gain,
+		const float32 threshold,
+		const float32 knee,
+		const float32 knee_half
+	) NOEXCEPT
 	{
-		return std::exp(-1.0f / (value * _SampleRate));
+		if (input_gain < threshold - knee_half)
+		{
+			return 0.0f;
+		}
+		else if (input_gain > threshold + knee_half)
+		{
+			return (threshold + (input_gain - threshold) / _Ratio) - input_gain;
+		}
+		else
+		{
+			const float32 D{ input_gain - threshold + knee_half };
+			return (1.0f / _Ratio - 1.0f) * D * D / (2.0f * knee);
+		}
 	}
 
 };
