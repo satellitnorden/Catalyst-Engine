@@ -62,6 +62,16 @@ public:
 	}
 
 	/*
+	*	Sets the sample rate.
+	*/
+	FORCE_INLINE void SetSampleRate(const float32 sample_rate) NOEXCEPT
+	{
+		//Initialize the perceptual loudness filters.
+		_InputPerceptualLoudnessFilter.Initialize(sample_rate);
+		_OutputPerceptualLoudnessFilter.Initialize(sample_rate);
+	}
+
+	/*
 	*	Pre-updates calibration.
 	*/
 	FORCE_INLINE void PreUpdateCalibration

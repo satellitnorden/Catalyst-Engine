@@ -12,6 +12,7 @@
 //Audio.
 #include <Audio/Core/Audio.h>
 #include <Audio/Core/AudioProcessContext.h>
+#include <Audio/Core/Buffer.h>
 #include <Audio/MIDI/MIDIMessage.h>
 
 //Concurrency.

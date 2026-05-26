@@ -49,11 +49,11 @@ public:
 	*/
 	FORCE_INLINE Compressor2() NOEXCEPT
 	{
-		//Define constants.
-		constexpr float32 GAIN_REDUCTION_TIME{ 10.0f / 1'000.0f };
+		//Initialize the detector envelope coefficient.
+		InitializeDetectorEnvelopeCoefficient();
 
-		//Calculate the gain reduction coefficient.
-		_GainReductionCoefficient = std::exp(-1.0f / (GAIN_REDUCTION_TIME * _SampleRate));
+		//Initialize the gain reduction coefficient.
+		InitializeGainReductionCoefficient();
 	}
 
 	/*
@@ -68,10 +68,7 @@ public:
 		const uint32 number_of_samples
 	) NOEXCEPT override
 	{
-		//Define constants.
-		constexpr float32 DETECTOR_ENVELOPE_TIME{ 1.0f / 1'000.0f };
-
-		//If the power isn't on, copy the inputs into the outputs and move in.
+		//If the power isn't on, copy the inputs into the outputs and move on.
 		if (!_Power)
 		{
 			for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
@@ -83,9 +80,6 @@ public:
 
 			return;
 		}
-
-		//Calculate the detector envelope coefficient.
-		const float32 detector_envelope_coefficient{ std::exp(-1.0f / (DETECTOR_ENVELOPE_TIME * _SampleRate)) };
 
 		//Calculate the attack coefficient.
 		const float32 attack_coefficient{ std::exp(-1.0f / (_Attack * _SampleRate)) };
@@ -117,7 +111,7 @@ public:
 			_DetectorEnvelope = BaseMath::Maximum<float32>
 			(
 				detector_input,
-				(_DetectorEnvelope * detector_envelope_coefficient) + (detector_input * (1.0f - detector_envelope_coefficient))
+				(_DetectorEnvelope * _DetectorEnvelopeCoefficient) + (detector_input * (1.0f - _DetectorEnvelopeCoefficient))
 			);
 
 			//Calculate gain.
@@ -161,6 +155,9 @@ public:
 
 private:
 
+	//The detector envelope coefficient.
+	float32 _DetectorEnvelopeCoefficient{ 0.5f };
+
 	//The detector envelope.
 	float32 _DetectorEnvelope{ FLOAT32_EPSILON };
 
@@ -172,6 +169,42 @@ private:
 
 	//The gain reduction.
 	float32 _GainReduction{ 0.0f };
+
+	/*
+	*	Initializes the detector envelope coefficient.
+	*/
+	FORCE_INLINE void InitializeDetectorEnvelopeCoefficient() NOEXCEPT
+	{
+		//Define constants.
+		constexpr float32 DETECTOR_ENVELOPE_TIME{ 1.0f / 1'000.0f };
+
+		//Calculate the detector envelope coefficient.
+		_DetectorEnvelopeCoefficient = std::exp(-1.0f / (DETECTOR_ENVELOPE_TIME * _SampleRate));
+	}
+
+	/*
+	*	Initializes the gain reduction coefficient.
+	*/
+	FORCE_INLINE void InitializeGainReductionCoefficient() NOEXCEPT
+	{
+		//Define constants.
+		constexpr float32 GAIN_REDUCTION_TIME{ 10.0f / 1'000.0f };
+
+		//Calculate the gain reduction coefficient.
+		_GainReductionCoefficient = std::exp(-1.0f / (GAIN_REDUCTION_TIME * _SampleRate));
+	}
+
+	/*
+	*	Callback for when the sample rate changed.
+	*/
+	FORCE_INLINE void OnSampleRateChanged() NOEXCEPT
+	{
+		//Initialize the detector envelope coefficient.
+		InitializeDetectorEnvelopeCoefficient();
+
+		//Initialize the gain reduction coefficient.
+		InitializeGainReductionCoefficient();
+	}
 
 	/*
 	*	Calculates the desired gain.
