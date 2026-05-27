@@ -387,13 +387,34 @@ namespace UI
 	}
 
 	/*
+	*	Returns the container widget padding.
+	*/
+	NO_DISCARD float32 Scene::GetContainerWidgetPadding() NOEXCEPT
+	{
+		ASSERT(_ActiveContainer, "Trying to get widget padding with no active container!");
+
+		return _ActiveContainer->_WidgetPadding;
+	}
+
+	/*
 	*	Sets the container widget padding.
 	*/
 	void Scene::SetContainerWidgetPadding(const float32 padding) NOEXCEPT
 	{
-		ASSERT(_ActiveContainer, "Trying to set widget size with no active container!");
+		ASSERT(_ActiveContainer, "Trying to set widget padding with no active container!");
 
 		_ActiveContainer->_WidgetPadding = padding;
+	}
+
+	/*
+	*	Sets the next bounding box for the next widget.
+	*	This will override the default positioning, if you want more granular control of the positioning of your widgets.
+	*/
+	void Scene::SetContainerNextWidgetBoundingBox(const AxisAlignedBoundingBox2D &bounding_box) NOEXCEPT
+	{
+		ASSERT(_ActiveContainer, "Trying to set next widget bounding box with no active container!");
+
+		_ActiveContainer->_NextWidgetBoundingBox = bounding_box;
 	}
 
 	/*

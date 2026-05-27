@@ -217,7 +217,7 @@ private:
 		const float32 knee_half
 	) NOEXCEPT
 	{
-		if (input_gain < threshold - knee_half)
+		if (input_gain <= threshold - knee_half)
 		{
 			return 0.0f;
 		}

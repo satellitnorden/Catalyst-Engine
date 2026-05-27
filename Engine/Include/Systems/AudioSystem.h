@@ -166,7 +166,7 @@ public:
 	/*
 	*	Removes an effect from the track with the given identifier.
 	*/
-	void RemoveEffectFromAudioTrack(const Audio::Identifier identifier, AudioEffect *const RESTRICT effect) NOEXCEPT;
+	void RemoveEffectFromAudioTrack(const Audio::Identifier identifier, AudioEffect *const RESTRICT effect, AtomicFlag *const RESTRICT request_complete_flag = nullptr) NOEXCEPT;
 
 	/*
 	*	Plays the given audio (in 2D). Returns an identifier for the played audio.
@@ -270,6 +270,9 @@ private:
 
 			//The effect.
 			AudioEffect *RESTRICT _Effect;
+
+			//The request complete flag.
+			AtomicFlag *RESTRICT _RequestCompleteFlag;
 		} _RemoveAudioEffectFromTrackData;
 
 		//The play audio 2D data.

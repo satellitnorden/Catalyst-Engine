@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/Optional.h>
 
 //Math.
 #include <Math/Geometry/AxisAlignedBoundingBox2D.h>
@@ -59,6 +60,9 @@ namespace UI
 
 		//The end widget index.
 		uint64 _EndWidgetIndex;
+
+		//The next widget bounding box.
+		Optional<AxisAlignedBoundingBox2D> _NextWidgetBoundingBox;
 
 		//The cursor.
 		float32 _Cursor;

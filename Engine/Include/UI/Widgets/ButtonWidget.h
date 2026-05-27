@@ -41,6 +41,22 @@ namespace UI
 		void OnDisabled() NOEXCEPT override;
 
 		/*
+		*	Returns the style.
+		*/
+		FORCE_INLINE NO_DISCARD const UI::Style &GetStyle() const NOEXCEPT
+		{
+			return _Style;
+		}
+
+		/*
+		*	Sets the style.
+		*/
+		FORCE_INLINE void SetStyle(const UI::Style &style) NOEXCEPT
+		{
+			_Style = style;
+		}
+
+		/*
 		*	Returns the clickable interface (if this widget is clickable.
 		*/
 		FORCE_INLINE NO_DISCARD ArrayProxy<UI::ClickableInterface *const RESTRICT> GetClickableInterfaces() NOEXCEPT override

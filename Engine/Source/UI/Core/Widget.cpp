@@ -32,6 +32,15 @@ namespace UI
 	*/
 	void Widget::Position() NOEXCEPT
 	{
+		//If the parent has a next widget bounding box, just use that.
+		if (_Parent->_NextWidgetBoundingBox.Valid())
+		{
+			_AxisAlignedBoundingBox = _Parent->_NextWidgetBoundingBox.Get();
+			_Parent->_NextWidgetBoundingBox.Invalidate();
+
+			return;
+		}
+
 		//Calculate the axis aligned bounding box from the container.
 		switch (_Parent->_Layout)
 		{

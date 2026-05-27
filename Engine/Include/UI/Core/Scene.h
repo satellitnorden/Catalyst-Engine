@@ -136,9 +136,20 @@ namespace UI
 		void SetContainerWidgetSize(const float32 size) NOEXCEPT;
 
 		/*
+		*	Returns the container widget padding.
+		*/
+		NO_DISCARD float32 GetContainerWidgetPadding() NOEXCEPT;
+
+		/*
 		*	Sets the container widget padding.
 		*/
 		void SetContainerWidgetPadding(const float32 padding) NOEXCEPT;
+
+		/*
+		*	Sets the next bounding box for the next widget.
+		*	This will override the default positioning, if you want more granular control of the positioning of your widgets.
+		*/
+		void SetContainerNextWidgetBoundingBox(const AxisAlignedBoundingBox2D &bounding_box) NOEXCEPT;
 
 		/*
 		*	Adds a widget of the given class.

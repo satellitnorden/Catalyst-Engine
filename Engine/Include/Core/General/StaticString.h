@@ -16,7 +16,7 @@ public:
 	*/
 	FORCE_INLINE constexpr StaticString() NOEXCEPT
 	{
-		_Data[0] = '\0';
+		Reset();
 	}
 
 	/*
@@ -33,7 +33,7 @@ public:
 	
 		else
 		{
-			_Data[0] = '\0';
+			Reset();
 		}
 	}
 	
@@ -99,6 +99,14 @@ public:
 	FORCE_INLINE RESTRICTED NO_DISCARD char *const RESTRICT Data() NOEXCEPT
 	{
 		return _Data.Data();
+	}
+
+	/*
+	*	Resets this static string.
+	*/
+	FORCE_INLINE void Reset() NOEXCEPT
+	{
+		_Data[0] = '\0';
 	}
 
 private:

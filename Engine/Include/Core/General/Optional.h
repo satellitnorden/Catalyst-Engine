@@ -63,6 +63,14 @@ public:
 		return _Value;
 	}
 
+	/*
+	*	Invalidates this optional.
+	*/
+	FORCE_INLINE void Invalidate() NOEXCEPT
+	{
+		_Valid = false;
+	}
+
 private:
 
 	//The value.

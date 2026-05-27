@@ -203,7 +203,7 @@ void AudioSystem::AddEffectToAudioTrack(const Audio::Identifier identifier, Audi
 /*
 *	Removes an effect from the track with the given identifier.
 */
-void AudioSystem::RemoveEffectFromAudioTrack(const Audio::Identifier identifier, AudioEffect *const RESTRICT effect) NOEXCEPT
+void AudioSystem::RemoveEffectFromAudioTrack(const Audio::Identifier identifier, AudioEffect *const RESTRICT effect, AtomicFlag *const RESTRICT request_complete_flag) NOEXCEPT
 {
 	//Add the request.
 	Request request;
@@ -211,6 +211,7 @@ void AudioSystem::RemoveEffectFromAudioTrack(const Audio::Identifier identifier,
 	request._Type = Request::Type::REMOVE_AUDIO_EFFECT_FROM_TRACK;
 	request._RemoveAudioEffectFromTrackData._Identifier = identifier;
 	request._RemoveAudioEffectFromTrackData._Effect = effect;
+	request._RemoveAudioEffectFromTrackData._RequestCompleteFlag = request_complete_flag;
 
 	_Requests.Push(request);
 }
@@ -558,6 +559,11 @@ void AudioSystem::ProcessRemoveAudioEffectFromTrackRequest(const Request &reques
 		if (audio_track._Identifier == request._RemoveAudioEffectFromTrackData._Identifier)
 		{
 			audio_track._Effects.Erase<true>(request._RemoveAudioEffectFromTrackData._Effect);
+
+			if (request._RemoveAudioEffectFromTrackData._RequestCompleteFlag)
+			{
+				request._RemoveAudioEffectFromTrackData._RequestCompleteFlag->Set();
+			}
 
 			break;
 		}
