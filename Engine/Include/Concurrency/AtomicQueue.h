@@ -6,12 +6,15 @@
 #if SAFE_ATOMIC_QUEUE
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/Containers/DynamicArray.h>
+#include <Core/Containers/StaticArray.h>
 #include <Core/General/Optional.h>
 
 //Concurrency.
 #include <Concurrency/ScopedLock.h>
 #include <Concurrency/Spinlock.h>
+
+//Math.
+#include <Math/Core/BaseMath.h>
 
 //Enumeration for all atomic queue modes.
 enum class AtomicQueueMode : uint8
@@ -32,6 +35,8 @@ template <typename TYPE, uint64 SIZE, AtomicQueueMode PRODUCER_MODE, AtomicQueue
 class AtomicQueue final
 {
 
+	static_assert(BaseMath::IsPowerOfTwo(SIZE), "SIZE is not a power of two!");
+
 public:
 
 	/*
@@ -39,8 +44,7 @@ public:
 	*/
 	FORCE_INLINE AtomicQueue() NOEXCEPT
 	{
-		//Resize the queue.
-		_Queue.Resize<true>(SIZE);
+
 	}
 
 	/*
@@ -55,12 +59,12 @@ public:
 		_Queue[_LastIndex] = new_value;
 
 		//Increment the last index.
-		_LastIndex = (_LastIndex + 1) % _Queue.Size();
+		_LastIndex = (_LastIndex + 1) & (SIZE - 1);
 
 		//Increment the number of items in the queue.
-		++_NumberOfItemsInQueue;
+		_NumberOfItemsInQueue.FetchAdd(1);
 
-		ASSERT(_NumberOfItemsInQueue <= SIZE, "Overflow!");
+		ASSERT(_NumberOfItemsInQueue.Load() <= SIZE, "Overflow!");
 	}
 
 	/*
@@ -72,19 +76,27 @@ public:
 		SCOPED_LOCK(_Lock);
 
 		//If the first and last index is the same, return nullptr.
-		if (_FirstIndex == _LastIndex)
+		if (_NumberOfItemsInQueue.Load() == 0)
 		{
 			return Optional<TYPE>();
 		}
 
 		//Otherwise, retrieve the correct item.
-		const uint64 item_index{ _FirstIndex };
+		const uint64 index{ _FirstIndex };
 
-		_FirstIndex = (_FirstIndex + 1) % _Queue.Size();
+		_FirstIndex = (_FirstIndex + 1) & (SIZE - 1);
 
-		--_NumberOfItemsInQueue;
+		_NumberOfItemsInQueue.FetchSub(1);
 
-		return Optional<TYPE>(_Queue[item_index]);
+		return Optional<TYPE>(_Queue[index]);
+	}
+
+	/*
+	*	Returns if there are any items in the queue.
+	*/
+	FORCE_INLINE NO_DISCARD bool AnyItemsInQueue() const NOEXCEPT
+	{
+		return _NumberOfItemsInQueue.Load() > 0;
 	}
 
 private:
@@ -93,7 +105,7 @@ private:
 	Spinlock _Lock;
 
 	//The underlying queue.
-	DynamicArray<TYPE> _Queue;
+	StaticArray<TYPE, SIZE> _Queue;
 
 	//The first index.
 	uint64 _FirstIndex{ 0 };
@@ -102,7 +114,7 @@ private:
 	uint64 _LastIndex{ 0 };
 
 	//The number of items in the queue.
-	uint64 _NumberOfItemsInQueue{ 0 };
+	Atomic<uint64> _NumberOfItemsInQueue{ 0 };
 
 };
 #else
