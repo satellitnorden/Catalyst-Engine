@@ -40,194 +40,386 @@
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_0.Texture2D",
             "Identifier": 13732252699823274531,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_0.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_1.Texture2D",
             "Identifier": 2807444024520360600,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_1.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_10.Texture2D",
             "Identifier": 15519639527412147852,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_10.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_11.Texture2D",
             "Identifier": 13931764123251145645,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_11.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_12.Texture2D",
             "Identifier": 17770526118561206568,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_12.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_13.Texture2D",
             "Identifier": 10776546266965242172,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_13.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_14.Texture2D",
             "Identifier": 3919959546965613003,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_14.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_15.Texture2D",
             "Identifier": 4944341948402954246,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_15.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_16.Texture2D",
             "Identifier": 11143710908495730823,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_16.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_17.Texture2D",
             "Identifier": 16227692825553674893,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_17.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_18.Texture2D",
             "Identifier": 12405987347180328944,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_18.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_19.Texture2D",
             "Identifier": 15056817842848916727,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_19.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_2.Texture2D",
             "Identifier": 11086382557012368705,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_2.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_20.Texture2D",
             "Identifier": 12309395150334305896,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_20.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_21.Texture2D",
             "Identifier": 13048359884203910188,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_21.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_22.Texture2D",
             "Identifier": 16038839143859198847,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_22.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_23.Texture2D",
             "Identifier": 15551191016515871729,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_23.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_24.Texture2D",
             "Identifier": 1737876546816936509,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_24.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_25.Texture2D",
             "Identifier": 6428791104026494114,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_25.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_26.Texture2D",
             "Identifier": 179549761514835562,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_26.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_27.Texture2D",
             "Identifier": 17246815594949492619,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_27.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_28.Texture2D",
             "Identifier": 4607511924995724988,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_28.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_29.Texture2D",
             "Identifier": 12274130492868885205,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_29.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_3.Texture2D",
             "Identifier": 17225169238543803413,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_3.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_30.Texture2D",
             "Identifier": 9978091736775903675,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_30.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_31.Texture2D",
             "Identifier": 17742808429505408346,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_31.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_4.Texture2D",
             "Identifier": 3928039861921849865,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_4.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_5.Texture2D",
             "Identifier": 17803725689021621592,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_5.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_6.Texture2D",
             "Identifier": 15046484030658615866,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_6.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_7.Texture2D",
             "Identifier": 12057504356640392674,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_7.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_8.Texture2D",
             "Identifier": 14238612793897093885,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_8.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_9.Texture2D",
             "Identifier": 13395404312521756904,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Textures\\Blue_Noise_Textures\\HDR_RGBA_9.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Editor\\Models\\PlayerSpawnMarker.Model",
@@ -238,14 +430,26 @@
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Editor\\Textures\\Editor_Create_Icon.Texture2D",
             "Identifier": 6758014183714889289,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Editor\\Textures\\Editor_Create_Icon.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Editor\\Textures\\Editor_Play_Icon.Texture2D",
             "Identifier": 8816978158968421272,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Editor\\Textures\\Editor_Play_Icon.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Editor\\Textures\\Editor_Sky.TextureCube",
@@ -256,8 +460,14 @@
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Editor\\Textures\\Editor_Translate_Icon.Texture2D",
             "Identifier": 14783675971760074480,
-            "Version": 1,
-            "LastChangedTime": 13361726146
+            "Version": 2,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Editor\\Textures\\Editor_Translate_Icon.png",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\AmbientOcclusionApplication.render_pipeline",

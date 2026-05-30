@@ -153,7 +153,15 @@ NO_DISCARD HashString Texture2DAssetCompiler::AssetTypeIdentifier() const NOEXCE
 */
 NO_DISCARD uint64 Texture2DAssetCompiler::CurrentVersion() const NOEXCEPT
 {
-	return 1;
+	enum class Version : uint64
+	{
+		BASE,
+		ADDED_DEPENDENCIES,
+
+		CURRENT_VERSION,
+	};
+
+	return static_cast<uint64>(Version::CURRENT_VERSION);
 }
 
 /*
@@ -1098,6 +1106,27 @@ void Texture2DAssetCompiler::Compile(const CompileContext &compile_context) NOEX
 
 	//Close the output file.
 	output_file.Close();
+
+	//Add the dependencies.
+	if (parameters._File1)
+	{
+		compile_context._Dependencies.Emplace(parameters._File1.Data());
+	}
+
+	if (parameters._File2)
+	{
+		compile_context._Dependencies.Emplace(parameters._File2.Data());
+	}
+
+	if (parameters._File3)
+	{
+		compile_context._Dependencies.Emplace(parameters._File3.Data());
+	}
+
+	if (parameters._File4)
+	{
+		compile_context._Dependencies.Emplace(parameters._File4.Data());
+	}
 }
 
 /*
