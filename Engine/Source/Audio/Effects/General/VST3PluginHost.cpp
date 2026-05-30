@@ -20,6 +20,7 @@
 #include <VST3/pluginterfaces/vst/ivstaudioprocessor.h>
 #include <VST3/pluginterfaces/vst/ivsteditcontroller.h>
 #include <VST3/pluginterfaces/vst/ivsthostapplication.h>
+#include <VST3/pluginterfaces/vst/ivstprocesscontext.h>
 
 //STD.
 #include <atomic>
@@ -71,6 +72,9 @@ public:
 
 	//The output buffer.
 	DynamicArray<DynamicArray<float32>> _OutputBuffer;
+
+	//The project time.
+	int64 _ProjectTime{ 0 };
 
 };
 
@@ -849,7 +853,16 @@ void VST3PluginHost::Process
 	process_data.outputParameterChanges = nullptr;
 	process_data.inputEvents = nullptr;
 	process_data.outputEvents = nullptr;
-	process_data.processContext = nullptr;
+
+	Steinberg::Vst::ProcessContext process_context{ };
+
+	process_context.state = Steinberg::Vst::ProcessContext::StatesAndFlags::kPlaying
+							| Steinberg::Vst::ProcessContext::StatesAndFlags::kTempoValid;
+	process_context.sampleRate = static_cast<float64>(_SampleRate);
+	process_context.projectTimeSamples = implementation->_ProjectTime;
+	process_context.tempo = static_cast<float64>(_BeatsPerMinute);
+
+	process_data.processContext = &process_context;
 
 	//Process!
 	if (implementation->_AudioProcessor->process(process_data) != Steinberg::kResultOk)
@@ -862,6 +875,9 @@ void VST3PluginHost::Process
 	{
 		Memory::Copy(outputs->At(channel_index).Data(), implementation->_OutputBuffer.At(channel_index).Data(), number_of_samples * sizeof(float32));
 	}
+
+	//Update the project time.
+	implementation->_ProjectTime += static_cast<int64>(number_of_samples);
 }
 
 /*
