@@ -181,6 +181,12 @@ namespace UI
 				UI::VerticalAlignment::CENTER
 			);
 		}
+
+		//Render the texture.
+		if (_TextureIndex != UINT32_MAXIMUM)
+		{
+			RenderBox(context, _AxisAlignedBoundingBox, _TextureIndex, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
+		}
 	}
 
 	/*

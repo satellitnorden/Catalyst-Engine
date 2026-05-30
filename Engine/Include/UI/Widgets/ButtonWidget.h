@@ -93,6 +93,15 @@ namespace UI
 		}
 
 		/*
+		*	Sets the texture index.
+		*/
+		FORCE_INLINE ButtonWidget *const RESTRICT SetTextureIndex(const uint32 value) NOEXCEPT
+		{
+			_TextureIndex = value;
+			return this;
+		}
+
+		/*
 		*	Sets the on start hover callback.
 		*/
 		FORCE_INLINE ButtonWidget *const RESTRICT SetOnStartHoverCallback(const OnStartHoverCallback callback) NOEXCEPT
@@ -183,6 +192,9 @@ namespace UI
 
 		//The text scale.
 		float32 _TextScale;
+
+		//The texture index.
+		uint32 _TextureIndex{ UINT32_MAXIMUM };
 
 		//The on start hover callback.
 		OnStartHoverCallback _OnStartHoverCallback{ nullptr };
