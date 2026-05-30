@@ -12,6 +12,14 @@ class CatalystPlatform final
 
 public:
 
+	//Enumeration covering all window types.
+	enum class WindowType : uint8
+	{
+		DEFAULT,
+		FULLSCREEN,
+		POPUP
+	};
+
 	/*
 	*	Initializes the platform.
 	*/
@@ -40,7 +48,7 @@ public:
 	/*
 	*	Creates a platform window with the given parameters.
 	*/
-	static void *const RESTRICT CreatePlatformWindow(const char *const RESTRICT name, const uint32 width, const uint32 height, const bool fullscreen) NOEXCEPT;
+	static void *const RESTRICT CreatePlatformWindow(const char *const RESTRICT name, const uint32 width, const uint32 height, const WindowType window_type) NOEXCEPT;
 
 	/*
 	*	Sets the size of a platform window.

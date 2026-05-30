@@ -261,7 +261,7 @@ void CatalystPlatform::Initialize() NOEXCEPT
 			CatalystPlatform::GetDefaultResolution(&resolution._Width, &resolution._Height);
 		}
 
-		CatalystPlatformWindows::_MainWindow = static_cast<HWND>(CreatePlatformWindow(window_name_buffer, resolution._Width, resolution._Height, fullscreen));
+		CatalystPlatformWindows::_MainWindow = static_cast<HWND>(CreatePlatformWindow(window_name_buffer, resolution._Width, resolution._Height, fullscreen ? WindowType::FULLSCREEN : WindowType::DEFAULT));
 	}
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
@@ -314,44 +314,87 @@ NO_DISCARD bool CatalystPlatform::IsPlatformWindowAlive(void* const RESTRICT win
 /*
 *	Creates a platform window with the given parameters.
 */
-void *const RESTRICT CatalystPlatform::CreatePlatformWindow(const char *const RESTRICT name, const uint32 width, const uint32 height, const bool fullscreen) NOEXCEPT
+void *const RESTRICT CatalystPlatform::CreatePlatformWindow(const char *const RESTRICT name, const uint32 width, const uint32 height, const WindowType window_type) NOEXCEPT
 {
 	HWND window{ nullptr };
 
-	if (fullscreen)
+	switch (window_type)
 	{
-		window = CreateWindow
-		(
-			CatalystPlatformWindows::_WindowInfo.lpszClassName,
-			_T(name),
-			WS_POPUP | WS_VISIBLE,
-			CW_USEDEFAULT,
-			CW_USEDEFAULT,
-			width,
-			height,
-			nullptr,
-			nullptr,
-			CatalystPlatformWindows::_Instance,
-			nullptr
-		);
-	}
+		case WindowType::DEFAULT:
+		{
+			window = CreateWindow
+			(
+				CatalystPlatformWindows::_WindowInfo.lpszClassName,
+				_T(name),
+				WS_MAXIMIZE | WS_SYSMENU | WS_EX_TRANSPARENT,
+				CW_USEDEFAULT,
+				CW_USEDEFAULT,
+				width,
+				height,
+				nullptr,
+				nullptr,
+				CatalystPlatformWindows::_Instance,
+				nullptr
+			);
 
-	else
-	{
-		window = CreateWindow
-		(
-			CatalystPlatformWindows::_WindowInfo.lpszClassName,
-			_T(name),
-			WS_MAXIMIZE | WS_SYSMENU | WS_EX_TRANSPARENT,
-			CW_USEDEFAULT,
-			CW_USEDEFAULT,
-			width,
-			height,
-			nullptr,
-			nullptr,
-			CatalystPlatformWindows::_Instance,
-			nullptr
-		);
+			break;
+		}
+
+		case WindowType::FULLSCREEN:
+		{
+			window = CreateWindow
+			(
+				CatalystPlatformWindows::_WindowInfo.lpszClassName,
+				_T(name),
+				WS_POPUP | WS_VISIBLE,
+				CW_USEDEFAULT,
+				CW_USEDEFAULT,
+				width,
+				height,
+				nullptr,
+				nullptr,
+				CatalystPlatformWindows::_Instance,
+				nullptr
+			);
+
+			break;
+		}
+
+		case WindowType::POPUP:
+		{
+			//Define constants.
+			constexpr DWORD STYLE{ WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU };
+
+			//Set up the rect.
+			RECT rect
+			{
+				0,
+				0,
+				width,
+				height
+			};
+
+			//Adjust the rect.
+			AdjustWindowRect(&rect, STYLE, FALSE);
+
+			//Create the window.
+			window = CreateWindow
+			(
+				CatalystPlatformWindows::_WindowInfo.lpszClassName,
+				_T(name),
+				WS_POPUPWINDOW | WS_VISIBLE | WS_CAPTION,
+				CW_USEDEFAULT,
+				CW_USEDEFAULT,
+				rect.right - rect.left,
+				rect.bottom - rect.top,
+				nullptr,
+				nullptr,
+				CatalystPlatformWindows::_Instance,
+				nullptr
+			);
+
+			break;
+		}
 	}
 
 	if (window)
