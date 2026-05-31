@@ -55,6 +55,12 @@ public:
 
 		_LeftPanGainMultiplier = std::cos(pan_theta);
 		_RightPanGainMultiplier = std::sin(pan_theta);
+
+		//Snap to mono if close enough.
+		if (BaseMath::Absolute(_LeftPanGainMultiplier - _RightPanGainMultiplier) <= (FLOAT32_EPSILON * 2.0f))
+		{
+			_LeftPanGainMultiplier = _RightPanGainMultiplier = 0.70710678118654752440f;
+		}
 	}
 
 	/*

@@ -160,7 +160,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD float32 Sample(const uint8 channel_index, const uint32 sample_index) const NOEXCEPT
 	{
-		const uint64 data_index{ sample_index * _NumberOfChannels * (Audio::BitsPerSample(_Format) / 8) + channel_index * (Audio::BitsPerSample(_Format) / 8) };
+		const uint64 data_index{ sample_index * _NumberOfChannels * (Audio::BitsPerSample(_Format) >> 3) + BaseMath::Minimum<uint8>(channel_index, _NumberOfChannels - 1) * (Audio::BitsPerSample(_Format) >> 3) };
 
 		return Audio::ConvertToFloat32(_Format, &GetData()[data_index]);
 	}
