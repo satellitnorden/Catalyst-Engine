@@ -7,6 +7,7 @@
 
 //Audio.
 #include <Audio/VST3/BitStream.h>
+#include <Audio/VST3/ComponentHandler.h>
 #include <Audio/VST3/HostApplication.h>
 #include <Audio/VST3/PlugFrame.h>
 #include <Audio/VST3/Utilities.h>
@@ -42,6 +43,9 @@ public:
 
 	//The plug frame.
 	VST3::PlugFrame _PlugFrame;
+
+	//The component handler.
+	VST3::ComponentHandler _ComponentHandler;
 
 	//The dynamic library.
 	DynamicLibrary _DynamicLibrary;
@@ -281,10 +285,14 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 
 					VST3::Utilities::ConvertString128(parameter_info.title, &new_parameter._Name);
 					new_parameter._Identifier = HashString(new_parameter._Name.Data());
-					new_parameter._DefaultNormalizedValue = parameter_info.defaultNormalizedValue;
+					new_parameter._DefaultNormalizedValue = new_parameter._CurrentNormalizedValue = parameter_info.defaultNormalizedValue;
+					new_parameter._DefaultPlainValue = new_parameter._CurrentPlainValue = implementation->_EditController->normalizedParamToPlain(parameter_info.id, parameter_info.defaultNormalizedValue);
 					new_parameter._FormatIdentifier._uint32 = parameter_info.id;
 				}
 			}
+
+			//Set the parameters on the component handler.
+			implementation->_ComponentHandler.SetParameters(&_Parameters);
 
 			//Query the bus information.
 			bool has_stereo_input{ false };
@@ -445,9 +453,9 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 }
 
 /*
-*	Sets a parameter with the given identifier. Returns if it succeeded.
+*	Sets a parameter (normalized) with the given identifier. Returns if it succeeded.
 */
-NO_DISCARD bool VST3PluginHost::SetParameter(const HashString identifier, const float64 value) NOEXCEPT
+NO_DISCARD bool VST3PluginHost::SetParameterNormalized(const HashString identifier, const float64 value) NOEXCEPT
 {
 	//Can't set parameters if we're not initialized.
 	if (!_Initialized)
@@ -470,6 +478,47 @@ NO_DISCARD bool VST3PluginHost::SetParameter(const HashString identifier, const 
 
 	//Set the value.
 	if (implementation->_EditController->setParamNormalized(parameter->_FormatIdentifier._uint32, value) != Steinberg::kResultOk)
+	{
+		ASSERT(false, "Could not set parameter value!");
+
+		return false;
+	}
+
+	else
+	{
+		return true;
+	}
+}
+
+/*
+*	Sets a parameter (plain) with the given identifier. Returns if it succeeded.
+*/
+NO_DISCARD bool VST3PluginHost::SetParameterPlain(const HashString identifier, const float64 value) NOEXCEPT
+{
+	//Can't set parameters if we're not initialized.
+	if (!_Initialized)
+	{
+		return false;
+	}
+
+	//Cache the implementation.
+	VST3PluginHostImplementation *const RESTRICT implementation{ Implementation() };
+
+	//Find the parameter.
+	const Parameter *const RESTRICT parameter{ FindParameter(identifier) };
+
+	if (!parameter)
+	{
+		ASSERT(false, "Could not find parameter!");
+
+		return false;
+	}
+
+	//Convert the value to normalized.
+	const Steinberg::Vst::ParamValue normalized_value{ implementation->_EditController->plainParamToNormalized(parameter->_FormatIdentifier._uint32, value) };
+
+	//Set the value.
+	if (implementation->_EditController->setParamNormalized(parameter->_FormatIdentifier._uint32, normalized_value) != Steinberg::kResultOk)
 	{
 		ASSERT(false, "Could not set parameter value!");
 
@@ -918,6 +967,21 @@ NO_DISCARD bool VST3PluginHost::CreateEditController() NOEXCEPT
 				implementation->_EditController = nullptr;
 			}
 		}
+	}
+
+	//Set the component handler on the edit controller.
+	if (implementation->_EditController)
+	{
+		if (implementation->_EditController->setComponentHandler(&implementation->_ComponentHandler) != Steinberg::kResultOk)
+		{
+			ASSERT(false, "Could not set component handler!");
+		}
+	}
+
+	//Set the edit controller on the component handler.
+	if (implementation->_EditController)
+	{
+		implementation->_ComponentHandler.SetEditController(implementation->_EditController);
 	}
 
 	//Return if the edit controller was created.

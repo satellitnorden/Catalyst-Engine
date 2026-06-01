@@ -16,7 +16,7 @@ class VST3PluginHost final : public PluginHost
 public:
 
 	//Constants.
-	constexpr static uint64 IMPLEMENTATION_SIZE{ 160 };
+	constexpr static uint64 IMPLEMENTATION_SIZE{ 192 };
 
 	/*
 	*	Default constructor.
@@ -34,9 +34,14 @@ public:
 	NO_DISCARD bool Initialize(const char *const RESTRICT plugin_file_path) NOEXCEPT override;
 
 	/*
-	*	Sets a parameter with the given identifier. Returns if it succeeded.
+	*	Sets a parameter (normalized) with the given identifier. Returns if it succeeded.
 	*/
-	NO_DISCARD bool SetParameter(const HashString identifier, const float64 value) NOEXCEPT override;
+	NO_DISCARD bool SetParameterNormalized(const HashString identifier, const float64 value) NOEXCEPT override;
+
+	/*
+	*	Sets a parameter (plain) with the given identifier. Returns if it succeeded.
+	*/
+	NO_DISCARD bool SetParameterPlain(const HashString identifier, const float64 value) NOEXCEPT override;
 
 	/*
 	*	Shows the UI. Returns if it succeeded.

@@ -34,6 +34,15 @@ public:
 		//The default normalized value.
 		float64 _DefaultNormalizedValue;
 
+		//The current normalized value.
+		float64 _CurrentNormalizedValue;
+
+		//The default plain value.
+		float64 _DefaultPlainValue;
+
+		//The current plain value.
+		float64 _CurrentPlainValue;
+
 		//The format identifier - Different formats (.vst3, .clap etc) stores identifiers differently, so support them all.
 		union
 		{
@@ -56,9 +65,14 @@ public:
 	virtual NO_DISCARD bool Initialize(const char* const RESTRICT plugin_file_path) NOEXCEPT = 0;
 
 	/*
-	*	Sets a parameter with the given identifier. Returns if it succeeded.
+	*	Sets a parameter (normalized) with the given identifier. Returns if it succeeded.
 	*/
-	virtual NO_DISCARD bool SetParameter(const HashString identifier, const float64 value) NOEXCEPT = 0;
+	virtual NO_DISCARD bool SetParameterNormalized(const HashString identifier, const float64 value) NOEXCEPT = 0;
+
+	/*
+	*	Sets a parameter (plain) with the given identifier. Returns if it succeeded.
+	*/
+	virtual NO_DISCARD bool SetParameterPlain(const HashString identifier, const float64 value) NOEXCEPT = 0;
 
 	/*
 	*	Shows the UI. Returns if it succeeded.
@@ -88,6 +102,13 @@ public:
 		return _PluginName.Data();
 	}
 
+	/*
+	*	Returns the parameters.
+	*/
+	FORCE_INLINE NO_DISCARD const DynamicArray<Parameter> &GetParameters() const NOEXCEPT
+	{
+		return _Parameters;
+	}
 
 protected:
 
