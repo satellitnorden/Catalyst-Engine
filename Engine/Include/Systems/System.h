@@ -50,7 +50,7 @@ public:								\
 *	Example: SYSTEM_UPDATE(RANGE(GAMEPLAY, PHYSICS))
 *	A system can have multiple ranges.
 */
-#define SYSTEM_UPDATE(RANGES)						\
+#define SYSTEM_UPDATE(...)							\
 public:												\
 	void Update(const UpdatePhase phase) NOEXCEPT;
 
