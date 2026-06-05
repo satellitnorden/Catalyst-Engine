@@ -154,6 +154,49 @@ namespace File
 	}
 
 	/*
+	*	Removes the directory from the given string.
+	*/
+	FORCE_INLINE void RemoveDirectory(char *const RESTRICT string, uint64 length = UINT64_MAXIMUM) NOEXCEPT
+	{
+		if (length == UINT64_MAXIMUM)
+		{
+			length = StringUtilities::StringLength(string);
+		}
+
+		for (int64 i{ static_cast<int64>(length) - 1 }; i >= 0; --i)
+		{
+			if (string[i] == '\\' || string[i] == '/')
+			{
+				memmove(&string[0], &string[i + 1], length - 1 - i);
+				string[length - 1 - i] = '\0';
+
+				return;
+			}
+		}
+	}
+
+	/*
+	*	Removes the extension from the given string.
+	*/
+	FORCE_INLINE void RemoveExtension(char *const RESTRICT string, uint64 length = UINT64_MAXIMUM) NOEXCEPT
+	{
+		if (length == UINT64_MAXIMUM)
+		{
+			length = StringUtilities::StringLength(string);
+		}
+
+		for (int64 i{ static_cast<int64>(length) - 1 }; i >= 0; --i)
+		{
+			if (string[i] == '.')
+			{
+				string[i] = '\0';
+
+				return;
+			}
+		}
+	}
+
+	/*
 	*	Browses for a file.
 	*	Returns if the action was successful.
 	*/
