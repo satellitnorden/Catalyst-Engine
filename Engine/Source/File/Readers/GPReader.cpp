@@ -809,58 +809,58 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 
 			if (StringUtilities::IsEqual(note_value_string, "Whole"))
 			{
-				new_rhythm._NoteDuration = NoteDuration::WHOLE;
+				new_rhythm._NoteDuration = Audio::NoteDuration::WHOLE;
 			}
 
 			else if (StringUtilities::IsEqual(note_value_string, "Half"))
 			{
-				new_rhythm._NoteDuration = NoteDuration::HALF;
+				new_rhythm._NoteDuration = Audio::NoteDuration::HALF;
 			}
 
 			else if (StringUtilities::IsEqual(note_value_string, "Quarter"))
 			{
-				new_rhythm._NoteDuration = NoteDuration::QUARTER;
+				new_rhythm._NoteDuration = Audio::NoteDuration::QUARTER;
 			}
 
 			else if (StringUtilities::IsEqual(note_value_string, "Eighth"))
 			{
-				new_rhythm._NoteDuration = NoteDuration::EIGHTH;
+				new_rhythm._NoteDuration = Audio::NoteDuration::EIGHTH;
 			}
 
 			else if (StringUtilities::IsEqual(note_value_string, "16th"))
 			{
-				new_rhythm._NoteDuration = NoteDuration::SIXTEENTH;
+				new_rhythm._NoteDuration = Audio::NoteDuration::SIXTEENTH;
 			}
 
 			else if (StringUtilities::IsEqual(note_value_string, "32nd"))
 			{
-				new_rhythm._NoteDuration = NoteDuration::THIRTYSECOND;
+				new_rhythm._NoteDuration = Audio::NoteDuration::THIRTYSECOND;
 			}
 
 			else if (StringUtilities::IsEqual(note_value_string, "64th"))
 			{
-				new_rhythm._NoteDuration = NoteDuration::SIXTEENTH;
+				new_rhythm._NoteDuration = Audio::NoteDuration::SIXTEENTH;
 			}
 
 			else if (StringUtilities::IsEqual(note_value_string, "128th"))
 			{
-				new_rhythm._NoteDuration = NoteDuration::HUNDREDTWENTYEIGHTH;
+				new_rhythm._NoteDuration = Audio::NoteDuration::HUNDREDTWENTYEIGHTH;
 			}
 
-			//Set the note type.
+			//Set the note mnodifier.
 			if (rhythm_node.child("AugmentationDot"))
 			{
-				new_rhythm._NoteType = NoteType::DOTTED;
+				new_rhythm._NoteModifier = Audio::NoteModifier::DOTTED;
 			}
 
 			else if (rhythm_node.child("PrimaryTuplet"))
 			{
-				new_rhythm._NoteType = NoteType::TRIPLET;
+				new_rhythm._NoteModifier = Audio::NoteModifier::TRIPLET;
 			}
 
 			else
 			{
-				new_rhythm._NoteType = NoteType::REGULAR;
+				new_rhythm._NoteModifier = Audio::NoteModifier::NONE;
 			}
 		}
 	}
@@ -919,7 +919,7 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 					const TemporaryData::Rhythm &rhythm{ temporary_data._Rhythms[beat._RhythmIndex] };
 
 					//Calculate the beat duration.
-					float64 beat_duration{ SoundUtilities::CalculateNoteDuration(rhythm._NoteDuration, rhythm._NoteType, 60.0) };
+					float64 beat_duration{ Audio::CalculateNoteTime(60.0, rhythm._NoteDuration, rhythm._NoteModifier) };
 
 					//If the last beat was a grace note, subtract that beat's duration from this.
 					if (last_beat._WasGraceNote)

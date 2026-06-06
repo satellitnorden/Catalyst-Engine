@@ -5,11 +5,11 @@
 #include <Core/Containers/DynamicArray.h>
 #include <Core/General/DynamicString.h>
 
+//Audio.
+#include <Audio/Core/Audio.h>
+
 //Profiling.
 #include <Profiling/Profiling.h>
-
-//Sound.
-#include <Sound/SoundUtilities.h>
 
 /*
 *	TODO:
@@ -281,10 +281,10 @@ private:
 		public:
 
 			//The note duration.
-			NoteDuration _NoteDuration;
+			Audio::NoteDuration _NoteDuration;
 
-			//The note type.
-			NoteType _NoteType;
+			//The note modifier.
+			Audio::NoteModifier _NoteModifier;
 
 		};
 

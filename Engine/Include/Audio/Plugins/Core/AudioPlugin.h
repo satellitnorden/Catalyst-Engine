@@ -22,9 +22,6 @@
 #include <Math/Core/CatalystRandomMath.h>
 #include <Math/Geometry/AxisAlignedBoundingBox2D.h>
 
-//Sound.
-#include <Sound/SoundUtilities.h>
-
 //UI.
 #include <UI/Core/UI.h>
 
