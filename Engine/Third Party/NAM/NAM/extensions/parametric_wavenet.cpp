@@ -1,345 +1,42 @@
 #include <algorithm>
+#include <cstring>
 #include <iostream>
 #include <math.h>
 #include <sstream>
+#include <stdexcept>
 
 #include "../Eigen/Dense"
 
 #include "../get_dsp.h"
 #include "../registry.h"
+#include "parametric_slimmable_wavenet.h"
 #include "parametric_wavenet.h"
 
-// Layer ======================================================================
+#if defined(NAM_ENABLE_A2_FAST)
+  #include "../wavenet/a2_fast.h"
+#endif
 
-void nam::parametric_wavenet::_Layer::SetMaxBufferSize(const int maxBufferSize)
+namespace
 {
-  _conv.SetMaxBufferSize(maxBufferSize);
-  _film_gamma.SetMaxBufferSize(maxBufferSize);
-  _film_beta.SetMaxBufferSize(maxBufferSize);
-  const long z_channels = this->_conv.get_out_channels(); // This is 2*bottleneck when gated, bottleneck when not
-  _z.resize(z_channels, maxBufferSize);
-  _1x1.SetMaxBufferSize(maxBufferSize);
-  // Pre-allocate output buffers
-  const long channels = this->get_channels();
-  this->_output_next_layer.resize(channels, maxBufferSize);
-  // _output_head stores the activated portion: bottleneck rows when no head1x1, or head1x1 out_channels when head1x1 is
-  // active
-  if (_head1x1)
-  {
-    this->_output_head.resize(_head1x1->get_out_channels(), maxBufferSize);
-    this->_output_head.setZero(); // Ensure consistent initialization across platforms
-    _head1x1->SetMaxBufferSize(maxBufferSize);
-  }
-  else
-  {
-    this->_output_head.resize(this->_bottleneck, maxBufferSize);
-    this->_output_head.setZero(); // Ensure consistent initialization across platforms
-  }
-  // Set max buffer size for FiLM objects
-  if (this->_conv_pre_film)
-    this->_conv_pre_film->SetMaxBufferSize(maxBufferSize);
-  if (this->_conv_post_film)
-    this->_conv_post_film->SetMaxBufferSize(maxBufferSize);
-  if (this->_input_mixin_pre_film)
-    this->_input_mixin_pre_film->SetMaxBufferSize(maxBufferSize);
-  if (this->_input_mixin_post_film)
-    this->_input_mixin_post_film->SetMaxBufferSize(maxBufferSize);
-  if (this->_activation_pre_film)
-    this->_activation_pre_film->SetMaxBufferSize(maxBufferSize);
-  if (this->_activation_post_film)
-    this->_activation_post_film->SetMaxBufferSize(maxBufferSize);
-  if (this->_gating_activation_post_film)
-    this->_gating_activation_post_film->SetMaxBufferSize(maxBufferSize);
-  if (this->_1x1_post_film)
-    this->_1x1_post_film->SetMaxBufferSize(maxBufferSize);
-  if (this->_head1x1_post_film)
-    this->_head1x1_post_film->SetMaxBufferSize(maxBufferSize);
-}
-
-void nam::parametric_wavenet::_Layer::set_weights_(std::vector<float>::iterator& weights)
+int wave_net_output_channels(const std::vector<nam::wavenet::LayerArrayParams>& layer_array_params,
+                             const bool with_head, const std::optional<nam::wavenet::HeadParams>& head_params)
 {
-  this->_conv.set_weights_(weights);
-  this->_film_gamma.set_weights_(weights);
-  this->_film_beta.set_weights_(weights);
-  this->_1x1.set_weights_(weights);
-  if (this->_head1x1)
-  {
-    this->_head1x1->set_weights_(weights);
-  }
-  // Set weights for FiLM objects
-  if (this->_conv_pre_film)
-    this->_conv_pre_film->set_weights_(weights);
-  if (this->_conv_post_film)
-    this->_conv_post_film->set_weights_(weights);
-  if (this->_input_mixin_pre_film)
-    this->_input_mixin_pre_film->set_weights_(weights);
-  if (this->_input_mixin_post_film)
-    this->_input_mixin_post_film->set_weights_(weights);
-  if (this->_activation_pre_film)
-    this->_activation_pre_film->set_weights_(weights);
-  if (this->_activation_post_film)
-    this->_activation_post_film->set_weights_(weights);
-  if (this->_gating_activation_post_film)
-    this->_gating_activation_post_film->set_weights_(weights);
-  if (this->_1x1_post_film)
-    this->_1x1_post_film->set_weights_(weights);
-  if (this->_head1x1_post_film)
-    this->_head1x1_post_film->set_weights_(weights);
+  if (layer_array_params.empty())
+    throw std::runtime_error("WaveNet requires at least one layer array");
+  if (with_head && head_params.has_value())
+    return head_params->out_channels;
+  return layer_array_params.back().head_size;
 }
-
-void nam::parametric_wavenet::_Layer::Process(const Eigen::MatrixXf& input, const Eigen::MatrixXf& condition, const int num_frames)
-{
-  const long bottleneck = this->_bottleneck; // Use the actual bottleneck value, not the doubled output channels
-
-  // Step 1: input convolutions
-  if (this->_conv_pre_film)
-  {
-    // Use Process() instead of Process_() since input is const
-    this->_conv_pre_film->Process(input, condition, num_frames);
-    this->_conv.Process(this->_conv_pre_film->GetOutput(), num_frames);
-  }
-  else
-  {
-    this->_conv.Process(input, num_frames);
-  }
-  if (this->_conv_post_film)
-  {
-    Eigen::MatrixXf& conv_output = this->_conv.GetOutput();
-    this->_conv_post_film->Process_(conv_output, condition, num_frames);
-  }
-
-  this->_film_gamma.process_(condition, num_frames);
-  this->_film_beta.process_(condition, num_frames);
-
-  //this->_z.leftCols(num_frames).noalias() = (_film_gamma.GetOutput().leftCols(num_frames).array() * _conv.GetOutput().leftCols(num_frames).array() + _film_beta.GetOutput().leftCols(num_frames).array()).matrix();
-  this->_z.leftCols(num_frames).array() = _film_gamma.GetOutput().leftCols(num_frames).array() * _conv.GetOutput().leftCols(num_frames).array() + _film_beta.GetOutput().leftCols(num_frames).array();
-  if (this->_activation_pre_film)
-  {
-    this->_activation_pre_film->Process_(this->_z, condition, num_frames);
-  }
-
-  // Step 2 & 3: activation and 1x1
-  //
-  // A note about the gating/blending activations:
-  // They take 2x dimension as input.
-  // The top channels are for the "primary" activation and will be in-place modified for the final result.
-  // The bottom channels are for the "secondary" activation and should not be used post-activation.
-  if (this->_gating_mode == GatingMode::NONE)
-  {
-    this->_activation->apply(this->_z.leftCols(num_frames));
-    if (this->_activation_post_film)
-    {
-      this->_activation_post_film->Process_(this->_z, condition, num_frames);
-    }
-    _1x1.process_(_z, num_frames);
-  }
-  else if (this->_gating_mode == GatingMode::GATED)
-  {
-    // Use the GatingActivation class
-    // Extract the blocks first to avoid temporary reference issues
-    auto input_block = this->_z.leftCols(num_frames);
-    auto output_block = this->_z.topRows(bottleneck).leftCols(num_frames);
-    this->_gating_activation->apply(input_block, output_block);
-    if (this->_gating_activation_post_film)
-    {
-      // Use Process() for blocks and copy result back
-      this->_gating_activation_post_film->Process(this->_z.topRows(bottleneck), condition, num_frames);
-      this->_z.topRows(bottleneck).leftCols(num_frames).noalias() =
-        this->_gating_activation_post_film->GetOutput().leftCols(num_frames);
-    }
-    _1x1.process_(this->_z.topRows(bottleneck), num_frames);
-  }
-  else if (this->_gating_mode == GatingMode::BLENDED)
-  {
-    // Use the BlendingActivation class
-    // Extract the blocks first to avoid temporary reference issues
-    auto input_block = this->_z.leftCols(num_frames);
-    auto output_block = this->_z.topRows(bottleneck).leftCols(num_frames);
-    this->_blending_activation->apply(input_block, output_block);
-    if (this->_activation_post_film)
-    {
-      // Use Process() for blocks and copy result back
-      this->_activation_post_film->Process(this->_z.topRows(bottleneck), condition, num_frames);
-      this->_z.topRows(bottleneck).leftCols(num_frames).noalias() =
-        this->_activation_post_film->GetOutput().leftCols(num_frames);
-    }
-    _1x1.process_(this->_z.topRows(bottleneck), num_frames);
-    if (this->_1x1_post_film)
-    {
-      Eigen::MatrixXf& _1x1_output = this->_1x1.GetOutput();
-      this->_1x1_post_film->Process_(_1x1_output, condition, num_frames);
-    }
-  }
-
-  if (this->_head1x1)
-  {
-    if (this->_gating_mode == GatingMode::NONE)
-    {
-      this->_head1x1->process_(this->_z.leftCols(num_frames), num_frames);
-    }
-    else
-    {
-      this->_head1x1->process_(this->_z.topRows(bottleneck).leftCols(num_frames), num_frames);
-    }
-    this->_head1x1->process(this->_z.topRows(bottleneck).leftCols(num_frames), num_frames);
-    if (this->_head1x1_post_film)
-    {
-      Eigen::MatrixXf& head1x1_output = this->_head1x1->GetOutput();
-      this->_head1x1_post_film->Process_(head1x1_output, condition, num_frames);
-    }
-    this->_output_head.leftCols(num_frames).noalias() = this->_head1x1->GetOutput().leftCols(num_frames);
-  }
-  else // No head 1x1
-  {
-    // (No FiLM)
-    // Store output to head (skip connection: activated conv output)
-    if (this->_gating_mode == GatingMode::NONE)
-      this->_output_head.leftCols(num_frames).noalias() = this->_z.leftCols(num_frames);
-    else
-      this->_output_head.leftCols(num_frames).noalias() = this->_z.topRows(bottleneck).leftCols(num_frames);
-  }
-
-  // Store output to next layer (residual connection: input + _1x1 output)
-  this->_output_next_layer.leftCols(num_frames).noalias() =
-    input.leftCols(num_frames) + _1x1.GetOutput().leftCols(num_frames);
-}
-
-// LayerArray =================================================================
-
-nam::parametric_wavenet::_LayerArray::_LayerArray(
-  const int input_size, const int condition_size, const int head_size, const int channels, const int bottleneck,
-  const int kernel_size, const std::vector<int>& dilations, const activations::ActivationConfig& activation_config,
-  const GatingMode gating_mode, const bool head_bias, const int groups_input, const int groups_1x1,
-  const Head1x1Params& head1x1_params, const std::string& secondary_activation, const _FiLMParams& conv_pre_film_params,
-  const _FiLMParams& conv_post_film_params, const _FiLMParams& input_mixin_pre_film_params,
-  const _FiLMParams& input_mixin_post_film_params, const _FiLMParams& activation_pre_film_params,
-  const _FiLMParams& activation_post_film_params, const _FiLMParams& gating_activation_post_film_params,
-  const _FiLMParams& _1x1_post_film_params, const _FiLMParams& head1x1_post_film_params)
-: _rechannel(input_size, channels, false)
-, _head_rechannel(bottleneck, head_size, head_bias)
-, _bottleneck(bottleneck)
-{
-  for (size_t i = 0; i < dilations.size(); i++)
-    this->_layers.push_back(_Layer(condition_size, channels, bottleneck, kernel_size, dilations[i], activation_config,
-                                   gating_mode, groups_input, groups_1x1, head1x1_params, secondary_activation,
-                                   conv_pre_film_params, conv_post_film_params, input_mixin_pre_film_params,
-                                   input_mixin_post_film_params, activation_pre_film_params,
-                                   activation_post_film_params, gating_activation_post_film_params,
-                                   _1x1_post_film_params, head1x1_post_film_params));
-}
-
-void nam::parametric_wavenet::_LayerArray::SetMaxBufferSize(const int maxBufferSize)
-{
-  _rechannel.SetMaxBufferSize(maxBufferSize);
-  _head_rechannel.SetMaxBufferSize(maxBufferSize);
-  for (auto it = _layers.begin(); it != _layers.end(); ++it)
-  {
-    it->SetMaxBufferSize(maxBufferSize);
-  }
-  // Pre-allocate output buffers
-  const long channels = this->_get_channels();
-  this->_layer_outputs.resize(channels, maxBufferSize);
-  this->_head_inputs.resize(this->_bottleneck, maxBufferSize);
-}
-
-
-long nam::parametric_wavenet::_LayerArray::get_receptive_field() const
-{
-  long result = 0;
-  for (size_t i = 0; i < this->_layers.size(); i++)
-    result += this->_layers[i].get_dilation() * (this->_layers[i].get_kernel_size() - 1);
-  return result;
-}
-
-
-void nam::parametric_wavenet::_LayerArray::Process(const Eigen::MatrixXf& layer_inputs, const Eigen::MatrixXf& condition,
-                                        const int num_frames)
-{
-  // Zero head inputs accumulator (first layer array)
-  this->_head_inputs.setZero();
-  ProcessInner(layer_inputs, condition, num_frames);
-}
-
-void nam::parametric_wavenet::_LayerArray::Process(const Eigen::MatrixXf& layer_inputs, const Eigen::MatrixXf& condition,
-                                        const Eigen::MatrixXf& head_inputs, const int num_frames)
-{
-  // Copy head inputs from previous layer array
-  this->_head_inputs.leftCols(num_frames).noalias() = head_inputs.leftCols(num_frames);
-  ProcessInner(layer_inputs, condition, num_frames);
-}
-
-void nam::parametric_wavenet::_LayerArray::ProcessInner(const Eigen::MatrixXf& layer_inputs, const Eigen::MatrixXf& condition,
-                                             const int num_frames)
-{
-  // Process rechannel and get output
-  this->_rechannel.process_(layer_inputs, num_frames);
-  Eigen::MatrixXf& rechannel_output = _rechannel.GetOutput();
-
-  // Process layers
-  for (size_t i = 0; i < this->_layers.size(); i++)
-  {
-    // Process first layer with rechannel output, subsequent layers with previous layer output
-    // Use separate branches to avoid ternary operator creating temporaries
-    if (i == 0)
-    {
-      // First layer consumes the rechannel output buffer
-      this->_layers[i].Process(rechannel_output, condition, num_frames);
-    }
-    else
-    {
-      // Subsequent layers consume the full output buffer of the previous layer
-      Eigen::MatrixXf& prev_output = this->_layers[i - 1].GetOutputNextLayer();
-      this->_layers[i].Process(prev_output, condition, num_frames);
-    }
-
-    // Accumulate head output from this layer
-    this->_head_inputs.leftCols(num_frames).noalias() += this->_layers[i].GetOutputHead().leftCols(num_frames);
-  }
-
-  // Store output from last layer
-  const size_t last_layer = this->_layers.size() - 1;
-  this->_layer_outputs.leftCols(num_frames).noalias() =
-    this->_layers[last_layer].GetOutputNextLayer().leftCols(num_frames);
-
-  // Process head rechannel
-  _head_rechannel.process_(this->_head_inputs, num_frames);
-}
-
-
-Eigen::MatrixXf& nam::parametric_wavenet::_LayerArray::GetHeadOutputs()
-{
-  return this->_head_rechannel.GetOutput();
-}
-
-const Eigen::MatrixXf& nam::parametric_wavenet::_LayerArray::GetHeadOutputs() const
-{
-  return this->_head_rechannel.GetOutput();
-}
-
-
-void nam::parametric_wavenet::_LayerArray::set_weights_(std::vector<float>::iterator& weights)
-{
-  this->_rechannel.set_weights_(weights);
-  for (size_t i = 0; i < this->_layers.size(); i++)
-    this->_layers[i].set_weights_(weights);
-  this->_head_rechannel.set_weights_(weights);
-}
-
-long nam::parametric_wavenet::_LayerArray::_get_channels() const
-{
-  return this->_layers.size() > 0 ? this->_layers[0].get_channels() : 0;
-}
+} // namespace
 
 // WaveNet ====================================================================
 
-nam::parametric_wavenet::WaveNet::WaveNet(const int in_channels,
-                               const std::vector<nam::parametric_wavenet::LayerArrayParams>& layer_array_params,
-                               const float head_scale, const bool with_head, std::vector<float> weights,
-                               std::unique_ptr<DSP> condition_dsp, const double expected_sample_rate)
-: DSP(in_channels,
-      layer_array_params.empty() ? throw std::runtime_error("WaveNet requires at least one layer array")
-                                 : layer_array_params.back().head_size,
-      expected_sample_rate)
+nam::parametric_wavenet::ParametricWaveNet::ParametricWaveNet(const int in_channels,
+                               const std::vector<nam::wavenet::LayerArrayParams>& layer_array_params,
+                               const float head_scale, const bool with_head, std::optional<nam::wavenet::HeadParams> head_params,
+                               std::vector<float> weights, std::unique_ptr<DSP> condition_dsp,
+                               const double expected_sample_rate)
+: DSP(in_channels, wave_net_output_channels(layer_array_params, with_head, head_params), expected_sample_rate)
 , _condition_dsp(std::move(condition_dsp))
 , _head_scale(head_scale)
 {
@@ -356,10 +53,21 @@ nam::parametric_wavenet::WaveNet::WaveNet(const int in_channels,
       throw std::runtime_error(ss.str().c_str());
     }
   }
-  if (layer_array_params.empty())
-    throw std::runtime_error("WaveNet requires at least one layer array");
   if (with_head)
-    throw std::runtime_error("Head not implemented!");
+  {
+    if (!head_params.has_value())
+      throw std::runtime_error("WaveNet: with_head is true but head configuration is missing");
+    if (head_params->in_channels != layer_array_params.back().head_size)
+    {
+      std::stringstream ss;
+      ss << "WaveNet head in_channels (" << head_params->in_channels << ") must match last layer array head_size ("
+         << layer_array_params.back().head_size << ")";
+      throw std::runtime_error(ss.str());
+    }
+    this->_post_stack_head = std::make_unique<nam::wavenet::detail::Head>(*head_params);
+  }
+  else if (head_params.has_value())
+    throw std::runtime_error("WaveNet: head configuration provided but with_head is false");
 
   for (size_t i = 0; i < layer_array_params.size(); i++)
   {
@@ -375,17 +83,7 @@ nam::parametric_wavenet::WaveNet::WaveNet(const int in_channels,
         throw std::runtime_error(ss.str().c_str());
       }
     }
-    this->_layer_arrays.push_back(nam::parametric_wavenet::_LayerArray(
-      layer_array_params[i].input_size, layer_array_params[i].condition_size, layer_array_params[i].head_size,
-      layer_array_params[i].channels, layer_array_params[i].bottleneck, layer_array_params[i].kernel_size,
-      layer_array_params[i].dilations, layer_array_params[i].activation_config, layer_array_params[i].gating_mode,
-      layer_array_params[i].head_bias, layer_array_params[i].groups_input, layer_array_params[i].groups_1x1,
-      layer_array_params[i].head1x1_params, layer_array_params[i].secondary_activation,
-      layer_array_params[i].conv_pre_film_params, layer_array_params[i].conv_post_film_params,
-      layer_array_params[i].input_mixin_pre_film_params, layer_array_params[i].input_mixin_post_film_params,
-      layer_array_params[i].activation_pre_film_params, layer_array_params[i].activation_post_film_params,
-      layer_array_params[i].gating_activation_post_film_params, layer_array_params[i]._1x1_post_film_params,
-      layer_array_params[i].head1x1_post_film_params));
+    this->_layer_arrays.push_back(nam::wavenet::detail::LayerArray(layer_array_params[i]));
     if (i > 0)
       if (layer_array_params[i].channels != layer_array_params[i - 1].head_size)
       {
@@ -397,16 +95,24 @@ nam::parametric_wavenet::WaveNet::WaveNet(const int in_channels,
   }
   this->set_weights_(weights);
 
-  mPrewarmSamples = 0;
+  // Finally, figure out how much pre-warming is needed for this model.
+  //mPrewarmSamples = this->_condition_dsp != nullptr ? this->_condition_dsp->PrewarmSamples() : 1;
+  mPrewarmSamples = 1;
+  for (size_t i = 0; i < this->_layer_arrays.size(); i++)
+    mPrewarmSamples += this->_layer_arrays[i].get_receptive_field();
+  if (this->_post_stack_head != nullptr)
+    mPrewarmSamples += this->_post_stack_head->receptive_field() - 1;
 }
 
-void nam::parametric_wavenet::WaveNet::set_weights_(std::vector<float>& weights)
+void nam::parametric_wavenet::ParametricWaveNet::set_weights_(std::vector<float>& weights)
 {
   std::vector<float>::iterator it = weights.begin();
   // Note: condition_dsp already has its own weights from construction,
   // so we don't need to set its weights here.
   for (size_t i = 0; i < this->_layer_arrays.size(); i++)
     this->_layer_arrays[i].set_weights_(it);
+  if (this->_post_stack_head != nullptr)
+    this->_post_stack_head->set_weights_(it);
   this->_head_scale = *(it++); // TODO `LayerArray.absorb_head_scale()`
   if (it != weights.end())
   {
@@ -422,7 +128,7 @@ void nam::parametric_wavenet::WaveNet::set_weights_(std::vector<float>& weights)
   }
 }
 
-void nam::parametric_wavenet::WaveNet::SetMaxBufferSize(const int maxBufferSize)
+void nam::parametric_wavenet::ParametricWaveNet::SetMaxBufferSize(const int maxBufferSize)
 {
   DSP::SetMaxBufferSize(maxBufferSize);
   this->_condition_input.resize(NumInputChannels(), maxBufferSize);
@@ -433,6 +139,7 @@ void nam::parametric_wavenet::WaveNet::SetMaxBufferSize(const int maxBufferSize)
   }
   else
   {
+    //this->_condition_dsp->SetMaxBufferSize(maxBufferSize);
     const int condition_output_channels = this->_condition_dsp->NumOutputChannels();
     this->_condition_output.resize(condition_output_channels, maxBufferSize);
 
@@ -458,9 +165,15 @@ void nam::parametric_wavenet::WaveNet::SetMaxBufferSize(const int maxBufferSize)
 
   for (size_t i = 0; i < this->_layer_arrays.size(); i++)
     this->_layer_arrays[i].SetMaxBufferSize(maxBufferSize);
+
+  if (this->_post_stack_head != nullptr)
+  {
+    this->_post_stack_head->SetMaxBufferSize(maxBufferSize);
+    this->_scaled_head_scratch.resize(this->_post_stack_head->in_channels(), maxBufferSize);
+  }
 }
 
-void nam::parametric_wavenet::WaveNet::_process_condition(NAM_SAMPLE** input, const int num_frames)
+void nam::parametric_wavenet::ParametricWaveNet::_process_condition(NAM_SAMPLE** input, const int num_frames)
 {
     for (int ch = 0; ch < _condition_size; ch++)
     {
@@ -471,7 +184,7 @@ void nam::parametric_wavenet::WaveNet::_process_condition(NAM_SAMPLE** input, co
     }
 }
 
-void nam::parametric_wavenet::WaveNet::_set_condition_array(NAM_SAMPLE** input, const int num_frames)
+void nam::parametric_wavenet::ParametricWaveNet::_set_condition_array(NAM_SAMPLE** input, const int num_frames)
 {
   const int in_channels = NumInputChannels();
   // Fill condition array with input channels
@@ -484,7 +197,7 @@ void nam::parametric_wavenet::WaveNet::_set_condition_array(NAM_SAMPLE** input, 
   }
 }
 
-void nam::parametric_wavenet::WaveNet::process(NAM_SAMPLE** input, NAM_SAMPLE** output, const int num_frames)
+void nam::parametric_wavenet::ParametricWaveNet::process(NAM_SAMPLE** input, NAM_SAMPLE** output, const int num_frames)
 {
   assert(num_frames <= mMaxBufferSize);
   const int out_channels = NumOutputChannels();
@@ -514,167 +227,502 @@ void nam::parametric_wavenet::WaveNet::process(NAM_SAMPLE** input, NAM_SAMPLE** 
     }
   }
 
-  // (Head not implemented)
-
   auto& final_head_outputs = this->_layer_arrays.back().GetHeadOutputs();
+
+  if (this->_post_stack_head != nullptr)
+  {
+    assert(final_head_outputs.rows() == this->_post_stack_head->in_channels());
+    const int head_in = this->_post_stack_head->in_channels();
+    for (int ch = 0; ch < head_in; ch++)
+    {
+      for (int s = 0; s < num_frames; s++)
+        this->_scaled_head_scratch(ch, s) = this->_head_scale * final_head_outputs(ch, s);
+    }
+    this->_post_stack_head->process(this->_scaled_head_scratch, num_frames);
+    const Eigen::MatrixXf& head_out = this->_post_stack_head->get_last_output();
+    assert(head_out.rows() == out_channels);
+
+    if (out_channels == 1)
+    {
+      const float* __restrict__ src = head_out.data();
+      NAM_SAMPLE* __restrict__ dst = output[0];
+      for (int s = 0; s < num_frames; s++)
+        dst[s] = (NAM_SAMPLE)src[s];
+    }
+    else
+    {
+      for (int ch = 0; ch < out_channels; ch++)
+      {
+        for (int s = 0; s < num_frames; s++)
+          output[ch][s] = (NAM_SAMPLE)head_out(ch, s);
+      }
+    }
+    return;
+  }
+
   assert(final_head_outputs.rows() == out_channels);
 
-  for (int ch = 0; ch < out_channels; ch++)
+  // Optimized output copy with head_scale multiplication
+  if (out_channels == 1)
   {
+    // Single channel: data is contiguous
+    const float scale = this->_head_scale;
+    const float* __restrict__ src = final_head_outputs.data();
+    NAM_SAMPLE* __restrict__ dst = output[0];
     for (int s = 0; s < num_frames; s++)
     {
-      const float out = this->_head_scale * final_head_outputs(ch, s);
-      output[ch][s] = out;
+      dst[s] = scale * src[s];
+    }
+  }
+  else
+  {
+    // Multi-channel: rows are not contiguous in column-major
+    for (int ch = 0; ch < out_channels; ch++)
+    {
+      for (int s = 0; s < num_frames; s++)
+      {
+        output[ch][s] = this->_head_scale * final_head_outputs(ch, s);
+      }
     }
   }
 }
 
-// Factory to instantiate from nlohmann json
-std::unique_ptr<nam::DSP> nam::parametric_wavenet::Factory(const nlohmann::json& config, std::vector<float>& weights,
-                                                const double expectedSampleRate)
+// Config parser - extracts all configuration from JSON without constructing the DSP
+nam::parametric_wavenet::WaveNetConfig nam::parametric_wavenet::parse_config_json(const nlohmann::json& config,
+                                                            const double expectedSampleRate)
 {
-  std::unique_ptr<nam::DSP> condition_dsp = nullptr;
-  if (config.find("condition_dsp") != config.end())
+  WaveNetConfig wc;
+
+  // Condition DSP (eagerly built via get_dsp)
+  if ((config.find("condition_dsp") != config.end()) && !config["condition_dsp"].is_null())
   {
     const nlohmann::json& condition_dsp_json = config["condition_dsp"];
-    condition_dsp = nam::get_dsp(condition_dsp_json);
-    if (condition_dsp->GetExpectedSampleRate() != expectedSampleRate)
+    wc.condition_dsp = nam::get_dsp(condition_dsp_json);
+    if (wc.condition_dsp->GetExpectedSampleRate() != expectedSampleRate)
     {
       std::stringstream ss;
-      ss << "Condition DSP expected sample rate (" << condition_dsp->GetExpectedSampleRate()
+      ss << "Condition DSP expected sample rate (" << wc.condition_dsp->GetExpectedSampleRate()
          << ") doesn't match WaveNet expected sample rate (" << expectedSampleRate << "!\n";
       throw std::runtime_error(ss.str().c_str());
     }
   }
-  std::vector<nam::parametric_wavenet::LayerArrayParams> layer_array_params;
+
+  int first_layer_input_size = 1;
+  int first_layer_condition_size = 1;
+
   for (size_t i = 0; i < config["layers"].size(); i++)
   {
     nlohmann::json layer_config = config["layers"][i];
 
-    const int groups = layer_config.value("groups", 1); // defaults to 1
-    const int groups_1x1 = layer_config.value("groups_1x1", 1); // defaults to 1
+    const int groups = layer_config.value("groups_input", 1); // defaults to 1
+    const int groups_input_mixin = layer_config.value("groups_input_mixin", 1); // defaults to 1
 
     const int channels = layer_config["channels"];
     const int bottleneck = layer_config.value("bottleneck", channels); // defaults to channels if not present
 
+    // Parse layer1x1 parameters
+    bool layer1x1_active = true;
+    int layer1x1_groups = 1;
+    if (layer_config.find("layer1x1") != layer_config.end())
+    {
+      const auto& layer1x1_config = layer_config["layer1x1"];
+      layer1x1_active = layer1x1_config["active"];
+      layer1x1_groups = layer1x1_config["groups"];
+    }
+    nam::wavenet::Layer1x1Params layer1x1_params(layer1x1_active, layer1x1_groups);
+
     const int input_size = layer_config["input_size"];
     const int condition_size = layer_config["condition_size"];
-    const int head_size = layer_config["head_size"];
-    const int kernel_size = layer_config["kernel_size"];
-    const auto dilations = layer_config["dilations"];
-    // Parse JSON into typed ActivationConfig at model loading boundary
-    const activations::ActivationConfig activation_config =
-      activations::ActivationConfig::from_json(layer_config["activation"]);
-    // Parse gating mode - support both old "gated" boolean and new "gating_mode" string
-    GatingMode gating_mode = GatingMode::NONE;
-    std::string secondary_activation;
 
-    if (layer_config.find("gating_mode") != layer_config.end())
+    if (i == 0)
     {
-      std::string gating_mode_str = layer_config["gating_mode"].get<std::string>();
-      if (gating_mode_str == "gated")
-      {
-        gating_mode = GatingMode::GATED;
-        secondary_activation = layer_config["secondary_activation"].get<std::string>();
-      }
-      else if (gating_mode_str == "blended")
-      {
-        gating_mode = GatingMode::BLENDED;
-        secondary_activation = layer_config["secondary_activation"].get<std::string>();
-      }
-      else if (gating_mode_str == "none")
-      {
-        gating_mode = GatingMode::NONE;
-        secondary_activation.clear();
-      }
-      else
-        throw std::runtime_error("Invalid gating_mode: " + gating_mode_str);
+        first_layer_input_size = input_size;
+        first_layer_condition_size = condition_size;
     }
-    else if (layer_config.find("gated") != layer_config.end())
+
+    int head_size = 0;
+    int head_kernel_size = 1;
+    bool head_bias = false;
+
+    // Prefer nested "head" (matches trainer export). Legacy .nam uses head_size + head_bias (implicit kernel 1).
+    if (layer_config.find("head") != layer_config.end() && !layer_config["head"].is_null())
     {
-      // Backward compatibility: convert old "gated" boolean to new enum
-      bool gated = layer_config["gated"];
-      gating_mode = gated ? GatingMode::GATED : GatingMode::NONE;
-      if (gated)
+      const auto& head_json = layer_config["head"];
+      if (!head_json.is_object())
       {
-        secondary_activation = "Sigmoid";
+        throw std::runtime_error("Layer array " + std::to_string(i) + ": 'head' must be a JSON object");
       }
-      else
+      head_size = head_json.at("out_channels").get<int>();
+      head_kernel_size = head_json.at("kernel_size").get<int>();
+      head_bias = head_json.at("bias").get<bool>();
+    }
+    else if (layer_config.find("head_size") != layer_config.end())
+    {
+      head_size = layer_config["head_size"].get<int>();
+      head_kernel_size = 1;
+      head_bias = layer_config.at("head_bias").get<bool>();
+    }
+    else
+    {
+      throw std::runtime_error("Layer array " + std::to_string(i)
+                               + ": expected 'head' object with out_channels, kernel_size, and bias, "
+                                 "or legacy 'head_size' and 'head_bias'");
+    }
+
+    if (head_kernel_size < 1)
+    {
+      throw std::runtime_error("Layer array " + std::to_string(i) + ": head.kernel_size must be >= 1");
+    }
+
+    const auto dilations = layer_config["dilations"];
+    const size_t num_layers = dilations.size();
+
+    // Parse kernel sizes - support legacy single-value kernel_size or new per-layer kernel_sizes
+    const bool has_kernel_size = layer_config.find("kernel_size") != layer_config.end();
+    const bool has_kernel_sizes = layer_config.find("kernel_sizes") != layer_config.end();
+    std::vector<int> kernel_sizes;
+    if (has_kernel_size && has_kernel_sizes)
+    {
+      throw std::runtime_error("Layer array " + std::to_string(i)
+                               + ": only one of kernel_size (int) or kernel_sizes (array) may be provided");
+    }
+    else if (has_kernel_sizes)
+    {
+      const auto& kernel_sizes_json = layer_config["kernel_sizes"];
+      if (!kernel_sizes_json.is_array())
       {
-        secondary_activation.clear();
+        throw std::runtime_error("Layer array " + std::to_string(i) + ": kernel_sizes must be an array");
+      }
+      for (const auto& ks_json : kernel_sizes_json)
+      {
+        kernel_sizes.push_back(ks_json.get<int>());
+      }
+      if (kernel_sizes.size() != num_layers)
+      {
+        throw std::runtime_error("Layer array " + std::to_string(i) + ": kernel_sizes array size ("
+                                 + std::to_string(kernel_sizes.size()) + ") must match dilations size ("
+                                 + std::to_string(num_layers) + ")");
+      }
+    }
+    else if (has_kernel_size)
+    {
+      const int kernel_size = layer_config["kernel_size"].get<int>();
+      kernel_sizes.resize(num_layers, kernel_size);
+    }
+    else
+    {
+      throw std::runtime_error("Layer array " + std::to_string(i)
+                               + ": either kernel_size (int) or kernel_sizes (array) must be provided");
+    }
+
+    // Parse activation config(s) - support both single config and array
+    std::vector<activations::ActivationConfig> activation_configs;
+    if (layer_config["activation"].is_array())
+    {
+      for (const auto& activation_json : layer_config["activation"])
+      {
+        activation_configs.push_back(activations::ActivationConfig::from_json(activation_json));
+      }
+      if (activation_configs.size() != num_layers)
+      {
+        throw std::runtime_error("Layer array " + std::to_string(i) + ": activation array size ("
+                                 + std::to_string(activation_configs.size()) + ") must match dilations size ("
+                                 + std::to_string(num_layers) + ")");
       }
     }
     else
     {
-      throw std::invalid_argument("No information on gating mode found for layer array " + std::to_string(i));
+      // Single activation config - duplicate it for all layers
+      const activations::ActivationConfig activation_config =
+        activations::ActivationConfig::from_json(layer_config["activation"]);
+      activation_configs.resize(num_layers, activation_config);
     }
 
-    const bool head_bias = layer_config["head_bias"];
+    // Parse gating mode(s) - support both single value and array, and old "gated" boolean
+    std::vector<nam::wavenet::GatingMode> gating_modes;
+    std::vector<activations::ActivationConfig> secondary_activation_configs;
+
+    auto parse_gating_mode_str = [](const std::string& gating_mode_str) -> nam::wavenet::GatingMode {
+      if (gating_mode_str == "gated")
+        return nam::wavenet::GatingMode::GATED;
+      else if (gating_mode_str == "blended")
+        return nam::wavenet::GatingMode::BLENDED;
+      else if (gating_mode_str == "none")
+        return nam::wavenet::GatingMode::NONE;
+      else
+        throw std::runtime_error("Invalid gating_mode: " + gating_mode_str);
+    };
+
+    if (layer_config.find("gating_mode") != layer_config.end())
+    {
+      if (layer_config["gating_mode"].is_array())
+      {
+        for (const auto& gating_mode_json : layer_config["gating_mode"])
+        {
+          std::string gating_mode_str = gating_mode_json.get<std::string>();
+          nam::wavenet::GatingMode mode = parse_gating_mode_str(gating_mode_str);
+          gating_modes.push_back(mode);
+
+          // Parse corresponding secondary activation if gating is enabled
+          if (mode != nam::wavenet::GatingMode::NONE)
+          {
+            if (layer_config.find("secondary_activation") != layer_config.end())
+            {
+              if (layer_config["secondary_activation"].is_array())
+              {
+                if (gating_modes.size() > layer_config["secondary_activation"].size())
+                {
+                  throw std::runtime_error("Layer array " + std::to_string(i)
+                                           + ": secondary_activation array size must be at least "
+                                           + std::to_string(gating_modes.size()));
+                }
+                secondary_activation_configs.push_back(activations::ActivationConfig::from_json(
+                  layer_config["secondary_activation"][gating_modes.size() - 1]));
+              }
+              else
+              {
+                // Single secondary activation - use for all gated layers
+                secondary_activation_configs.push_back(
+                  activations::ActivationConfig::from_json(layer_config["secondary_activation"]));
+              }
+            }
+            else
+            {
+              // Default to Sigmoid for backward compatibility
+              secondary_activation_configs.push_back(
+                activations::ActivationConfig::simple(activations::ActivationType::Sigmoid));
+            }
+          }
+          else
+          {
+            secondary_activation_configs.push_back(activations::ActivationConfig{});
+          }
+        }
+        if (gating_modes.size() != num_layers)
+        {
+          throw std::runtime_error("Layer array " + std::to_string(i) + ": gating_mode array size ("
+                                   + std::to_string(gating_modes.size()) + ") must match dilations size ("
+                                   + std::to_string(num_layers) + ")");
+        }
+        // Validate secondary_activation array size if it's an array
+        if (layer_config.find("secondary_activation") != layer_config.end()
+            && layer_config["secondary_activation"].is_array())
+        {
+          if (layer_config["secondary_activation"].size() != num_layers)
+          {
+            throw std::runtime_error("Layer array " + std::to_string(i) + ": secondary_activation array size ("
+                                     + std::to_string(layer_config["secondary_activation"].size())
+                                     + ") must match dilations size (" + std::to_string(num_layers) + ")");
+          }
+        }
+      }
+      else
+      {
+        // Single gating mode - duplicate for all layers
+        std::string gating_mode_str = layer_config["gating_mode"].get<std::string>();
+        nam::wavenet::GatingMode gating_mode = parse_gating_mode_str(gating_mode_str);
+        gating_modes.resize(num_layers, gating_mode);
+
+        activations::ActivationConfig secondary_activation_config;
+        if (gating_mode != nam::wavenet::GatingMode::NONE)
+        {
+          if (layer_config.find("secondary_activation") != layer_config.end())
+          {
+            secondary_activation_config =
+              activations::ActivationConfig::from_json(layer_config["secondary_activation"]);
+          }
+          else
+          {
+            // Default to Sigmoid for backward compatibility
+            secondary_activation_config = activations::ActivationConfig::simple(activations::ActivationType::Sigmoid);
+          }
+        }
+        secondary_activation_configs.resize(num_layers, secondary_activation_config);
+      }
+    }
+    // Backward compatibility: convert old "gated" boolean to new enum
+    else if (layer_config.find("gated") != layer_config.end())
+    {
+      bool gated = layer_config["gated"];
+      nam::wavenet::GatingMode gating_mode = gated ? nam::wavenet::GatingMode::GATED : nam::wavenet::GatingMode::NONE;
+      gating_modes.resize(num_layers, gating_mode);
+
+      if (gated)
+      {
+        activations::ActivationConfig secondary_config =
+          activations::ActivationConfig::simple(activations::ActivationType::Sigmoid);
+        secondary_activation_configs.resize(num_layers, secondary_config);
+      }
+      else
+      {
+        secondary_activation_configs.resize(num_layers, activations::ActivationConfig{});
+      }
+    }
+    else
+    {
+      // Default to NONE for all layers
+      gating_modes.resize(num_layers, nam::wavenet::GatingMode::NONE);
+      secondary_activation_configs.resize(num_layers, activations::ActivationConfig{});
+    }
 
     // Parse head1x1 parameters
-    bool head1x1_active = layer_config.value("head1x1_active", false);
-    int head1x1_out_channels = layer_config.value("head1x1_out_channels", channels);
-    int head1x1_groups = layer_config.value("head1x1_groups", 1);
-    nam::parametric_wavenet::Head1x1Params head1x1_params(head1x1_active, head1x1_out_channels, head1x1_groups);
+    bool head1x1_active = false;
+    int head1x1_out_channels = channels;
+    int head1x1_groups = 1;
+    if (layer_config.find("head1x1") != layer_config.end())
+    {
+      const auto& head1x1_config = layer_config["head1x1"];
+      head1x1_active = head1x1_config["active"];
+      head1x1_out_channels = head1x1_config["out_channels"];
+      head1x1_groups = head1x1_config["groups"];
+    }
+    nam::wavenet::Head1x1Params head1x1_params(head1x1_active, head1x1_out_channels, head1x1_groups);
 
     // Helper function to parse FiLM parameters
-    auto parse_film_params = [&layer_config](const std::string& key) -> nam::parametric_wavenet::_FiLMParams {
+    auto parse_film_params = [&layer_config](const std::string& key) -> nam::wavenet::_FiLMParams {
       if (layer_config.find(key) == layer_config.end() || layer_config[key] == false)
       {
-        return nam::parametric_wavenet::_FiLMParams(false, false);
+        return nam::wavenet::_FiLMParams(false, false);
       }
       const nlohmann::json& film_config = layer_config[key];
       bool active = film_config.value("active", true);
       bool shift = film_config.value("shift", true);
-      return nam::parametric_wavenet::_FiLMParams(active, shift);
+      int film_groups = film_config.value("groups", 1);
+      return nam::wavenet::_FiLMParams(active, shift, film_groups);
     };
 
     // Parse FiLM parameters
-    nam::parametric_wavenet::_FiLMParams conv_pre_film_params = parse_film_params("conv_pre_film");
-    nam::parametric_wavenet::_FiLMParams conv_post_film_params = parse_film_params("conv_post_film");
-    nam::parametric_wavenet::_FiLMParams input_mixin_pre_film_params = parse_film_params("input_mixin_pre_film");
-    nam::parametric_wavenet::_FiLMParams input_mixin_post_film_params = parse_film_params("input_mixin_post_film");
-    nam::parametric_wavenet::_FiLMParams activation_pre_film_params = parse_film_params("activation_pre_film");
-    nam::parametric_wavenet::_FiLMParams activation_post_film_params = parse_film_params("activation_post_film");
-    nam::parametric_wavenet::_FiLMParams gating_activation_post_film_params = parse_film_params("gating_activation_post_film");
-    nam::parametric_wavenet::_FiLMParams _1x1_post_film_params = parse_film_params("1x1_post_film");
-    nam::parametric_wavenet::_FiLMParams head1x1_post_film_params = parse_film_params("head1x1_post_film");
+    nam::wavenet::_FiLMParams conv_pre_film_params = parse_film_params("conv_pre_film");
+    nam::wavenet::_FiLMParams conv_post_film_params = parse_film_params("conv_post_film");
+    nam::wavenet::_FiLMParams input_mixin_pre_film_params = parse_film_params("input_mixin_pre_film");
+    nam::wavenet::_FiLMParams input_mixin_post_film_params = parse_film_params("input_mixin_post_film");
+    nam::wavenet::_FiLMParams activation_pre_film_params = parse_film_params("activation_pre_film");
+    nam::wavenet::_FiLMParams activation_post_film_params = parse_film_params("activation_post_film");
+    nam::wavenet::_FiLMParams _layer1x1_post_film_params = parse_film_params("layer1x1_post_film");
+    nam::wavenet::_FiLMParams head1x1_post_film_params = parse_film_params("head1x1_post_film");
 
-    layer_array_params.push_back(nam::parametric_wavenet::LayerArrayParams(
-      input_size, condition_size, head_size, channels, bottleneck, kernel_size, dilations, activation_config,
-      gating_mode, head_bias, groups, groups_1x1, head1x1_params, secondary_activation, conv_pre_film_params,
-      conv_post_film_params, input_mixin_pre_film_params, input_mixin_post_film_params, activation_pre_film_params,
-      activation_post_film_params, gating_activation_post_film_params, _1x1_post_film_params,
-      head1x1_post_film_params));
+    // Validation: if layer1x1_post_film is active, layer1x1 must also be active
+    if (_layer1x1_post_film_params.active && !layer1x1_active)
+    {
+      throw std::runtime_error("Layer array " + std::to_string(i)
+                               + ": layer1x1_post_film cannot be active when layer1x1.active is false");
+    }
+
+    wc.layer_array_params.push_back(nam::wavenet::LayerArrayParams(
+      input_size, condition_size, head_size, head_kernel_size, channels, bottleneck, std::move(kernel_sizes), dilations,
+      std::move(activation_configs), std::move(gating_modes), head_bias, groups, groups_input_mixin, layer1x1_params,
+      head1x1_params, std::move(secondary_activation_configs), conv_pre_film_params, conv_post_film_params,
+      input_mixin_pre_film_params, input_mixin_post_film_params, activation_pre_film_params,
+      activation_post_film_params, _layer1x1_post_film_params, head1x1_post_film_params));
   }
-  const bool with_head = !config["head"].is_null();
-  const float head_scale = config["head_scale"];
 
-  if (layer_array_params.empty())
+  wc.with_head = config.find("head") != config.end() && !config["head"].is_null();
+  wc.head_scale = config["head_scale"];
+  wc.in_channels = config.value("in_channels", 1);
+
+  if (wc.layer_array_params.empty())
     throw std::runtime_error("WaveNet config requires at least one layer array");
 
-  // Backward compatibility: assume 1 input channel
-  const int in_channels = config.value("in_channels", 1);
+  if (wc.with_head)
+  {
+    const nlohmann::json& hj = config["head"];
+    nam::wavenet::HeadParams hp;
+    const int implied_in = wc.layer_array_params.back().head_size;
+    // New trainer export omits in_channels (single source: last layer head_size). Legacy .nam may include it.
+    if (hj.find("in_channels") != hj.end() && !hj["in_channels"].is_null())
+    {
+      const int legacy_in = hj["in_channels"].get<int>();
+      if (legacy_in != implied_in)
+      {
+        std::stringstream ss;
+        ss << "WaveNet config: head.in_channels (" << legacy_in << ") must equal last layer's head_size (" << implied_in
+           << ")";
+        throw std::runtime_error(ss.str());
+      }
+    }
+    hp.in_channels = implied_in;
+    hp.channels = hj.at("channels").get<int>();
+    hp.out_channels = hj.at("out_channels").get<int>();
+    hp.kernel_sizes = hj.at("kernel_sizes").get<std::vector<int>>();
+    hp.activation_config = nam::activations::ActivationConfig::from_json(hj.at("activation"));
+    if (hp.kernel_sizes.empty())
+      throw std::runtime_error("WaveNet config: head.kernel_sizes must be non-empty");
+    wc.head_params = std::move(hp);
+  }
+  else
+    wc.head_params = std::nullopt;
 
-  // out_channels is determined from last layer array's head_size
-  return std::make_unique<nam::parametric_wavenet::WaveNet>(
-    in_channels, layer_array_params, head_scale, with_head, weights, std::move(condition_dsp), expectedSampleRate);
+  return wc;
 }
 
-void nam::parametric_wavenet::RegisterFactory()
+// WaveNetConfig::create()
+std::unique_ptr<nam::DSP> nam::parametric_wavenet::WaveNetConfig::create(std::vector<float> weights, double sampleRate)
+{
+  return std::make_unique<nam::parametric_wavenet::ParametricWaveNet>(in_channels, layer_array_params, head_scale, with_head,
+                                                 std::move(head_params), std::move(weights), std::move(condition_dsp),
+                                                 sampleRate);
+}
+
+namespace
+{
+const std::string SLIMMABLE_METHOD = "slice_channels_uniform";
+
+bool config_is_slimmable_wavenet(const nlohmann::json& config)
+{
+  if (config.find("layers") == config.end() || !config["layers"].is_array())
+    return false;
+  for (const auto& lc : config["layers"])
+  {
+    if (lc.find("slimmable") == lc.end() || !lc["slimmable"].is_object())
+      continue;
+    const std::string method = lc["slimmable"].value("method", "");
+    if (method != SLIMMABLE_METHOD)
+    {
+      if (!method.empty())
+        throw std::runtime_error("SlimmableWavenet: unsupported slimmable method '" + method + "'");
+      continue;
+    }
+    return true;
+  }
+  return false;
+}
+} // namespace
+
+// Config parser for ConfigParserRegistry
+std::unique_ptr<nam::ModelConfig> nam::parametric_wavenet::create_config(const nlohmann::json& config, double sampleRate)
+{
+  if (config_is_slimmable_wavenet(config))
+    return nam::parametric_slimmable_wavenet::create_config(config, sampleRate);
+
+  /*
+#if defined(NAM_ENABLE_A2_FAST)
+  if (int a2_channels = 0; nam::wavenet::a2_fast::is_a2_shape(config, &a2_channels))
+    return nam::wavenet::a2_fast::create_a2_fast_config(config, sampleRate);
+#endif
+    */
+
+  auto wc = std::make_unique<WaveNetConfig>();
+  auto parsed = parse_config_json(config, sampleRate);
+  *wc = std::move(parsed);
+  return wc;
+}
+
+void nam::parametric_wavenet::register_parser()
 {
     static bool ONCE{ false };
 
     if (!ONCE)
     {
-        nam::factory::FactoryRegistry::instance().registerFactory("ParametricWaveNet", nam::parametric_wavenet::Factory);
+        ConfigParserRegistry::instance().registerParser("ParametricWaveNet", nam::parametric_wavenet::create_config);
 
         ONCE = true;
     }
 }
 
-// Register the factory
+// Register the config parser
+/*
 namespace
 {
-//static nam::factory::Helper _register_WaveNet("WaveNet", nam::wavenet::Factory);
+static nam::ConfigParserHelper _register_WaveNet("WaveNet", nam::wavenet::create_config);
 }
+*/

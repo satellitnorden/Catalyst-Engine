@@ -1,10 +1,14 @@
 #pragma once
 
-// Registry for DSP objects
+// Registry for DSP objects — external code compatibility layer.
+//
+// The primary registration mechanism is ConfigParserRegistry in model_config.h.
+// This header provides FactoryConfig (a ModelConfig wrapper around legacy factory
+// functions) and factory::Helper (which registers into ConfigParserRegistry).
 
 #include <string>
 #include <memory>
-#include <unordered_map>
+#include <vector>
 #include <functional>
 
 #include "dsp.h"
@@ -13,50 +17,52 @@ namespace nam
 {
 namespace factory
 {
-// TODO get rid of weights and expectedSampleRate
+/// \brief Factory function type for creating DSP objects (legacy interface)
 using FactoryFunction = std::function<std::unique_ptr<DSP>(const nlohmann::json&, std::vector<float>&, const double)>;
 
-// Register factories for instantiating DSP objects
-class FactoryRegistry
+/// \brief ModelConfig wrapper around a legacy FactoryFunction
+///
+/// Stores the factory function, JSON config, and sample rate so that
+/// create() can delegate to the factory. This allows external code that
+/// registers a FactoryFunction to work transparently with ConfigParserRegistry.
+class FactoryConfig : public ModelConfig
 {
 public:
-  static FactoryRegistry& instance()
+  FactoryConfig(FactoryFunction factory, nlohmann::json config, double sampleRate)
+  : _factory(std::move(factory))
+  , _config(std::move(config))
+  , _sampleRate(sampleRate)
   {
-    static FactoryRegistry inst;
-    return inst;
   }
 
-  void registerFactory(const std::string& key, FactoryFunction func)
+  std::unique_ptr<DSP> create(std::vector<float> weights, double sampleRate) override
   {
-    // Assert that the key is not already registered
-    if (factories_.find(key) != factories_.end())
-    {
-      throw std::runtime_error("Factory already registered for key: " + key);
-    }
-    factories_[key] = func;
-  }
-
-  std::unique_ptr<DSP> create(const std::string& name, const nlohmann::json& config, std::vector<float>& weights,
-                              const double expectedSampleRate) const
-  {
-    auto it = factories_.find(name);
-    if (it != factories_.end())
-    {
-      return it->second(config, weights, expectedSampleRate);
-    }
-    throw std::runtime_error("Factory not found for name: " + name);
+    (void)sampleRate; // Use stored sample rate from construction
+    return _factory(_config, weights, _sampleRate);
   }
 
 private:
-  std::unordered_map<std::string, FactoryFunction> factories_;
+  FactoryFunction _factory;
+  nlohmann::json _config;
+  double _sampleRate;
 };
 
-// Registration helper. Use this to register your factories.
+/// \brief Registration helper for factories (external code compatibility)
+///
+/// Wraps a FactoryFunction into a ConfigParserRegistry entry via FactoryConfig.
+/// Use this to register external architectures. Create a static instance to
+/// automatically register a factory when the program starts.
 struct Helper
 {
+  /// \param name Architecture name
+  /// \param factory Factory function
   Helper(const std::string& name, FactoryFunction factory)
   {
-    FactoryRegistry::instance().registerFactory(name, std::move(factory));
+    // Capture factory by value in the lambda
+    ConfigParserRegistry::instance().registerParser(
+      name, [f = std::move(factory)](const nlohmann::json& config, double sampleRate) -> std::unique_ptr<ModelConfig> {
+        return std::make_unique<FactoryConfig>(f, config, sampleRate);
+      });
   }
 };
 } // namespace factory

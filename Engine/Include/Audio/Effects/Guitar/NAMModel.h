@@ -14,9 +14,11 @@
 
 //Third party.
 #include <ThirdParty/AudioFile/AudioFile.h>
-#include <NAM/get_dsp.h>
 #include <NAM/extensions/parametric_wavenet.h>
-#include <NAM/wavenet.h>
+#include <NAM/wavenet/model.h>
+#include <NAM/container.h>
+#include <NAM/get_dsp.h>
+#include <NAM/slimmable.h>
 
 /*
 *	Compares the original and optimized WaveNet implementations.
@@ -173,8 +175,9 @@ public:
 		}
 
 		//The initialization order may be a bit whack here, so make sure that architectures are registered.
-		nam::parametric_wavenet::RegisterFactory();
-		nam::wavenet::RegisterFactory();
+		nam::container::register_parser();
+		nam::parametric_wavenet::register_parser();
+		nam::wavenet::register_parser();
 
 		//Compare WaveNet implementations. (:
 		//CompareWaveNets();
@@ -184,6 +187,7 @@ public:
 		{
 			nam::dspData dsp_data;
 			dsp = nam::get_dsp(std::filesystem::path(std::string(file_path)), dsp_data);
+			dsp->Reset(static_cast<float64>(_SampleRate), 4'096);
 			_InputSize = input_size;
 		}
 
@@ -212,6 +216,14 @@ public:
 
 		//This NAM model is now valid!
 		_Valid = true;
+	}
+
+	/*
+	*	Sets the quality.
+	*/
+	FORCE_INLINE void SetQuality(const float32 quality) NOEXCEPT
+	{
+		_CurrentQuality = quality;
 	}
 
 	/*
@@ -253,6 +265,20 @@ public:
 		if (!_Valid)
 		{
 			return;
+		}
+
+		//Update the quality.
+		if (_PreviousQuality != _CurrentQuality)
+		{
+			for (std::unique_ptr<nam::DSP> &dsp : _DSPs)
+			{
+				if (nam::SlimmableModel *const RESTRICT slimmable_model{ dynamic_cast<nam::SlimmableModel *const RESTRICT>(dsp.get()) })
+				{
+					slimmable_model->SetSlimmableSize(_CurrentQuality);
+				}
+			}
+
+			_PreviousQuality = _CurrentQuality;
 		}
 
 		//Fill up the input buffers.
@@ -341,6 +367,12 @@ private:
 
 	//The DSP's.
 	StaticArray<std::unique_ptr<nam::DSP>, 2> _DSPs;
+
+	//The previous quality.
+	float32 _PreviousQuality{ 1.0f };
+
+	//The current quality.
+	float32 _CurrentQuality{ 1.0f };
 
 	//The parameters.
 	DynamicArray<float32> _Parameters;

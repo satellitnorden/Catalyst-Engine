@@ -1,366 +1,78 @@
 #pragma once
 
+// This header defines the WaveNet end-user model: ``WaveNet`` (DSP), ``WaveNetConfig``, and JSON helpers
+// ``parse_config_json`` / ``create_config``. Lower-level building blocks live in ``params.h`` and ``detail.h``.
+
 #include <memory>
-#include <stdexcept>
-#include <string>
+#include <optional>
 #include <vector>
 
 #include "../Eigen/Dense"
 
-#include "../activations.h"
-#include "../conv1d.h"
 #include "../dsp.h"
-#include "../gating_activations.h"
-#include "../film.h"
 #include "../json.hpp"
+
+#include "../wavenet/detail.h"
 
 namespace nam
 {
 namespace parametric_wavenet
 {
 
-// Gating mode for WaveNet layers
-enum class GatingMode
-{
-  NONE, // No gating or blending
-  GATED, // Traditional gating (element-wise multiplication)
-  BLENDED // Blending (weighted average)
-};
-
-// Helper function for backward compatibility with boolean gated parameter
-inline GatingMode gating_mode_from_bool(bool gated)
-{
-  return gated ? GatingMode::GATED : GatingMode::NONE;
-}
-// Parameters for head1x1 configuration
-struct Head1x1Params
-{
-  Head1x1Params(bool active_, int out_channels_, int groups_)
-  : active(active_)
-  , out_channels(out_channels_)
-  , groups(groups_)
-  {
-  }
-
-  const bool active;
-  const int out_channels;
-  const int groups;
-};
-
-struct _FiLMParams
-{
-  _FiLMParams(bool active_, bool shift_)
-  : active(active_)
-  , shift(shift_)
-  {
-  }
-  const bool active;
-  const bool shift;
-};
-
-class _Layer
+/// \brief The main WaveNet model
+///
+/// WaveNet is a dilated convolutional neural network architecture for audio processing.
+/// It consists of multiple LayerArrays, each containing multiple layers with increasing
+/// dilation factors. The model processes audio through:
+///
+/// 1. Condition DSP (optional) - processes input to generate conditioning signal
+/// 2. LayerArrays - sequential processing with residual and skip connections
+/// 3. Head scaling - final output scaling
+///
+/// The model supports real-time audio processing with pre-allocated buffers.
+class ParametricWaveNet : public DSP
 {
 public:
-  // Constructor with GatingMode enum and typed ActivationConfig
-  _Layer(const int condition_size, const int channels, const int bottleneck, const int kernel_size, const int dilation,
-         const activations::ActivationConfig& activation_config, const GatingMode gating_mode, const int groups_input,
-         const int groups_1x1, const Head1x1Params& head1x1_params, const std::string& secondary_activation,
-         const _FiLMParams& conv_pre_film_params, const _FiLMParams& conv_post_film_params,
-         const _FiLMParams& input_mixin_pre_film_params, const _FiLMParams& input_mixin_post_film_params,
-         const _FiLMParams& activation_pre_film_params, const _FiLMParams& activation_post_film_params,
-         const _FiLMParams& gating_activation_post_film_params, const _FiLMParams& _1x1_post_film_params,
-         const _FiLMParams& head1x1_post_film_params)
-  : _conv(channels, (gating_mode != GatingMode::NONE) ? 2 * bottleneck : bottleneck, kernel_size, true, dilation)
-  , _film_gamma(condition_size, (gating_mode != GatingMode::NONE) ? 2 * bottleneck : bottleneck, true)
-  , _film_beta(condition_size, (gating_mode != GatingMode::NONE) ? 2 * bottleneck : bottleneck, true)
-  , _1x1(bottleneck, channels, groups_1x1)
-  , _activation(activations::Activation::get_activation(activation_config))
-  , _gating_mode(gating_mode)
-  , _bottleneck(bottleneck)
-  {
-    if (head1x1_params.active)
-    {
-      _head1x1 = std::make_unique<Conv1x1>(bottleneck, head1x1_params.out_channels, true, head1x1_params.groups);
-    }
+  /// \brief Constructor
+  /// \param in_channels Number of input channels
+  /// \param layer_array_params Parameters for each layer array
+  /// \param head_scale Scaling factor applied to the final head output
+  /// \param with_head Whether to apply the optional post-stack head (Conv1D stack after layer arrays)
+  /// \param head_params Configuration for the post-stack head when ``with_head`` is true
+  /// \param weights Model weights (will be consumed during construction)
+  /// \param condition_dsp Optional DSP module for processing the conditioning input
+  /// \param expected_sample_rate Expected sample rate in Hz (-1.0 if unknown)
+  ParametricWaveNet(const int in_channels, const std::vector<nam::wavenet::LayerArrayParams>& layer_array_params, const float head_scale,
+          const bool with_head, std::optional<nam::wavenet::HeadParams> head_params, std::vector<float> weights,
+          std::unique_ptr<DSP> condition_dsp, const double expected_sample_rate = -1.0);
 
-    // Validate & initialize gating/blending activation
-    if (gating_mode == GatingMode::GATED)
-    {
-      if (secondary_activation.empty())
-        throw std::invalid_argument("secondary_activation must be provided for gated mode");
-      _gating_activation = std::make_unique<gating_activations::GatingActivation>(
-        _activation, activations::Activation::get_activation(secondary_activation), bottleneck);
-    }
-    else if (gating_mode == GatingMode::BLENDED)
-    {
-      if (secondary_activation.empty())
-        throw std::invalid_argument("secondary_activation must be provided for blended mode");
-      _blending_activation = std::make_unique<gating_activations::BlendingActivation>(
-        _activation, activations::Activation::get_activation(secondary_activation), bottleneck);
-    }
-    else
-    {
-      if (!secondary_activation.empty())
-        throw std::invalid_argument("secondary_activation provided for none mode");
-    }
+  /// \brief Destructor
+  ~ParametricWaveNet() = default;
 
-    // Initialize FiLM objects
-    if (conv_pre_film_params.active)
-    {
-      _conv_pre_film = std::make_unique<FiLM>(condition_size, channels, conv_pre_film_params.shift);
-    }
-    if (conv_post_film_params.active)
-    {
-      const int conv_out_channels = (gating_mode != GatingMode::NONE) ? 2 * bottleneck : bottleneck;
-      _conv_post_film = std::make_unique<FiLM>(condition_size, conv_out_channels, conv_post_film_params.shift);
-    }
-    if (input_mixin_pre_film_params.active)
-    {
-      _input_mixin_pre_film = std::make_unique<FiLM>(condition_size, condition_size, input_mixin_pre_film_params.shift);
-    }
-    if (input_mixin_post_film_params.active)
-    {
-      const int input_mixin_out_channels = (gating_mode != GatingMode::NONE) ? 2 * bottleneck : bottleneck;
-      _input_mixin_post_film =
-        std::make_unique<FiLM>(condition_size, input_mixin_out_channels, input_mixin_post_film_params.shift);
-    }
-    if (activation_pre_film_params.active)
-    {
-      const int z_channels = (gating_mode != GatingMode::NONE) ? 2 * bottleneck : bottleneck;
-      _activation_pre_film = std::make_unique<FiLM>(condition_size, z_channels, activation_pre_film_params.shift);
-    }
-    if (activation_post_film_params.active)
-    {
-      _activation_post_film = std::make_unique<FiLM>(condition_size, bottleneck, activation_post_film_params.shift);
-    }
-    if (gating_activation_post_film_params.active)
-    {
-      _gating_activation_post_film =
-        std::make_unique<FiLM>(condition_size, bottleneck, gating_activation_post_film_params.shift);
-    }
-    if (_1x1_post_film_params.active)
-    {
-      _1x1_post_film = std::make_unique<FiLM>(condition_size, channels, _1x1_post_film_params.shift);
-    }
-    if (head1x1_post_film_params.active && head1x1_params.active)
-    {
-      _head1x1_post_film =
-        std::make_unique<FiLM>(condition_size, head1x1_params.out_channels, head1x1_post_film_params.shift);
-    }
-  };
-
-  // Resize all arrays to be able to process `maxBufferSize` frames.
-  void SetMaxBufferSize(const int maxBufferSize);
-  // Set the parameters of this module
-  void set_weights_(std::vector<float>::iterator& weights);
-  // Process a block of frames.
-  // :param `input`: from previous layer
-  // :param `condition`: conditioning input (input to the WaveNet / "skip-in")
-  // :param `num_frames`: number of frames to process
-  // Outputs are stored internally and accessible via GetOutputNextLayer() and GetOutputHead()
-  void Process(const Eigen::MatrixXf& input, const Eigen::MatrixXf& condition, const int num_frames);
-  // The number of channels expected as input/output from this layer
-  long get_channels() const { return this->_conv.get_in_channels(); };
-  // Dilation of the input convolution layer
-  int get_dilation() const { return this->_conv.get_dilation(); };
-  // Kernel size of the input convolution layer
-  long get_kernel_size() const { return this->_conv.get_kernel_size(); };
-
-  // Get output to next layer (residual connection: input + _1x1 output)
-  // Returns the full pre-allocated buffer; only the first `num_frames` columns
-  // are valid for a given processing call. Slice with .leftCols(num_frames) as needed.
-  Eigen::MatrixXf& GetOutputNextLayer() { return this->_output_next_layer; }
-  const Eigen::MatrixXf& GetOutputNextLayer() const { return this->_output_next_layer; }
-  // Get output to head (skip connection: activated conv output)
-  // Returns the full pre-allocated buffer; only the first `num_frames` columns
-  // are valid for a given processing call. Slice with .leftCols(num_frames) as needed.
-  Eigen::MatrixXf& GetOutputHead() { return this->_output_head; }
-  const Eigen::MatrixXf& GetOutputHead() const { return this->_output_head; }
-
-  // Access Conv1D for Reset() propagation (needed for _LayerArray)
-  Conv1D& get_conv() { return _conv; }
-  const Conv1D& get_conv() const { return _conv; }
-
-private:
-  // The dilated convolution at the front of the block
-  Conv1D _conv;
-
-  Conv1x1 _film_gamma;
-  Conv1x1 _film_beta;
-  // The post-activation 1x1 convolution
-  Conv1x1 _1x1;
-  // The post-activation 1x1 convolution outputting to the head, optional
-  std::unique_ptr<Conv1x1> _head1x1;
-  // The internal state
-  Eigen::MatrixXf _z;
-  // Output to next layer (residual connection: input + _1x1 output)
-  Eigen::MatrixXf _output_next_layer;
-  // Output to head (skip connection: activated conv output)
-  Eigen::MatrixXf _output_head;
-
-  activations::Activation::Ptr _activation;
-  const GatingMode _gating_mode;
-  const int _bottleneck; // Internal channel count (not doubled when gated)
-
-  // Gating/blending activation objects
-  std::unique_ptr<gating_activations::GatingActivation> _gating_activation;
-  std::unique_ptr<gating_activations::BlendingActivation> _blending_activation;
-
-  // FiLM objects for feature-wise linear modulation
-  std::unique_ptr<FiLM> _conv_pre_film;
-  std::unique_ptr<FiLM> _conv_post_film;
-  std::unique_ptr<FiLM> _input_mixin_pre_film;
-  std::unique_ptr<FiLM> _input_mixin_post_film;
-  std::unique_ptr<FiLM> _activation_pre_film;
-  std::unique_ptr<FiLM> _activation_post_film;
-  std::unique_ptr<FiLM> _gating_activation_post_film;
-  std::unique_ptr<FiLM> _1x1_post_film;
-  std::unique_ptr<FiLM> _head1x1_post_film;
-};
-
-class LayerArrayParams
-{
-public:
-  LayerArrayParams(const int input_size_, const int condition_size_, const int head_size_, const int channels_,
-                   const int bottleneck_, const int kernel_size_, const std::vector<int>&& dilations_,
-                   const activations::ActivationConfig& activation_, const GatingMode gating_mode_,
-                   const bool head_bias_, const int groups_input, const int groups_1x1_,
-                   const Head1x1Params& head1x1_params_, const std::string& secondary_activation_,
-                   const _FiLMParams& conv_pre_film_params_, const _FiLMParams& conv_post_film_params_,
-                   const _FiLMParams& input_mixin_pre_film_params_, const _FiLMParams& input_mixin_post_film_params_,
-                   const _FiLMParams& activation_pre_film_params_, const _FiLMParams& activation_post_film_params_,
-                   const _FiLMParams& gating_activation_post_film_params_, const _FiLMParams& _1x1_post_film_params_,
-                   const _FiLMParams& head1x1_post_film_params_)
-  : input_size(input_size_)
-  , condition_size(condition_size_)
-  , head_size(head_size_)
-  , channels(channels_)
-  , bottleneck(bottleneck_)
-  , kernel_size(kernel_size_)
-  , dilations(std::move(dilations_))
-  , activation_config(activation_)
-  , gating_mode(gating_mode_)
-  , head_bias(head_bias_)
-  , groups_input(groups_input)
-  , groups_1x1(groups_1x1_)
-  , head1x1_params(head1x1_params_)
-  , secondary_activation(secondary_activation_)
-  , conv_pre_film_params(conv_pre_film_params_)
-  , conv_post_film_params(conv_post_film_params_)
-  , input_mixin_pre_film_params(input_mixin_pre_film_params_)
-  , input_mixin_post_film_params(input_mixin_post_film_params_)
-  , activation_pre_film_params(activation_pre_film_params_)
-  , activation_post_film_params(activation_post_film_params_)
-  , gating_activation_post_film_params(gating_activation_post_film_params_)
-  , _1x1_post_film_params(_1x1_post_film_params_)
-  , head1x1_post_film_params(head1x1_post_film_params_)
-  {
-  }
-
-  const int input_size;
-  const int condition_size;
-  const int head_size;
-  const int channels;
-  const int bottleneck;
-  const int kernel_size;
-  std::vector<int> dilations;
-  const activations::ActivationConfig activation_config;
-  const GatingMode gating_mode;
-  const bool head_bias;
-  const int groups_input;
-  const int groups_1x1;
-  const Head1x1Params head1x1_params;
-  const std::string secondary_activation;
-  const _FiLMParams conv_pre_film_params;
-  const _FiLMParams conv_post_film_params;
-  const _FiLMParams input_mixin_pre_film_params;
-  const _FiLMParams input_mixin_post_film_params;
-  const _FiLMParams activation_pre_film_params;
-  const _FiLMParams activation_post_film_params;
-  const _FiLMParams gating_activation_post_film_params;
-  const _FiLMParams _1x1_post_film_params;
-  const _FiLMParams head1x1_post_film_params;
-};
-
-// An array of layers with the same channels, kernel sizes, activations.
-class _LayerArray
-{
-public:
-  // Constructor with GatingMode enum and typed ActivationConfig
-  _LayerArray(const int input_size, const int condition_size, const int head_size, const int channels,
-              const int bottleneck, const int kernel_size, const std::vector<int>& dilations,
-              const activations::ActivationConfig& activation_config, const GatingMode gating_mode,
-              const bool head_bias, const int groups_input, const int groups_1x1, const Head1x1Params& head1x1_params,
-              const std::string& secondary_activation, const _FiLMParams& conv_pre_film_params,
-              const _FiLMParams& conv_post_film_params, const _FiLMParams& input_mixin_pre_film_params,
-              const _FiLMParams& input_mixin_post_film_params, const _FiLMParams& activation_pre_film_params,
-              const _FiLMParams& activation_post_film_params, const _FiLMParams& gating_activation_post_film_params,
-              const _FiLMParams& _1x1_post_film_params, const _FiLMParams& head1x1_post_film_params);
-
-  void SetMaxBufferSize(const int maxBufferSize);
-
-  // All arrays are "short".
-  // Process without head input (first layer array) - zeros head inputs before proceeding
-  void Process(const Eigen::MatrixXf& layer_inputs, // Short
-               const Eigen::MatrixXf& condition, // Short
-               const int num_frames);
-  // Process with head input (subsequent layer arrays) - copies head input before proceeding
-  void Process(const Eigen::MatrixXf& layer_inputs, // Short
-               const Eigen::MatrixXf& condition, // Short
-               const Eigen::MatrixXf& head_inputs, // Short - from previous layer array
-               const int num_frames);
-  // Get output from last layer (for next layer array)
-  // Returns the full pre-allocated buffer; only the first `num_frames` columns
-  // are valid for a given processing call. Slice with .leftCols(num_frames) as needed.
-  Eigen::MatrixXf& GetLayerOutputs() { return this->_layer_outputs; }
-  const Eigen::MatrixXf& GetLayerOutputs() const { return this->_layer_outputs; }
-  // Get head outputs (post head-rechannel)
-  // Returns the full pre-allocated buffer; only the first `num_frames` columns
-  // are valid for a given processing call. Slice with .leftCols(num_frames) as needed.
-  Eigen::MatrixXf& GetHeadOutputs();
-  const Eigen::MatrixXf& GetHeadOutputs() const;
-  void set_weights_(std::vector<float>::iterator& it);
-
-  // "Zero-indexed" receptive field.
-  // E.g. a 1x1 convolution has a z.i.r.f. of zero.
-  long get_receptive_field() const;
-
-private:
-  // The rechannel before the layers
-  Conv1x1 _rechannel;
-
-  // The layer objects
-  std::vector<_Layer> _layers;
-  // Output from last layer (for next layer array)
-  Eigen::MatrixXf _layer_outputs;
-  // Accumulated head inputs from all layers (bottleneck channels)
-  Eigen::MatrixXf _head_inputs;
-
-  // Rechannel for the head (bottleneck -> head_size)
-  Conv1x1 _head_rechannel;
-
-  // Bottleneck size (internal channel count)
-  const int _bottleneck;
-
-  long _get_channels() const;
-  // Common processing logic after head inputs are set
-  void ProcessInner(const Eigen::MatrixXf& layer_inputs, const Eigen::MatrixXf& condition, const int num_frames);
-};
-
-// The main WaveNet model
-class WaveNet : public DSP
-{
-public:
-  WaveNet(const int in_channels, const std::vector<LayerArrayParams>& layer_array_params, const float head_scale,
-          const bool with_head, std::vector<float> weights, std::unique_ptr<DSP> condition_dsp,
-          const double expected_sample_rate = -1.0);
-  ~WaveNet() = default;
+  /// \brief Process audio frames
+  ///
+  /// Implements the DSP::process() interface. Processes input audio through the
+  /// complete WaveNet pipeline and writes to output.
+  /// \param input Input audio buffers (in_channels x frames)
+  /// \param output Output audio buffers (out_channels x frames)
+  /// \param num_frames Number of frames to process
   void process(NAM_SAMPLE** input, NAM_SAMPLE** output, const int num_frames) override;
+
+  /// \brief Set model weights from a vector
+  /// \param weights Vector containing all model weights
   void set_weights_(std::vector<float>& weights);
+
+  /// \brief Set model weights from an iterator
+  /// \param weights Iterator to the weights vector. Will be advanced as weights are consumed.
   void set_weights_(std::vector<float>::iterator& weights);
+
+  //For now, just empty out the prewarm - Try to figure out a way to actually prewarm in the future.
+  void prewarm() override
+  {
+      
+  }
 
 protected:
-    int _condition_size;
   // Element-wise arrays:
   Eigen::MatrixXf _condition_input;
   Eigen::MatrixXf _condition_output;
@@ -371,28 +83,75 @@ protected:
   std::vector<NAM_SAMPLE*> _condition_dsp_input_ptrs;
   std::vector<NAM_SAMPLE*> _condition_dsp_output_ptrs;
 
+  /// \brief Resize all buffers to handle maxBufferSize frames
+  /// \param maxBufferSize Maximum number of frames to process in a single call
   void SetMaxBufferSize(const int maxBufferSize) override;
-  // Compute the conditioning array to be given to the layer arrays
+
+  /// \brief Compute the conditioning array to be given to the layer arrays
+  ///
+  /// Processes the condition input through the condition DSP (if present) or
+  /// passes it through directly.
+  /// \param num_frames Number of frames to process
   virtual void _process_condition(NAM_SAMPLE** input, const int num_frames);
-  // Fill in the "condition" array that's fed into the various parts of the net.
+
+  /// \brief Fill in the "condition" array that's fed into the various parts of the net
+  ///
+  /// Copies input audio into the condition buffer for processing.
+  /// \param input Input audio buffers
+  /// \param num_frames Number of frames to process
   virtual void _set_condition_array(NAM_SAMPLE** input, const int num_frames);
-  // How many conditioning inputs are there.
-  // Just one--the audio.
+
+  /// \brief Get the number of conditioning inputs
+  ///
+  /// For standard WaveNet, this is just the audio input (same as input channels).
+  /// \return Number of conditioning input channels
   virtual int _get_condition_dim() const { return _condition_size; };
 
 private:
-  std::vector<_LayerArray> _layer_arrays;
+    int _condition_size;
+
+  std::vector<nam::wavenet::detail::LayerArray> _layer_arrays;
 
   float _head_scale;
+
+  std::unique_ptr<nam::wavenet::detail::Head> _post_stack_head;
+  /// Scratch (in_channels × maxBufferSize) for scaled head input when ``_post_stack_head`` is used
+  Eigen::MatrixXf _scaled_head_scratch;
 
   int mPrewarmSamples = 0; // Pre-compute during initialization
   int PrewarmSamples() override { return mPrewarmSamples; };
 };
 
-void RegisterFactory();
+/// \brief Configuration for a WaveNet model
+struct WaveNetConfig : public ModelConfig
+{
+  int in_channels;
+  std::vector<nam::wavenet::LayerArrayParams> layer_array_params;
+  float head_scale;
+  bool with_head;
+  std::optional<nam::wavenet::HeadParams> head_params;
+  std::unique_ptr<DSP> condition_dsp;
 
-// Factory to instantiate from nlohmann json
-std::unique_ptr<DSP> Factory(const nlohmann::json& config, std::vector<float>& weights,
-                             const double expectedSampleRate);
-}; // namespace wavenet
-}; // namespace nam
+  // Move-only due to unique_ptr
+  WaveNetConfig() = default;
+  WaveNetConfig(WaveNetConfig&&) = default;
+  WaveNetConfig& operator=(WaveNetConfig&&) = default;
+  WaveNetConfig(const WaveNetConfig&) = delete;
+  WaveNetConfig& operator=(const WaveNetConfig&) = delete;
+
+  std::unique_ptr<DSP> create(std::vector<float> weights, double sampleRate) override;
+};
+
+/// \brief Parse WaveNet configuration from JSON
+/// \param config JSON configuration object
+/// \param expectedSampleRate Expected sample rate in Hz (-1.0 if unknown)
+/// \return WaveNetConfig
+WaveNetConfig parse_config_json(const nlohmann::json& config, const double expectedSampleRate);
+
+/// \brief Config parser for ConfigParserRegistry
+std::unique_ptr<ModelConfig> create_config(const nlohmann::json& config, double sampleRate);
+
+void register_parser();
+
+} // namespace parametric_wavenet
+} // namespace nam

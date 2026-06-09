@@ -11,6 +11,7 @@ static nam::activations::ActivationSigmoid _SIGMOID;
 static nam::activations::ActivationSwish _SWISH;
 static nam::activations::ActivationHardSwish _HARD_SWISH;
 static nam::activations::ActivationLeakyHardTanh _LEAKY_HARD_TANH;
+static nam::activations::ActivationSoftsign _SOFTSIGN;
 
 bool nam::activations::Activation::using_fast_tanh = false;
 
@@ -31,10 +32,13 @@ std::unordered_map<std::string, nam::activations::Activation::Ptr> nam::activati
   {"SiLU", make_singleton_ptr(_SWISH)},
   {"Hardswish", make_singleton_ptr(_HARD_SWISH)},
   {"LeakyHardtanh", make_singleton_ptr(_LEAKY_HARD_TANH)},
-  {"PReLU", make_singleton_ptr(_PRELU)}};
+  {"PReLU", make_singleton_ptr(_PRELU)},
+  {"Softsign", make_singleton_ptr(_SOFTSIGN)}};
 
+// Variables to hold previous instances of activations when we replace them with fast or LUT implementations
 nam::activations::Activation::Ptr tanh_bak = nullptr;
 nam::activations::Activation::Ptr sigmoid_bak = nullptr;
+nam::activations::Activation::Ptr silu_bak = nullptr;
 
 nam::activations::Activation::Ptr nam::activations::Activation::get_activation(const std::string name)
 {
@@ -68,8 +72,8 @@ nam::activations::ActivationConfig nam::activations::ActivationConfig::from_json
     {"SiLU", ActivationType::SiLU},
     {"Hardswish", ActivationType::Hardswish},
     {"LeakyHardtanh", ActivationType::LeakyHardtanh},
-    {"LeakyHardTanh", ActivationType::LeakyHardtanh} // Support both casings
-  };
+    {"LeakyHardTanh", ActivationType::LeakyHardtanh}, // Support both casings
+    {"Softsign", ActivationType::Softsign}};
 
   // If it's a string, simple lookup
   if (j.is_string())
@@ -156,6 +160,7 @@ nam::activations::Activation::Ptr nam::activations::Activation::get_activation(c
       return std::make_shared<ActivationLeakyHardTanh>(config.min_val.value_or(-1.0f), config.max_val.value_or(1.0f),
                                                        config.min_slope.value_or(0.01f),
                                                        config.max_slope.value_or(0.01f));
+    case ActivationType::Softsign: return _activations["Softsign"];
     default: return nullptr;
   }
 }
@@ -194,9 +199,14 @@ void nam::activations::Activation::enable_lut(std::string function_name, float m
     fn = sigmoid;
     sigmoid_bak = _activations["Sigmoid"];
   }
+  else if (function_name == "SiLU")
+  {
+    fn = swish;
+    silu_bak = _activations["SiLU"];
+  }
   else
   {
-    throw std::runtime_error("Tried to enable LUT for a function other than Tanh or Sigmoid");
+    throw std::runtime_error("Tried to enable LUT for a function other than Tanh, Sigmoid, or SiLU");
   }
   _activations[function_name] = std::make_shared<FastLUTActivation>(min, max, n_points, fn);
 }
@@ -211,8 +221,12 @@ void nam::activations::Activation::disable_lut(std::string function_name)
   {
     _activations["Sigmoid"] = sigmoid_bak;
   }
+  else if (function_name == "SiLU")
+  {
+    _activations["SiLU"] = silu_bak;
+  }
   else
   {
-    throw std::runtime_error("Tried to disable LUT for a function other than Tanh or Sigmoid");
+    throw std::runtime_error("Tried to disable LUT for a function other than Tanh, Sigmoid, or SiLU");
   }
 }

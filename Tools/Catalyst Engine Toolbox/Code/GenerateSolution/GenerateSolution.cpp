@@ -100,6 +100,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 	preprocessor_definitions->emplace_back("CATALYST_DISTRIBUTION_NULL");
 	preprocessor_definitions->emplace_back("CATALYST_PLATFORM_WINDOWS");
 	preprocessor_definitions->emplace_back("CATALYST_RENDERING_VULKAN");
+	preprocessor_definitions->emplace_back("NAM_ENABLE_A2_FAST");
 
 	switch (project_settings._Physics)
 	{

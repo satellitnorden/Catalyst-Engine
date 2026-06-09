@@ -1,30 +1,61 @@
 #include <fstream>
 #include <iostream>
+#include <mutex>
+#include <regex>
 #include <sstream>
 #include <stdexcept>
-#include <unordered_set>
 
 #include "dsp.h"
 #include "registry.h"
 #include "json.hpp"
-#include "lstm.h"
-#include "convnet.h"
-#include "wavenet.h"
 #include "get_dsp.h"
+#include "model_config.h"
 
 namespace nam
 {
-struct Version
+namespace
 {
-  int major;
-  int minor;
-  int patch;
+
+class CoreVersionSupportChecker : public IVersionSupportChecker
+{
+public:
+  Supported support(const std::string& version) const override
+  {
+    static const std::regex semver_regex(R"(^\d+\.\d+\.\d+$)");
+    if (!std::regex_match(version, semver_regex))
+      return Supported::NO;
+
+    const Version parsed = ParseVersion(version);
+    const Version latest = ParseVersion(LATEST_FULLY_SUPPORTED_NAM_FILE_VERSION);
+    const Version earliest = ParseVersion(EARLIEST_SUPPORTED_NAM_FILE_VERSION);
+
+    if (parsed < earliest)
+      return Supported::NO;
+    if (parsed.major > latest.major || parsed.minor > latest.minor)
+      return Supported::NO;
+    if (latest < parsed)
+      return Supported::PARTIAL;
+    return Supported::YES;
+  }
 };
+
+std::vector<std::shared_ptr<const IVersionSupportChecker>>& version_support_registry()
+{
+  static std::vector<std::shared_ptr<const IVersionSupportChecker>> registry{
+    std::make_shared<CoreVersionSupportChecker>()};
+  return registry;
+}
+
+std::mutex& version_support_registry_mutex()
+{
+  static std::mutex registry_mutex;
+  return registry_mutex;
+}
+
+} // namespace
 
 Version ParseVersion(const std::string& versionStr)
 {
-  Version version;
-
   // Split the version string into major, minor, and patch components
   std::stringstream ss(versionStr);
   std::string majorStr, minorStr, patchStr;
@@ -33,11 +64,14 @@ Version ParseVersion(const std::string& versionStr)
   std::getline(ss, patchStr);
 
   // Parse the components as integers and assign them to the version struct
+  int major;
+  int minor;
+  int patch;
   try
   {
-    version.major = std::stoi(majorStr);
-    version.minor = std::stoi(minorStr);
-    version.patch = std::stoi(patchStr);
+    major = std::stoi(majorStr);
+    minor = std::stoi(minorStr);
+    patch = std::stoi(patchStr);
   }
   catch (const std::invalid_argument&)
   {
@@ -49,23 +83,48 @@ Version ParseVersion(const std::string& versionStr)
   }
 
   // Validate the semver components
-  if (version.major < 0 || version.minor < 0 || version.patch < 0)
+  if (major < 0 || minor < 0 || patch < 0)
   {
     throw std::invalid_argument("Negative version component: " + versionStr);
   }
-  return version;
+  return Version(major, minor, patch);
+}
+
+void register_version_support_checker(std::shared_ptr<const IVersionSupportChecker> checker)
+{
+  if (!checker)
+    throw std::invalid_argument("version support checker cannot be null");
+  std::lock_guard<std::mutex> lock(version_support_registry_mutex());
+  version_support_registry().push_back(std::move(checker));
+}
+
+Supported is_version_supported(const std::string version)
+{
+  std::lock_guard<std::mutex> lock(version_support_registry_mutex());
+  Supported best_support = Supported::NO;
+  for (const auto& checker : version_support_registry())
+  {
+    const auto candidate_support = checker->support(version);
+    if (static_cast<int>(candidate_support) > static_cast<int>(best_support))
+      best_support = candidate_support;
+  }
+  return best_support;
 }
 
 void verify_config_version(const std::string versionStr)
 {
-  Version version = ParseVersion(versionStr);
-  if (version.major != 0 || version.minor != 5)
+  const Supported support = is_version_supported(versionStr);
+  if (support == Supported::NO)
   {
     std::stringstream ss;
-    ss << "Model config is an unsupported version " << versionStr
-       << ". Try either converting the model to a more recent version, or "
-          "update your version of the NAM plugin.";
+    ss << "Model config is an unsupported version " << versionStr << ".";
     throw std::runtime_error(ss.str());
+  }
+  if (support == Supported::PARTIAL)
+  {
+    std::stringstream ss;
+    std::cerr << "Model config is a partially-supported version " << versionStr << ". Continuing with partial support."
+              << std::endl;
   }
 }
 
@@ -122,7 +181,7 @@ std::unique_ptr<DSP> get_dsp(const nlohmann::json& config, dspData& returnedConf
   returnedConfig.version = config["version"].get<std::string>();
   returnedConfig.architecture = config["architecture"].get<std::string>();
   returnedConfig.config = config_json;
-  returnedConfig.metadata = config["metadata"];
+  returnedConfig.metadata = config.value("metadata", nlohmann::json());
   returnedConfig.weights = weights;
   returnedConfig.expected_sample_rate = nam::get_sample_rate_from_nam_file(config);
 
@@ -135,62 +194,69 @@ std::unique_ptr<DSP> get_dsp(const nlohmann::json& config, dspData& returnedConf
   return get_dsp(conf);
 }
 
-struct OptionalValue
+// =============================================================================
+// Unified construction path
+// =============================================================================
+
+std::unique_ptr<ModelConfig> parse_model_config_json(const std::string& architecture, const nlohmann::json& config,
+                                                     double sample_rate)
 {
-  bool have = false;
-  double value = 0.0;
-};
+  return ConfigParserRegistry::instance().parse(architecture, config, sample_rate);
+}
+
+namespace
+{
+
+void apply_metadata(DSP& dsp, const ModelMetadata& metadata)
+{
+  if (metadata.loudness.has_value())
+    dsp.SetLoudness(metadata.loudness.value());
+  if (metadata.input_level.has_value())
+    dsp.SetInputLevel(metadata.input_level.value());
+  if (metadata.output_level.has_value())
+    dsp.SetOutputLevel(metadata.output_level.value());
+}
+
+} // anonymous namespace
+
+std::unique_ptr<DSP> create_dsp(std::unique_ptr<ModelConfig> config, std::vector<float> weights,
+                                const ModelMetadata& metadata)
+{
+  auto out = config->create(std::move(weights), metadata.sample_rate);
+  apply_metadata(*out, metadata);
+  // "pre-warm" the model to settle initial conditions
+  // Can this be removed now that it's part of Reset()?
+  out->prewarm();
+  return out;
+}
+
+// =============================================================================
+// get_dsp(dspData&) — now uses unified path
+// =============================================================================
 
 std::unique_ptr<DSP> get_dsp(dspData& conf)
 {
   verify_config_version(conf.version);
 
-  auto& architecture = conf.architecture;
-  nlohmann::json& config = conf.config;
-  std::vector<float>& weights = conf.weights;
-  OptionalValue loudness, inputLevel, outputLevel;
-
-  auto AssignOptional = [&conf](const std::string key, OptionalValue& v) {
-    if (conf.metadata.find(key) != conf.metadata.end())
-    {
-      if (!conf.metadata[key].is_null())
-      {
-        v.value = conf.metadata[key];
-        v.have = true;
-      }
-    }
-  };
+  // Extract metadata from JSON
+  ModelMetadata metadata;
+  metadata.version = conf.version;
+  metadata.sample_rate = conf.expected_sample_rate;
 
   if (!conf.metadata.is_null())
   {
-    AssignOptional("loudness", loudness);
-    AssignOptional("input_level_dbu", inputLevel);
-    AssignOptional("output_level_dbu", outputLevel);
-  }
-  const double expectedSampleRate = conf.expected_sample_rate;
-
-  // Initialize using registry-based factory
-  std::unique_ptr<DSP> out =
-    nam::factory::FactoryRegistry::instance().create(architecture, config, weights, expectedSampleRate);
-
-  if (loudness.have)
-  {
-    out->SetLoudness(loudness.value);
-  }
-  if (inputLevel.have)
-  {
-    out->SetInputLevel(inputLevel.value);
-  }
-  if (outputLevel.have)
-  {
-    out->SetOutputLevel(outputLevel.value);
+    auto extract = [&conf](const std::string& key) -> std::optional<double> {
+      if (conf.metadata.find(key) != conf.metadata.end() && !conf.metadata[key].is_null())
+        return conf.metadata[key].get<double>();
+      return std::nullopt;
+    };
+    metadata.loudness = extract("loudness");
+    metadata.input_level = extract("input_level_dbu");
+    metadata.output_level = extract("output_level_dbu");
   }
 
-  // "pre-warm" the model to settle initial conditions
-  // Can this be removed now that it's part of Reset()?
-  out->prewarm();
-
-  return out;
+  auto model_config = ConfigParserRegistry::instance().parse(conf.architecture, conf.config, conf.expected_sample_rate);
+  return create_dsp(std::move(model_config), std::move(conf.weights), metadata);
 }
 
 double get_sample_rate_from_nam_file(const nlohmann::json& j)
