@@ -10,7 +10,6 @@
 #ifndef THIRD_PARTY_EIGEN3_EIGEN_SRC_CORE_ARCH_AVX512_MATHFUNCTIONS_H_
 #define THIRD_PARTY_EIGEN3_EIGEN_SRC_CORE_ARCH_AVX512_MATHFUNCTIONS_H_
 
-// IWYU pragma: private
 #include "../../InternalHeaderCheck.h"
 
 namespace Eigen {
@@ -47,16 +46,18 @@ EIGEN_STRONG_INLINE Packet16bf pldexp(const Packet16bf& a, const Packet16bf& exp
 
 #if EIGEN_FAST_MATH
 template <>
-EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS Packet16f psqrt<Packet16f>(const Packet16f& x) {
-  return generic_sqrt_newton_step<Packet16f>::run(x, _mm512_rsqrt14_ps(x));
+EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS Packet16f
+psqrt<Packet16f>(const Packet16f& _x) {
+  return generic_sqrt_newton_step<Packet16f>::run(_x, _mm512_rsqrt14_ps(_x));
 }
 
 template <>
-EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS Packet8d psqrt<Packet8d>(const Packet8d& x) {
+EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS Packet8d
+psqrt<Packet8d>(const Packet8d& _x) {
 #ifdef EIGEN_VECTORIZE_AVX512ER
-  return generic_sqrt_newton_step<Packet8d, /*Steps=*/1>::run(x, _mm512_rsqrt28_pd(x));
+  return generic_sqrt_newton_step<Packet8d, /*Steps=*/1>::run(_x, _mm512_rsqrt28_pd(_x));
 #else
-  return generic_sqrt_newton_step<Packet8d, /*Steps=*/2>::run(x, _mm512_rsqrt14_pd(x));
+  return generic_sqrt_newton_step<Packet8d, /*Steps=*/2>::run(_x, _mm512_rsqrt14_pd(_x));
 #endif
 }
 #else
@@ -80,24 +81,26 @@ EIGEN_STRONG_INLINE Packet16f prsqrt<Packet16f>(const Packet16f& x) {
 #elif EIGEN_FAST_MATH
 
 template <>
-EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS Packet16f prsqrt<Packet16f>(const Packet16f& x) {
-  return generic_rsqrt_newton_step<Packet16f, /*Steps=*/1>::run(x, _mm512_rsqrt14_ps(x));
+EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS Packet16f
+prsqrt<Packet16f>(const Packet16f& _x) {
+  return generic_rsqrt_newton_step<Packet16f, /*Steps=*/1>::run(_x, _mm512_rsqrt14_ps(_x));
 }
 #endif
+
 
 // prsqrt for double.
 #if EIGEN_FAST_MATH
 template <>
-EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS Packet8d prsqrt<Packet8d>(const Packet8d& x) {
-#ifdef EIGEN_VECTORIZE_AVX512ER
-  return generic_rsqrt_newton_step<Packet8d, /*Steps=*/1>::run(x, _mm512_rsqrt28_pd(x));
-#else
-  return generic_rsqrt_newton_step<Packet8d, /*Steps=*/2>::run(x, _mm512_rsqrt14_pd(x));
-#endif
+EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS Packet8d
+prsqrt<Packet8d>(const Packet8d& _x) {
+  #ifdef EIGEN_VECTORIZE_AVX512ER
+    return generic_rsqrt_newton_step<Packet8d, /*Steps=*/1>::run(_x, _mm512_rsqrt28_pd(_x));
+  #else
+    return generic_rsqrt_newton_step<Packet8d, /*Steps=*/2>::run(_x, _mm512_rsqrt14_pd(_x));
+  #endif
 }
 
-template <>
-EIGEN_STRONG_INLINE Packet16f preciprocal<Packet16f>(const Packet16f& a) {
+template<> EIGEN_STRONG_INLINE Packet16f preciprocal<Packet16f>(const Packet16f& a) {
 #ifdef EIGEN_VECTORIZE_AVX512ER
   return _mm512_rcp28_ps(a);
 #else
@@ -108,7 +111,6 @@ EIGEN_STRONG_INLINE Packet16f preciprocal<Packet16f>(const Packet16f& a) {
 
 BF16_PACKET_FUNCTION(Packet16f, Packet16bf, pcos)
 BF16_PACKET_FUNCTION(Packet16f, Packet16bf, pexp)
-BF16_PACKET_FUNCTION(Packet16f, Packet16bf, pexp2)
 BF16_PACKET_FUNCTION(Packet16f, Packet16bf, pexpm1)
 BF16_PACKET_FUNCTION(Packet16f, Packet16bf, plog)
 BF16_PACKET_FUNCTION(Packet16f, Packet16bf, plog1p)
@@ -118,11 +120,8 @@ BF16_PACKET_FUNCTION(Packet16f, Packet16bf, prsqrt)
 BF16_PACKET_FUNCTION(Packet16f, Packet16bf, psin)
 BF16_PACKET_FUNCTION(Packet16f, Packet16bf, psqrt)
 BF16_PACKET_FUNCTION(Packet16f, Packet16bf, ptanh)
-
-#ifndef EIGEN_VECTORIZE_AVX512FP16
 F16_PACKET_FUNCTION(Packet16f, Packet16h, pcos)
 F16_PACKET_FUNCTION(Packet16f, Packet16h, pexp)
-F16_PACKET_FUNCTION(Packet16f, Packet16h, pexp2)
 F16_PACKET_FUNCTION(Packet16f, Packet16h, pexpm1)
 F16_PACKET_FUNCTION(Packet16f, Packet16h, plog)
 F16_PACKET_FUNCTION(Packet16f, Packet16h, plog1p)
@@ -132,7 +131,6 @@ F16_PACKET_FUNCTION(Packet16f, Packet16h, prsqrt)
 F16_PACKET_FUNCTION(Packet16f, Packet16h, psin)
 F16_PACKET_FUNCTION(Packet16f, Packet16h, psqrt)
 F16_PACKET_FUNCTION(Packet16f, Packet16h, ptanh)
-#endif  // EIGEN_VECTORIZE_AVX512FP16
 
 }  // end namespace internal
 
