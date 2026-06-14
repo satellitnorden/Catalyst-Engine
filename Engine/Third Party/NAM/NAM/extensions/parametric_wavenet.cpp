@@ -13,7 +13,7 @@
 #include "parametric_wavenet.h"
 
 #if defined(NAM_ENABLE_A2_FAST)
-  #include "../wavenet/a2_fast.h"
+  #include "parametric_a2_fast.h"
 #endif
 
 namespace
@@ -694,12 +694,10 @@ std::unique_ptr<nam::ModelConfig> nam::parametric_wavenet::create_config(const n
   if (config_is_slimmable_wavenet(config))
     return nam::parametric_slimmable_wavenet::create_config(config, sampleRate);
 
-  /*
 #if defined(NAM_ENABLE_A2_FAST)
-  if (int a2_channels = 0; nam::wavenet::a2_fast::is_a2_shape(config, &a2_channels))
-    return nam::wavenet::a2_fast::create_a2_fast_config(config, sampleRate);
+  if ( nam::wavenet::parametric_a2_fast::is_a2_shape(config, nullptr, nullptr))
+    return nam::wavenet::parametric_a2_fast::create_a2_fast_config(config, sampleRate);
 #endif
-    */
 
   auto wc = std::make_unique<WaveNetConfig>();
   auto parsed = parse_config_json(config, sampleRate);
