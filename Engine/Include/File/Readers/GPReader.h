@@ -127,8 +127,11 @@ public:
 					//The slide values.
 					DynamicArray<float32> _SlideValues;
 
-					//Denotes if this is a slide event.
-					bool _IsSlideEvent;
+					//Denotes if this is a shift slide event (event is slid to without picking the event).
+					bool _IsShiftSlideEvent;
+
+					//Denotes if this is a legato slide event (event is slid to while picking the event).
+					bool _IsLegatoSlideEvent;
 
 				};
 
@@ -244,9 +247,10 @@ private:
 				NATURAL_HARMONIC = BIT(2),
 				PALM_MUTED = BIT(3),
 				LEGATO_SLIDE = BIT(4),
-				TAPPED = BIT(5),
-				TIE_ORIGIN = BIT(6),
-				TIE_DESTINATION = BIT(7)
+				SHIFT_SLIDE = BIT(5),
+				TAPPED = BIT(6),
+				TIE_ORIGIN = BIT(7),
+				TIE_DESTINATION = BIT(8)
 			};
 
 			//The string index.
@@ -301,6 +305,9 @@ private:
 
 			//Whether or not this was a tie origin.
 			bool _WasTieOrigin;
+
+			//Whether or not this was a shift slide origin.
+			bool _WasShiftSlideOrigin;
 
 			//Whether or not this was a legato slide origin.
 			bool _WasLegatoSlideOrigin;

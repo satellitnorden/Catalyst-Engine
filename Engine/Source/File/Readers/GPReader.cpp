@@ -685,6 +685,7 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 
 				else if (StringUtilities::IsEqual(property_node.attribute("name").value(), "Slide"))
 				{
+					constexpr uint32 SHIFT_SLIDE_BIT{ BIT(0) };
 					constexpr uint32 LEGATO_SLIDE_BIT{ BIT(1) };
 					constexpr uint32 SLIDE_OUT_BIT{ BIT(2) };
 					constexpr uint32 SLIDE_UP_BIT{ BIT(3) };
@@ -692,6 +693,11 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 					const uint32 flags{ std::stoul(property_node.child("Flags").child_value()) };
 
 					//Add the flag.
+					if (TEST_BIT(flags, SHIFT_SLIDE_BIT))
+					{
+						new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::SHIFT_SLIDE));
+					}
+
 					if (TEST_BIT(flags, LEGATO_SLIDE_BIT))
 					{
 						new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::LEGATO_SLIDE));
@@ -1098,12 +1104,16 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 							new_event._SlideOffsets = note._SlideOffsets;
 							new_event._SlideValues = note._SlideValues;
 
-							//Set whether or not this is a slide event.
-							new_event._IsSlideEvent = last_played_note._WasLegatoSlideOrigin;
+							//Set whether or not this is a shift slide event.
+							new_event._IsShiftSlideEvent = last_played_note._WasShiftSlideOrigin;
+
+							//Set whether or not this is a legato slide event.
+							new_event._IsLegatoSlideEvent = last_played_note._WasLegatoSlideOrigin;
 
 							//Update the last played note.
 							last_played_note._FretIndex = note._FretIndex;
 							last_played_note._WasTieOrigin = TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::TIE_ORIGIN));
+							last_played_note._WasShiftSlideOrigin = TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::SHIFT_SLIDE));
 							last_played_note._WasLegatoSlideOrigin = TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::LEGATO_SLIDE));
 							last_played_note._BarIndex = bar_index;
 							last_played_note._EventIndex = track_bar._Events.LastIndex();
