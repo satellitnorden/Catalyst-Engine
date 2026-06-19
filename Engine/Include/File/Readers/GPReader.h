@@ -15,7 +15,6 @@
 *	TODO:
 *	Handles linear tempo events.
 *	Correctly identify tapped notes.
-*	Correctly identify pinched harmonic notes.
 */
 class GPReader
 {
@@ -97,7 +96,8 @@ public:
 						PULL_OFF,
 						TAPPED,
 						DEAD,
-						NATURAL_HARMONIC
+						NATURAL_HARMONIC,
+						PINCH_HARMONIC
 					};
 
 					//The offset (from the start of the bar, in quarter notes).
@@ -246,11 +246,12 @@ private:
 				HOPO_DESTINATION = BIT(1),
 				NATURAL_HARMONIC = BIT(2),
 				PALM_MUTED = BIT(3),
-				LEGATO_SLIDE = BIT(4),
-				SHIFT_SLIDE = BIT(5),
-				TAPPED = BIT(6),
-				TIE_ORIGIN = BIT(7),
-				TIE_DESTINATION = BIT(8)
+				PINCH_HARMONIC = BIT(4),
+				LEGATO_SLIDE = BIT(5),
+				SHIFT_SLIDE = BIT(6),
+				TAPPED = BIT(7),
+				TIE_ORIGIN = BIT(8),
+				TIE_DESTINATION = BIT(9)
 			};
 
 			//The string index.

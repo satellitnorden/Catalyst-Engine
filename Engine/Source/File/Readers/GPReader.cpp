@@ -15,7 +15,7 @@
 #include <ThirdParty/pugixml/pugixml.hpp>
 
 //Defines.
-#define GP_READER_DEBUG (0)
+#define GP_READER_DEBUG (1)
 
 /*
 *	Bend properties class definition.
@@ -662,7 +662,10 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 						new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::NATURAL_HARMONIC));
 					}
 
-					//TODO: Handle pinch harmonics.
+					else if (StringUtilities::IsEqual(h_type_node.child_value(), "Pinch"))
+					{
+						new_note._Flags = static_cast<TemporaryData::Note::Flags>(UNDERLYING(new_note._Flags) | UNDERLYING(TemporaryData::Note::Flags::PINCH_HARMONIC));
+					}
 				}
 
 				else if (StringUtilities::IsEqual(property_node.attribute("name").value(), "Muted"))
@@ -1094,6 +1097,11 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 							else if (TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::DEAD)))
 							{
 								new_event._Articulation = Tablature::Track::TrackBar::Event::Articulation::DEAD;
+							}
+
+							else if (TEST_BIT(UNDERLYING(note._Flags), UNDERLYING(TemporaryData::Note::Flags::PINCH_HARMONIC)))
+							{
+								new_event._Articulation = Tablature::Track::TrackBar::Event::Articulation::PINCH_HARMONIC;
 							}
 
 							//Set the bend offsets/values.
