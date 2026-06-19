@@ -15,7 +15,7 @@
 #include <ThirdParty/pugixml/pugixml.hpp>
 
 //Defines.
-#define GP_READER_DEBUG (1)
+#define GP_READER_DEBUG (0)
 
 /*
 *	Bend properties class definition.
