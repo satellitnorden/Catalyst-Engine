@@ -72,6 +72,7 @@ NO_DISCARD uint64 ModelAssetCompiler::CurrentVersion() const NOEXCEPT
 	{
 		DEFAULT,
 		ADD_DEFAULT_MATERIALS,
+		ADDED_DEPENDENCIES,
 
 		CURRENT_VERSION
 	};
@@ -384,6 +385,12 @@ void ModelAssetCompiler::Compile(const CompileContext &compile_context) NOEXCEPT
 
 	//Close the output file.
 	output_file.Close();
+
+	//Add the dependency to the level of details.
+	for (const StaticString<MAXIMUM_FILE_PATH_LENGTH> &level_of_detail : parameters._LevelOfDetails)
+	{
+		compile_context._Dependencies.Emplace(level_of_detail.Data());
+	}
 }
 
 /*

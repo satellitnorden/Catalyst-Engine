@@ -28,14 +28,26 @@
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Models\\Cube.Model",
             "Identifier": 7925492426184606939,
-            "Version": 2,
-            "LastChangedTime": 13361726146
+            "Version": 3,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Models\\Cube.fbx",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Models\\Plane.Model",
             "Identifier": 17090651975792105736,
-            "Version": 2,
-            "LastChangedTime": 13361726146
+            "Version": 3,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Base\\Models\\Plane.fbx",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Base\\Textures\\Blue_Noise_0.Texture2D",
@@ -424,8 +436,14 @@
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Editor\\Models\\PlayerSpawnMarker.Model",
             "Identifier": 6858184895984341476,
-            "Version": 2,
-            "LastChangedTime": 13361726146
+            "Version": 3,
+            "LastChangedTime": 13361726146,
+            "Dependencies": [
+                {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source\\Editor\\Models\\PlayerSpawnMarker.fbx",
+                    "LastChangedTime": 13361726146
+                }
+            ]
         },
         {
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets\\COLLECTION Editor\\Textures\\Editor_Create_Icon.Texture2D",
