@@ -49,7 +49,15 @@ NO_DISCARD HashString RawDataAssetCompiler::AssetTypeIdentifier() const NOEXCEPT
 */
 NO_DISCARD uint64 RawDataAssetCompiler::CurrentVersion() const NOEXCEPT
 {
-	return 1;
+	enum class Version : uint64
+	{
+		BASE,
+		ADDED_DEPENDENCIES,
+
+		CURRENT_VERSION,
+	};
+
+	return static_cast<uint64>(Version::CURRENT_VERSION);
 }
 
 /*
@@ -159,6 +167,9 @@ void RawDataAssetCompiler::Compile(const CompileContext &compile_context) NOEXCE
 
 	//Close the output file.
 	output_file.Close();
+
+	//Add the dependency to the file.
+	compile_context._Dependencies.Emplace(parameters._File.Data());
 }
 
 /*
