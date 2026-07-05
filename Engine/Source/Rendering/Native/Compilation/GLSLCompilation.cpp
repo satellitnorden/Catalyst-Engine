@@ -1,3 +1,4 @@
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 //Header file.
 #include <Rendering/Native/Compilation/GLSLCompilation.h>
 
@@ -155,3 +156,4 @@ NO_DISCARD bool GLSLCompilation::Compile(const CompileParameters &parameters) NO
 
 	return true;
 }
+#endif

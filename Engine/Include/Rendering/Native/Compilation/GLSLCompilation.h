@@ -1,3 +1,4 @@
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 #pragma once
 
 //Core.
@@ -399,3 +400,4 @@ namespace GLSLCompilation
 	}
 
 }
+#endif

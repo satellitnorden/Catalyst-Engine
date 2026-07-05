@@ -59,6 +59,7 @@ private:
 	//The asset allocator.
 	PoolAllocator<sizeof(RenderPipelineAsset)> _AssetAllocator;
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 	/*
 	*	Retrieves all lines from the given file.
 	*/
@@ -117,5 +118,6 @@ private:
 		class ExtraData *const RESTRICT extra_data,
 		const DynamicArray<class ShaderStageLines> &shader_stages
 	) NOEXCEPT;
+#endif
 
 };

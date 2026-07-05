@@ -629,6 +629,7 @@ NO_DISCARD uint64 RenderPipelineAssetCompiler::CurrentVersion() const NOEXCEPT
 */
 void RenderPipelineAssetCompiler::Compile(const CompileContext &compile_context) NOEXCEPT
 {
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 	PROFILING_SCOPE("RenderPipelineAssetCompiler::Compile");
 
 	//Define constants.
@@ -886,6 +887,9 @@ void RenderPipelineAssetCompiler::Compile(const CompileContext &compile_context)
 
 	//Close the output file.
 	output_file.Close();
+#else
+ASSERT(false, "Should not compile in final builds!");
+#endif
 }
 
 /*
@@ -1100,6 +1104,7 @@ void RenderPipelineAssetCompiler::Load(const LoadContext &load_context) NOEXCEPT
 	}
 }
 
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 /*
 *	Retrieves all lines from the given file.
 */
@@ -4407,3 +4412,4 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 		}
 	}
 }
+#endif
