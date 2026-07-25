@@ -21,142 +21,12 @@
 #include <NAM/slimmable.h>
 
 /*
-*	Compares the original and optimized WaveNet implementations.
-*/
-FORCE_INLINE void CompareWaveNets() NOEXCEPT
-{
-#if 0
-	//Define constants.
-	constexpr const char *const RESTRICT INPUT_AUDIO_FILE_PATH{ "C:\\Users\\Denni\\Desktop\\NeuralAmpModelerModels\\Input\\v3_0_0.wav" };
-	constexpr const char *const RESTRICT ORIGINAL_WAVE_NET_FILE_PATH{ "C:\\Users\\Denni\\My Drive\\Share Folder\\Plugins\\Neural Amp Models\\Darkglass ADAM\\Clean Model.nam" };
-	constexpr const char *const RESTRICT OPTIMIZED_WAVE_NET_FILE_PATH{ "C:\\Users\\Denni\\My Drive\\Share Folder\\Plugins\\Neural Amp Models\\Darkglass ADAM\\Clean Model Optimized.nam" };
-	constexpr uint32 BUFFER_SIZE{ 256 };
-
-	//Keep a buffer around for messages.
-	char buffer[512];
-
-	//Retrieve the DSP's.
-	std::unique_ptr<nam::DSP> original_dsp;
-	std::unique_ptr<nam::DSP> optimized_dsp;
-
-	{
-		nam::dspData dsp_data;
-
-		original_dsp = nam::get_dsp(std::filesystem::path(std::string(ORIGINAL_WAVE_NET_FILE_PATH)), dsp_data);
-		optimized_dsp = nam::get_dsp(std::filesystem::path(std::string(OPTIMIZED_WAVE_NET_FILE_PATH)), dsp_data);
-	}
-
-	//Read the input audio.
-	DynamicArray<float32> input_audio;
-
-	{
-		AudioFile<float32> audio_file;
-
-		if (!audio_file.load(INPUT_AUDIO_FILE_PATH))
-		{
-			ASSERT(false, "Couldn't load audio!");
-		}
-
-		input_audio.Resize<false>(audio_file.samples[0].size());
-		Memory::Copy(input_audio.Data(), audio_file.samples[0].data(), audio_file.samples[0].size() * sizeof(float32));
-	}
-
-	//Cache the total number of samples.
-	const uint32 total_number_of_samples{ static_cast<uint32>(input_audio.Size()) };
-
-	//Set up the output buffers.
-	DynamicArray<float32> original_output_buffer;
-	DynamicArray<float32> optimized_output_buffer;
-
-	original_output_buffer.Resize<false>(total_number_of_samples);
-	optimized_output_buffer.Resize<false>(total_number_of_samples);
-
-	Memory::Set(original_output_buffer.Data(), 0, total_number_of_samples * sizeof(float32));
-	Memory::Set(optimized_output_buffer.Data(), 0, total_number_of_samples * sizeof(float32));
-
-	//Keep track of the execution times of both DSP's.
-	float64 original_execution_time{ 0.0 };
-	float64 optimized_execution_time{ 0.0 };
-
-	//Feed the DSP's.
-	for (uint32 sample_index{ 0 }; sample_index < total_number_of_samples; sample_index += BUFFER_SIZE)
-	{
-		const uint32 number_of_samples{ BaseMath::Minimum<uint32>(BUFFER_SIZE, total_number_of_samples - sample_index) };
-
-		float32 *const RESTRICT input{ &input_audio[sample_index] };
-
-		{
-			float32 *const RESTRICT output{ &original_output_buffer[sample_index] };
-			TimePoint start_time;
-			original_dsp->process(input, output, number_of_samples);
-			original_execution_time += start_time.GetSecondsSince();
-		}
-
-		{
-			float32 *const RESTRICT output{ &optimized_output_buffer[sample_index] };
-			TimePoint start_time;
-			optimized_dsp->process(input, output, number_of_samples);
-			optimized_execution_time += start_time.GetSecondsSince();
-		}
-	}
-
-	//Cache the input time.
-	const float64 input_time{ static_cast<float64>(total_number_of_samples) / 48'000.0 };
-
-	sprintf_s
-	(
-		buffer,
-		"Original execution time: %f seconds, or %f%% realtime.\n",
-		original_execution_time,
-		original_execution_time / input_time * 100.0
-	);
-	PRINT_TO_OUTPUT(buffer);
-	sprintf_s
-	(
-		buffer,
-		"Optimized execution time: %f seconds, or %f%% realtime.\n",
-		optimized_execution_time,
-		optimized_execution_time / input_time * 100.0
-	);
-	PRINT_TO_OUTPUT(buffer);
-
-	//Calculate the (output) difference.
-	float64 difference{ 0.0f };
-
-	for (uint32 sample_index{ 0 }; sample_index < total_number_of_samples; ++sample_index)
-	{
-		const float64 original_sample{ static_cast<float32>(original_output_buffer[sample_index]) };
-		const float64 optimized_sample{ static_cast<float32>(optimized_output_buffer[sample_index]) };
-		const float64 _difference{ original_sample - optimized_sample };
-
-		difference += (_difference * _difference);
-	}
-
-	difference /= static_cast<float64>(total_number_of_samples);
-	difference = std::sqrt(difference);
-
-	sprintf_s(buffer, "Difference between original and optimized DSP's: %f\n", difference);
-	PRINT_TO_OUTPUT(buffer);
-
-	BREAKPOINT();
-#endif
-}
-
-/*
 *	An effect wrapping a NAM (Neural Amp Modeler) model.
 */
 class NAMModel final : public AudioEffect
 {
 
 public:
-
-	/*
-	*	Returns if this NAM model is valid.
-	*/
-	FORCE_INLINE NO_DISCARD bool Valid() const NOEXCEPT
-	{
-		return _Valid;
-	}
 
 	/*
 	*	Initializes this NAM model.
@@ -216,6 +86,47 @@ public:
 
 		//This NAM model is now valid!
 		_Valid = true;
+	}
+
+	/*
+	*	Returns if this NAM model is valid.
+	*/
+	FORCE_INLINE NO_DISCARD bool Valid() const NOEXCEPT
+	{
+		return _Valid;
+	}
+
+	/*
+	*	Prewarms this NAM model.
+	*/
+	FORCE_INLINE NO_DISCARD void Prewarm() NOEXCEPT
+	{
+		//Define constants.
+		constexpr uint32 NUMBER_OF_SAMPLES{ 48'000 * 1 };
+
+		//Set up the inputs & outputs.
+		DynamicArray<DynamicArray<float32>> inputs;
+		DynamicArray<DynamicArray<float32>> outputs;
+
+		inputs.Upsize<true>(2);
+		outputs.Upsize<true>(2);
+
+		for (uint8 channel_index{ 0 }; channel_index < 2; ++channel_index)
+		{
+			inputs.At(channel_index).Upsize<false>(NUMBER_OF_SAMPLES);
+			outputs.At(channel_index).Upsize<false>(NUMBER_OF_SAMPLES);
+
+			Memory::Set(inputs.At(channel_index).Data(), 0, NUMBER_OF_SAMPLES * sizeof(float32));
+			Memory::Set(outputs.At(channel_index).Data(), 0, NUMBER_OF_SAMPLES * sizeof(float32));
+		}
+
+		//Process!
+		AudioProcessContext context;
+
+		context._WasTimelineRunning = false;
+		context._IsTimelineRunning = false;
+
+		Process(context, inputs, &outputs, 2, NUMBER_OF_SAMPLES);
 	}
 
 	/*
