@@ -20,6 +20,7 @@ class LowPassFilter final : public AudioEffect
 public:
 
 	//Constants.
+	constexpr static uint32 MAXIMUM_NUMBER_OF_CHANNELS{ 4 };
 	constexpr static float32 DEFAULT_FREQUENCY{ 20'000.0f };
 	constexpr static float32 DEFAULT_QUALITY{ 1.0f };
 	constexpr static uint32 DEFAULT_ORDER{ 2 };
@@ -76,6 +77,8 @@ public:
 		const uint32 number_of_samples
 	) NOEXCEPT override
 	{
+		ASSERT(number_of_channels <= MAXIMUM_NUMBER_OF_CHANNELS, "Too many channels!");
+
 		//Copy inputs into outputs as all subsequent steps works inplace.
 		for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
 		{
@@ -137,7 +140,7 @@ private:
 	public:
 
 		//The biquads.
-		StaticArray<Biquad, 2> _Biquads;
+		StaticArray<Biquad, MAXIMUM_NUMBER_OF_CHANNELS> _Biquads;
 
 	};
 
@@ -150,7 +153,7 @@ private:
 	public:
 
 		//The previous output samples.
-		StaticArray<float32, 2> _PreviousOutputSamples{ 0.0f };
+		StaticArray<float32, MAXIMUM_NUMBER_OF_CHANNELS> _PreviousOutputSamples{ 0.0f };
 
 		//The alpha.
 		float32 _Alpha;
