@@ -49,9 +49,6 @@ public:
 		nam::parametric_wavenet::register_parser();
 		nam::wavenet::register_parser();
 
-		//Compare WaveNet implementations. (:
-		//CompareWaveNets();
-
 		//Retrieve the DSP's.
 		for (std::unique_ptr<nam::DSP> &dsp : _DSPs)
 		{
