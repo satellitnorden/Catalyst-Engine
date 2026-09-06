@@ -30,12 +30,12 @@ public:
 	/*
 	*	The start game function.
 	*/
-	void(*_StartGameFunction)();
+	void(*_StartGameFunction)(){ nullptr };
 
 	/*
 	*	The end game function.
 	*/
-	void(*_EndGameFunction)();
+	void(*_EndGameFunction)(){ nullptr };
 
 	/*
 	*	Default constructor.
