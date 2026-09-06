@@ -28,14 +28,16 @@ nam::lstm::LSTMCell::LSTMCell(const int input_size, const int hidden_size, std::
     this->_c[i] = *(weights++);
 }
 
-void nam::lstm::LSTMCell::process_(const Eigen::VectorXf& x)
+void nam::lstm::LSTMCell::process_(const Eigen::Ref<const Eigen::VectorXf>& x)
 {
   const long hidden_size = this->_get_hidden_size();
   const long input_size = this->_get_input_size();
   // Assign inputs
   this->_xh(Eigen::seq(0, input_size - 1)) = x;
-  // The matmul
-  this->_ifgo = this->_w * this->_xh + this->_b;
+  // The matmul. Use noalias() and a separate bias add so Eigen evaluates the
+  // matrix-vector product directly into the pre-allocated _ifgo without a temporary.
+  this->_ifgo.noalias() = this->_w * this->_xh;
+  this->_ifgo += this->_b;
   // Elementwise updates (apply nonlinearities here)
   const long i_offset = 0;
   const long f_offset = hidden_size;
@@ -122,8 +124,9 @@ void nam::lstm::LSTM::process(NAM_SAMPLE** input, NAM_SAMPLE** output, const int
   }
 }
 
-int nam::lstm::LSTM::PrewarmSamples()
+int nam::lstm::LSTM::GetPrewarmSamples()
 {
+  // Hacky, but a half-second seems to work for most models.
   int result = (int)(0.5 * mExpectedSampleRate);
   // If the expected sample rate wasn't provided, it'll be -1.
   // Make sure something still happens.
@@ -153,7 +156,8 @@ void nam::lstm::LSTM::_process_sample()
 
   // Compute output using head weight matrix and bias vector
   // _output = _head_weight * hidden_state + _head_bias
-  const Eigen::VectorXf& hidden_state = this->_layers[this->_layers.size() - 1].get_hidden_state();
+  // Bind to an Eigen::Ref (a non-owning view) so reading the hidden state does not allocate.
+  const Eigen::Ref<const Eigen::VectorXf> hidden_state = this->_layers[this->_layers.size() - 1].get_hidden_state();
 
   // Compute matrix-vector product: (out_channels x hidden_size) * (hidden_size) = (out_channels)
   // Store directly in _output (which is already sized correctly in constructor)

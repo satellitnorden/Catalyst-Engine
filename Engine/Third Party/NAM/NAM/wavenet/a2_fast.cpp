@@ -66,10 +66,11 @@ public:
   ~A2FastModel() override = default;
 
   void process(NAM_SAMPLE** input, NAM_SAMPLE** output, int num_frames) override;
+  void prewarm() override;
+  int GetPrewarmSamples() override { return _prewarm_samples; }
 
 protected:
   void SetMaxBufferSize(int maxBufferSize) override;
-  int PrewarmSamples() override { return _prewarm_samples; }
 
 private:
   struct Layer
@@ -92,6 +93,7 @@ private:
 
     // Conv1D input history ring buffer, column-major (Channels rows).
     std::vector<float> history;
+    std::array<float, Channels> cached_prewarm_state{};
   #if NAM_A2_RING_MODE == 1
     // pow2 ring + tail mirror. Storage = (pow2_size + max_buffer_size) cols.
     // write_pos is kept in [0, pow2_size), reads use (pos & pow2_mask) and are
@@ -124,6 +126,7 @@ private:
 
   // Head ring buffer (Channels rows, col-major). Same ring layout as per-layer.
   std::vector<float> _head_history;
+  std::array<float, Channels> _cached_head_prewarm_state{};
   #if NAM_A2_RING_MODE == 1
   int _head_pow2_size = 0;
   int _head_pow2_mask = 0;
@@ -141,8 +144,12 @@ private:
   std::vector<float> _head_out; // float32 head output before writing to NAM_SAMPLE
 
   int _prewarm_samples = 0;
+  bool _has_cached_prewarm_state = false;
 
   void _load_weights(std::vector<float>& weights);
+  bool HasCachedPrewarmState() const { return _has_cached_prewarm_state; }
+  void PrewarmFromCache();
+  void CacheStateAsPrewarmed();
   void _ring_write(Layer& L, int num_frames);
   void _head_ring_write(int num_frames);
   void _layer_forward(int layer_idx, const float* cond, int num_frames);
@@ -172,7 +179,11 @@ A2FastModel<Channels>::A2FastModel(std::vector<float> weights, double expected_s
 
   _load_weights(weights);
 
-  int prewarm = 0;
+  // Receptive field = 1 (the sample being produced) + sum of per-layer lookbacks +
+  // (head kernel - 1). The leading 1 matches the generic WaveNet's prewarm count
+  // (model.cpp: mPrewarmSamples starts at 1 when there's no condition DSP), so the
+  // fast path warms up by exactly the same number of samples as the model it replaces.
+  int prewarm = 1;
   for (int i = 0; i < kNumLayers; i++)
     prewarm += _layers[i].max_lookback;
   prewarm += kHeadKernelSize - 1;
@@ -326,6 +337,73 @@ void A2FastModel<Channels>::SetMaxBufferSize(int maxBufferSize)
 }
 
 // -----------------------------------------------------------------------------
+// Prewarm-state cache
+//
+// Processing silence for a full receptive field leaves every convolution
+// history constant in time. Keep one Channels-wide column from each layer and
+// the head so later prewarms can rebuild the complete histories directly.
+// -----------------------------------------------------------------------------
+template <int Channels>
+void A2FastModel<Channels>::prewarm()
+{
+  if (HasCachedPrewarmState())
+  {
+    PrewarmFromCache();
+    return;
+  }
+
+  DSP::prewarm();
+  CacheStateAsPrewarmed();
+}
+
+template <int Channels>
+void A2FastModel<Channels>::PrewarmFromCache()
+{
+  for (auto& L : _layers)
+  {
+    const size_t columns = L.history.size() / Channels;
+    for (size_t column = 0; column < columns; column++)
+    {
+      std::copy(L.cached_prewarm_state.begin(), L.cached_prewarm_state.end(),
+                L.history.begin() + static_cast<std::ptrdiff_t>(column * Channels));
+    }
+    L.write_pos = L.max_lookback;
+  }
+
+  const size_t head_columns = _head_history.size() / Channels;
+  for (size_t column = 0; column < head_columns; column++)
+  {
+    std::copy(_cached_head_prewarm_state.begin(), _cached_head_prewarm_state.end(),
+              _head_history.begin() + static_cast<std::ptrdiff_t>(column * Channels));
+  }
+  _head_write_pos = kHeadKernelSize - 1;
+}
+
+template <int Channels>
+void A2FastModel<Channels>::CacheStateAsPrewarmed()
+{
+  for (auto& L : _layers)
+  {
+  #if NAM_A2_RING_MODE == 1
+    const int last_column = (L.write_pos - 1) & L.pow2_mask;
+  #else
+    const int last_column = L.write_pos - 1;
+  #endif
+    std::copy_n(L.history.begin() + static_cast<std::ptrdiff_t>(last_column * Channels), Channels,
+                L.cached_prewarm_state.begin());
+  }
+
+  #if NAM_A2_RING_MODE == 1
+  const int last_head_column = (_head_write_pos - 1) & _head_pow2_mask;
+  #else
+  const int last_head_column = _head_write_pos - 1;
+  #endif
+  std::copy_n(_head_history.begin() + static_cast<std::ptrdiff_t>(last_head_column * Channels), Channels,
+              _cached_head_prewarm_state.begin());
+  _has_cached_prewarm_state = true;
+}
+
+// -----------------------------------------------------------------------------
 // Ring-write helpers.
 //   Mode 1: pow2 + tail mirror. Constant-time per block (one short memcpy
 //   into the ring, one mirror refresh).
@@ -426,14 +504,14 @@ void A2FastModel<Channels>::_layer_forward_k(Layer& L, const float* cond, int nu
 
   // Two conv strategies, dispatched at compile time on Channels:
   //
-  //   - Channels <= 4 (A2 nano): full-block tap-major. The z accumulator lives
+  //   - Channels <= 4 (A2-Lite): full-block tap-major. The z accumulator lives
   //     in the heap buffer across all taps, and for each tap the inner f-loop
   //     iterates over all num_frames. This gives clang frame-level
   //     parallelism — it vectorizes across 4 frames at a time, which matters
   //     more than weight-reload cost when the b-loop (3 wide) can't saturate
   //     NEON lanes on its own.
   //
-  //   - Channels >= 8 (A2 standard): frame-tiled tap-major with T=4. ztile
+  //   - Channels >= 8 (A2-Full): frame-tiled tap-major with T=4. ztile
   //     stays in NEON registers across all K taps, amortizing weight loads
   //     over 4 frames — equivalent to what a GEMM kernel does. Weight reuse
   //     matters here because the b-loop (8 wide) already saturates SIMD, so
@@ -763,6 +841,17 @@ bool is_a2_shape(const nlohmann::json& config, int* channels)
   if (head_it != config.end() && !head_it->is_null())
     return false;
 
+  // No conditioning DSP. When given a non-null condition_dsp the generic WaveNet
+  // builds a nested model and routes the conditioning signal through it before the
+  // layer stack; the fast path has no such stage and feeds the raw input as the
+  // condition. The condition DSP carries its own weights, so the parent weight
+  // stream is identical with or without it and the loader cannot detect the
+  // difference -- the detector must reject it here, or the fast path would silently
+  // produce different audio than the model it replaces.
+  auto cond_it = config.find("condition_dsp");
+  if (cond_it != config.end() && !cond_it->is_null())
+    return false;
+
   // head_scale is loaded from the trailing weight, but require the field to
   // stay schema-compatible with the generic WaveNet parser.
   auto hs_it = config.find("head_scale");
@@ -827,6 +916,14 @@ bool is_a2_shape(const nlohmann::json& config, int* channels)
       return false;
   }
 
+  // Legacy boolean `gated` (the pre-gating_mode schema): the generic parser maps
+  // gated==true to GATED layers, which the fast path does not implement. A genuinely
+  // gated model has a larger weight stream and the loader would throw, but reject it
+  // here so the boundary is enforced by the detector rather than a downstream error.
+  auto gated_it = la.find("gated");
+  if (gated_it != la.end() && gated_it->is_boolean() && gated_it->get<bool>())
+    return false;
+
   // secondary_activation: all null (or field absent)
   auto sa_it = la.find("secondary_activation");
   if (sa_it != la.end() && !sa_it->is_null())
@@ -856,6 +953,8 @@ bool is_a2_shape(const nlohmann::json& config, int* channels)
   if (lah_it->value("out_channels", 0) != 1)
     return false;
   if (lah_it->value("kernel_size", 0) != kHeadKernelSize)
+    return false;
+  if (lah_it->value("head_dilation", 1) != 1)
     return false;
   if (!lah_it->value("bias", false))
     return false;

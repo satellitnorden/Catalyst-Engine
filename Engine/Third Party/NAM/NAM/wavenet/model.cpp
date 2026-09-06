@@ -55,6 +55,23 @@ void nam::wavenet::detail::Head::SetMaxBufferSize(const int maxBufferSize)
     _convs[i].SetMaxBufferSize(maxBufferSize);
 }
 
+bool nam::wavenet::detail::Head::HasCachedPrewarmState() const
+{
+  return std::all_of(_convs.begin(), _convs.end(), [](const Conv1D& conv) { return conv.HasCachedPrewarmState(); });
+}
+
+void nam::wavenet::detail::Head::PrewarmFromCache()
+{
+  for (auto& conv : _convs)
+    conv.PrewarmFromCache();
+}
+
+void nam::wavenet::detail::Head::CacheStateAsPrewarmed()
+{
+  for (auto& conv : _convs)
+    conv.CacheStateAsPrewarmed();
+}
+
 long nam::wavenet::detail::Head::receptive_field() const
 {
   long rf = 1;
@@ -262,12 +279,15 @@ void nam::wavenet::detail::Layer::Process(const Eigen::MatrixXf& input, const Ei
     if (this->_layer1x1)
     {
       this->_layer1x1->process_(this->_z.topRows(bottleneck), num_frames);
-      if (this->_layer1x1_post_film)
-      {
-        Eigen::MatrixXf& layer1x1_output = this->_layer1x1->GetOutput();
-        this->_layer1x1_post_film->Process_(layer1x1_output, condition, num_frames);
-      }
     }
+  }
+
+  // layer1x1_post_film is independent of the gating mode and must be applied
+  // whenever layer1x1 is active.
+  if (this->_layer1x1 && this->_layer1x1_post_film)
+  {
+    Eigen::MatrixXf& layer1x1_output = this->_layer1x1->GetOutput();
+    this->_layer1x1_post_film->Process_(layer1x1_output, condition, num_frames);
   }
 
   if (this->_head1x1)
@@ -315,12 +335,12 @@ void nam::wavenet::detail::Layer::Process(const Eigen::MatrixXf& input, const Ei
         // Column-major: need to copy column by column with stride
         const int out_rows = (int)bottleneck;
         const int z_rows = (int)this->_z.rows(); // 2*bottleneck for gated
-        const float* __restrict__ src = this->_z.data();
-        float* __restrict__ dst = this->_output_head.data();
+        const float* NAM_RESTRICT src = this->_z.data();
+        float* NAM_RESTRICT dst = this->_output_head.data();
         for (int f = 0; f < num_frames; f++)
         {
-          const float* __restrict__ src_col = src + f * z_rows;
-          float* __restrict__ dst_col = dst + f * out_rows;
+          const float* NAM_RESTRICT src_col = src + f * z_rows;
+          float* NAM_RESTRICT dst_col = dst + f * out_rows;
           for (int r = 0; r < out_rows; r++)
             dst_col[r] = src_col[r];
         }
@@ -341,9 +361,9 @@ void nam::wavenet::detail::Layer::Process(const Eigen::MatrixXf& input, const Ei
     {
       const int channels = (int)this->get_channels();
       const int total = channels * num_frames;
-      const float* __restrict__ in_ptr = input.data();
-      const float* __restrict__ layer_ptr = this->_layer1x1->GetOutput().data();
-      float* __restrict__ out_ptr = this->_output_next_layer.data();
+      const float* NAM_RESTRICT in_ptr = input.data();
+      const float* NAM_RESTRICT layer_ptr = this->_layer1x1->GetOutput().data();
+      float* NAM_RESTRICT out_ptr = this->_output_next_layer.data();
       int i = 0;
       for (; i + 3 < total; i += 4)
       {
@@ -380,7 +400,7 @@ void nam::wavenet::detail::Layer::Process(const Eigen::MatrixXf& input, const Ei
 nam::wavenet::detail::LayerArray::LayerArray(const LayerArrayParams& params)
 : _rechannel(params.input_size, params.channels, false)
 , _head_rechannel(params.head1x1_params.active ? params.head1x1_params.out_channels : params.bottleneck,
-                  params.head_size, params.head_kernel_size, params.head_bias ? 1 : 0, 1, 1)
+                  params.head_size, params.head_kernel_size, params.head_bias ? 1 : 0, params.head_dilation, 1)
 , _head_output_size(params.head1x1_params.active ? params.head1x1_params.out_channels : params.bottleneck)
 {
   const size_t num_layers = params.dilations.size();
@@ -413,22 +433,43 @@ void nam::wavenet::detail::LayerArray::SetMaxBufferSize(const int maxBufferSize)
   this->_head_inputs.resize(this->_head_output_size, maxBufferSize);
 }
 
-
 long nam::wavenet::detail::LayerArray::get_receptive_field() const
 {
   long result = 0;
   for (size_t i = 0; i < this->_layers.size(); i++)
     result += this->_layers[i].get_dilation() * (this->_layers[i].get_kernel_size() - 1);
-  result += (long)this->_head_rechannel.get_kernel_size() - 1;
+  result += this->_head_rechannel.get_dilation() * ((long)this->_head_rechannel.get_kernel_size() - 1);
   return result;
 }
 
+bool nam::wavenet::detail::LayerArray::HasCachedPrewarmState() const
+{
+  return _head_rechannel.HasCachedPrewarmState() && std::all_of(_layers.begin(), _layers.end(), [](const Layer& layer) {
+           return layer.HasCachedPrewarmState();
+         });
+}
+
+void nam::wavenet::detail::LayerArray::PrewarmFromCache()
+{
+  for (auto& layer : _layers)
+    layer.PrewarmFromCache();
+  _head_rechannel.PrewarmFromCache();
+}
+
+void nam::wavenet::detail::LayerArray::CacheStateAsPrewarmed()
+{
+  for (auto& layer : _layers)
+    layer.CacheStateAsPrewarmed();
+  _head_rechannel.CacheStateAsPrewarmed();
+}
 
 void nam::wavenet::detail::LayerArray::Process(const Eigen::MatrixXf& layer_inputs, const Eigen::MatrixXf& condition,
                                                const int num_frames)
 {
-  // Zero head inputs accumulator (first layer array)
-  this->_head_inputs.setZero();
+  // Zero head inputs accumulator (first layer array). Only the first num_frames columns are ever
+  // read this call, so zeroing the whole maxBufferSize-wide buffer is wasted work when the host
+  // processes blocks smaller than the maximum it reserved.
+  this->_head_inputs.leftCols(num_frames).setZero();
   ProcessInner(layer_inputs, condition, num_frames);
 }
 
@@ -475,8 +516,8 @@ void nam::wavenet::detail::LayerArray::ProcessInner(const Eigen::MatrixXf& layer
 #ifdef NAM_USE_INLINE_GEMM
     {
       const int total = (int)this->_head_output_size * num_frames;
-      const float* __restrict__ src = this->_layers[i].GetOutputHead().data();
-      float* __restrict__ dst = this->_head_inputs.data();
+      const float* NAM_RESTRICT src = this->_layers[i].GetOutputHead().data();
+      float* NAM_RESTRICT dst = this->_head_inputs.data();
       int j = 0;
       for (; j + 3 < total; j += 4)
       {
@@ -613,7 +654,7 @@ nam::wavenet::WaveNet::WaveNet(const int in_channels,
   this->set_weights_(weights);
 
   // Finally, figure out how much pre-warming is needed for this model.
-  mPrewarmSamples = this->_condition_dsp != nullptr ? this->_condition_dsp->PrewarmSamples() : 1;
+  mPrewarmSamples = this->_condition_dsp != nullptr ? this->_condition_dsp->GetPrewarmSamples() : 1;
   for (size_t i = 0; i < this->_layer_arrays.size(); i++)
     mPrewarmSamples += this->_layer_arrays[i].get_receptive_field();
   if (this->_post_stack_head != nullptr)
@@ -687,6 +728,53 @@ void nam::wavenet::WaveNet::SetMaxBufferSize(const int maxBufferSize)
     this->_post_stack_head->SetMaxBufferSize(maxBufferSize);
     this->_scaled_head_scratch.resize(this->_post_stack_head->in_channels(), maxBufferSize);
   }
+}
+
+void nam::wavenet::WaveNet::SetPrewarmOnReset(const bool prewarmOnReset)
+{
+  DSP::SetPrewarmOnReset(prewarmOnReset);
+  if (this->_condition_dsp != nullptr)
+    this->_condition_dsp->SetPrewarmOnReset(prewarmOnReset);
+}
+
+void nam::wavenet::WaveNet::prewarm()
+{
+  if (HasCachedPrewarmState())
+  {
+    PrewarmFromCache();
+    return;
+  }
+
+  DSP::prewarm();
+  CacheStateAsPrewarmed();
+}
+
+bool nam::wavenet::WaveNet::HasCachedPrewarmState() const
+{
+  if (_condition_dsp != nullptr)
+    return false;
+  if (!std::all_of(_layer_arrays.begin(), _layer_arrays.end(),
+                   [](const detail::LayerArray& layer_array) { return layer_array.HasCachedPrewarmState(); }))
+    return false;
+  return _post_stack_head == nullptr || _post_stack_head->HasCachedPrewarmState();
+}
+
+void nam::wavenet::WaveNet::PrewarmFromCache()
+{
+  for (auto& layer_array : _layer_arrays)
+    layer_array.PrewarmFromCache();
+  if (_post_stack_head != nullptr)
+    _post_stack_head->PrewarmFromCache();
+}
+
+void nam::wavenet::WaveNet::CacheStateAsPrewarmed()
+{
+  if (_condition_dsp != nullptr)
+    return;
+  for (auto& layer_array : _layer_arrays)
+    layer_array.CacheStateAsPrewarmed();
+  if (_post_stack_head != nullptr)
+    _post_stack_head->CacheStateAsPrewarmed();
 }
 
 void nam::wavenet::WaveNet::_process_condition(const int num_frames)
@@ -769,20 +857,20 @@ void nam::wavenet::WaveNet::process(NAM_SAMPLE** input, NAM_SAMPLE** output, con
   if (this->_post_stack_head != nullptr)
   {
     assert(final_head_outputs.rows() == this->_post_stack_head->in_channels());
-    const int head_in = this->_post_stack_head->in_channels();
-    for (int ch = 0; ch < head_in; ch++)
-    {
-      for (int s = 0; s < num_frames; s++)
-        this->_scaled_head_scratch(ch, s) = this->_head_scale * final_head_outputs(ch, s);
-    }
+    // _scaled_head_scratch is sized (in_channels, maxBufferSize), and the assert above pins
+    // final_head_outputs to the same row count, so this is a straight scaled copy of the block.
+    // Expressed as one Eigen expression rather than a nested loop: the manual loop walked the
+    // column-major matrix with a row-major access pattern, striding by in_channels per step.
+    this->_scaled_head_scratch.leftCols(num_frames).noalias() =
+      this->_head_scale * final_head_outputs.leftCols(num_frames);
     this->_post_stack_head->process(this->_scaled_head_scratch, num_frames);
     const Eigen::MatrixXf& head_out = this->_post_stack_head->get_last_output();
     assert(head_out.rows() == out_channels);
 
     if (out_channels == 1)
     {
-      const float* __restrict__ src = head_out.data();
-      NAM_SAMPLE* __restrict__ dst = output[0];
+      const float* NAM_RESTRICT src = head_out.data();
+      NAM_SAMPLE* NAM_RESTRICT dst = output[0];
       for (int s = 0; s < num_frames; s++)
         dst[s] = (NAM_SAMPLE)src[s];
     }
@@ -804,8 +892,8 @@ void nam::wavenet::WaveNet::process(NAM_SAMPLE** input, NAM_SAMPLE** output, con
   {
     // Single channel: data is contiguous
     const float scale = this->_head_scale;
-    const float* __restrict__ src = final_head_outputs.data();
-    NAM_SAMPLE* __restrict__ dst = output[0];
+    const float* NAM_RESTRICT src = final_head_outputs.data();
+    NAM_SAMPLE* NAM_RESTRICT dst = output[0];
     for (int s = 0; s < num_frames; s++)
     {
       dst[s] = scale * src[s];
@@ -869,6 +957,7 @@ nam::wavenet::WaveNetConfig nam::wavenet::parse_config_json(const nlohmann::json
     const int condition_size = layer_config["condition_size"];
 
     int head_size = 0;
+    int head_dilation = 1;
     int head_kernel_size = 1;
     bool head_bias = false;
 
@@ -881,6 +970,12 @@ nam::wavenet::WaveNetConfig nam::wavenet::parse_config_json(const nlohmann::json
         throw std::runtime_error("Layer array " + std::to_string(i) + ": 'head' must be a JSON object");
       }
       head_size = head_json.at("out_channels").get<int>();
+
+      if (head_json.contains("head_dilation"))
+      {
+        head_dilation = head_json.at("head_dilation").get<int>();
+      }
+
       head_kernel_size = head_json.at("kernel_size").get<int>();
       head_bias = head_json.at("bias").get<bool>();
     }
@@ -1137,11 +1232,11 @@ nam::wavenet::WaveNetConfig nam::wavenet::parse_config_json(const nlohmann::json
     }
 
     wc.layer_array_params.push_back(nam::wavenet::LayerArrayParams(
-      input_size, condition_size, head_size, head_kernel_size, channels, bottleneck, std::move(kernel_sizes), dilations,
-      std::move(activation_configs), std::move(gating_modes), head_bias, groups, groups_input_mixin, layer1x1_params,
-      head1x1_params, std::move(secondary_activation_configs), conv_pre_film_params, conv_post_film_params,
-      input_mixin_pre_film_params, input_mixin_post_film_params, activation_pre_film_params,
-      activation_post_film_params, _layer1x1_post_film_params, head1x1_post_film_params));
+      input_size, condition_size, head_size, head_dilation, head_kernel_size, channels, bottleneck,
+      std::move(kernel_sizes), dilations, std::move(activation_configs), std::move(gating_modes), head_bias, groups,
+      groups_input_mixin, layer1x1_params, head1x1_params, std::move(secondary_activation_configs),
+      conv_pre_film_params, conv_post_film_params, input_mixin_pre_film_params, input_mixin_post_film_params,
+      activation_pre_film_params, activation_post_film_params, _layer1x1_post_film_params, head1x1_post_film_params));
   }
 
   wc.with_head = config.find("head") != config.end() && !config["head"].is_null();
@@ -1233,22 +1328,8 @@ std::unique_ptr<nam::ModelConfig> nam::wavenet::create_config(const nlohmann::js
   return wc;
 }
 
-void nam::wavenet::register_parser()
-{
-    static bool ONCE{ false };
-
-    if (!ONCE)
-    {
-        ConfigParserRegistry::instance().registerParser("WaveNet", nam::wavenet::create_config);
-
-        ONCE = true;
-    }
-}
-
 // Register the config parser
-/*
 namespace
 {
 static nam::ConfigParserHelper _register_WaveNet("WaveNet", nam::wavenet::create_config);
 }
-*/

@@ -24,12 +24,18 @@ public:
   LSTMCell(const int input_size, const int hidden_size, std::vector<float>::iterator& weights);
 
   /// \brief Get the current hidden state
-  /// \return Hidden state vector
-  Eigen::VectorXf get_hidden_state() const { return this->_xh(Eigen::placeholders::lastN(this->_get_hidden_size())); };
+  /// \return A non-owning view of the hidden state (the tail of the concatenated input/hidden vector).
+  ///
+  /// Returns an Eigen::Ref rather than a by-value Eigen::VectorXf so that reading the hidden state
+  /// does not heap-allocate. This is required for real-time safety: process_() is called once per
+  /// audio sample, and a by-value return would allocate on every layer hop and head evaluation.
+  Eigen::Ref<const Eigen::VectorXf> get_hidden_state() const { return this->_xh.tail(this->_get_hidden_size()); };
 
   /// \brief Process a single input vector
   /// \param x Input vector
-  void process_(const Eigen::VectorXf& x);
+  ///
+  /// Accepts an Eigen::Ref so that a hidden-state view from another cell binds without copying.
+  void process_(const Eigen::Ref<const Eigen::VectorXf>& x);
 
 private:
   // Parameters
@@ -78,9 +84,7 @@ public:
   /// \param num_frames Number of frames to process
   void process(NAM_SAMPLE** input, NAM_SAMPLE** output, const int num_frames) override;
 
-protected:
-  // Hacky, but a half-second seems to work for most models.
-  int PrewarmSamples() override;
+  int GetPrewarmSamples() override;
 
   Eigen::MatrixXf _head_weight; // (out_channels x hidden_size)
   Eigen::VectorXf _head_bias; // (out_channels)

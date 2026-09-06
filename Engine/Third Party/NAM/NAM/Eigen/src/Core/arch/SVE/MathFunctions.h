@@ -10,6 +10,7 @@
 #ifndef EIGEN_MATH_FUNCTIONS_SVE_H
 #define EIGEN_MATH_FUNCTIONS_SVE_H
 
+// IWYU pragma: private
 #include "../../InternalHeaderCheck.h"
 
 namespace Eigen {
@@ -38,8 +39,9 @@ EIGEN_STRONG_INLINE PacketXf pcos<PacketXf>(const PacketXf& x) {
 // Hyperbolic Tangent function.
 template <>
 EIGEN_STRONG_INLINE PacketXf ptanh<PacketXf>(const PacketXf& x) {
-  return internal::generic_fast_tanh_float(x);
+  return ptanh_float(x);
 }
+
 }  // end namespace internal
 }  // end namespace Eigen
 

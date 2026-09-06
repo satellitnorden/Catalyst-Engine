@@ -37,12 +37,14 @@ public:
   void process(NAM_SAMPLE** input, NAM_SAMPLE** output, const int num_frames) override;
   void prewarm() override;
   void Reset(const double sampleRate, const int maxBufferSize) override;
+  void SetPrewarmOnReset(const bool prewarmOnReset) override;
   void SetSlimmableSize(const double val) override;
-
-protected:
-  int PrewarmSamples() override { return 0; }
+  std::vector<double> GetSlimmableSizeBreakpoints() const override;
+  int GetPrewarmSamples() override;
 
 private:
+  size_t _get_index_for_slimmable_size(const double val) const;
+
   std::vector<Submodel> _submodels;
   std::atomic<size_t> _active_index{0};
   std::mutex _slim_set_mutex;
@@ -59,8 +61,6 @@ struct ContainerConfig : public ModelConfig
 };
 
 std::unique_ptr<ModelConfig> create_config(const nlohmann::json& config, double sampleRate);
-
-void register_parser();
 
 } // namespace container
 } // namespace nam

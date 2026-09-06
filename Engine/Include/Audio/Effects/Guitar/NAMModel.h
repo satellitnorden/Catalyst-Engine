@@ -15,8 +15,6 @@
 //Third party.
 #include <ThirdParty/AudioFile/AudioFile.h>
 #include <NAM/extensions/parametric_wavenet.h>
-#include <NAM/wavenet/model.h>
-#include <NAM/container.h>
 #include <NAM/get_dsp.h>
 #include <NAM/slimmable.h>
 
@@ -45,9 +43,7 @@ public:
 		}
 
 		//The initialization order may be a bit whack here, so make sure that architectures are registered.
-		nam::container::register_parser();
 		nam::parametric_wavenet::register_parser();
-		nam::wavenet::register_parser();
 
 		//Retrieve the DSP's.
 		for (std::unique_ptr<nam::DSP> &dsp : _DSPs)
