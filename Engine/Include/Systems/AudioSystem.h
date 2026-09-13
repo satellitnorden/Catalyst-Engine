@@ -156,7 +156,7 @@ public:
 	/*
 	*	Removes the audio track with the given identifier.
 	*/
-	void RemoveAudioTrack(const Audio::Identifier identifier) NOEXCEPT;
+	void RemoveAudioTrack(const Audio::Identifier identifier, AtomicFlag *const RESTRICT request_complete_flag = nullptr) NOEXCEPT;
 
 	/*
 	*	Adds an effect to the track with the given identifier.
@@ -250,6 +250,9 @@ private:
 		{
 			//The identifier.
 			Audio::Identifier _Identifier;
+
+			//The request complete flag.
+			AtomicFlag *RESTRICT _RequestCompleteFlag;
 		} _RemoveAudioTrackData;
 
 		//The add audio effect to track data.

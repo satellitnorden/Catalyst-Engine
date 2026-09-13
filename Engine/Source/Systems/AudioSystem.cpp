@@ -153,7 +153,7 @@ Audio::Identifier AudioSystem::AddAudioTrack(const AudioTrackInformation &inform
 /*
 *	Removes the audio track with the given identifier.
 */
-void AudioSystem::RemoveAudioTrack(const Audio::Identifier identifier) NOEXCEPT
+void AudioSystem::RemoveAudioTrack(const Audio::Identifier identifier, AtomicFlag *const RESTRICT request_complete_flag) NOEXCEPT
 {
 	//Remove the main thread audio track. Remember if it had inputs.
 	bool removed_track_had_inputs{ false };
@@ -181,6 +181,7 @@ void AudioSystem::RemoveAudioTrack(const Audio::Identifier identifier) NOEXCEPT
 
 	request._Type = Request::Type::REMOVE_AUDIO_TRACK;
 	request._RemoveAudioTrackData._Identifier = identifier;
+	request._RemoveAudioTrackData._RequestCompleteFlag = request_complete_flag;
 
 	_Requests.Push(request);
 }
@@ -531,6 +532,11 @@ void AudioSystem::ProcessRemoveAudioTrackRequest(const Request &request) NOEXCEP
 			break;
 		}
 	}
+
+	if (request._RemoveAudioTrackData._RequestCompleteFlag)
+	{
+		request._RemoveAudioTrackData._RequestCompleteFlag->Set();
+	}
 }
 
 /*
@@ -560,13 +566,13 @@ void AudioSystem::ProcessRemoveAudioEffectFromTrackRequest(const Request &reques
 		{
 			audio_track._Effects.Erase<true>(request._RemoveAudioEffectFromTrackData._Effect);
 
-			if (request._RemoveAudioEffectFromTrackData._RequestCompleteFlag)
-			{
-				request._RemoveAudioEffectFromTrackData._RequestCompleteFlag->Set();
-			}
-
 			break;
 		}
+	}
+
+	if (request._RemoveAudioEffectFromTrackData._RequestCompleteFlag)
+	{
+		request._RemoveAudioEffectFromTrackData._RequestCompleteFlag->Set();
 	}
 }
 
