@@ -59,10 +59,10 @@ public:
 	/*
 	*	Rounds a number up to the nearest integer.
 	*/
-	template <typename TYPE>
-	FORCE_INLINE constexpr static NO_DISCARD TYPE Ceiling(const float32 number) NOEXCEPT
+	template <typename RETURN_TYPE, typename ARGUMENT_TYPE>
+	FORCE_INLINE constexpr static NO_DISCARD RETURN_TYPE Ceiling(const ARGUMENT_TYPE number) NOEXCEPT
 	{
-		return number >= 0.0f ? static_cast<TYPE>(static_cast<int32>(number + 1.0f)) : static_cast<TYPE>(static_cast<int32>(number));
+		return number >= static_cast<ARGUMENT_TYPE>(0) ? static_cast<RETURN_TYPE>(static_cast<int64>(number + static_cast<ARGUMENT_TYPE>(1))) : static_cast<RETURN_TYPE>(static_cast<int64>(number));
 	}
 
 	/*
@@ -127,10 +127,10 @@ public:
 	/*
 	*	Rounds a number down to the nearest integer.
 	*/
-	template <typename TYPE>
-	FORCE_INLINE constexpr static NO_DISCARD TYPE Floor(const float32 number) NOEXCEPT
+	template <typename RETURN_TYPE, typename ARGUMENT_TYPE>
+	FORCE_INLINE constexpr static NO_DISCARD RETURN_TYPE Floor(const ARGUMENT_TYPE number) NOEXCEPT
 	{
-		return number >= 0.0f ? static_cast<TYPE>(static_cast<int32>(number)) : static_cast<TYPE>(static_cast<int32>(number - 1.0f));
+		return number >= static_cast<ARGUMENT_TYPE>(0) ? static_cast<RETURN_TYPE>(static_cast<int64>(number)) : static_cast<RETURN_TYPE>(static_cast<int64>(number - static_cast<ARGUMENT_TYPE>(1)));
 	}
 
 	/*
@@ -299,10 +299,10 @@ public:
 	/*
 	*	Rounds a float32 to the nearest integral value, with halfway cases rounded away from zero.
 	*/
-	template <typename TYPE>
-	FORCE_INLINE constexpr static NO_DISCARD TYPE Round(const float32 value) NOEXCEPT
+	template <typename RETURN_TYPE, typename ARGUMENT_TYPE>
+	FORCE_INLINE constexpr static NO_DISCARD RETURN_TYPE Round(const ARGUMENT_TYPE value) NOEXCEPT
 	{
-		return value >= 0.0f ? static_cast<TYPE>(static_cast<int32>(value + 0.5f)) : static_cast<TYPE>(static_cast<int32>(value - 0.5f));
+		return value >= static_cast<ARGUMENT_TYPE>(0) ? static_cast<RETURN_TYPE>(static_cast<int64>(value + static_cast<ARGUMENT_TYPE>(0.5))) : static_cast<RETURN_TYPE>(static_cast<int64>(value - static_cast<ARGUMENT_TYPE>(0.5)));
 	}
 
 	/*
