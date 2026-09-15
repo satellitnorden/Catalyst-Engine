@@ -13,7 +13,15 @@
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+#include <Systems/DebugSystem.h>
+#endif
 #include <Systems/LogSystem.h>
+
+//Third party.
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+#include <ImGui/imgui.h>
+#endif
 
 /*
 *	Initializes the audio system.
@@ -48,6 +56,19 @@ void AudioSystem::Initialize() NOEXCEPT
 #endif
 
 	_MixThread.Launch();
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	//Register the debug commands.
+	DebugSystem::Instance->RegisterCustomDebugCommand
+	(
+		"Audio\\Mixer",
+		[](DebugCommand *const RESTRICT command, void *const RESTRICT user_data)
+		{
+			AudioSystem::Instance->MixerDebugWindow(command);
+		},
+		nullptr
+	);
+#endif
 }
 
 /*
@@ -130,6 +151,8 @@ Audio::Identifier AudioSystem::AddAudioTrack(const AudioTrackInformation &inform
 
 	main_thread_audio_track._Information = information;
 	main_thread_audio_track._Identifier = _AudioTrackIdentifierGenerator++;
+	main_thread_audio_track._Solo = false;
+	main_thread_audio_track._Mute = false;
 
 	//Add the request.
 	Request request;
@@ -148,6 +171,58 @@ Audio::Identifier AudioSystem::AddAudioTrack(const AudioTrackInformation &inform
 
 	//Return the identifier.
 	return main_thread_audio_track._Identifier;
+}
+
+/*
+*	Sets whether or not the audio track with the given identifier is solo'd.
+*/
+void AudioSystem::SetAudioTrackSolo(const Audio::Identifier identifier, const bool value) NOEXCEPT
+{
+	//Set the value.
+	for (AudioTrack &audio_track : _MainThreadAudioTracks)
+	{
+		if (audio_track._Identifier == identifier)
+		{
+			audio_track._Solo = value;
+
+			break;
+		}
+	}
+
+	//Add the request.
+	Request request;
+
+	request._Type = Request::Type::SET_AUDIO_TRACK_SOLO;
+	request._SetAudioTrackSoloData._Identifier = identifier;
+	request._SetAudioTrackSoloData._Value = value;
+
+	_Requests.Push(request);
+}
+
+/*
+*	Sets whether or not the audio track with the given identifier is muted.
+*/
+void AudioSystem::SetAudioTrackMute(const Audio::Identifier identifier, const bool value) NOEXCEPT
+{
+	//Set the value.
+	for (AudioTrack &audio_track : _MainThreadAudioTracks)
+	{
+		if (audio_track._Identifier == identifier)
+		{
+			audio_track._Mute = value;
+
+			break;
+		}
+	}
+
+	//Add the request.
+	Request request;
+
+	request._Type = Request::Type::SET_AUDIO_TRACK_MUTE;
+	request._SetAudioTrackMuteData._Identifier = identifier;
+	request._SetAudioTrackMuteData._Value = value;
+
+	_Requests.Push(request);
 }
 
 /*
@@ -439,6 +514,20 @@ NO_DISCARD bool AudioSystem::ProcessRequests() NOEXCEPT
 				break;
 			}
 
+			case Request::Type::SET_AUDIO_TRACK_SOLO:
+			{
+				ProcessSetAudioTrackSoloRequest(_request);
+
+				break;
+			}
+
+			case Request::Type::SET_AUDIO_TRACK_MUTE:
+			{
+				ProcessSetAudioTrackMuteRequest(_request);
+
+				break;
+			}
+
 			case Request::Type::REMOVE_AUDIO_TRACK:
 			{
 				ProcessRemoveAudioTrackRequest(_request);
@@ -515,6 +604,40 @@ void AudioSystem::ProcessAddAudioTrackRequest(const Request &request) NOEXCEPT
 
 	mix_thread_audio_track._Information = request._AddAudioTrackData._Information;
 	mix_thread_audio_track._Identifier = request._AddAudioTrackData._Identifier;
+	mix_thread_audio_track._Solo = false;
+	mix_thread_audio_track._Mute = false;
+}
+
+/*
+*	Processes a set audio track solo request.
+*/
+void AudioSystem::ProcessSetAudioTrackSoloRequest(const Request &request) NOEXCEPT
+{
+	for (AudioTrack &audio_track : _MixThreadAudioTracks)
+	{
+		if (audio_track._Identifier == request._SetAudioTrackSoloData._Identifier)
+		{
+			audio_track._Solo = request._SetAudioTrackSoloData._Value;
+
+			return;
+		}
+	}
+}
+
+/*
+*	Processes a set audio track mute request.
+*/
+void AudioSystem::ProcessSetAudioTrackMuteRequest(const Request &request) NOEXCEPT
+{
+	for (AudioTrack &audio_track : _MixThreadAudioTracks)
+	{
+		if (audio_track._Identifier == request._SetAudioTrackMuteData._Identifier)
+		{
+			audio_track._Mute = request._SetAudioTrackMuteData._Value;
+
+			return;
+		}
+	}
 }
 
 /*
@@ -759,6 +882,19 @@ void AudioSystem::ProcessMixBufferRequest(const Request &request) NOEXCEPT
 		Memory::Set(mix_buffer._Outputs[channel_index].Data(), 0, sizeof(float32) * number_of_samples);
 	}
 
+	//Determine if any audio track are solo'd.
+	bool any_tracks_solo{ false };
+
+	for (uint64 track_index{ 0 }; track_index < _MixThreadAudioTracks.Size(); ++track_index)
+	{
+		if (_MixThreadAudioTracks[track_index]._Solo)
+		{
+			any_tracks_solo = true;
+
+			break;
+		}
+	}
+
 	//Set up the audio process context.
 	AudioProcessContext audio_process_context;
 
@@ -766,7 +902,7 @@ void AudioSystem::ProcessMixBufferRequest(const Request &request) NOEXCEPT
 	audio_process_context._IsTimelineRunning = true;
 
 	//Mix all tracks into the output.
-	for (uint64 track_index{ 1 }; track_index < _MixThreadAudioTracks.Size(); ++track_index)
+	for (uint64 track_index{ 0 }; track_index < _MixThreadAudioTracks.Size(); ++track_index)
 	{
 		//Cache the track.
 		AudioTrack &track{ _MixThreadAudioTracks[track_index] };
@@ -802,43 +938,49 @@ void AudioSystem::ProcessMixBufferRequest(const Request &request) NOEXCEPT
 			}
 		}
 
-		//Apply the audio effects.
-		for (AudioEffect *const RESTRICT effect : track._Effects)
+		if (track_index > 0)
 		{
-			effect->Process
-			(
-				audio_process_context,
-				track._Samples,
-				&track._Samples,
-				number_of_channels,
-				number_of_samples
-			);
+			//Apply the audio effects.
+			for (AudioEffect *const RESTRICT effect : track._Effects)
+			{
+				effect->Process
+				(
+					audio_process_context,
+					track._Samples,
+					&track._Samples,
+					number_of_channels,
+					number_of_samples
+				);
+			}
 		}
 
+		//Determine is this audio track is muted.
+		bool is_muted{ false };
+
+		is_muted = is_muted || (any_tracks_solo && !track._Solo);
+		is_muted = is_muted || track._Mute;
+
 		//Add to the output.
-		for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
+		if (!is_muted)
 		{
-			SIMD::Add(mix_buffer._Outputs[channel_index].Data(), track._Samples[channel_index].Data(), number_of_samples);
+			for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
+			{
+				SIMD::Add(mix_buffer._Outputs[channel_index].Data(), track._Samples[channel_index].Data(), number_of_samples);
+			}
 		}
 	}
 
-	//Add playing audio 2D to the output.
-	ProcessPlayingAudio2D(number_of_channels, number_of_samples, _MixThreadAudioTracks[0]._PlayingAudio2D, mix_buffer._Outputs);
-
-	//Process the master track effects, if there are any.
-	if (!_MixThreadAudioTracks[0]._Effects.Empty())
+	//Process the master track effects.
+	for (AudioEffect *const RESTRICT master_effect : _MixThreadAudioTracks[0]._Effects)
 	{
-		for (AudioEffect *const RESTRICT master_effect : _MixThreadAudioTracks[0]._Effects)
-		{
-			master_effect->Process
-			(
-				audio_process_context,
-				mix_buffer._Outputs,
-				&mix_buffer._Outputs,
-				number_of_channels,
-				number_of_samples
-			);
-		}
+		master_effect->Process
+		(
+			audio_process_context,
+			mix_buffer._Outputs,
+			&mix_buffer._Outputs,
+			number_of_channels,
+			number_of_samples
+		);
 	}
 
 	//Clip all outputs to avoid overruns.
@@ -976,3 +1118,55 @@ void AudioSystem::Process(const DynamicArray<DynamicArray<float32>> &inputs, Dyn
 	++_CurrentMixBufferIndex;
 	_CurrentMixBufferIndex *= static_cast<uint8>(_CurrentMixBufferIndex < NUMBER_OF_MIX_BUFFERS);
 }
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+/*
+*	Adds the mixer debug window.
+*/
+void AudioSystem::MixerDebugWindow(DebugCommand *const RESTRICT command) NOEXCEPT
+{
+	//Iterate over the audio tracks.
+	for (uint64 audio_track_index{ 0 }; audio_track_index < _MainThreadAudioTracks.Size(); ++audio_track_index)
+	{
+		//Cache the audio track.
+		AudioTrack &audio_track{ _MainThreadAudioTracks[audio_track_index] };
+
+		//Push the ID.
+		ImGui::PushID(audio_track_index);
+
+		//Add some spacing.
+		for (uint32 i{ 0 }; i < command->_State._CustomState._Depth; ++i)
+		{
+			ImGui::Text(" ");
+			ImGui::SameLine();
+		}
+
+		//Add the header.
+		ImGui::Text("Audio Track: %s", audio_track._Information._Name);
+
+		//Add some spacing.
+		for (uint32 i{ 0 }; i < command->_State._CustomState._Depth; ++i)
+		{
+			ImGui::Text(" ");
+			ImGui::SameLine();
+		}
+
+		//Add the "Solo" checkbox.
+		if (ImGui::Checkbox("Solo", &audio_track._Solo))
+		{
+			SetAudioTrackSolo(audio_track._Identifier, audio_track._Solo);
+		}
+
+		ImGui::SameLine();
+
+		//Add the "Mute" checkbox.
+		if (ImGui::Checkbox("Mute", &audio_track._Mute))
+		{
+			SetAudioTrackMute(audio_track._Identifier, audio_track._Mute);
+		}
+
+		//Pop the ID.
+		ImGui::PopID();
+	}
+}
+#endif

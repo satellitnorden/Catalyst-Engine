@@ -21,6 +21,12 @@ public:
 	//The identifier.
 	Audio::Identifier _Identifier;
 
+	//Denotes whether or not this audio track is solo'd.
+	bool _Solo;
+
+	//Denotes whether or not this audio track is muted.
+	bool _Mute;
+
 	//The playing audio 2D.
 	DynamicArray<PlayingAudio2D> _PlayingAudio2D;
 

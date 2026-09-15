@@ -154,6 +154,16 @@ public:
 	Audio::Identifier AddAudioTrack(const AudioTrackInformation &information) NOEXCEPT;
 
 	/*
+	*	Sets whether or not the audio track with the given identifier is solo'd.
+	*/
+	void SetAudioTrackSolo(const Audio::Identifier identifier, const bool value) NOEXCEPT;
+
+	/*
+	*	Sets whether or not the audio track with the given identifier is muted.
+	*/
+	void SetAudioTrackMute(const Audio::Identifier identifier, const bool value) NOEXCEPT;
+
+	/*
 	*	Removes the audio track with the given identifier.
 	*/
 	void RemoveAudioTrack(const Audio::Identifier identifier, AtomicFlag *const RESTRICT request_complete_flag = nullptr) NOEXCEPT;
@@ -222,6 +232,8 @@ private:
 			NONE,
 
 			ADD_AUDIO_TRACK,
+			SET_AUDIO_TRACK_SOLO,
+			SET_AUDIO_TRACK_MUTE,
 			REMOVE_AUDIO_TRACK,
 			ADD_AUDIO_EFFECT_TO_TRACK,
 			REMOVE_AUDIO_EFFECT_FROM_TRACK,
@@ -244,6 +256,26 @@ private:
 			//The identifier.
 			Audio::Identifier _Identifier;
 		} _AddAudioTrackData;
+
+		//The set audio track solo data.
+		struct
+		{
+			//The identifier.
+			Audio::Identifier _Identifier;
+
+			//The value.
+			bool _Value;
+		} _SetAudioTrackSoloData;
+
+		//The set audio track mute data.
+		struct
+		{
+			//The identifier.
+			Audio::Identifier _Identifier;
+
+			//The value.
+			bool _Value;
+		} _SetAudioTrackMuteData;
 
 		//The remove audio track data.
 		struct
@@ -415,6 +447,16 @@ private:
 	void ProcessAddAudioTrackRequest(const Request &request) NOEXCEPT;
 
 	/*
+	*	Processes a set audio track solo request.
+	*/
+	void ProcessSetAudioTrackSoloRequest(const Request &request) NOEXCEPT;
+
+	/*
+	*	Processes a set audio track mute request.
+	*/
+	void ProcessSetAudioTrackMuteRequest(const Request &request) NOEXCEPT;
+
+	/*
 	*	Processes a remove audio track request.
 	*/
 	void ProcessRemoveAudioTrackRequest(const Request &request) NOEXCEPT;
@@ -453,5 +495,12 @@ private:
 	*	Processes.
 	*/
 	void Process(const DynamicArray<DynamicArray<float32>> &inputs, DynamicArray<DynamicArray<float32>> *const RESTRICT outputs) NOEXCEPT;
+
+#if !defined(CATALYST_CONFIGURATION_FINAL)
+	/*
+	*	Adds the mixer debug window.
+	*/
+	void MixerDebugWindow(class DebugCommand *const RESTRICT command) NOEXCEPT;
+#endif
 
 };

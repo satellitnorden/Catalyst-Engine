@@ -24,6 +24,12 @@ public:
 	{
 		struct
 		{
+			//The depth in the tree we are at currently.
+			uint32 _Depth;
+		} _CustomState;
+
+		struct
+		{
 			//Denotes whether or not this checkbox is checked.
 			bool _IsChecked;
 		} _CheckboxState;
@@ -59,6 +65,7 @@ public:
 	//Enumeration covering all types.
 	enum class Type : uint8
 	{
+		CUSTOM,
 		BUTTON,
 		CHECKBOX,
 		SLIDER
@@ -104,6 +111,16 @@ public:
 	{
 
 	}
+
+	/*
+	*	Registers a custom debug command.
+	*/
+	void RegisterCustomDebugCommand
+	(
+		const char *const RESTRICT name,
+		DebugCommandFunction function,
+		void* const RESTRICT user_data
+	) NOEXCEPT;
 
 	/*
 	*	Registers a button debug command.
