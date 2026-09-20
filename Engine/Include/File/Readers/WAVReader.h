@@ -293,7 +293,7 @@ public:
 			//The sub chunk 1 size.
 			uint32 _SubChunk1Size;
 
-			//The audio format. PCM == 1, other values indicate some form of compression.
+			//The audio format. Integer PCM == 1, Float PCM = 3, other values indicate some form of compression.
 			uint16 _AudioFormat;
 
 			//The number of channels. 1 == Mono, 2 == Stereo etc.
