@@ -148,4 +148,52 @@ public:
 		std::sort(begin, end, Comparator(user_data, comparison_function));
 	}
 
+	/*
+	*	Standard stable sort.
+	*
+	*	Time complexity: At most O(n log n).
+	*	Sorting in place: Yes.
+	*	Stable: Yes.
+	*	Uses: General sorting algorithm suited for most cases.
+	*/
+	template <typename TYPE>
+	static void StandardStableSort(TYPE *const RESTRICT begin, TYPE *const RESTRICT end, const void *const RESTRICT user_data, ComparisonFunction<TYPE> comparison_function = [](const void *const RESTRICT user_data, const TYPE *const RESTRICT first, const TYPE *const RESTRICT second) { return *first < *second; }) NOEXCEPT
+	{
+		class Comparator final
+		{
+
+		public:
+
+			/*
+			*	Constructor taking all values as arguments.
+			*/
+			FORCE_INLINE Comparator(const void *const RESTRICT initial_user_data, const ComparisonFunction<TYPE> initial_comparison_function) NOEXCEPT
+				:
+				_UserData(initial_user_data),
+				_ComparisonFunction(initial_comparison_function)
+			{
+
+			}
+
+			/*
+			*	Bool operator overload.
+			*/
+			FORCE_INLINE bool operator()(const TYPE &first, const TYPE &second) NOEXCEPT
+			{
+				return _ComparisonFunction(_UserData, &first, &second);
+			}
+
+		private:
+
+			//The user data.
+			const void *RESTRICT _UserData;
+
+			//The comparison function.
+			ComparisonFunction<TYPE> _ComparisonFunction;
+
+		};
+
+		std::stable_sort(begin, end, Comparator(user_data, comparison_function));
+	}
+
 };

@@ -370,8 +370,8 @@ void *const RESTRICT CatalystPlatform::CreatePlatformWindow(const char *const RE
 			{
 				0,
 				0,
-				width,
-				height
+				static_cast<LONG>(width),
+				static_cast<LONG>(height)
 			};
 
 			//Adjust the rect.

@@ -14,6 +14,7 @@
 #include <Audio/Core/AudioProcessContext.h>
 #include <Audio/Core/Buffer.h>
 #include <Audio/MIDI/MIDIMessage.h>
+#include <Audio/Miscellaneous/PianoRollInformation.h>
 
 //Concurrency.
 #include <Concurrency/Atomic.h>
@@ -458,35 +459,6 @@ public:
 	};
 
 	/*
-	*	Piano roll information class definition.
-	*/
-	class PianoRollInformation final
-	{
-
-	public:
-
-		/*
-		*	Key information class definition.
-		*/
-		class KeyInformation final
-		{
-
-		public:
-
-			//The color.
-			Vector3<float32> _Color{ -1.0f, -1.0f, -1.0f };
-
-			//The tooltip.
-			const char *RESTRICT _Tooltip{ "" };
-
-		};
-
-		//The key information.
-		StaticArray<KeyInformation, 127> _KeyInformation;
-
-	};
-
-	/*
 	*	Default destructor.
 	*/
 	FORCE_INLINE virtual ~AudioPlugin() NOEXCEPT
@@ -505,7 +477,7 @@ public:
 	/*
 	*	Returns the piano roll information.
 	*/
-	FORCE_INLINE virtual void GetPianoRollInformation(PianoRollInformation *const RESTRICT information) NOEXCEPT
+	FORCE_INLINE virtual void GetPianoRollInformation(Audio::PianoRollInformation *const RESTRICT information) NOEXCEPT
 	{
 
 	}
