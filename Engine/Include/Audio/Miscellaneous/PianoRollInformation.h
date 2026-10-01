@@ -36,7 +36,7 @@ namespace Audio
 		};
 
 		//The key information.
-		StaticArray<KeyInformation, 127> _KeyInformation;
+		StaticArray<KeyInformation, 128> _KeyInformation;
 
 	};
 
