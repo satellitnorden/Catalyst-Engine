@@ -15,6 +15,22 @@ class ADSREnvelope final
 public:
 
 	/*
+	*	Returns whether or not this ADSR envelope is enabled.
+	*/
+	FORCE_INLINE NO_DISCARD bool GetEnabled() const NOEXCEPT
+	{
+		return _Enabled;
+	}
+
+	/*
+	*	Sets whether or not this ADSR envelope is enabled.
+	*/
+	FORCE_INLINE void SetEnabled(const bool value) NOEXCEPT
+	{
+		_Enabled = value;
+	}
+
+	/*
 	*	Sets the sample rate.
 	*/
 	FORCE_INLINE void SetSampleRate(const float32 sample_rate) NOEXCEPT
@@ -212,6 +228,9 @@ private:
 
 		OFF
 	};
+
+	//Denotes whether or not this ADSR envelope is enabled.
+	bool _Enabled{ true };
 
 	//The sample rate.
 	float32 _SampleRate{ Audio::DEFAULT_SAMPLE_RATE };

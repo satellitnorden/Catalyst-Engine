@@ -111,7 +111,7 @@ public:
 		return	BaseMath::LinearlyInterpolate(_AudioStream->Sample(channel_index, index_0), _AudioStream->Sample(channel_index, index_1), _CurrentFraction)
 				* _Gain
 				* (channel_index == 0 ? _LeftPanGainMultiplier : _RightPanGainMultiplier)
-				* _ADSREnvelope.Sample();
+				* (_ADSREnvelope.GetEnabled() ? _ADSREnvelope.Sample() : 1.0f);
 	}
 
 	/*
@@ -132,7 +132,10 @@ public:
 			_CurrentSample -= _AudioStream->GetNumberOfSamples();
 		}
 
-		_ADSREnvelope.Advance();
+		if (_ADSREnvelope.GetEnabled())
+		{
+			_ADSREnvelope.Advance();
+		}
 	}
 
 	/*
@@ -140,7 +143,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD bool IsActive() const NOEXCEPT
 	{
-		return _CurrentSample < _AudioStream->GetNumberOfSamples() && !_ADSREnvelope.IsOff();
+		return _CurrentSample < _AudioStream->GetNumberOfSamples() && (_ADSREnvelope.GetEnabled() ? !_ADSREnvelope.IsOff() : true);
 	}
 
 private:
