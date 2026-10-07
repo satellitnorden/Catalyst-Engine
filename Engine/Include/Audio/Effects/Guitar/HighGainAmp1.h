@@ -5,6 +5,7 @@
 
 //Audio.
 #include <Audio/Effects/Core/AudioEffect.h>
+#include <Audio/Effects/Distortion/Distortion1.h>
 #include <Audio/Effects/General/HighPassFilter.h>
 #include <Audio/Effects/General/HighShelfFilter.h>
 #include <Audio/Effects/General/LowPassFilter.h>
@@ -45,6 +46,9 @@ public:
 
 	//The power.
 	bool _Power{ true };
+
+	//Debug. (:
+	float32 _Debug{ 0.0 };
 
 	/*
 	*	Default constructor.
@@ -207,24 +211,9 @@ public:
 			_PreFilters._LowPassFilter.Process(context, *outputs, outputs, number_of_channels, number_of_samples);
 		}
 
-		//Apply the gain.
-		for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
-		{
-			//Calculate the gain.
-			const float32 gain{ Audio::DecibelsToGain(BaseMath::LinearlyInterpolate(48.0f, 96.0f, BaseMath::InverseSquare(_Gain))) };
-
-			for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
-			{
-				_OverSamplers[channel_index].Feed(outputs->At(channel_index).At(sample_index));
-
-				for (float32 &sample : _OverSamplers[channel_index].GetSamples())
-				{
-					sample = ApplyDistortion(sample, gain);
-				}
-
-				outputs->At(channel_index).At(sample_index) = _OverSamplers[channel_index].DownSample();
-			}
-		}
+		//Apply the distortion.
+		_Distortion._Gain = _Gain;
+		_Distortion.Process(context, *outputs, outputs, number_of_channels, number_of_samples);
 
 		//Apply the post filters.
 		{
@@ -418,8 +407,8 @@ private:
 	//The pre filters.
 	PreFilters _PreFilters;
 
-	//The oversamplers.
-	StaticArray<OverSampler<2, 32>, 2> _OverSamplers;
+	//The distortion.
+	Distortion1 _Distortion{ 0.5f, 40.0f, 80.0f, 1.0f, Audio::DecibelsToGain(3.5f) };
 
 	//The post filters.
 	PostFilters _PostFilters;
@@ -432,27 +421,6 @@ private:
 
 	//The calibration curve.
 	Curve<float32, CALIBRATION_CURVE_SIZE> _CalibrationCurve;
-
-	/*
-	*	Applies distortion. (:
-	*	https://www.desmos.com/calculator/dzpujomgss
-	*/
-	FORCE_INLINE NO_DISCARD float32 ApplyDistortion(const float32 sample, const float32 gain) NOEXCEPT
-	{
-		//Calculate the sign multiplier.
-		const float32 sign_multiplier{ std::tanh(sample * gain) };
-
-		//Calculate the gain multipliers.
-		const float32 gain_multiplier_1{ BaseMath::LinearlyInterpolate(0.5f, 2.0f, BaseMath::Absolute<float32>(sign_multiplier)) };
-		const float32 gain_multiplier_2{ BaseMath::LinearlyInterpolate(0.25f, 4.0f, sign_multiplier * 0.5f + 0.5f) };
-
-		//Calculate the different distortions.
-		const float32 distortion_1{ std::atan(sample * gain * gain_multiplier_1 * gain_multiplier_2) };
-		const float32 distortion_2{ std::tanh(sample * sample * sample * sample * (gain - 1.0f) * gain_multiplier_1 * gain_multiplier_2 * (sample >= 0.0f ? 1.0f : -1.0f) * 0.25f) * (BaseMathConstants::HALF_PI - 1) };
-
-		//Return the final blend!
-		return distortion_1 - distortion_2;
-	}
 
 	/*
 	*	Applies the tone filters.
