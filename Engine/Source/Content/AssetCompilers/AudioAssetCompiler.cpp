@@ -171,7 +171,7 @@ void AudioAssetCompiler::Compile(const CompileContext &compile_context) NOEXCEPT
 	output_file.Write(&number_of_samples, sizeof(uint32));
 
 	//Write the data.
-	output_file.Write(audio_stream.GetData(), audio_stream.GetDataSize());
+	output_file.Write(audio_stream.GetDataRead(), audio_stream.GetDataSize());
 
 	//Close the output file.
 	output_file.Close();

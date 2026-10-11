@@ -14,7 +14,7 @@ namespace Audio
 		/*
 		*	Returns if the given buffer is a mono.
 		*/
-		FORCE_INLINE NO_DISCARD bool IsMono(const DynamicArray<DynamicArray<float32>> &buffer) NOEXCEPT
+		FORCE_INLINE NO_DISCARD bool IsMono(const DynamicArray<DynamicArray<float32>> &buffer, const bool *const RESTRICT previous_value = nullptr) NOEXCEPT
 		{
 			//Define constants.
 			constexpr float32 THRESHOLD{ FLOAT32_EPSILON };
@@ -38,6 +38,8 @@ namespace Audio
 			const uint32 number_of_samples{ static_cast<uint32>(buffer.At(0).Size()) };
 
 			//Iterate over all samples, calculating their differences and see if it passes the threshold.
+			float32 total_sum{ 0.0f };
+
 			for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
 			{
 				//Calculate the difference.
@@ -48,9 +50,17 @@ namespace Audio
 				{
 					return false;
 				}
+
+				total_sum += buffer.At(0).At(sample_index);
+				total_sum += buffer.At(1).At(sample_index);
 			}
 
-			//If we got here, we didn't detect a difference higher than the threshold, so the buffer is mono!
+			//If we got here, we didn't detect a difference higher than the threshold - If we were fed all 0's, we should just return the previous value (if one was supplied).
+			if (total_sum == 0.0f && previous_value)
+			{
+				return *previous_value;
+			}
+
 			return true;
 		}
 

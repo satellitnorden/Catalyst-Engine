@@ -7,6 +7,7 @@
 //Audio.
 #include <Audio/Core/Audio.h>
 #include <Audio/Core/AudioProcessContext.h>
+#include <Audio/MIDI/MIDIMessage.h>
 
 /*
 *	An audio effects encapsulates one piece of audio processing, and can be used as modular building blocks to create more complex plugins.
@@ -61,6 +62,14 @@ public:
 	*	Updates this audio effect on the main thread.
 	*/
 	FORCE_INLINE virtual void MainThreadUpdate() NOEXCEPT
+	{
+
+	}
+
+	/*
+	*	Callback for when this plugin receives MIDI messages.
+	*/
+	FORCE_INLINE virtual void OnMIDIMessages(const MIDIMessage *const RESTRICT messages, const uint64 number_of_messages) NOEXCEPT
 	{
 
 	}

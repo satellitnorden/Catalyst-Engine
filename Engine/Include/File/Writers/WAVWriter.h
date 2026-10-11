@@ -99,7 +99,7 @@ public:
 			const int32 data_chunk_size{ static_cast<int32>(audio_stream.GetNumberOfSamples()) * (static_cast<int32>(audio_stream.GetNumberOfChannels()) * bit_depth / 8) };
 			output_file.Write(&data_chunk_size, sizeof(int32));
 
-			output_file.Write(audio_stream.GetData(), audio_stream.GetNumberOfSamples() * audio_stream.GetNumberOfChannels() * bit_depth / 8);
+			output_file.Write(audio_stream.GetDataRead(), audio_stream.GetNumberOfSamples() * audio_stream.GetNumberOfChannels() * bit_depth / 8);
 		}
 
 		//Close the output file.

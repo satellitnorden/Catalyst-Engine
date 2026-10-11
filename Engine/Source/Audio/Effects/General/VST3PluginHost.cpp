@@ -8,9 +8,13 @@
 //Audio.
 #include <Audio/VST3/BitStream.h>
 #include <Audio/VST3/ComponentHandler.h>
+#include <Audio/VST3/EventList.h>
 #include <Audio/VST3/HostApplication.h>
 #include <Audio/VST3/PlugFrame.h>
 #include <Audio/VST3/Utilities.h>
+
+//Concurrency.
+#include <Concurrency/AtomicQueue.h>
 
 //Systems.
 #include <Systems/LogSystem.h>
@@ -76,6 +80,12 @@ public:
 
 	//The output buffer.
 	DynamicArray<DynamicArray<float32>> _OutputBuffer;
+
+	//The input event list.
+	VST3::EventList _InputEventList;
+
+	//The incoming MIDI messages.
+	AtomicQueue<MIDIMessage, 128, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _IncomingMIDIMessages;
 
 	//The project time.
 	int64 _ProjectTime{ 0 };
@@ -820,6 +830,17 @@ void VST3PluginHost::Terminate() NOEXCEPT
 }
 
 /*
+*	Callback for when this plugin receives MIDI messages.
+*/
+void VST3PluginHost::OnMIDIMessages(const MIDIMessage *const RESTRICT messages, const uint64 number_of_messages) NOEXCEPT
+{
+	for (uint64 message_index{ 0 }; message_index < number_of_messages; ++message_index)
+	{
+		Implementation()->_IncomingMIDIMessages.Push(messages[message_index]);
+	}
+}
+
+/*
 *	Callback for this audio effect to process the given buffer.
 */
 void VST3PluginHost::Process
@@ -844,6 +865,9 @@ void VST3PluginHost::Process
 
 	//Do some sanity checking.
 	ASSERT(number_of_channels == 2, "This assumes we have stereo in/stereo out!");
+
+	//Process the incoming MIDI messages.
+	ProcessIncomingMIDIMessages();
 
 	//Cache the implementation.
 	VST3PluginHostImplementation *const RESTRICT implementation{ Implementation() };
@@ -900,7 +924,7 @@ void VST3PluginHost::Process
 
 	process_data.inputParameterChanges = nullptr;
 	process_data.outputParameterChanges = nullptr;
-	process_data.inputEvents = nullptr;
+	process_data.inputEvents = &implementation->_InputEventList;
 	process_data.outputEvents = nullptr;
 
 	Steinberg::Vst::ProcessContext process_context{ };
@@ -927,6 +951,9 @@ void VST3PluginHost::Process
 
 	//Update the project time.
 	implementation->_ProjectTime += static_cast<int64>(number_of_samples);
+
+	//Clear the input event list.
+	implementation->_InputEventList.Clear();
 }
 
 /*
@@ -1047,4 +1074,68 @@ NO_DISCARD bool VST3PluginHost::DestroyEditController() NOEXCEPT
 
 	//There's nothing that can fail here really, so just return true.
 	return true;
+}
+
+/*
+*	Processes the incoming MIDI messages.
+*/
+void VST3PluginHost::ProcessIncomingMIDIMessages() NOEXCEPT
+{
+	//Cache the implementation.
+	VST3PluginHostImplementation *const RESTRICT implementation{ Implementation() };
+
+	//Process the incoming MIDI messages.
+	Optional<MIDIMessage> incoming_midi_message{ implementation->_IncomingMIDIMessages.Pop() };
+
+	while (incoming_midi_message.Valid())
+	{
+		const MIDIMessage &_incoming_midi_message{ incoming_midi_message.Get() };
+
+		switch (_incoming_midi_message._Type)
+		{
+			case MIDIMessage::Type::NOTE_ON:
+			{
+				Steinberg::Vst::Event event;
+
+				event.busIndex = 0;
+				event.sampleOffset = 0;
+				event.ppqPosition = 0.0;
+				event.flags = 0;
+				event.type = Steinberg::Vst::Event::EventTypes::kNoteOnEvent;
+				event.noteOn.channel = _incoming_midi_message._NoteOnChannel;
+				event.noteOn.pitch = _incoming_midi_message._NoteOnNote;
+				event.noteOn.tuning = 0.0f;
+				event.noteOn.velocity = static_cast<float32>(_incoming_midi_message._NoteOnVelocity) / 127.0f;
+				event.noteOn.length = 0;
+				event.noteOn.noteId = -1;
+
+				implementation->_InputEventList.addEvent(event);
+
+				break;
+			}
+
+			case MIDIMessage::Type::NOTE_OFF:
+			{
+				Steinberg::Vst::Event event;
+
+				event.busIndex = 0;
+				event.sampleOffset = 0;
+				event.ppqPosition = 0.0;
+				event.flags = 0;
+				event.type = Steinberg::Vst::Event::EventTypes::kNoteOffEvent;
+				event.noteOff.channel = _incoming_midi_message._NoteOffChannel;
+				event.noteOff.pitch = _incoming_midi_message._NoteOffNote;
+				event.noteOff.velocity = 0.0f;
+				event.noteOff.noteId = -1;
+				event.noteOff.tuning = 0.0f;
+
+				implementation->_InputEventList.addEvent(event);
+
+				break;
+			}
+		}
+
+		incoming_midi_message = implementation->_IncomingMIDIMessages.Pop();
+	}
+
 }

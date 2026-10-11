@@ -88,13 +88,23 @@ public:
 	}
 
 	/*
-	*	Returns the data.
+	*	Returns the data for reading.
 	*/
-	FORCE_INLINE NO_DISCARD const byte *const RESTRICT GetData() const NOEXCEPT
+	FORCE_INLINE NO_DISCARD const byte *const RESTRICT GetDataRead() const NOEXCEPT
 	{
 		ASSERT((!_Data._Internal.Empty() && !_Data._External) || (_Data._Internal.Empty() && _Data._External), "Either not data is set or it is set both internally or externally.");
 
 		return _Data._Internal.Empty() ? _Data._External : _Data._Internal.Data();
+	}
+
+	/*
+	*	Returns the dat for writing.
+	*/
+	FORCE_INLINE NO_DISCARD byte *const RESTRICT GetDataWrite() NOEXCEPT
+	{
+		ASSERT(!_Data._Internal.Empty(), "Can only write to internal data!");
+
+		return _Data._Internal.Data();
 	}
 
 	/*
@@ -156,13 +166,19 @@ public:
 	}
 
 	/*
+	*	Returns the data index for the given channel/sample index combination.
+	*/
+	FORCE_INLINE NO_DISCARD uint64 GetDataIndex(const uint8 channel_index, const uint32 sample_index) const NOEXCEPT
+	{
+		return sample_index * _NumberOfChannels * (Audio::BitsPerSample(_Format) >> 3) + BaseMath::Minimum<uint8>(channel_index, _NumberOfChannels - 1) * (Audio::BitsPerSample(_Format) >> 3);
+	}
+
+	/*
 	*	Samples this audio stream.
 	*/
 	FORCE_INLINE NO_DISCARD float32 Sample(const uint8 channel_index, const uint32 sample_index) const NOEXCEPT
 	{
-		const uint64 data_index{ sample_index * _NumberOfChannels * (Audio::BitsPerSample(_Format) >> 3) + BaseMath::Minimum<uint8>(channel_index, _NumberOfChannels - 1) * (Audio::BitsPerSample(_Format) >> 3) };
-
-		return Audio::ConvertToFloat32(_Format, &GetData()[data_index]);
+		return Audio::ConvertToFloat32(_Format, &GetDataRead()[GetDataIndex(channel_index, sample_index)]);
 	}
 
 private:

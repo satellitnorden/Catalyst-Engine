@@ -16,7 +16,7 @@ class VST3PluginHost final : public PluginHost
 public:
 
 	//Constants.
-	constexpr static uint64 IMPLEMENTATION_SIZE{ 192 };
+	constexpr static uint64 IMPLEMENTATION_SIZE{ 1'024 };
 
 	/*
 	*	Default constructor.
@@ -69,6 +69,11 @@ public:
 	void Terminate() NOEXCEPT;
 
 	/*
+	*	Callback for when this plugin receives MIDI messages.
+	*/
+	void OnMIDIMessages(const MIDIMessage *const RESTRICT messages, const uint64 number_of_messages) NOEXCEPT override;
+
+	/*
 	*	Callback for this audio effect to process the given buffer.
 	*/
 	void Process
@@ -109,5 +114,10 @@ private:
 	*	Destroys the edit controller.
 	*/
 	NO_DISCARD bool DestroyEditController() NOEXCEPT;
+
+	/*
+	*	Processes the incoming MIDI messages.
+	*/
+	void ProcessIncomingMIDIMessages() NOEXCEPT;
 
 };
