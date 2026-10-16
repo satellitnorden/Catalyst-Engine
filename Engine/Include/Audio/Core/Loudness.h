@@ -5,6 +5,7 @@
 
 //Audio.
 #include <Audio/Core/Audio.h>
+#include <Audio/Utilities/PerceptualLoudnessFilter.h>
 
 /*
 *	Class dealing with loudness.
@@ -29,18 +30,24 @@ public:
 		const uint32 number_of_samples
 	) NOEXCEPT
 	{
+		//Set up the filter.
+		PerceptualLoudnessFilter filter;
+		filter.Initialize(sample_rate);
+
+		//Calculate the sum.
         float64 sum{ 0.0 };
 
         for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
         {
 			float32 sample{ samples[sample_index] };
-
+			sample = filter.Process(sample);
             sum += static_cast<float64>(sample) * static_cast<float64>(sample);
         }
 
         sum /= static_cast<float64>(number_of_samples);
 		sum = std::sqrt(sum);
 
+		//Convert to decibels and return!
         return Audio::GainToDecibels(static_cast<float32>(sum));
 	}
 
