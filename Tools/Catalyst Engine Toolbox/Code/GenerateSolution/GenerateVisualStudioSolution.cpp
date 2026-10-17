@@ -73,7 +73,7 @@ void GenerateVisualStudioSolution::GenerateProjectFile(const Parameters &paramet
 {
     //Figure out the project file path.
     char file_path_buffer[256];
-    sprintf_s(file_path_buffer, "%s\\%s.vcxproj", parameters._DirectoryPath, parameters._ProjectName);
+    sprintf_s(file_path_buffer, "%s\\%s.vcxproj", parameters._DirectoryPath.c_str(), parameters._ProjectName);
 
     //Open the file.
     std::ofstream file{ file_path_buffer };
@@ -220,7 +220,7 @@ void GenerateVisualStudioSolution::GenerateProjectFile(const Parameters &paramet
             file << "\t\t<TargetName Condition=" << GetConfigurationPlatformConditionString(configuration._Name, platform._Name) << ">" << parameters._ProjectName << "</TargetName>" << std::endl;
 
             //Set the target extension.
-            file << "\t\t<TargetExt>" << configuration._TargetFileExtension << "</TargetExt>" << std::endl;
+            file << "\t\t<TargetExt Condition=" << GetConfigurationPlatformConditionString(configuration._Name, platform._Name) << ">" << configuration._TargetFileExtension << "</TargetExt>" << std::endl;
         }
     }
 
@@ -350,7 +350,7 @@ void GenerateVisualStudioSolution::GenerateFiltersFile(const Parameters &paramet
 {
     //Figure out the project file path.
     char file_path_buffer[256];
-    sprintf_s(file_path_buffer, "%s\\%s.vcxproj.filters", parameters._DirectoryPath, parameters._ProjectName);
+    sprintf_s(file_path_buffer, "%s\\%s.vcxproj.filters", parameters._DirectoryPath.c_str(), parameters._ProjectName);
 
     //Open the file.
     std::ofstream file{ file_path_buffer };
@@ -410,7 +410,7 @@ void GenerateVisualStudioSolution::GenerateSolutionFile(const Parameters &parame
 
     //Figure out the project file path.
     char file_path_buffer[256];
-    sprintf_s(file_path_buffer, "%s\\%s.sln", parameters._DirectoryPath, parameters._ProjectName);
+    sprintf_s(file_path_buffer, "%s\\%s.sln", parameters._DirectoryPath.c_str(), parameters._ProjectName);
 
     //Open the file.
     std::ofstream file{ file_path_buffer };

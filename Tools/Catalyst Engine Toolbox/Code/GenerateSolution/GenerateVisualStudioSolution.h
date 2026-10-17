@@ -119,7 +119,7 @@ public:
 		};
 
 		//The directory path.
-		const char *_DirectoryPath;
+		std::string _DirectoryPath;
 
 		//The project name.
 		const char *_ProjectName;

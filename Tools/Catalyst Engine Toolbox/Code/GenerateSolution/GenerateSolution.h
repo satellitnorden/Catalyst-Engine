@@ -21,11 +21,6 @@ private:
 	/*
 	*	Cleans.
 	*/
-	static void Clean();
-
-	/*
-	*	Generates the "RunCodeGeneration.bat" file.
-	*/
-	static void GenerateRunCodeGenerationBatchFile(const ProjectSettings &project_settings, const bool for_pre_generation);
+	static void Clean(const ProjectSettings &project_settings);
 
 };

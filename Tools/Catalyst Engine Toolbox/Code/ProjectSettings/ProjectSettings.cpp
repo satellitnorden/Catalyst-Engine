@@ -80,6 +80,24 @@ void ProjectSettings::Read(const char *file_path)
 		_ScriptGameInclude = JSON["ScriptGameInclude"].get<std::string>();
 	}
 
+	//Read the audio plugins.
+	if (JSON.contains("AudioPlugins"))
+	{
+		for (const nlohmann::ordered_json &audio_plugin_entry : JSON["AudioPlugins"])
+		{
+			AudioPlugin &audio_plugin{ _AudioPlugins.emplace_back() };
+
+			audio_plugin._Name = audio_plugin_entry["Name"];
+
+			audio_plugin._NameNoSpaces = audio_plugin._Name;
+			audio_plugin._NameNoSpaces.erase(std::remove_if(audio_plugin._NameNoSpaces.begin(), audio_plugin._NameNoSpaces.end(), [](unsigned char x) { return std::isspace(x); }), audio_plugin._NameNoSpaces.end());
+
+			audio_plugin._ClassName = audio_plugin._NameNoSpaces + std::string("Plugin");
+
+			audio_plugin._DirectoryPath = audio_plugin_entry["DirectoryPath"];
+		}
+	}
+
 	//Calculate the developer name with no spaces.
 	_DeveloperNameNoSpaces = _DeveloperName;
 	_DeveloperNameNoSpaces.erase(std::remove_if(_DeveloperNameNoSpaces.begin(), _DeveloperNameNoSpaces.end(), [](unsigned char x) { return std::isspace(x); }), _DeveloperNameNoSpaces.end());

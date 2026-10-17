@@ -5,6 +5,7 @@
 
 //STD.
 #include <string>
+#include <vector>
 
 class ProjectSettings final
 {
@@ -17,6 +18,28 @@ public:
 		NONE,
 
 		JOLT
+	};
+
+	/*
+	*	Audio plugin class definition.
+	*/
+	class AudioPlugin final
+	{
+
+	public:
+
+		//The name.
+		std::string _Name;
+
+		//The name with no spaces.
+		std::string _NameNoSpaces;
+
+		//The class name.
+		std::string _ClassName;
+
+		//The directory path.
+		std::string _DirectoryPath;
+
 	};
 
 	//The devloper name.
@@ -42,6 +65,9 @@ public:
 
 	//The script game include.
 	std::string _ScriptGameInclude;
+
+	//The audio plugins.
+	std::vector<AudioPlugin> _AudioPlugins;
 
 	/*
 	*	Reads the project settings.
