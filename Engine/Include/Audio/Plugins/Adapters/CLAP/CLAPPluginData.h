@@ -3,6 +3,7 @@
 
 //Audio.
 #include <Audio/Plugins/Core/Plugin.h>
+#include <Audio/Plugins/Adapters/Core/PluginWindow.h>
 
 /*
 *	CLAP Plugin Data class definition.
@@ -31,11 +32,8 @@ public:
 	//The outputs.
 	DynamicArray<DynamicArray<float32>> _Outputs;
 
-	//The parent window.
-	void *RESTRICT _ParentWindow{ nullptr };
-
-	//The child window.
-	void *RESTRICT _ChildWindow{ nullptr };
+	//The plugin window.
+	PluginWindow _PluginWindow;
 
 };
 #endif

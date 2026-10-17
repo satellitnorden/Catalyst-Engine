@@ -58,7 +58,7 @@ namespace CLAPGUIExtension
 		CLAPPluginData *const RESTRICT plugin_data{ static_cast<CLAPPluginData *const RESTRICT>(plugin->plugin_data) };
 
 		//Destroy the window.
-		CatalystPlatform::DestroyPlayformWindow(plugin_data->_ChildWindow);
+		plugin_data->_PluginWindow.Destroy();
 	}
 
 	/*
@@ -128,17 +128,8 @@ namespace CLAPGUIExtension
 		//Cache the plugin data.
 		CLAPPluginData *const RESTRICT plugin_data{ static_cast<CLAPPluginData *const RESTRICT>(plugin->plugin_data) };
 
-		//Retrieve the resolution.
-		const Resolution resolution{ plugin_data->_Plugin->GetResolution() };
-
-		//Set the parent window.
-		plugin_data->_ParentWindow = window->win32;
-
-		//Create the child window.
-		plugin_data->_ChildWindow = CatalystPlatform::CreateChildPlatformWindow(plugin_data->_ParentWindow, resolution._Width, resolution._Height);
-
 		//Return if the child window was created successfully.
-		return plugin_data->_ChildWindow != nullptr;
+		return plugin_data->_PluginWindow.Create(window->win32, plugin_data->_Plugin->GetResolution());
 	}
 
 	/*
@@ -166,7 +157,7 @@ namespace CLAPGUIExtension
 		CLAPPluginData *const RESTRICT plugin_data{ static_cast<CLAPPluginData *const RESTRICT>(plugin->plugin_data) };
 
 		//Show the window.
-		CatalystPlatform::ShowPlatformWindow(plugin_data->_ChildWindow);
+		plugin_data->_PluginWindow.Show();
 
 		//Return success!
 		return true;
@@ -181,7 +172,7 @@ namespace CLAPGUIExtension
 		CLAPPluginData *const RESTRICT plugin_data{ static_cast<CLAPPluginData *const RESTRICT>(plugin->plugin_data) };
 
 		//Hide the window.
-		CatalystPlatform::HidePlatformWindow(plugin_data->_ChildWindow);
+		plugin_data->_PluginWindow.Hide();
 
 		//Return success!
 		return true;
