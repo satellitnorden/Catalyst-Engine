@@ -1,42 +1,20 @@
 #if defined(AUDIO_PLUGIN_CLAP)
+#pragma once
 //Audio plugin.
 #include <AudioPluginGlue.h>
 
+//Audio.
+#include <Audio/Plugins/Adapters/CLAP/CLAPPlugin.h>
+#include <Audio/Plugins/Adapters/CLAP/CLAPPluginData.h>
+
 //Third party.
 #include <ThirdParty/CLAP/clap.h>
-
-//STD.
-#include <cstring>
-#include <filesystem>
-#include <fstream>
-
-void DebugLog(const char *message)
-{
-	constexpr const char *FILE_PATH{ "C:\\Users\\Denni\\My Drive\\Share Folder\\Plugins\\TEST\\Log.txt" };
-
-	if (!std::filesystem::exists(FILE_PATH))
-	{
-		std::ofstream file{ FILE_PATH };
-
-		file << "Start!" << std::endl;
-
-		file.close();
-	}
-
-	std::ofstream file{ FILE_PATH, std::ofstream::app };
-
-	file << message << std::endl;
-
-	file.close();
-}
 
 /*
 *	The 'get_plugin_count' function.
 */
 uint32_t CLAP_ABI get_plugin_count(const struct clap_plugin_factory* factory)
 {
-	DebugLog("get_plugin_count");
-
 	return 1;
 }
 
@@ -64,8 +42,6 @@ const clap_plugin_descriptor_t PLUGIN_DESCRIPTOR
 
 const clap_plugin_descriptor_t *CLAP_ABI get_plugin_descriptor(const struct clap_plugin_factory *factory, uint32_t index)
 {
-	DebugLog("get_plugin_descriptor");
-
 	if (index != 0)
 	{
 		return nullptr;
@@ -79,19 +55,17 @@ const clap_plugin_descriptor_t *CLAP_ABI get_plugin_descriptor(const struct clap
 */
 const clap_plugin_t *CLAP_ABI create_plugin(const struct clap_plugin_factory *factory, const clap_host_t *host, const char *plugin_id)
 {
-	DebugLog("create_plugin");
-
 	clap_plugin_t *const plugin = new clap_plugin_t();
 
 	plugin->desc = &PLUGIN_DESCRIPTOR;
-	plugin->plugin_data = AudioPluginGlue::Create();
+	plugin->plugin_data = new CLAPPluginData(AudioPluginGlue::Create());
 	plugin->init = [](const struct clap_plugin *plugin)
 	{
 		return true;
 	};
 	plugin->destroy = [](const struct clap_plugin *plugin)
 	{
-		
+
 	};
 	plugin->activate = []
 	(
@@ -105,7 +79,7 @@ const clap_plugin_t *CLAP_ABI create_plugin(const struct clap_plugin_factory *fa
 	};
 	plugin->deactivate = [](const struct clap_plugin *plugin)
 	{
-		
+
 	};
 	plugin->start_processing = [](const struct clap_plugin *plugin)
 	{
@@ -113,74 +87,27 @@ const clap_plugin_t *CLAP_ABI create_plugin(const struct clap_plugin_factory *fa
 	};
 	plugin->stop_processing = [](const struct clap_plugin *plugin)
 	{
-		
+
 	};
 	plugin->reset = [](const struct clap_plugin *plugin)
 	{
-	
+
 	};
-	plugin->process = [](const struct clap_plugin *plugin, const clap_process_t *process) -> clap_process_status
+	plugin->process = process;
+	plugin->get_extension = get_extension;
+	plugin->on_main_thread = [](const struct clap_plugin* plugin)
 	{
-		return CLAP_PROCESS_CONTINUE;
-	};
-	plugin->get_extension = [](const struct clap_plugin *plugin, const char *id) -> const void*
-	{
-		return nullptr;
-	};
-	plugin->on_main_thread = [](const struct clap_plugin *plugin)
-	{
-		
+
 	};
 
 	return plugin;
 }
 
-/*
-*	The 'init' function.
-*/
-bool CLAP_ABI init(const char *plugin_path)
-{
-	DebugLog("init");
-
-	return true;
-}
-
-/*
-*	The 'deinit' function.
-*/
-void CLAP_ABI deinit()
-{
-	DebugLog("deinit");
-}
-
-/*
-*	The 'get_factory' function.
-*/
+//The plugin factory.
 const clap_plugin_factory PLUGIN_FACTORY
 {
 	get_plugin_count,
 	get_plugin_descriptor,
 	create_plugin
-};
-
-const void *CLAP_ABI get_factory(const char *factory_id)
-{
-	DebugLog("get_factory");
-
-	if (strcmp(factory_id, CLAP_PLUGIN_FACTORY_ID) != 0)
-	{
-		return nullptr;
-	}
-
-	return &PLUGIN_FACTORY;
-}
-
-//Export the CLAP plugin entry object.
-extern "C" CLAP_EXPORT const clap_plugin_entry_t clap_entry = 
-{
-	CLAP_VERSION,	//clap_version
-	init,			//init
-	deinit,			//deinit
-	get_factory		//get_factory
 };
 #endif
