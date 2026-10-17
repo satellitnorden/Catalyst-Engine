@@ -4,6 +4,7 @@
 //Audio.
 #include <Audio/Plugins/Core/Plugin.h>
 #include <Audio/Plugins/Adapters/CLAP/Extensions/CLAPAudioPortsExtension.h>
+#include <Audio/Plugins/Adapters/CLAP/Extensions/CLAPGUIExtension.h>
 #include <Audio/Plugins/Adapters/CLAP/CLAPPluginData.h>
 
 //Third party.
@@ -64,10 +65,15 @@ const void *get_extension(const struct clap_plugin *plugin, const char *id)
 	//Cache the plugin data.
 	CLAPPluginData *const RESTRICT plugin_data{ static_cast<CLAPPluginData *const RESTRICT>(plugin->plugin_data) };
 
-	//Is this the audio ports extension?
-	if (strcmp(id, CLAP_EXT_AUDIO_PORTS) == 0)
+	//Query for supported extensions.
+	if (strcmp(id, CLAP_EXT_AUDIO_PORTS) == 0 && CLAPAudioPortsExtension::IsSupported(plugin))
 	{
 		return &CLAPAudioPortsExtension::EXTENSION;
+	}
+
+	else if (strcmp(id, CLAP_EXT_GUI) == 0 && CLAPGUIExtension::IsSupported(plugin))
+	{
+		return &CLAPGUIExtension::EXTENSION;
 	}
 
 	//Not a supported extension.

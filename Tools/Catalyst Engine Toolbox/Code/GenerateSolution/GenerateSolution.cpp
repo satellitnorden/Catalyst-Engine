@@ -938,15 +938,6 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 				file << std::endl;
 
 				file << "\t/*" << std::endl;
-				file << "\t*\tReturns the name of this plugin." << std::endl;
-				file << "\t*/" << std::endl;
-				file << "\tFORCE_INLINE const char *const RESTRICT Name() const NOEXCEPT override" << std::endl;
-				file << "\t{" << std::endl;
-				file << "\t\treturn \"" << audio_plugin._Name.c_str() << "\";" << std::endl;
-				file << "\t}" << std::endl;
-				file << std::endl;
-
-				file << "\t/*" << std::endl;
 				file << "\t*\tCallback for this plugin to process the given buffer." << std::endl;
 				file << "\t*/" << std::endl;
 				file << "\tvoid Process" << std::endl;

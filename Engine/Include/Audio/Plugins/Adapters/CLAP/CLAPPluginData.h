@@ -31,5 +31,11 @@ public:
 	//The outputs.
 	DynamicArray<DynamicArray<float32>> _Outputs;
 
+	//The parent window.
+	void *RESTRICT _ParentWindow{ nullptr };
+
+	//The child window.
+	void *RESTRICT _ChildWindow{ nullptr };
+
 };
 #endif

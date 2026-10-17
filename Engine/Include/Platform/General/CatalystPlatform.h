@@ -51,9 +51,24 @@ public:
 	static void *const RESTRICT CreatePlatformWindow(const char *const RESTRICT name, const uint32 width, const uint32 height, const WindowType window_type) NOEXCEPT;
 
 	/*
+	*	Creates a child platform window with the given parameters.
+	*/
+	static void *const RESTRICT CreateChildPlatformWindow(void *const RESTRICT parent, const uint32 width, const uint32 height) NOEXCEPT;
+
+	/*
 	*	Sets the size of a platform window.
 	*/
 	static void SetPlatformWindowSize(void *const RESTRICT window, const uint32 width, const uint32 height) NOEXCEPT;
+
+	/*
+	*	Shows the given platform window.
+	*/
+	static void ShowPlatformWindow(void *const RESTRICT window) NOEXCEPT;
+
+	/*
+	*	Hides the given platform window.
+	*/
+	static void HidePlatformWindow(void *const RESTRICT window) NOEXCEPT;
 
 	/*
 	*	Destroys a platform window.

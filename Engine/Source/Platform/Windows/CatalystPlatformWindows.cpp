@@ -30,6 +30,7 @@
 //Static variable definitions.
 HINSTANCE CatalystPlatformWindows::_Instance;
 int32 CatalystPlatformWindows::_ShowCommand;
+bool CatalystPlatformWindows::_WindowInfoRegistered{ false };
 WNDCLASSEX CatalystPlatformWindows::_WindowInfo;
 HWND CatalystPlatformWindows::_MainWindow;
 DynamicArray<uint64> CatalystPlatformWindows::_KeyDownEvents;
@@ -193,20 +194,15 @@ LRESULT CALLBACK WindowProcedure(	_In_ HWND   window,
 }
 
 /*
-*	Sets the visibility of the cursor.
+*	Registers the window info.
 */
-FORCE_INLINE void SetCursorVisibility(const bool visibility) NOEXCEPT
+FORCE_INLINE void RegisterWindowInfo() NOEXCEPT
 {
-	//Set the requested visibility.
-	CatalystWindowsData::_CursorRequestedVisibility = visibility;
-}
+	if (CatalystPlatformWindows::_WindowInfoRegistered)
+	{
+		return;
+	}
 
-/*
-*	Initializes the platform.
-*/
-void CatalystPlatform::Initialize() NOEXCEPT
-{
-	//Create the window info.
 	CatalystPlatformWindows::_WindowInfo.cbSize = sizeof(WNDCLASSEX);
 	CatalystPlatformWindows::_WindowInfo.style = 0;
 	CatalystPlatformWindows::_WindowInfo.lpfnWndProc = WindowProcedure;
@@ -228,6 +224,26 @@ void CatalystPlatform::Initialize() NOEXCEPT
 #else
 	RegisterClassEx(&CatalystPlatformWindows::_WindowInfo);
 #endif
+
+	CatalystPlatformWindows::_WindowInfoRegistered = true;
+}
+
+/*
+*	Sets the visibility of the cursor.
+*/
+FORCE_INLINE void SetCursorVisibility(const bool visibility) NOEXCEPT
+{
+	//Set the requested visibility.
+	CatalystWindowsData::_CursorRequestedVisibility = visibility;
+}
+
+/*
+*	Initializes the platform.
+*/
+void CatalystPlatform::Initialize() NOEXCEPT
+{
+	//Register the window info.
+	RegisterWindowInfo();
 
 	//Create the window.
 	{
@@ -316,6 +332,8 @@ NO_DISCARD bool CatalystPlatform::IsPlatformWindowAlive(void* const RESTRICT win
 */
 void *const RESTRICT CatalystPlatform::CreatePlatformWindow(const char *const RESTRICT name, const uint32 width, const uint32 height, const WindowType window_type) NOEXCEPT
 {
+	RegisterWindowInfo();
+
 	HWND window{ nullptr };
 
 	switch (window_type)
@@ -410,6 +428,30 @@ void *const RESTRICT CatalystPlatform::CreatePlatformWindow(const char *const RE
 }
 
 /*
+*	Creates a child platform window with the given parameters.
+*/
+void *const RESTRICT CatalystPlatform::CreateChildPlatformWindow(void *const RESTRICT parent, const uint32 width, const uint32 height) NOEXCEPT
+{
+	RegisterWindowInfo();
+
+	return CreateWindowEx
+	(
+		0,
+		CatalystPlatformWindows::_WindowInfo.lpszClassName,
+		nullptr,
+		WS_CHILD,
+		0,
+		0,
+		width,
+		height,
+		static_cast<HWND>(parent),
+		nullptr,
+		CatalystPlatformWindows::_Instance,
+		nullptr
+	);
+}
+
+/*
 *	Sets the size of a platform window.
 */
 void CatalystPlatform::SetPlatformWindowSize(void *const RESTRICT window, const uint32 width, const uint32 height) NOEXCEPT
@@ -424,6 +466,22 @@ void CatalystPlatform::SetPlatformWindowSize(void *const RESTRICT window, const 
 		height,
 		SWP_NOMOVE | SWP_NOZORDER
 	);
+}
+
+/*
+*	Shows the given platform window.
+*/
+void CatalystPlatform::ShowPlatformWindow(void *const RESTRICT window) NOEXCEPT
+{
+	ShowWindow(static_cast<HWND>(window), SW_SHOW);
+}
+
+/*
+*	Hides the given platform window.
+*/
+void CatalystPlatform::HidePlatformWindow(void *const RESTRICT window) NOEXCEPT
+{
+	ShowWindow(static_cast<HWND>(window), SW_HIDE);
 }
 
 /*

@@ -2,6 +2,11 @@
 //Audio.
 #include <Audio/Plugins/Adapters/CLAP/CLAPFactory.h>
 
+//Platform.
+#if defined(CATALYST_PLATFORM_WINDOWS)
+#include <Platform/Windows/CatalystPlatformWindows.h>
+#endif
+
 //Third party.
 #include <ThirdParty/CLAP/clap.h>
 
@@ -15,6 +20,20 @@
 */
 bool CLAP_ABI init(const char *plugin_path)
 {
+	//Retrieve platform-specific stuff.
+#if defined(CATALYST_PLATFORM_WINDOWS)
+	HMODULE module = nullptr;
+
+	GetModuleHandleExW(
+		GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+		GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+		reinterpret_cast<LPCWSTR>(&init),
+		&module
+	);
+
+	CatalystPlatformWindows::_Instance = module;
+#endif
+
 	return true;
 }
 

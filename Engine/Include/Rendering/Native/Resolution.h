@@ -42,7 +42,7 @@ public:
 	/*
 	*	Division operator overload.	
 	*/
-		FORCE_INLINE constexpr NO_DISCARD Resolution operator/(const uint32 scalar) NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Resolution operator/(const uint32 scalar) NOEXCEPT
 	{
 		return Resolution(_Width / scalar, _Height / scalar);
 	}

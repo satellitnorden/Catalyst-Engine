@@ -1,5 +1,9 @@
 #if defined(AUDIO_PLUGIN_CLAP)
 #pragma once
+
+//Core.
+#include <Core/Essential/CatalystEssential.h>
+
 //Third party.
 #include <ThirdParty/CLAP/clap.h>
 
@@ -59,6 +63,15 @@ namespace CLAPAudioPortsExtension
 		count,
 		get
 	};
+
+	/*
+	*	Returns whether or not the given plugin supports this extension.
+	*/
+	FORCE_INLINE NO_DISCARD bool IsSupported(const clap_plugin_t *plugin) NOEXCEPT
+	{
+		//This extension is always supported.
+		return true;
+	}
 
 }
 #endif

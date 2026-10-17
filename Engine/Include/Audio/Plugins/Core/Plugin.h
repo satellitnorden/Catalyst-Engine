@@ -7,6 +7,9 @@
 //Audio.
 #include <Audio/Core/AudioProcessContext.h>
 
+//Rendering.
+#include <Rendering/Native/Resolution.h>
+
 namespace Audio
 {
 
@@ -28,9 +31,12 @@ namespace Audio
 		}
 
 		/*
-		*	Returns the name of this plugin.
+		*	Returns the resolution.
 		*/
-		FORCE_INLINE virtual const char *const RESTRICT Name() const NOEXCEPT = 0;
+		FORCE_INLINE virtual NO_DISCARD Resolution GetResolution() const NOEXCEPT
+		{
+			return Resolution(0, 0);
+		}
 
 		/*
 		*	Callback for this plugin to process the given buffer.
