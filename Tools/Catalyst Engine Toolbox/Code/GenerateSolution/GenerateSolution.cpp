@@ -34,6 +34,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 		preprocessor_definitions->emplace_back("_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_ENABLE_RESOURCE_BUILDING");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
 		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
 	}
@@ -43,6 +44,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 		preprocessor_definitions->emplace_back("_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_ENABLE_RESOURCE_BUILDING");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
 		preprocessor_definitions->emplace_back("CATALYST_EDITOR");
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
 		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
@@ -53,6 +55,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 		preprocessor_definitions->emplace_back("NDEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_PROFILE");
 		preprocessor_definitions->emplace_back("CATALYST_ENABLE_RESOURCE_BUILDING");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
 		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
 	}
@@ -62,6 +65,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 		preprocessor_definitions->emplace_back("NDEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_PROFILE");
 		preprocessor_definitions->emplace_back("CATALYST_ENABLE_RESOURCE_BUILDING");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
 		preprocessor_definitions->emplace_back("CATALYST_EDITOR");
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
 		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
@@ -100,6 +104,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 		preprocessor_definitions->emplace_back("_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_ENABLE_RESOURCE_BUILDING");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
 		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
 	}
@@ -109,6 +114,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 		preprocessor_definitions->emplace_back("NDEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_PROFILE");
 		preprocessor_definitions->emplace_back("CATALYST_ENABLE_RESOURCE_BUILDING");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
 		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
 	}
@@ -123,9 +129,6 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 	{
 		preprocessor_definitions->emplace_back("_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_DEBUG");
-		preprocessor_definitions->emplace_back("CATALYST_ENABLE_RESOURCE_BUILDING");
-		preprocessor_definitions->emplace_back("TRACY_ENABLE");
-		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
 	}
 
 	else if (strcmp(configuration_name, "CLAP Final") == 0)
@@ -138,9 +141,6 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 	{
 		preprocessor_definitions->emplace_back("_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_DEBUG");
-		preprocessor_definitions->emplace_back("CATALYST_ENABLE_RESOURCE_BUILDING");
-		preprocessor_definitions->emplace_back("TRACY_ENABLE");
-		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
 		}
 
 	else if (strcmp(configuration_name, "VST3 Final") == 0)
@@ -276,7 +276,6 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 	{
 		library_includes->emplace_back("Debug\\shaderc_shared.lib");
 		library_includes->emplace_back("Debug\\libsoundwave.lib");
-		library_includes->emplace_back("Debug\\assimp-vc143-mtd.lib");
 	}
 
 	else if (strcmp(configuration_name, "CLAP Final") == 0)
@@ -288,7 +287,6 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 	{
 		library_includes->emplace_back("Debug\\shaderc_shared.lib");
 		library_includes->emplace_back("Debug\\libsoundwave.lib");
-		library_includes->emplace_back("Debug\\assimp-vc143-mtd.lib");
 	}
 
 	else if (strcmp(configuration_name, "VST3 Final") == 0)
@@ -860,6 +858,33 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 
 			file << "namespace AudioPluginGlue" << std::endl;
 			file << "{" << std::endl;
+			file << std::endl;
+
+			file << "\t/*" << std::endl;
+			file << "\t*\tReturns the identifier of the plugin." << std::endl;
+			file << "\t*/" << std::endl;
+			file << "\tFORCE_INLINE constexpr const char *const RESTRICT Identifier() NOEXCEPT" << std::endl;
+			file << "\t{" << std::endl;
+			file << "\t\treturn \"com." << project_settings._DeveloperNameNoSpaces.c_str() << "." << audio_plugin._NameNoSpaces.c_str() << "\";" << std::endl;
+			file << "\t}" << std::endl;
+			file << std::endl;
+
+			file << "\t/*" << std::endl;
+			file << "\t*\tReturns the name of the plugin." << std::endl;
+			file << "\t*/" << std::endl;
+			file << "\tFORCE_INLINE constexpr const char *const RESTRICT Name() NOEXCEPT" << std::endl;
+			file << "\t{" << std::endl;
+			file << "\t\treturn \"" << audio_plugin._Name.c_str() << "\";" << std::endl;
+			file << "\t}" << std::endl;
+			file << std::endl;
+
+			file << "\t/*" << std::endl;
+			file << "\t*\tReturns the vendor of the plugin." << std::endl;
+			file << "\t*/" << std::endl;
+			file << "\tFORCE_INLINE constexpr const char *const RESTRICT Vendor() NOEXCEPT" << std::endl;
+			file << "\t{" << std::endl;
+			file << "\t\treturn \"" << project_settings._DeveloperNameNoSpaces.c_str() << "\";" << std::endl;
+			file << "\t}" << std::endl;
 			file << std::endl;
 
 			file << "\t/*" << std::endl;

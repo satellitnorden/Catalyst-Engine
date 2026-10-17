@@ -1,6 +1,31 @@
 //Header file.
 #include <File/Readers/FBXReader.h>
 
+#if !defined(CATALYST_HAS_ASSIMP)
+/*
+*	Reads the animated model file at the given file path. Returns if the read was succesful.
+*/
+NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, AnimatedModelFile *const RESTRICT animated_model_file) NOEXCEPT
+{
+	return false;
+}
+
+/*
+*	Reads the animation file at the given file path. Returns if the read was succesful.
+*/
+NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, AnimationFile *const RESTRICT animation_file) NOEXCEPT
+{
+	return false;
+}
+
+/*
+*	Reads the model file at the given file path. Returns if the read was succesful.
+*/
+NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, ModelFile *const RESTRICT model_file) NOEXCEPT
+{
+	return false;
+}
+#else
 //Core.
 #include <Core/General/DynamicString.h>
 
@@ -1371,4 +1396,5 @@ NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, ModelFile 
 	//Return that the read succeeded!
 	return true;
 }
+#endif
 #endif

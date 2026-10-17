@@ -10,6 +10,9 @@
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 
+//STD.
+#include <cstdio>
+
 /*
 *	Initializes the task system.
 */
