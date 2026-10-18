@@ -24,12 +24,16 @@ bool CLAP_ABI init(const char *plugin_path)
 #if defined(CATALYST_PLATFORM_WINDOWS)
 	HMODULE module = nullptr;
 
-	GetModuleHandleExW(
+	if (!GetModuleHandleExW
+	(
 		GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
 		GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
 		reinterpret_cast<LPCWSTR>(&init),
 		&module
-	);
+	))
+	{
+		return false;
+	}
 
 	CatalystPlatformWindows::_Instance = module;
 #endif

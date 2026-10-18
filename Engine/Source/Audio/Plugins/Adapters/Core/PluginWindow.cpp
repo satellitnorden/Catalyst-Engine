@@ -152,11 +152,13 @@ LRESULT CALLBACK PluginWindowProcedure
 */
 FORCE_INLINE NO_DISCARD bool RegisterWindowInfo() NOEXCEPT
 {
+	//If the window is already explicitly registered, return true.
 	if (WINDOW_INFO_REGISTERED)
 	{
 		return true;
 	}
 
+	//Set up the window info.
 	WINDOW_INFO.cbSize = sizeof(WNDCLASSEX);
 	WINDOW_INFO.style = 0;
 	WINDOW_INFO.lpfnWndProc = PluginWindowProcedure;
@@ -167,14 +169,36 @@ FORCE_INLINE NO_DISCARD bool RegisterWindowInfo() NOEXCEPT
 	WINDOW_INFO.hCursor = LoadCursor(NULL, IDC_ARROW);
 	WINDOW_INFO.hbrBackground = 0;
 	WINDOW_INFO.lpszMenuName = NULL;
-	WINDOW_INFO.lpszClassName = _T("Plugin Window");
+	WINDOW_INFO.lpszClassName = _T("Catalyst Plugin Window");
 	WINDOW_INFO.hIconSm = LoadIcon(CatalystPlatformWindows::_Instance, IDI_APPLICATION);
 
+	//Due to .dll loading/unloading shenanigans, the class may already be registered - Check that.
+	{
+		WNDCLASSEX existing_class{ };
+		existing_class.cbSize = sizeof(WNDCLASSEX);
+
+		if (GetClassInfoEx(CatalystPlatformWindows::_Instance, _T("Catalyst Plugin Window"), &existing_class))
+		{
+			//The class existis, but we need to check that it's actually the same class.
+			const bool identical_window_procedure{ existing_class.lpfnWndProc == WINDOW_INFO.lpfnWndProc };
+
+			//If they are identical, the class is already registered.
+			if (identical_window_procedure)
+			{
+				WINDOW_INFO_REGISTERED = true;
+
+				return true;
+			}
+		}
+	}
+
+	//Try to register the class.
 	if (RegisterClassEx(&WINDOW_INFO))
 	{
 		WINDOW_INFO_REGISTERED = true;
 	}
 
+	//Return if the window info was registered.
 	return WINDOW_INFO_REGISTERED;
 }
 
