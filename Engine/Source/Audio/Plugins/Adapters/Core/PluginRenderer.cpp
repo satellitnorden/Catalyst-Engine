@@ -1,0 +1,45 @@
+//Header file.
+#include <Audio/Plugins/Adapters/Core/PluginRenderer.h>
+
+//Audio.
+#include <Audio/Plugins/Adapters/Core/PluginRenderBackends/SoftwarePluginRenderBackend.h>
+
+/*
+*	Initializes this plugin renderer.
+*/
+void PluginRenderer::Initialize(Audio::Plugin *const RESTRICT plugin, const PluginWindow *const RESTRICT window) NOEXCEPT
+{
+	//Set the plugin.
+	_Plugin = plugin;
+
+	//Set the window.
+	_Window = window;
+
+	//Create the render backend.
+	_RenderBackend = new SoftwarePluginRenderBackend(_Plugin);
+}
+
+/*
+*	Updates this plugin renderer.
+*/
+void PluginRenderer::Update() NOEXCEPT
+{
+	//Update the render backend.
+	_RenderBackend->Update();
+}
+
+/*
+*	Returns if this renderer is doing software rendering.
+*/
+NO_DISCARD bool PluginRenderer::IsDoingSoftwareRendering() const NOEXCEPT
+{
+	return _RenderBackend->IsDoingSoftwareRendering();
+}
+
+/*
+*	Returns the software render data.
+*/
+NO_DISCARD const uint32 *const RESTRICT PluginRenderer::GetSoftwareRenderData() const NOEXCEPT
+{
+	return _RenderBackend->GetSoftwareRenderData();
+}

@@ -6,6 +6,9 @@
 //Rendering.
 #include <Rendering/Native/Resolution.h>
 
+//Forward declarations.
+class PluginRenderer;
+
 /*
 *	Class holding a (child) window for a plugin.
 *	Handles creation/destruction/showing/hiding as well as setting up update functions and handling window messages.
@@ -14,6 +17,11 @@ class PluginWindow final
 {
 
 public:
+
+	/*
+	*	Initializes this plugin window.
+	*/
+	void Initialize(PluginRenderer *const RESTRICT renderer) NOEXCEPT;
 
 	/*
 	*	Creates this plugin window.
@@ -36,7 +44,29 @@ public:
 	*/
 	void Destroy();
 
+	/*
+	*	Returns the renderer.
+	*/
+	FORCE_INLINE NO_DISCARD PluginRenderer *const RESTRICT GetRenderer() const NOEXCEPT
+	{
+		return _Renderer;
+	}
+
+	/*
+	*	Returns the resolution.
+	*/
+	FORCE_INLINE NO_DISCARD Resolution GetResolution() const NOEXCEPT
+	{
+		return _Resolution;
+	}
+
 private:
+
+	//The renderer.
+	PluginRenderer *RESTRICT _Renderer;
+
+	//The resolution.
+	Resolution _Resolution;
 
 	//The window.
 	void *RESTRICT _Window{ nullptr };

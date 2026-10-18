@@ -1,6 +1,18 @@
 //Header file.
 #include <Audio/Plugins/Adapters/Core/PluginWindow.h>
 
+//Audio.
+#include <Audio/Plugins/Adapters/Core/PluginRenderer.h>
+
+/*
+*	Initializes this plugin window.
+*/
+void PluginWindow::Initialize(PluginRenderer *const RESTRICT renderer) NOEXCEPT
+{
+	//Set the renderer.
+	_Renderer = renderer;
+}
+
 #if defined(CATALYST_PLATFORM_WINDOWS)
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
@@ -28,14 +40,40 @@ LRESULT CALLBACK PluginWindowProcedure
 {
 	switch (message)
 	{
+		case WM_NCCREATE:
+		{
+			//Retrieve the create state.
+			const CREATESTRUCT *const RESTRICT create_state{ reinterpret_cast<const CREATESTRUCT *const RESTRICT>(lParam) };
+
+			//Retrieve the plugin window.
+			PluginWindow *const RESTRICT plugin_window{ static_cast<PluginWindow *const RESTRICT>(create_state->lpCreateParams) };
+
+			//Associate this plugin window with the window.
+			SetWindowLongPtr
+			(
+				window,
+				GWLP_USERDATA,
+				reinterpret_cast<LONG_PTR>(plugin_window)
+			);
+
+			break;
+		}
+
 		case WM_TIMER:
 		{
 			if (wParam == TIMER_ID)
 			{
-				//TODO:Run the UI update loop.
+				//Retrieve the plugin window.
+				PluginWindow *const RESTRICT plugin_window{ reinterpret_cast<PluginWindow *const RESTRICT>(GetWindowLongPtr(window, GWLP_USERDATA)) };
 
-				//Invalidate the window to receive a PAINT call.
-				InvalidateRect(window, nullptr, FALSE);
+				if (plugin_window)
+				{
+					//Update the renderer.
+					plugin_window->GetRenderer()->Update();
+
+					//Invalidate the window to receive a PAINT call.
+					InvalidateRect(window, nullptr, FALSE);
+				}
 			}
 
 			break;
@@ -43,23 +81,65 @@ LRESULT CALLBACK PluginWindowProcedure
 
 		case WM_PAINT:
 		{
-			PAINTSTRUCT paint_state;
-			HDC device_context{ BeginPaint(window, &paint_state) };
+			//Retrieve the plugin window.
+			PluginWindow *const RESTRICT plugin_window{ reinterpret_cast<PluginWindow *const RESTRICT>(GetWindowLongPtr(window, GWLP_USERDATA)) };
 
-			RECT client_rectangle;
-			GetClientRect(window, &client_rectangle);
-
-			HBRUSH brush{ CreateSolidBrush(RGB(CatalystRandomMath::RandomIntegerInRange<int32>(0, 255), CatalystRandomMath::RandomIntegerInRange<int32>(0, 255), CatalystRandomMath::RandomIntegerInRange<int32>(0, 255)))};
-
-			if (brush)
+			if (plugin_window)
 			{
-				FillRect(device_context, &client_rectangle, brush);
-				DeleteObject(brush);
-			}
+				//Retrieve the renderer.
+				const PluginRenderer *const RESTRICT renderer{ plugin_window->GetRenderer() };
 
-			EndPaint(window, &paint_state);
+				//If we are doing software renderering, blit the pixels into the window.
+				if (renderer->IsDoingSoftwareRendering())
+				{
+					//Retrieve the resolution.
+					const Resolution resolution{ plugin_window->GetResolution() };
+
+					//Retrieve the data.
+					const uint32 *const RESTRICT data{ renderer->GetSoftwareRenderData() };
+
+					//Begin the paint.
+					PAINTSTRUCT paint_state;
+					HDC device_context{ BeginPaint(window, &paint_state) };
+
+					//Set up the bitmap info.
+					BITMAPINFO bitmap_info{ };
+
+					bitmap_info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+					bitmap_info.bmiHeader.biWidth = resolution._Width;
+					bitmap_info.bmiHeader.biHeight = resolution._Height;
+					bitmap_info.bmiHeader.biPlanes = 1;
+					bitmap_info.bmiHeader.biBitCount = 32;
+					bitmap_info.bmiHeader.biCompression = BI_RGB;
+
+					//Retrieve the client rectangle.
+					RECT client_rectangle{ };
+					GetClientRect(window, &client_rectangle);
+
+					//Do the paint!
+					StretchDIBits
+					(
+						device_context,
+						0,
+						0,
+						client_rectangle.right,
+						client_rectangle.bottom,
+						0,
+						0,
+						resolution._Width,
+						resolution._Height,
+						data,
+						&bitmap_info,
+						DIB_RGB_COLORS,
+						SRCCOPY
+					);
+
+					//End the paint.
+					EndPaint(window, &paint_state);
+				}
+			}
 			
-			break;
+			return 0;
 		}
 	}
 
@@ -110,6 +190,9 @@ NO_DISCARD bool PluginWindow::Create(void *const RESTRICT parent_window, const R
 		return false;
 	}
 
+	//Set the resolution.
+	_Resolution = resolution;
+
 	//Create the window.
 	_Window = CreateWindowEx
 	(
@@ -119,12 +202,12 @@ NO_DISCARD bool PluginWindow::Create(void *const RESTRICT parent_window, const R
 		WS_CHILD,
 		0,
 		0,
-		resolution._Width,
-		resolution._Height,
+		_Resolution._Width,
+		_Resolution._Height,
 		static_cast<HWND>(parent_window),
 		nullptr,
 		CatalystPlatformWindows::_Instance,
-		nullptr
+		this
 	);
 
 	//Return if the window could be created.
