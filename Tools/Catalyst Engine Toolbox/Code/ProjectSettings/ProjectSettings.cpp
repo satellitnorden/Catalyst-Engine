@@ -95,6 +95,11 @@ void ProjectSettings::Read(const char *file_path)
 			audio_plugin._ClassName = audio_plugin._NameNoSpaces + std::string("Plugin");
 
 			audio_plugin._DirectoryPath = audio_plugin_entry["DirectoryPath"];
+
+			const nlohmann::ordered_json &resolution_entry{ audio_plugin_entry["Resolution"] };
+
+			audio_plugin._Resolution._Width = resolution_entry[0].get<unsigned>();
+			audio_plugin._Resolution._Height = resolution_entry[1].get<unsigned>();
 		}
 	}
 

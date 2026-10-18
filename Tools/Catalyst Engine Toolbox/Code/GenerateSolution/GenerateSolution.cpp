@@ -812,10 +812,10 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 
 	//Generate the audio plugin files.
 	{
-		//Generate the "Main.cpp" file.
+		//Generate the "StandaloneMain.Generated.cpp" file.
 		{
 			char buffer[256];
-			sprintf_s(buffer, "%s\\StandaloneMain.cpp", std::string(std::string("..\\") + audio_plugin._DirectoryPath).c_str());
+			sprintf_s(buffer, "%s\\StandaloneMain.Generated.cpp", std::string(std::string("..\\") + audio_plugin._DirectoryPath).c_str());
 
 			std::ofstream file{ buffer };
 
@@ -829,8 +829,44 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 			file << "#include <Platform/Windows/CatalystPlatformWindows.h>" << std::endl;
 			file << std::endl;
 
+			file << "//Systems." << std::endl;
+			file << "#include <Systems/CatalystEngineSystem.h>" << std::endl;
+			file << std::endl;
+
+			file << "/*" << std::endl;
+			file << "*\tCreates the Catalyst project configuration." << std::endl;
+			file << "*/" << std::endl;
+			file << "void CreateCatalystProjectConfiguration(CatalystProjectConfiguration *const RESTRICT configuration) NOEXCEPT" << std::endl;
+			file << "{" << std::endl;
+
+			file << "\tconfiguration->_GeneralConfiguration._ProjectName = \"" << audio_plugin._Name.c_str() << "\";" << std::endl;
+			file << std::endl;
+
+			file << "\tconfiguration->_RenderingConfiguration._InitialFullScreen = false;" << std::endl;
+			file << "\tconfiguration->_RenderingConfiguration._Resolution = Resolution(" <<audio_plugin._Resolution._Width << ", " << audio_plugin._Resolution._Height << ");" << std::endl;
+
+			file << "}" << std::endl;
+			file << std::endl;
+
 			file << "MAIN_FUNCTION" << std::endl;
 			file << "(" << std::endl;
+
+			file << "\t//Create the Catalyst project configuration." << std::endl;
+			file << "\tCatalystProjectConfiguration configuration;" << std::endl;
+			file << "\tCreateCatalystProjectConfiguration(&configuration);" << std::endl;
+			file << std::endl;
+
+			file << "\t//Initialize the engine system." << std::endl;
+			file << "\tCatalystEngineSystem::Instance->Initialize(configuration);" << std::endl;
+			file << std::endl;
+
+			file << "\t//Main game loop." << std::endl;
+			file << "\twhile (CatalystEngineSystem::Instance->Update());" << std::endl;
+			file << std::endl;
+
+			file << "\t//Terminate the engine system." << std::endl;
+			file << "\tCatalystEngineSystem::Instance->Terminate();" << std::endl;
+
 			file << ")" << std::endl;
 
 			file << "#endif";
@@ -838,10 +874,10 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 			file.close();
 		}
 
-		//Generate the "AudioPluginGlue.h" file.
+		//Generate the "AudioPluginGlue.Generated.h" file.
 		{
 			char buffer[256];
-			sprintf_s(buffer, "%s\\AudioPluginGlue.h", std::string(std::string("..\\") + audio_plugin._DirectoryPath).c_str());
+			sprintf_s(buffer, "%s\\AudioPluginGlue.Generated.h", std::string(std::string("..\\") + audio_plugin._DirectoryPath).c_str());
 
 			std::ofstream file{ buffer };
 
@@ -938,6 +974,21 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 				file << std::endl;
 
 				file << "\t/*" << std::endl;
+				file << "\t*\tReturns the resolution." << std::endl;
+				file << "\t*/" << std::endl;
+				file << "\tFORCE_INLINE NO_DISCARD Resolution GetResolution() const NOEXCEPT override" << std::endl;
+				file << "\t{" << std::endl;
+				file << "\t\treturn Resolution(" << audio_plugin._Resolution._Width << ", " << audio_plugin._Resolution._Height << ");" << std::endl;
+				file << "\t} NOEXCEPT override;" << std::endl;
+				file << std::endl;
+
+				file << "\t/*" << std::endl;
+				file << "\t*\tInitializes this plugin." << std::endl;
+				file << "\t*/" << std::endl;
+				file << "\tvoid Initialize(const InitializeContext &context) NOEXCEPT override;" << std::endl;
+				file << std::endl;
+
+				file << "\t/*" << std::endl;
 				file << "\t*\tCallback for this plugin to process the given buffer." << std::endl;
 				file << "\t*/" << std::endl;
 				file << "\tvoid Process" << std::endl;
@@ -968,6 +1019,14 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 				file << "//Header file." << std::endl;
 				file << "#include <" << audio_plugin._ClassName.c_str() <<".h>" << std::endl;
 				file << std::endl;
+
+				file << "/*" << std::endl;
+				file << "*\tInitializes this plugin." << std::endl;
+				file << "*/" << std::endl;
+				file << "void " << audio_plugin._ClassName.c_str() << "::Initialize(const InitializeContext &context) NOEXCEPT" << std::endl;
+				file << "{" << std::endl;
+				file << std::endl;
+				file << "}";
 
 				file << "/*" << std::endl;
 				file << "*\tCallback for this plugin to process the given buffer." << std::endl;
@@ -1019,7 +1078,7 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 
 	//Copy assimp-vc143-mt.dll.
 	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", std::string(AudioPluginDirectory(audio_plugin) + std::string("\\Standalone Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", std::string(AudioPluginDirectory(audio_plugin) + std::string("\\Standalone Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(AudioPluginDirectory(audio_plugin) + std::string("\\Standalone Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(AudioPluginDirectory(audio_plugin) + std::string("\\Standalone Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 
 	//Copy onnxruntime.dll.

@@ -40,6 +40,16 @@ public:
 		//The directory path.
 		std::string _DirectoryPath;
 
+		//The resolution.
+		struct
+		{
+			//The width.
+			unsigned _Width;
+
+			//The height.
+			unsigned _Height;
+		} _Resolution;
+
 	};
 
 	//The devloper name.

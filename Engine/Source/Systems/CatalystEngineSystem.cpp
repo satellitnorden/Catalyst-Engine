@@ -123,7 +123,11 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 #if !defined(CATALYST_EDITOR)
 	//If this is a pure game build, start the game immediately.
 	Components::StartGame();
-	_ProjectConfiguration._GeneralConfiguration._StartGameFunction();
+	
+	if (_ProjectConfiguration._GeneralConfiguration._StartGameFunction)
+	{
+		_ProjectConfiguration._GeneralConfiguration._StartGameFunction();
+	}
 #endif
 
 	//Flush the logs after initialization.

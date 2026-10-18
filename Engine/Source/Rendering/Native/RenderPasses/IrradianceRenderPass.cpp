@@ -371,7 +371,7 @@ void IrradianceRenderPass::Execute() NOEXCEPT
 
 			for (GraphicsRenderPipeline &pipeline : _SpecularIrradianceTemporalDenoisingPipelines)
 			{
-				pipeline.SetIncludeInRender(true);
+				pipeline.SetIncludeInRender(false);
 			}
 
 			break;
