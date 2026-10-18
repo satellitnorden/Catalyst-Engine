@@ -80,20 +80,39 @@ public:
 	void LoadAssetCollection(const char *const RESTRICT file_path) NOEXCEPT;
 
 	/*
+	*	Tries to return the asset with the given asset identifier.
+	*/
+	template <typename TYPE>
+	FORCE_INLINE NO_DISCARD AssetPointer<TYPE> TryGetAsset(const HashString asset_identifier) NOEXCEPT
+	{
+		HashTable<HashString, Asset *RESTRICT> *const RESTRICT assets{ _Assets.Find(TYPE::TYPE_IDENTIFIER) };
+
+		if (!assets)
+		{
+			return AssetPointer<TYPE>();
+		}
+
+		Asset *const RESTRICT *const RESTRICT asset{ assets->Find(asset_identifier) };
+
+		if (!asset)
+		{
+			return AssetPointer<TYPE>();
+		}
+
+		return AssetPointer<TYPE>(static_cast<TYPE *const RESTRICT>(*asset));
+	}
+
+	/*
 	*	Returns the asset with the given asset identifier.
 	*/
 	template <typename TYPE>
 	FORCE_INLINE NO_DISCARD AssetPointer<TYPE> GetAsset(const HashString asset_identifier) NOEXCEPT
 	{
-		HashTable<HashString, Asset *RESTRICT> *const RESTRICT assets{ _Assets.Find(TYPE::TYPE_IDENTIFIER) };
+		AssetPointer<TYPE> asset = TryGetAsset<TYPE>(asset_identifier);
 
-		ASSERT(assets, "Couldn't find asset list for type!");
-		
-		Asset *const RESTRICT *const RESTRICT asset{ assets->Find(asset_identifier) };
+		ASSERT(asset, "Could not find asset!");
 
-		ASSERT(asset, "Couldn't find asset!");
-
-		return AssetPointer<TYPE>(static_cast<TYPE *const RESTRICT>(*asset));
+		return asset;
 	}
 
 	/*

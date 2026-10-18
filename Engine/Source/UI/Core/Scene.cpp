@@ -32,7 +32,7 @@ namespace UI
 		_Style._Rounding = 8.0f;
 
 		//Set the default font.
-		_Font = ContentSystem::Instance->GetAsset<FontAsset>(HashString("Default"));
+		_Font = ContentSystem::Instance->TryGetAsset<FontAsset>(HashString("Default"));
 
 		//Set the default text scale.
 		_TextScale = 32.0f;
@@ -150,11 +150,11 @@ namespace UI
 			{
 				case UI::Anchor::CENTER:
 				{
-					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._X = UI::Constants::REFERENCE_RESOLUTION._X * 0.5f - half_size._X;
-					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._Y = UI::Constants::REFERENCE_RESOLUTION._Y * 0.5f - half_size._Y;
+					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._X = _ReferenceResolution._X * 0.5f - half_size._X;
+					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._Y = _ReferenceResolution._Y * 0.5f - half_size._Y;
 
-					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._X = UI::Constants::REFERENCE_RESOLUTION._X * 0.5f + half_size._X;
-					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._Y = UI::Constants::REFERENCE_RESOLUTION._Y * 0.5f + half_size._Y;
+					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._X = _ReferenceResolution._X * 0.5f + half_size._X;
+					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._Y = _ReferenceResolution._Y * 0.5f + half_size._Y;
 
 					break;
 				}
@@ -162,21 +162,21 @@ namespace UI
 				case UI::Anchor::TOP:
 				{
 					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._X = center._X - half_size._X;
-					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._Y = UI::Constants::REFERENCE_RESOLUTION._Y - size._Y;
+					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._Y = _ReferenceResolution._Y - size._Y;
 
 					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._X = center._X + half_size._X;
-					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._Y = UI::Constants::REFERENCE_RESOLUTION._Y;
+					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._Y = _ReferenceResolution._Y;
 
 					break;
 				}
 
 				case UI::Anchor::RIGHT:
 				{
-					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._X = UI::Constants::REFERENCE_RESOLUTION._X - size._X;
-					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._Y = UI::Constants::REFERENCE_RESOLUTION._Y * 0.5f - half_size._Y;
+					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._X = _ReferenceResolution._X - size._X;
+					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._Y = _ReferenceResolution._Y * 0.5f - half_size._Y;
 
-					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._X = UI::Constants::REFERENCE_RESOLUTION._X;
-					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._Y = UI::Constants::REFERENCE_RESOLUTION._Y * 0.5f + half_size._Y;
+					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._X = _ReferenceResolution._X;
+					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._Y = _ReferenceResolution._Y * 0.5f + half_size._Y;
 
 					break;
 				}
@@ -184,10 +184,10 @@ namespace UI
 				case UI::Anchor::LEFT:
 				{
 					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._X = 0.0f;
-					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._Y = UI::Constants::REFERENCE_RESOLUTION._Y * 0.5f - half_size._Y;
+					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._Y = _ReferenceResolution._Y * 0.5f - half_size._Y;
 
 					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._X = size._X;
-					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._Y = UI::Constants::REFERENCE_RESOLUTION._Y * 0.5f + half_size._Y;
+					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._Y = _ReferenceResolution._Y * 0.5f + half_size._Y;
 
 					break;
 				}
@@ -195,21 +195,21 @@ namespace UI
 				case UI::Anchor::TOP_LEFT:
 				{
 					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._X = 0.0f;
-					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._Y = UI::Constants::REFERENCE_RESOLUTION._Y - size._Y;
+					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._Y = _ReferenceResolution._Y - size._Y;
 
 					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._X = size._X;
-					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._Y = UI::Constants::REFERENCE_RESOLUTION._Y;
+					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._Y = _ReferenceResolution._Y;
 
 					break;
 				}
 
 				case UI::Anchor::TOP_RIGHT:
 				{
-					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._X = UI::Constants::REFERENCE_RESOLUTION._X - size._X;
-					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._Y = UI::Constants::REFERENCE_RESOLUTION._Y - size._Y;
+					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._X = _ReferenceResolution._X - size._X;
+					_ActiveContainer->_AxisAlignedBoundingBox._Minimum._Y = _ReferenceResolution._Y - size._Y;
 
-					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._X = UI::Constants::REFERENCE_RESOLUTION._X;
-					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._Y = UI::Constants::REFERENCE_RESOLUTION._Y;
+					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._X = _ReferenceResolution._X;
+					_ActiveContainer->_AxisAlignedBoundingBox._Maximum._Y = _ReferenceResolution._Y;
 
 					break;
 				}
@@ -240,7 +240,7 @@ namespace UI
 			case UI::Container::Layout::LEFT_TO_RIGHT:
 			case UI::Container::Layout::RIGHT_TO_LEFT:
 			{
-				_ActiveContainer->_WidgetSize = UI::Constants::REFERENCE_RESOLUTION._X / 12.0f;
+				_ActiveContainer->_WidgetSize = _ReferenceResolution._X / 12.0f;
 
 				break;
 			}
@@ -248,7 +248,7 @@ namespace UI
 			case UI::Container::Layout::TOP_TO_BOTTOM:
 			case UI::Container::Layout::BOTTOM_TO_TOP:
 			{
-				_ActiveContainer->_WidgetSize = UI::Constants::REFERENCE_RESOLUTION._Y / 12.0f;
+				_ActiveContainer->_WidgetSize = _ReferenceResolution._Y / 12.0f;
 
 				break;
 			}

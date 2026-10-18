@@ -93,13 +93,28 @@ void UISystem::Update(const UpdatePhase phase) NOEXCEPT
 }
 
 /*
+*	Sets the reference resolution.
+*/
+void UISystem::SetReferenceResolution(const Vector2<float32> value) NOEXCEPT
+{
+	//Set the reference resolution.
+	_ReferenceResolution = value;
+
+	//Set it on all active scenes as well.
+	for (UI::Scene *const RESTRICT scene : _Scenes)
+	{
+		scene->SetReferenceResolution(_ReferenceResolution);
+	}
+}
+
+/*
 *	Updates widgets.
 */
 void UISystem::UpdateWidgets() NOEXCEPT
 {
 	//Cache the mouse data.
 	const MouseState *const RESTRICT mouse_state{ InputSystem::Instance->GetMouseState(InputLayer::USER_INTERFACE) };
-	const Vector2<float32> mouse_position{ Vector2<float32>(mouse_state->_CurrentX, mouse_state->_CurrentY) * UI::Constants::REFERENCE_RESOLUTION };
+	const Vector2<float32> mouse_position{ Vector2<float32>(mouse_state->_CurrentX, mouse_state->_CurrentY) * _ReferenceResolution };
 	const ButtonState mouse_button_state{ mouse_state->_Left };
 	const int8 mouse_scroll_wheel_step{ mouse_state->_ScrollWheelStep };
 
@@ -110,7 +125,7 @@ void UISystem::UpdateWidgets() NOEXCEPT
 	//Iterate through all scenes.
 	if (!_Scenes.Empty())
 	{
-		for (int64 scene_index{static_cast<int64>(_Scenes.Size() - 1)}; scene_index >= 0; --scene_index)
+		for (int64 scene_index{ static_cast<int64>(_Scenes.Size() - 1) }; scene_index >= 0; --scene_index)
 		{
 			const UI::Scene *const RESTRICT scene{ _Scenes[scene_index] };
 
@@ -296,8 +311,8 @@ void UISystem::UpdatePreRender() NOEXCEPT
 		//Flip position and transform into clip space.
 		for (Vector4<float32> &position : render_command._Positions)
 		{
-			position._X /= UI::Constants::REFERENCE_RESOLUTION._X;
-			position._Y /= UI::Constants::REFERENCE_RESOLUTION._Y;
+			position._X /= _ReferenceResolution._X;
+			position._Y /= _ReferenceResolution._Y;
 
 			position._Y = 1.0f - position._Y;
 

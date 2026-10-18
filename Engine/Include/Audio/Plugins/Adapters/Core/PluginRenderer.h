@@ -8,6 +8,9 @@
 #include <Audio/Plugins/Adapters/Core/PluginRenderBackends/PluginRenderBackend.h>
 #include <Audio/Plugins/Adapters/Core/PluginUpdateContext.h>
 
+//Systems.
+#include <Systems/UISystem.h>
+
 //Forward declarations.
 class PluginWindow;
 
@@ -59,5 +62,8 @@ private:
 
 	//The render backend.
 	PluginRenderBackend *RESTRICT _RenderBackend;
+
+	//The UI System.
+	UISystem _UISystem;
 
 };

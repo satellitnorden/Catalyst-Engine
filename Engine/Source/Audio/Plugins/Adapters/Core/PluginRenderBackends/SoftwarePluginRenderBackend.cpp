@@ -26,12 +26,12 @@ void SoftwarePluginRenderBackend::Update(const PluginUpdateContext &context) NOE
 	//Calculate the distance from the center of the mouse state.
 	const float32 distance_from_center
 	{
-		BaseMath::Minimum<float32>
+		1.0f - BaseMath::Minimum<float32>
 		(
 			Vector2<float32>::Length
 			(
 				Vector2<float32>(0.5f, 0.5f) - Vector2<float32>(context._MouseState->_CurrentX, context._MouseState->_CurrentY)
-			),
+			) * 2.0f,
 			1.0f
 		)
 	};

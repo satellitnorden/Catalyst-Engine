@@ -41,10 +41,4 @@ namespace UI
 		BOTTOM
 	};
 
-	//Constants.
-	namespace Constants
-	{
-		constexpr Vector2<float32> REFERENCE_RESOLUTION{ 1'920.0f, 1'080.0f };
-	}
-
 }

@@ -37,12 +37,18 @@ public:
 	}
 
 	/*
+	*	Sets the reference resolution.
+	*/
+	void SetReferenceResolution(const Vector2<float32> value) NOEXCEPT;
+
+	/*
 	*	Adds a UI scene of the given type.
 	*/
 	template <typename TYPE>
 	FORCE_INLINE TYPE *const RESTRICT AddScene() NOEXCEPT
 	{
 		TYPE *const RESTRICT scene{ new TYPE() };
+		scene->SetReferenceResolution(_ReferenceResolution);
 		_AddSceneRequests.Push(scene);
 		return scene;
 	}
@@ -56,6 +62,9 @@ public:
 	}
 
 private:
+
+	//The reference resolution.
+	Vector2<float32> _ReferenceResolution{ 1'920.0f, 1'080.0f };
 
 	//The widget allocator.
 	UI::WidgetAllocator _WidgetAllocator;

@@ -2,6 +2,7 @@
 #include <UI/Core/Widget.h>
 
 //UI.
+#include <UI/Core/Scene.h>
 #include <UI/Core/Utilities.h>
 
 //Systems.
@@ -290,7 +291,7 @@ namespace UI
 			command._ColorOpacity = *Color(color).Data();
 
 			//Set the smoothing factor.
-			command._Parameter1_float32 = TEXT_SMOOTHING_FACTOR_CURVE.Sample(_scale / UI::Constants::REFERENCE_RESOLUTION._Y);
+			command._Parameter1_float32 = TEXT_SMOOTHING_FACTOR_CURVE.Sample(_scale / GetParent()->_Parent->GetReferenceResolution()._Y);
 
 			//Update the current offset.
 			current_offset += font->_CharacterDescriptions[character]._Advance * _scale;

@@ -34,6 +34,22 @@ namespace UI
 		}
 
 		/*
+		*	Returns the reference resolution.
+		*/
+		FORCE_INLINE NO_DISCARD Vector2<float32> GetReferenceResolution() const NOEXCEPT
+		{
+			return _ReferenceResolution;
+		}
+
+		/*
+		*	Sets the reference resolution.
+		*/
+		FORCE_INLINE void SetReferenceResolution(const Vector2<float32> value) NOEXCEPT
+		{
+			_ReferenceResolution = value;
+		}
+
+		/*
 		*	Returns the style for this scene.
 		*/
 		FORCE_INLINE NO_DISCARD const UI::Style &GetStyle() const NOEXCEPT
@@ -198,6 +214,9 @@ namespace UI
 		void EndContainer(const UI::BuildContext &context) NOEXCEPT;
 
 	private:
+
+		//The reference resolution.
+		Vector2<float32> _ReferenceResolution;
 
 		//The identifier.
 		UI::Identifier _Identifier;

@@ -17,6 +17,15 @@ void PluginRenderer::Initialize(Audio::Plugin *const RESTRICT plugin, const Plug
 
 	//Create the render backend.
 	_RenderBackend = new SoftwarePluginRenderBackend(_Plugin);
+
+	//Initialize the plugin.
+	{
+		Audio::Plugin::InitializeContext context;
+
+		context._UISystem = &_UISystem;
+
+		_Plugin->Initialize(context);
+	}
 }
 
 /*
@@ -24,6 +33,9 @@ void PluginRenderer::Initialize(Audio::Plugin *const RESTRICT plugin, const Plug
 */
 void PluginRenderer::Update(const PluginUpdateContext &context) NOEXCEPT
 {
+	//Update the UI system.
+	
+
 	//Update the render backend.
 	_RenderBackend->Update(context);
 }

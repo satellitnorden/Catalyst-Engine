@@ -10,6 +10,9 @@
 //Rendering.
 #include <Rendering/Native/Resolution.h>
 
+//Forward declarations.
+class UISystem;
+
 namespace Audio
 {
 
@@ -21,6 +24,19 @@ namespace Audio
 	{
 
 	public:
+
+		/*
+		*	Initialize context class definition.
+		*/
+		class InitializeContext final
+		{
+
+		public:
+
+			//The UI system.
+			UISystem *RESTRICT _UISystem;
+
+		};
 
 		/*
 		*	Default destructor.
@@ -36,6 +52,14 @@ namespace Audio
 		FORCE_INLINE virtual NO_DISCARD Resolution GetResolution() const NOEXCEPT
 		{
 			return Resolution(0, 0);
+		}
+
+		/*
+		*	Initializes this plugin.
+		*/
+		FORCE_INLINE virtual void Initialize(const InitializeContext &context) NOEXCEPT
+		{
+
 		}
 
 		/*
