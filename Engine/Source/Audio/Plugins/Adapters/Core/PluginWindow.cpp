@@ -84,6 +84,7 @@ LRESULT CALLBACK PluginWindowProcedure
 					//Update the renderer.
 					PluginUpdateContext context;
 
+					context._DeltaTime = 16.0f / 1'000.0f;
 					context._MouseState = plugin_window->GetMouseState();
 
 					plugin_window->GetRenderer()->Update(context);

@@ -66,6 +66,14 @@ public:
 	*/
 	void Update(const float32 delta_time, const MouseState *const RESTRICT mouse_state) NOEXCEPT;
 
+	/*
+	*	Returns the render commands.
+	*/
+	FORCE_INLINE NO_DISCARD const DynamicArray<UI::RenderCommand> &GetRenderCommands() const NOEXCEPT
+	{
+		return _RenderCommands;
+	}
+
 private:
 
 	//The reference resolution.

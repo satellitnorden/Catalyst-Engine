@@ -11,6 +11,9 @@ class PluginUpdateContext final
 
 public:
 
+	//The delta time.
+	float32 _DeltaTime;
+
 	//The mouse state.
 	const MouseState *RESTRICT _MouseState{ nullptr };
 

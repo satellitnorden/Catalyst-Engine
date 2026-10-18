@@ -35,17 +35,17 @@ public:
 	*/
 	NO_DISCARD const uint32 *const RESTRICT GetSoftwareRenderData() const NOEXCEPT override
 	{
-		return _Data.Data();
+		return _Buffer.Data();
 	}
 	 
 	/*
 	*	Updates this render backend.
 	*/
-	void Update(const PluginUpdateContext &context) NOEXCEPT override;
+	void Update(const PluginUpdateContext &context, const DynamicArray<UI::RenderCommand> &render_commands) NOEXCEPT override;
 
 private:
 
-	//The data.
-	Texture2D<uint32> _Data;
+	//The buffer.
+	Texture2D<uint32> _Buffer;
 
 };

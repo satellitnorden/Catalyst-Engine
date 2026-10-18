@@ -25,6 +25,16 @@ public:
 	}
 
 	/*
+	*	Constructor taking a single uint32.
+	*/
+	FORCE_INLINE constexpr Color(const uint32 data) NOEXCEPT
+		:
+		_Data(data)
+	{
+
+	}
+
+	/*
 	*	Constructor taking three uint8's. Initializes the alpha channel to 1.0f.
 	*/
 	FORCE_INLINE constexpr Color(const uint8 R, const uint8 G, const uint8 B) NOEXCEPT

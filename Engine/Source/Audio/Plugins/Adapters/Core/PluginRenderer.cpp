@@ -18,6 +18,16 @@ void PluginRenderer::Initialize(Audio::Plugin *const RESTRICT plugin, const Plug
 	//Create the render backend.
 	_RenderBackend = new SoftwarePluginRenderBackend(_Plugin);
 
+	//Set up the UI system.
+	_UISystem.SetReferenceResolution
+	(
+		Vector2<float32>
+		(
+			static_cast<float32>(_Plugin->GetResolution()._Width),
+			static_cast<float32>(_Plugin->GetResolution()._Height)
+		)
+	);
+
 	//Initialize the plugin.
 	{
 		Audio::Plugin::InitializeContext context;
@@ -34,10 +44,10 @@ void PluginRenderer::Initialize(Audio::Plugin *const RESTRICT plugin, const Plug
 void PluginRenderer::Update(const PluginUpdateContext &context) NOEXCEPT
 {
 	//Update the UI system.
-	
+	_UISystem.Update(context._DeltaTime, context._MouseState);
 
 	//Update the render backend.
-	_RenderBackend->Update(context);
+	_RenderBackend->Update(context, _UISystem.GetRenderCommands());
 }
 
 /*

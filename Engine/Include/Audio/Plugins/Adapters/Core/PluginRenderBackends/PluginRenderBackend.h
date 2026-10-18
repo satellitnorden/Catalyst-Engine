@@ -7,6 +7,9 @@
 #include <Audio/Plugins/Core/Plugin.h>
 #include <Audio/Plugins/Adapters/Core/PluginUpdateContext.h>
 
+//UI.
+#include <UI/Core/RenderCommand.h>
+
 /*
 *	Plugin render backend class - Responsible for doing the actual drawing, based on the given state.
 */
@@ -46,7 +49,7 @@ public:
 	/*
 	*	Updates this render backend.
 	*/
-	virtual void Update(const PluginUpdateContext &context) NOEXCEPT = 0;
+	virtual void Update(const PluginUpdateContext &context, const DynamicArray<UI::RenderCommand> &render_commands) NOEXCEPT = 0;
 
 protected:
 
