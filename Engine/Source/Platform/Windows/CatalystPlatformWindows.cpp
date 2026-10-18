@@ -40,6 +40,9 @@ DynamicArray<char> CatalystPlatformWindows::_InputCharacters;
 //Catalyst Windows data.
 namespace CatalystWindowsData
 {
+	//Denotes whether or not the window is in focus.
+	bool _IsWindowInFocus{ true };
+
 	//Denotes the cursor's requested visibility.
 	bool _CursorRequestedVisibility{ true };
 
@@ -67,6 +70,9 @@ namespace CatalystWindowsLogic
 
 		if (_window == CatalystPlatformWindows::_MainWindow)
 		{
+			//Determine if the window is in focus.
+			CatalystWindowsData::_IsWindowInFocus = GetFocus() == _window;
+
 			//Clear the keyboard events.
 			CatalystPlatformWindows::_KeyDownEvents.Clear();
 			CatalystPlatformWindows::_KeyUpEvents.Clear();
@@ -491,9 +497,15 @@ void CatalystPlatform::DestroyPlayformWindow(void *const RESTRICT window) NOEXCE
 */
 bool CatalystPlatform::IsWindowInFocus(void *const RESTRICT window) NOEXCEPT
 {
-	const HWND _window{ window ? static_cast<HWND>(window) : CatalystPlatformWindows::_MainWindow };
+	if (window)
+	{
+		return GetFocus() == static_cast<HWND>(window);
+	}
 
-	return GetFocus() == _window;
+	else
+	{
+		return CatalystWindowsData::_IsWindowInFocus;
+	}
 }
 
 /*
@@ -579,7 +591,7 @@ void CatalystPlatform::UpdateMouseState(MouseState *const RESTRICT mouse_state, 
 	const HWND _window{ window ? static_cast<HWND>(window) : CatalystPlatformWindows::_MainWindow };
 
 	//Don't update if the window is not in focus, but only if it is the main window. If we have an explicit window passed in, always update.
-	if (!window && !CatalystPlatform::IsWindowInFocus(_window))
+	if (!window && !CatalystPlatform::IsWindowInFocus(nullptr))
 	{
 		return;
 	}

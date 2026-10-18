@@ -25,7 +25,7 @@ public:
 	(
 		UISystem,
 		SYSTEM_INITIALIZE()
-		SYSTEM_UPDATE(RANGE(USER_INTERFACE, RUN_ON_MAIN_THREAD), RANGE(PRE_RENDER, RENDER))
+		SYSTEM_UPDATE(RANGE(USER_INTERFACE, RUN_ON_MAIN_THREAD))
 	);
 
 	/*
@@ -61,6 +61,11 @@ public:
 		_RemoveSceneRequests.Push(scene);
 	}
 
+	/*
+	*	Updates the UI system.
+	*/
+	void Update(const float32 delta_time, const MouseState *const RESTRICT mouse_state) NOEXCEPT;
+
 private:
 
 	//The reference resolution.
@@ -84,17 +89,7 @@ private:
 	/*
 	*	Updates widgets.
 	*/
-	void UpdateWidgets() NOEXCEPT;
-
-	/*
-	*	Updates during the USER_INTERFACE phase.
-	*/
-	void UpdateUserInterface() NOEXCEPT;
-
-	/*
-	*	Updates during the PRE_RENDER phase.
-	*/
-	void UpdatePreRender() NOEXCEPT;
+	void UpdateWidgets(const MouseState *const RESTRICT mouse_state) NOEXCEPT;
 
 	/*
 	*	Returns if any widget is blocking the given position for the given widget.

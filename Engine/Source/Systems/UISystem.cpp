@@ -67,29 +67,8 @@ void UISystem::Initialize() NOEXCEPT
 */
 void UISystem::Update(const UpdatePhase phase) NOEXCEPT
 {
-	switch (phase)
-	{
-		case UpdatePhase::USER_INTERFACE:
-		{
-			UpdateUserInterface();
-
-			break;
-		}
-
-		case UpdatePhase::PRE_RENDER:
-		{
-			UpdatePreRender();
-
-			break;
-		}
-
-		default:
-		{
-			ASSERT(false, "Invalid case!");
-
-			break;
-		}
-	}
+	//Update. (:
+	Update(CatalystEngineSystem::Instance->GetDeltaTime(), InputSystem::Instance->GetMouseState(InputLayer::USER_INTERFACE));
 }
 
 /*
@@ -108,12 +87,102 @@ void UISystem::SetReferenceResolution(const Vector2<float32> value) NOEXCEPT
 }
 
 /*
+*	Updates the UI system.
+*/
+void UISystem::Update(const float32 delta_time, const MouseState *const RESTRICT mouse_state) NOEXCEPT
+{
+	//Process the add scene requests.
+	{
+		Optional<UI::Scene *RESTRICT> add_scene_request{ _AddSceneRequests.Pop() };
+
+		while (add_scene_request.Valid())
+		{
+			_Scenes.Emplace(add_scene_request.Get());
+
+			add_scene_request = _AddSceneRequests.Pop();
+		}
+	}
+
+	//Process the remove scene requests.
+	{
+		Optional<UI::Scene *RESTRICT> remove_scene_request{ _RemoveSceneRequests.Pop() };
+
+		while (remove_scene_request.Valid())
+		{
+			UI::Scene *const RESTRICT scene{ remove_scene_request.Get() };
+
+			_Scenes.Erase<true>(scene);
+			delete scene;
+
+			remove_scene_request = _RemoveSceneRequests.Pop();
+		}
+	}
+
+	//Prepare all scenes for building.
+	for (UI::Scene *const RESTRICT scene : _Scenes)
+	{
+		scene->PrepareBuild();
+	}
+
+	//Prepare the widget allocator.
+	_WidgetAllocator.Prepare();
+
+	//Set up the build context.
+	UI::BuildContext build_context;
+
+	build_context._DeltaTime = delta_time;
+	build_context._WidgetAllocator = &_WidgetAllocator;
+
+	//Build all scenes.
+	for (UI::Scene *const RESTRICT scene : _Scenes)
+	{
+		scene->Build(build_context);
+	}
+
+	//Clean the widget allocator.
+	_WidgetAllocator.Clean();
+
+	//Update the widgets.
+	UpdateWidgets(mouse_state);
+
+	//Clear the render commands.
+	_RenderCommands.Clear();
+
+	//Set up the render context.
+	UI::RenderContext render_context;
+
+	render_context._DeltaTime = delta_time;
+	render_context._RenderCommands = &_RenderCommands;
+
+	//Render all scenes!
+	for (UI::Scene *const RESTRICT scene : _Scenes)
+	{
+		scene->Render(render_context);
+	}
+
+	//Go through all render commands and make them ready for rendering.
+	for (UI::RenderCommand &render_command : _RenderCommands)
+	{
+		//Flip position and transform into clip space.
+		for (Vector4<float32> &position : render_command._Positions)
+		{
+			position._X /= _ReferenceResolution._X;
+			position._Y /= _ReferenceResolution._Y;
+
+			position._Y = 1.0f - position._Y;
+
+			position._X = position._X * 2.0f - 1.0f;
+			position._Y = position._Y * 2.0f - 1.0f;
+		}
+	}
+}
+
+/*
 *	Updates widgets.
 */
-void UISystem::UpdateWidgets() NOEXCEPT
+void UISystem::UpdateWidgets(const MouseState *const RESTRICT mouse_state) NOEXCEPT
 {
 	//Cache the mouse data.
-	const MouseState *const RESTRICT mouse_state{ InputSystem::Instance->GetMouseState(InputLayer::USER_INTERFACE) };
 	const Vector2<float32> mouse_position{ Vector2<float32>(mouse_state->_CurrentX, mouse_state->_CurrentY) * _ReferenceResolution };
 	const ButtonState mouse_button_state{ mouse_state->_Left };
 	const int8 mouse_scroll_wheel_step{ mouse_state->_ScrollWheelStep };
@@ -223,103 +292,6 @@ void UISystem::UpdateWidgets() NOEXCEPT
 		}
 	}
 	
-}
-
-/*
-*	Updates during the USER_INTERFACE phase.
-*/
-void UISystem::UpdateUserInterface() NOEXCEPT
-{
-	//Process the add scene requests.
-	{
-		Optional<UI::Scene *RESTRICT> add_scene_request{ _AddSceneRequests.Pop() };
-
-		while (add_scene_request.Valid())
-		{
-			_Scenes.Emplace(add_scene_request.Get());
-
-			add_scene_request = _AddSceneRequests.Pop();
-		}
-	}
-
-	//Process the remove scene requests.
-	{
-		Optional<UI::Scene *RESTRICT> remove_scene_request{ _RemoveSceneRequests.Pop() };
-
-		while (remove_scene_request.Valid())
-		{
-			UI::Scene *const RESTRICT scene{ remove_scene_request.Get() };
-
-			_Scenes.Erase<true>(scene);
-			delete scene;
-
-			remove_scene_request = _RemoveSceneRequests.Pop();
-		}
-	}
-
-	//Prepare all scenes for building.
-	for (UI::Scene *const RESTRICT scene : _Scenes)
-	{
-		scene->PrepareBuild();
-	}
-
-	//Prepare the widget allocator.
-	_WidgetAllocator.Prepare();
-
-	//Set up the build context.
-	UI::BuildContext context;
-
-	context._DeltaTime = CatalystEngineSystem::Instance->GetDeltaTime();
-	context._WidgetAllocator = &_WidgetAllocator;
-
-	//Build all scenes.
-	for (UI::Scene *const RESTRICT scene : _Scenes)
-	{
-		scene->Build(context);
-	}
-
-	//Clean the widget allocator.
-	_WidgetAllocator.Clean();
-
-	//Update the widgets.
-	UpdateWidgets();
-}
-
-/*
-*	Updates during the PRE_RENDER phase.
-*/
-void UISystem::UpdatePreRender() NOEXCEPT
-{
-	//Clear the render commands.
-	_RenderCommands.Clear();
-
-	//Set up the context.
-	UI::RenderContext context;
-
-	context._DeltaTime = CatalystEngineSystem::Instance->GetDeltaTime();
-	context._RenderCommands = &_RenderCommands;
-
-	//Render all scenes!
-	for (UI::Scene *const RESTRICT scene : _Scenes)
-	{
-		scene->Render(context);
-	}
-
-	//Go through all render commands and make them ready for rendering.
-	for (UI::RenderCommand &render_command : _RenderCommands)
-	{
-		//Flip position and transform into clip space.
-		for (Vector4<float32> &position : render_command._Positions)
-		{
-			position._X /= _ReferenceResolution._X;
-			position._Y /= _ReferenceResolution._Y;
-
-			position._Y = 1.0f - position._Y;
-
-			position._X = position._X * 2.0f - 1.0f;
-			position._Y = position._Y * 2.0f - 1.0f;
-		}
-	}
 }
 
 /*
