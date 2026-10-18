@@ -167,7 +167,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	//Retrieve the preferred refresh rate.
 	float32 preferred_refresh_rate;
 
-	if (CatalystPlatform::IsWindowInFocus())
+	if (CatalystPlatform::IsWindowInFocus(nullptr))
 	{
 		preferred_refresh_rate = _ProjectConfiguration._RenderingConfiguration._FocusedRefreshRate;
 	}

@@ -22,10 +22,10 @@ void PluginRenderer::Initialize(Audio::Plugin *const RESTRICT plugin, const Plug
 /*
 *	Updates this plugin renderer.
 */
-void PluginRenderer::Update() NOEXCEPT
+void PluginRenderer::Update(const PluginUpdateContext &context) NOEXCEPT
 {
 	//Update the render backend.
-	_RenderBackend->Update();
+	_RenderBackend->Update(context);
 }
 
 /*

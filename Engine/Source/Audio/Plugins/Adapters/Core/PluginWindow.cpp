@@ -59,6 +59,19 @@ LRESULT CALLBACK PluginWindowProcedure
 			break;
 		}
 
+		case WM_MOUSEWHEEL:
+		{
+			//Retrieve the plugin window.
+			PluginWindow *const RESTRICT plugin_window{ reinterpret_cast<PluginWindow *const RESTRICT>(GetWindowLongPtr(window, GWLP_USERDATA)) };
+
+			if (plugin_window)
+			{
+				plugin_window->SetScrollWheelStep(GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA);
+			}
+
+			break;
+		}
+
 		case WM_TIMER:
 		{
 			if (wParam == TIMER_ID)
@@ -69,7 +82,11 @@ LRESULT CALLBACK PluginWindowProcedure
 				if (plugin_window)
 				{
 					//Update the renderer.
-					plugin_window->GetRenderer()->Update();
+					PluginUpdateContext context;
+
+					context._MouseState = plugin_window->GetMouseState();
+
+					plugin_window->GetRenderer()->Update(context);
 
 					//Invalidate the window to receive a PAINT call.
 					InvalidateRect(window, nullptr, FALSE);
@@ -263,4 +280,19 @@ void PluginWindow::Hide()
 void PluginWindow::Destroy()
 {
 	CatalystPlatform::DestroyPlayformWindow(_Window);
+}
+
+/*
+*	Returns the mouse state.
+*/
+NO_DISCARD const MouseState *const RESTRICT PluginWindow::GetMouseState() NOEXCEPT
+{
+	//Update the mouse state.
+	CatalystPlatform::UpdateMouseState(&_MouseState, _Window);
+
+	//Set the scroll wheel step.
+	_MouseState._ScrollWheelStep = GetAndResetScrollWheelStep();
+
+	//Return the mouse state.
+	return &_MouseState;
 }

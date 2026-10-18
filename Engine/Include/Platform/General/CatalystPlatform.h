@@ -6,6 +6,7 @@
 //Forward declarations.
 class DynamicString;
 class KeyboardState;
+class MouseState;
 
 class CatalystPlatform final
 {
@@ -78,7 +79,7 @@ public:
 	/*
 	*	Returns whether or not the window is in focus.
 	*/
-	static bool IsWindowInFocus() NOEXCEPT;
+	static bool IsWindowInFocus(void *const RESTRICT window) NOEXCEPT;
 
 	/*
 	*	Returns the default resolution.
@@ -89,6 +90,12 @@ public:
 	*	Returns the default refresh rate.
 	*/
 	static float32 GetDefaultRefreshRate() NOEXCEPT;
+
+	/*
+	*	Updates the given mouse state for the given window.
+	*	If window is nullptr, then the main window will be used.
+	*/
+	static void UpdateMouseState(MouseState *const RESTRICT mouse_state, void *const RESTRICT window) NOEXCEPT;
 
 	/*
 	*	Returns the number of input characters for this frame.

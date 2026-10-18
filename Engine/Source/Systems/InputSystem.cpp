@@ -67,7 +67,7 @@ void InputSystem::Update(const UpdatePhase phase) NOEXCEPT
 	{
 		PROFILING_SCOPE("InputSystem::Update - UpdateMouseState");
 
-		UpdateMouseState();
+		CatalystPlatform::UpdateMouseState(&_InputState._MouseState, nullptr);
 	}
 
 	//Update the touch state.

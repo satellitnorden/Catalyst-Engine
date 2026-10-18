@@ -37,11 +37,11 @@ public:
 	{
 		return _Data.Data();
 	}
-
+	 
 	/*
 	*	Updates this render backend.
 	*/
-	void Update() NOEXCEPT override;
+	void Update(const PluginUpdateContext &context) NOEXCEPT override;
 
 private:
 

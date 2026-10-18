@@ -1,9 +1,6 @@
 //Header file.
 #include <Audio/Plugins/Adapters/Core/PluginRenderBackends/SoftwarePluginRenderBackend.h>
 
-//Math.
-#include <Math/Core/CatalystRandomMath.h>
-
 //Rendering.
 #include <Rendering/Native/Color.h>
 
@@ -24,20 +21,31 @@ SoftwarePluginRenderBackend::SoftwarePluginRenderBackend(const Audio::Plugin *co
 /*
 *	Updates this render backend.
 */
-void SoftwarePluginRenderBackend::Update() NOEXCEPT
+void SoftwarePluginRenderBackend::Update(const PluginUpdateContext &context) NOEXCEPT
 {
-	//Just draw a random color. (:
-	const float32 random_number{ CatalystRandomMath::RandomFloat() };
+	//Calculate the distance from the center of the mouse state.
+	const float32 distance_from_center
+	{
+		BaseMath::Minimum<float32>
+		(
+			Vector2<float32>::Length
+			(
+				Vector2<float32>(0.5f, 0.5f) - Vector2<float32>(context._MouseState->_CurrentX, context._MouseState->_CurrentY)
+			),
+			1.0f
+		)
+	};
 
+	//Calculate the color.
 	const uint32 color
 	{
 		*Color
 		(
 			Vector4<float32>
 			(
-				random_number,
-				random_number,
-				random_number,
+				distance_from_center,
+				distance_from_center,
+				distance_from_center,
 				1.0f
 			)
 		).Data()

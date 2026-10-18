@@ -40,9 +40,6 @@ DynamicArray<char> CatalystPlatformWindows::_InputCharacters;
 //Catalyst Windows data.
 namespace CatalystWindowsData
 {
-	//Denotes whether or not the window is in focus.
-	bool _IsWindowInFocus{ true };
-
 	//Denotes the cursor's requested visibility.
 	bool _CursorRequestedVisibility{ true };
 
@@ -70,9 +67,6 @@ namespace CatalystWindowsLogic
 
 		if (_window == CatalystPlatformWindows::_MainWindow)
 		{
-			//Determine if the window is in focus.
-			CatalystWindowsData::_IsWindowInFocus = GetFocus() == _window;
-
 			//Clear the keyboard events.
 			CatalystPlatformWindows::_KeyDownEvents.Clear();
 			CatalystPlatformWindows::_KeyUpEvents.Clear();
@@ -495,9 +489,11 @@ void CatalystPlatform::DestroyPlayformWindow(void *const RESTRICT window) NOEXCE
 /*
 *	Returns whether or not the window is in focus.
 */
-bool CatalystPlatform::IsWindowInFocus() NOEXCEPT
+bool CatalystPlatform::IsWindowInFocus(void *const RESTRICT window) NOEXCEPT
 {
-	return CatalystWindowsData::_IsWindowInFocus;
+	const HWND _window{ window ? static_cast<HWND>(window) : CatalystPlatformWindows::_MainWindow };
+
+	return GetFocus() == _window;
 }
 
 /*
@@ -537,6 +533,163 @@ float32 CatalystPlatform::GetDefaultRefreshRate() NOEXCEPT
 	EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &dev_mode);
 
 	return static_cast<float32>(dev_mode.dmDisplayFrequency);
+}
+
+/*
+*	Updates the given button state for the given button.
+*/
+FORCE_INLINE void UpdateButtonState(const uint16 button, ButtonState *const RESTRICT button_state) NOEXCEPT
+{
+	//The Windows button is not pressed.
+	if (!static_cast<bool>(GetKeyState(button) & 0x8000))
+	{
+		if (*button_state == ButtonState::PRESSED_HELD || *button_state == ButtonState::PRESSED)
+		{
+			*button_state = ButtonState::RELEASED;
+		}
+
+		else if (*button_state == ButtonState::RELEASED)
+		{
+			*button_state = ButtonState::RELEASED_HELD;
+		}
+	}
+
+	//The Windows button is pressed.
+	else
+	{
+		if (*button_state == ButtonState::RELEASED_HELD || *button_state == ButtonState::RELEASED)
+		{
+			*button_state = ButtonState::PRESSED;
+		}
+
+		else if (*button_state == ButtonState::PRESSED)
+		{
+			*button_state = ButtonState::PRESSED_HELD;
+		}
+	}
+}
+
+/*
+*	Updates the given mouse state for the given window.
+*	If window is nullptr, then the main window will be used.
+*/
+void CatalystPlatform::UpdateMouseState(MouseState *const RESTRICT mouse_state, void *const RESTRICT window) NOEXCEPT
+{
+	//Cache the window.
+	const HWND _window{ window ? static_cast<HWND>(window) : CatalystPlatformWindows::_MainWindow };
+
+	//Don't update if the window is not in focus, but only if it is the main window. If we have an explicit window passed in, always update.
+	if (!window && !CatalystPlatform::IsWindowInFocus(_window))
+	{
+		return;
+	}
+
+	//Copy the previous X and Y positions.
+	mouse_state->_PreviousX = mouse_state->_CurrentX;
+	mouse_state->_PreviousY = mouse_state->_CurrentY;
+
+	//Get the current cursor position.
+	POINT point;
+
+	if (GetCursorPos(&point))
+	{
+		if (ScreenToClient(_window, &point))
+		{
+			RECT rectangle;
+
+			if (GetClientRect(_window, &rectangle))
+			{
+				mouse_state->_CurrentX = BaseMath::Clamp<float>(static_cast<float>(point.x) / static_cast<float>(rectangle.right - rectangle.left), 0.0f, 1.0f);
+				mouse_state->_CurrentY = BaseMath::Clamp<float>(1.0f - static_cast<float>(point.y) / static_cast<float>(rectangle.bottom - rectangle.top), 0.0f, 1.0f);
+
+				mouse_state->_DeltaX = mouse_state->_CurrentX - mouse_state->_PreviousX;
+				mouse_state->_DeltaY = mouse_state->_CurrentY - mouse_state->_PreviousY;
+			}
+
+			else
+			{
+				ASSERT(false, "Could not retrieve window rectangle.");
+			}
+		}
+
+		else
+		{
+			ASSERT(false, "Could not convert cursor position to window coordinates.");
+		}
+	}
+
+	else
+	{
+		ASSERT(false, "Could not retrieve the current cursor position.");
+	}
+
+	//Special handling for if the cursor is not shown.
+	if (!CatalystPlatform::IsCursorShown())
+	{
+		//Imagine that the cursor is always at the center of the screen.
+		mouse_state->_CurrentX = mouse_state->_CurrentY = mouse_state->_PreviousX = mouse_state->_PreviousY = 0.5f;
+
+		//Get the current cursor position.
+		POINT point;
+
+		if (GetCursorPos(&point))
+		{
+			if (ScreenToClient(_window, &point))
+			{
+				RECT rectangle;
+
+				if (GetClientRect(_window, &rectangle))
+				{
+					//Calculate the center and always place the cursor at the center of the screen.
+					POINT center;
+					POINT adjusted_center;
+
+					center.x = adjusted_center.x = rectangle.left + ((rectangle.right - rectangle.left) / 2);
+					center.y = adjusted_center.y = rectangle.top + ((rectangle.bottom - rectangle.top) / 2);
+
+					if (ClientToScreen(_window, &adjusted_center))
+					{
+						SetCursorPos(adjusted_center.x, adjusted_center.y);
+
+						const float current_x{ BaseMath::Clamp<float>(static_cast<float>(point.x) / static_cast<float>(rectangle.right - rectangle.left), 0.0f, 1.0f) };
+						const float current_y{ BaseMath::Clamp<float>(1.0f - static_cast<float>(point.y) / static_cast<float>(rectangle.bottom - rectangle.top), 0.0f, 1.0f) };
+
+						//Don't bother moving the cursor if it hasn't moved N pixels to account for integer rounding errors.
+						mouse_state->_DeltaX = (current_x - 0.5f) * static_cast<float>(BaseMath::Absolute<int32>(point.x - center.x) > 0);
+						mouse_state->_DeltaY = (current_y - 0.5f) * static_cast<float>(BaseMath::Absolute<int32>(point.y - center.y) > 0);
+					}
+
+					else
+					{
+						ASSERT(false, "Could not convert cursor position to window coordinates.");
+					}
+				}
+
+				else
+				{
+					ASSERT(false, "Could not retrieve window rectangle.");
+				}
+			}
+
+			else
+			{
+				ASSERT(false, "Could not convert cursor position to window coordinates.");
+			}
+		}
+
+		else
+		{
+			ASSERT(false, "Could not retrieve the current cursor position.");
+		}
+	}
+
+	//Update the button states.
+	UpdateButtonState(VK_LBUTTON, &mouse_state->_Left);
+	UpdateButtonState(VK_MBUTTON, &mouse_state->_ScrollWheel);
+	UpdateButtonState(VK_RBUTTON, &mouse_state->_Right);
+
+	//Update the scroll wheel step.
+	mouse_state->_ScrollWheelStep = CatalystPlatform::GetAndResetScrollWheelStep();
 }
 
 /*

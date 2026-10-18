@@ -170,11 +170,6 @@ private:
 	void UpdateKeyboardState() NOEXCEPT;
 
 	/*
-	*	Updates the mouse state.
-	*/
-	void UpdateMouseState() NOEXCEPT;
-
-	/*
 	*	Updates the touch state.
 	*/
 	void UpdateTouchState() NOEXCEPT;

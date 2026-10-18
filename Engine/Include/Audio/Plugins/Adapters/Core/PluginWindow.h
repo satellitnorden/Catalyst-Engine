@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Input.
+#include <Input/MouseState.h>
+
 //Rendering.
 #include <Rendering/Native/Resolution.h>
 
@@ -60,6 +63,29 @@ public:
 		return _Resolution;
 	}
 
+	/*
+	*	Sets the scroll wheel step.
+	*/
+	FORCE_INLINE void SetScrollWheelStep(const int8 value) NOEXCEPT
+	{
+		_ScrollWheelStep = value;
+	}
+
+	/*
+	*	Returns and resets the scroll wheel step.
+	*/
+	FORCE_INLINE NO_DISCARD int8 GetAndResetScrollWheelStep() NOEXCEPT
+	{
+		const int8 scroll_wheel_step{ _ScrollWheelStep };
+		_ScrollWheelStep = 0;
+		return scroll_wheel_step;
+	}
+
+	/*
+	*	Returns the mouse state.
+	*/
+	NO_DISCARD const MouseState *const RESTRICT GetMouseState() NOEXCEPT;
+
 private:
 
 	//The renderer.
@@ -70,5 +96,11 @@ private:
 
 	//The window.
 	void *RESTRICT _Window{ nullptr };
+
+	//The mouse state.
+	MouseState _MouseState;
+
+	//The scroll wheel step.
+	int8 _ScrollWheelStep{ 0 };
 
 };

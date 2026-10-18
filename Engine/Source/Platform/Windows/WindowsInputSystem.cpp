@@ -11,13 +11,6 @@
 //Windows.
 #include <Xinput.h>
 
-//Windows input system data.
-namespace WindowsInputSystemData
-{
-	//The last known cursor position.
-	Vector2<float32> _LastKnownCursorPosition{ 0.5f, 0.5f };
-}
-
 //Windows input system logic.
 namespace WindowsInputSystemLogic
 {
@@ -109,7 +102,7 @@ void InputSystem::UpdateGamepadState(const uint8 index) NOEXCEPT
 	}
 
 	//No need to update if the window isn't in focus.
-	if (!CatalystPlatform::IsWindowInFocus())
+	if (!CatalystPlatform::IsWindowInFocus(nullptr))
 	{
 		return;
 	}
@@ -353,7 +346,7 @@ void InputSystem::UpdateKeyboardState() NOEXCEPT
 	};
 
 	//No need to update if the window isn't in focus.
-	if (!CatalystPlatform::IsWindowInFocus())
+	if (!CatalystPlatform::IsWindowInFocus(nullptr))
 	{
 		return;
 	}
@@ -409,167 +402,6 @@ void InputSystem::UpdateKeyboardState() NOEXCEPT
 			}
 		}
 	}
-}
-
-/*
-*	Updates the mouse state.
-*/
-void InputSystem::UpdateMouseState() NOEXCEPT
-{
-	//No need to update if the window isn't in focus.
-	if (!CatalystPlatform::IsWindowInFocus())
-	{
-		return;
-	}
-
-	//Cache the state.
-	MouseState *const RESTRICT state{ &_InputState._MouseState };
-
-	//Copy the previous X and Y positions.
-	state->_PreviousX = state->_CurrentX;
-	state->_PreviousY = state->_CurrentY;
-
-	//Get the current cursor position.
-	POINT point;
-
-	if (GetCursorPos(&point))
-	{
-		if (ScreenToClient(CatalystPlatformWindows::_MainWindow, &point))
-		{
-			RECT rectangle;
-
-			if (GetClientRect(CatalystPlatformWindows::_MainWindow, &rectangle))
-			{
-				state->_CurrentX = BaseMath::Clamp<float>(static_cast<float>(point.x) / static_cast<float>(rectangle.right - rectangle.left), 0.0f, 1.0f);
-				state->_CurrentY = BaseMath::Clamp<float>(1.0f - static_cast<float>(point.y) / static_cast<float>(rectangle.bottom - rectangle.top), 0.0f, 1.0f);
-
-				state->_DeltaX = state->_CurrentX - state->_PreviousX;
-				state->_DeltaY = state->_CurrentY - state->_PreviousY;
-			}
-
-			else
-			{
-				ASSERT(false, "Could not retrieve window rectangle.");
-			}
-		}
-
-		else
-		{
-			ASSERT(false, "Could not convert cursor position to window coordinates.");
-		}
-	}
-
-	else
-	{
-		ASSERT(false, "Could not retrieve the current cursor position.");
-	}
-
-	//Remember the last known cursor position.
-	if (CatalystPlatform::IsCursorShown())
-	{
-		WindowsInputSystemData::_LastKnownCursorPosition._X = state->_CurrentX;
-		WindowsInputSystemData::_LastKnownCursorPosition._Y = state->_CurrentY;
-	}
-
-	//Else, just imagine that the cursor is always at the last known cursor position.
-	else
-	{
-		/*
-		state->_PreviousX = state->_CurrentX = CatalystWindowsData::_LastKnownCursorPosition._X;
-		state->_PreviousY = state->_CurrentY = CatalystWindowsData::_LastKnownCursorPosition._Y;
-
-		//Get the current screen rectangle.
-		RECT rectangle;
-
-		if (GetClientRect(_Window, &rectangle))
-		{
-		//Calculate the last known cursor point.
-		POINT last_known_cursor_point;
-
-		last_known_cursor_point.x = static_cast<LONG>(BaseMath::LinearlyInterpolate(static_cast<float>(rectangle.left), static_cast<float>(rectangle.right), CatalystWindowsData::_LastKnownCursorPosition._X));
-		last_known_cursor_point.y = static_cast<LONG>(BaseMath::LinearlyInterpolate(static_cast<float>(rectangle.bottom), static_cast<float>(rectangle.top), CatalystWindowsData::_LastKnownCursorPosition._Y));
-
-		if (ClientToScreen(_Window, &last_known_cursor_point))
-		{
-		SetCursorPos(last_known_cursor_point.x, last_known_cursor_point.y);
-		}
-
-		else
-		{
-		ASSERT(false, "Could not convert cursor position to window coordinates.");
-		}
-		}
-
-		else
-		{
-		ASSERT(false, "Could not retrieve window rectangle.");
-		}
-		*/
-
-		//Imagine that the cursor is always at the center of the screen.
-		state->_CurrentX = state->_CurrentY = state->_PreviousX = state->_PreviousY = 0.5f;
-
-		//Get the current cursor position.
-		POINT point;
-
-		if (GetCursorPos(&point))
-		{
-			if (ScreenToClient(CatalystPlatformWindows::_MainWindow, &point))
-			{
-				RECT rectangle;
-
-				if (GetClientRect(CatalystPlatformWindows::_MainWindow, &rectangle))
-				{
-					//Calculate the center and always place the cursor at the center of the screen.
-					POINT center;
-					POINT adjusted_center;
-
-					center.x = adjusted_center.x = rectangle.left + ((rectangle.right - rectangle.left) / 2);
-					center.y = adjusted_center.y = rectangle.top + ((rectangle.bottom - rectangle.top) / 2);
-
-					if (ClientToScreen(CatalystPlatformWindows::_MainWindow, &adjusted_center))
-					{
-						SetCursorPos(adjusted_center.x, adjusted_center.y);
-
-						const float current_x{ BaseMath::Clamp<float>(static_cast<float>(point.x) / static_cast<float>(rectangle.right - rectangle.left), 0.0f, 1.0f) };
-						const float current_y{ BaseMath::Clamp<float>(1.0f - static_cast<float>(point.y) / static_cast<float>(rectangle.bottom - rectangle.top), 0.0f, 1.0f) };
-
-						//Don't bother moving the cursor if it hasn't moved N pixels to account for integer rounding errors.
-						state->_DeltaX = (current_x - 0.5f) * static_cast<float>(BaseMath::Absolute<int32>(point.x - center.x) > 0);
-						state->_DeltaY = (current_y - 0.5f) * static_cast<float>(BaseMath::Absolute<int32>(point.y - center.y) > 0);
-					}
-
-					else
-					{
-						ASSERT(false, "Could not convert cursor position to window coordinates.");
-					}
-				}
-
-				else
-				{
-					ASSERT(false, "Could not retrieve window rectangle.");
-				}
-			}
-
-			else
-			{
-				ASSERT(false, "Could not convert cursor position to window coordinates.");
-			}
-		}
-
-		else
-		{
-			ASSERT(false, "Could not retrieve the current cursor position.");
-		}
-	}
-
-	//Update the button states.
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_LBUTTON, &state->_Left);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_MBUTTON, &state->_ScrollWheel);
-	WindowsInputSystemLogic::UpdateWindowsButton(VK_RBUTTON, &state->_Right);
-
-	//Update the scroll wheel step.
-	state->_ScrollWheelStep = CatalystPlatform::GetAndResetScrollWheelStep();
 }
 
 /*

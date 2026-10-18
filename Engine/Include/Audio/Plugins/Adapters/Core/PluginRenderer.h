@@ -6,6 +6,7 @@
 //Audio.
 #include <Audio/Plugins/Core/Plugin.h>
 #include <Audio/Plugins/Adapters/Core/PluginRenderBackends/PluginRenderBackend.h>
+#include <Audio/Plugins/Adapters/Core/PluginUpdateContext.h>
 
 //Forward declarations.
 class PluginWindow;
@@ -36,7 +37,7 @@ public:
 	/*
 	*	Updates this plugin renderer.
 	*/
-	void Update() NOEXCEPT;
+	void Update(const PluginUpdateContext &context) NOEXCEPT;
 
 	/*
 	*	Returns if this renderer is doing software rendering.
