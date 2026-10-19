@@ -3,8 +3,14 @@
 
 #define RENDER_COMMAND_MODE_COLOR (1)
 #define RENDER_COMMAND_MODE_TEXTURE (2)
-
 #define RENDER_COMMAND_MODE_TEXT (3)
+
+#define RENDER_COMMAND_SHAPE_NONE (0)
+
+#define RENDER_COMMAND_SHAPE_SOLID_BOX (1)
+#define RENDER_COMMAND_SHAPE_ROUNDED_BOX (2)
+#define RENDER_COMMAND_SHAPE_SOLID_CIRCLE (3)
+#define RENDER_COMMAND_SHAPE_HOLLOW_CIRCLE (4)
 
 //UI render command struct definition.
 struct RenderCommand
@@ -14,7 +20,10 @@ struct RenderCommand
 	uint _Mode;
 	uint _ColorOrTexture;
 	uint _ColorOpacity;
-	float _Parameter1;
+	float _ModeParameter1;
+	uint _Shape;
+	float _ShapeParameter1;
+	float _ShapeParameter2;
 };
 
 StorageBuffer(UI)

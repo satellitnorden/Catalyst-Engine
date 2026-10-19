@@ -105,7 +105,7 @@ namespace UI
 		//Update the value.
 		if (_ClickableInterface.GetState() == UI::ClickableInterface::State::PRESSED)
 		{
-			const float32 alpha{ (_ClickableInterface.GetMousePosition()._X - _AxisAlignedBoundingBox._Minimum._X) / (_AxisAlignedBoundingBox._Maximum._X - _AxisAlignedBoundingBox._Minimum._X) };
+			const float32 alpha{ BaseMath::Clamp<float32>((_ClickableInterface.GetMousePosition()._X - _AxisAlignedBoundingBox._Minimum._X) / (_AxisAlignedBoundingBox._Maximum._X - _AxisAlignedBoundingBox._Minimum._X), 0.0f, 1.0f) };
 			_Value = BaseMath::Round<int32>(BaseMath::LinearlyInterpolate(static_cast<float32>(_Minimum), static_cast<float32>(_Maximum), alpha));
 
 			if (_OnValueChangedCallback)
@@ -118,7 +118,7 @@ namespace UI
 		const float32 current_animator_value{ _Animator.Update(context._DeltaTime) };
 
 		//Render the base box.
-		RenderBox(context, _AxisAlignedBoundingBox, BaseMath::LinearlyInterpolate(GetColor(_SourceState, false), GetColor(_DestinationState, false), current_animator_value), Vector4<float32>(1.0f, 1.0f, 1.0f, 0.5f), _Style._Rounding);
+		RenderRoundedBox(context, _AxisAlignedBoundingBox, BaseMath::LinearlyInterpolate(GetColor(_SourceState, false), GetColor(_DestinationState, false), current_animator_value), Vector4<float32>(1.0f, 1.0f, 1.0f, 0.5f), _Style._Rounding);
 
 		//Calculate the indicator box.
 		AxisAlignedBoundingBox2D indicator_axis_aligned_bounding_box;
@@ -130,7 +130,7 @@ namespace UI
 		}
 
 		//Render the indicator box.
-		RenderBox(context, indicator_axis_aligned_bounding_box, BaseMath::LinearlyInterpolate(GetColor(_SourceState, true), GetColor(_DestinationState, true), current_animator_value), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
+		RenderRoundedBox(context, indicator_axis_aligned_bounding_box, BaseMath::LinearlyInterpolate(GetColor(_SourceState, true), GetColor(_DestinationState, true), current_animator_value), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
 
 		//Draw the overlay box.
 		if (current_animator_value < 1.0f)
@@ -166,7 +166,7 @@ namespace UI
 
 			color._A *= (1.0f - current_animator_value);
 
-			RenderBox(context, axis_aligned_bounding_box, color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
+			RenderRoundedBox(context, axis_aligned_bounding_box, color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
 		}
 
 		//Render the text.
@@ -180,7 +180,6 @@ namespace UI
 				_AxisAlignedBoundingBox,
 				_Parent->_Parent->GetFont(),
 				buffer,
-				StringUtilities::StringLength(buffer),
 				_TextScale,
 				UI::HorizontalAlignment::CENTER,
 				UI::VerticalAlignment::CENTER

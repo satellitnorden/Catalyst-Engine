@@ -5,6 +5,7 @@
 #include <Audio/Plugins/Core/Plugin.h>
 #include <Audio/Plugins/Adapters/CLAP/Extensions/CLAPAudioPortsExtension.h>
 #include <Audio/Plugins/Adapters/CLAP/Extensions/CLAPGUIExtension.h>
+#include <Audio/Plugins/Adapters/CLAP/Extensions/CLAPParamsExtension.h>
 #include <Audio/Plugins/Adapters/CLAP/CLAPPluginData.h>
 
 //Third party.
@@ -39,13 +40,38 @@ clap_process_status CLAP_ABI process(const struct clap_plugin *plugin, const cla
 		Memory::Set(plugin_data->_Outputs.At(channel_index).Data(), 0, number_of_samples * sizeof(float32));
 	}
 
+	//Handle events.
+	if (process->in_events)
+	{
+		const uint32_t number_of_events{ process->in_events->size(process->in_events) };
+
+		for (uint32_t event_index{ 0 }; event_index < number_of_events; ++event_index)
+		{
+			const clap_event_header_t *const event_header{ process->in_events->get(process->in_events, event_index) };
+
+			if (event_header)
+			{
+				switch (event_header->type)
+				{
+					case CLAP_EVENT_PARAM_VALUE:
+					{
+						const clap_event_param_value *const event{ reinterpret_cast<const clap_event_param_value *RESTRICT>(event_header) };
+						plugin_data->_Plugin->SetParameterPlain(event->param_id, static_cast<float32>(event->value));
+
+						break;
+					}
+				}
+			}
+		}
+	}
+
 	//Call the plugin's 'Process()' function!
 	AudioProcessContext context;
 
 	context._WasTimelineRunning = false; //TODO
 	context._IsTimelineRunning = false; //TODO
 
-	plugin_data->_Plugin->Process(context, plugin_data->_Inputs, &plugin_data->_Outputs, number_of_channels, number_of_samples);
+	plugin_data->_Plugin->CallProcess(context, plugin_data->_Inputs, &plugin_data->_Outputs, number_of_channels, number_of_samples);
 
 	//Copy the outputs.
 	for (uint8 channel_index{ 0 }; channel_index < number_of_channels; ++channel_index)
@@ -74,6 +100,11 @@ const void *get_extension(const struct clap_plugin *plugin, const char *id)
 	else if (strcmp(id, CLAP_EXT_GUI) == 0 && CLAPGUIExtension::IsSupported(plugin))
 	{
 		return &CLAPGUIExtension::EXTENSION;
+	}
+
+	else if (strcmp(id, CLAP_EXT_PARAMS) == 0 && CLAPParamsExtension::IsSupported(plugin))
+	{
+		return &CLAPParamsExtension::EXTENSION;
 	}
 
 	//Not a supported extension.

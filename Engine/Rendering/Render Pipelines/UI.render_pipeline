@@ -1,3 +1,6 @@
+//Declare uniform buffer includes.
+IncludeUniformBuffer(General);
+
 //Declare storage buffer includes.
 IncludeStorageBuffer(UI);
 
@@ -75,21 +78,6 @@ Fragment
         {
             color = UnpackColor(RENDER_COMMANDS[InInstanceIndex]._ColorOrTexture);
 
-            //Calculate the signed distance to apply rounded corners.
-            float signed_distance = RoundedRectangleSignedDistance
-            (
-                ClipToPixel(RENDER_COMMANDS[InInstanceIndex]._Positions[0].xy),
-                ClipToPixel(RENDER_COMMANDS[InInstanceIndex]._Positions[2].xy),
-                RENDER_COMMANDS[InInstanceIndex]._Parameter1,
-                InPixelPosition
-            );
-
-            //Calculate anti aliasing from the signed distance.
-            float anti_aliasing = fwidth(signed_distance);
-
-            //Modify the opacity depending on the signed distance.
-            color.a *= 1.0f - smoothstep(0.0f, anti_aliasing, signed_distance);
-
             break;
         }
 
@@ -97,28 +85,13 @@ Fragment
         {
             color = texture(sampler2D(TEXTURES[RENDER_COMMANDS[InInstanceIndex]._ColorOrTexture], SAMPLER), InTextureCoordinate);
 
-            //Calculate the signed distance to apply rounded corners.
-            float signed_distance = RoundedRectangleSignedDistance
-            (
-                ClipToPixel(RENDER_COMMANDS[InInstanceIndex]._Positions[0].xy),
-                ClipToPixel(RENDER_COMMANDS[InInstanceIndex]._Positions[2].xy),
-                RENDER_COMMANDS[InInstanceIndex]._Parameter1,
-                InPixelPosition
-            );
-
-            //Calculate anti aliasing from the signed distance.
-            float anti_aliasing = fwidth(signed_distance);
-
-            //Modify the opacity depending on the signed distance.
-            color.a *= 1.0f - smoothstep(0.0f, anti_aliasing, signed_distance);
-
             break;
         }
 
         case RENDER_COMMAND_MODE_TEXT:
         {
             float text_sdf = texture(sampler2D(TEXTURES[RENDER_COMMANDS[InInstanceIndex]._ColorOrTexture], SAMPLER), InTextureCoordinate).x;
-            float opacity = smoothstep(0.5f - RENDER_COMMANDS[InInstanceIndex]._Parameter1, 0.5f, text_sdf);
+            float opacity = smoothstep(0.5f - RENDER_COMMANDS[InInstanceIndex]._ModeParameter1, 0.5f, text_sdf);
             color = vec4(1.0f, 1.0f, 1.0f, opacity);
 
             break;
@@ -130,6 +103,70 @@ Fragment
 
     //Apply the color/opacity.
     color *= color_opacity;
+
+    //Apply the shape.
+    switch (RENDER_COMMANDS[InInstanceIndex]._Shape)
+    {
+        case RENDER_COMMAND_SHAPE_ROUNDED_BOX:
+        {
+            //Calculate the signed distance to apply rounded corners.
+            float signed_distance = RoundedRectangleSignedDistance
+            (
+                ClipToPixel(RENDER_COMMANDS[InInstanceIndex]._Positions[0].xy),
+                ClipToPixel(RENDER_COMMANDS[InInstanceIndex]._Positions[2].xy),
+                RENDER_COMMANDS[InInstanceIndex]._ShapeParameter1,
+                InPixelPosition
+            );
+
+            //Calculate anti aliasing from the signed distance.
+            float anti_aliasing = fwidth(signed_distance);
+
+            //Modify the opacity depending on the signed distance.
+            color.a *= 1.0f - smoothstep(0.0f, anti_aliasing, signed_distance);
+
+            break;
+        }
+
+        case RENDER_COMMAND_SHAPE_SOLID_CIRCLE:
+        {
+            //Calculate the center.
+            vec2 center = mix(ClipToPixel(RENDER_COMMANDS[InInstanceIndex]._Positions[0].xy), ClipToPixel(RENDER_COMMANDS[InInstanceIndex]._Positions[2].xy), 0.5f);
+
+            //Calculate the signed distance
+            float signed_distance = length(center - InPixelPosition) - RENDER_COMMANDS[InInstanceIndex]._ShapeParameter1;
+
+            //Calculate anti aliasing from the signed distance.
+            float anti_aliasing = fwidth(signed_distance);
+
+            //Modify the opacity depending on the signed distance.
+            color.a *= 1.0f - smoothstep(0.0f, anti_aliasing, signed_distance);
+
+            break;
+        }
+
+        case RENDER_COMMAND_SHAPE_HOLLOW_CIRCLE:
+        {
+            //Calculate the center.
+            vec2 center = mix(ClipToPixel(RENDER_COMMANDS[InInstanceIndex]._Positions[0].xy), ClipToPixel(RENDER_COMMANDS[InInstanceIndex]._Positions[2].xy), 0.5f);
+
+            //Calculate the distance to the center.
+            float distance_to_center = length(center - InPixelPosition);
+
+            //Calculate the signed distances.
+            float signed_distance_1 = distance_to_center - RENDER_COMMANDS[InInstanceIndex]._ShapeParameter1;
+            float signed_distance_2 = (distance_to_center - RENDER_COMMANDS[InInstanceIndex]._ShapeParameter2) * -1.0f;
+
+            float signed_distance = max(signed_distance_1, signed_distance_2);
+
+            //Calculate anti aliasing from the signed distance.
+            float anti_aliasing = fwidth(signed_distance);
+
+            //Modify the opacity depending on the signed distance.
+            color.a *= 1.0f - smoothstep(0.0f, anti_aliasing, signed_distance);
+
+            break;
+        }
+    }
 
     //Output the fragments.
     OutputFragment(SceneLowDynamicRange1, color);

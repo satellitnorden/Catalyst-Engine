@@ -127,7 +127,7 @@ namespace UI
 		const float32 current_animator_value{ _Animator.Update(context._DeltaTime) };
 
 		//Render the base box.
-		RenderBox(context, _AxisAlignedBoundingBox, BaseMath::LinearlyInterpolate(GetColor(_SourceState), GetColor(_DestinationState), current_animator_value), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
+		RenderRoundedBox(context, _AxisAlignedBoundingBox, BaseMath::LinearlyInterpolate(GetColor(_SourceState), GetColor(_DestinationState), current_animator_value), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
 
 		//Draw the overlay box.
 		if (current_animator_value < 1.0f)
@@ -163,7 +163,7 @@ namespace UI
 
 			color._A *= (1.0f - current_animator_value);
 
-			RenderBox(context, axis_aligned_bounding_box, color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
+			RenderRoundedBox(context, axis_aligned_bounding_box, color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
 		}
 
 		//Render the text.
@@ -175,7 +175,6 @@ namespace UI
 				_AxisAlignedBoundingBox,
 				_Parent->_Parent->GetFont(),
 				_Text.Data(),
-				_Text.Length(),
 				_TextScale,
 				UI::HorizontalAlignment::CENTER,
 				UI::VerticalAlignment::CENTER
@@ -185,7 +184,7 @@ namespace UI
 		//Render the texture.
 		if (_TextureIndex != UINT32_MAXIMUM)
 		{
-			RenderBox(context, _AxisAlignedBoundingBox, _TextureIndex, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
+			RenderRoundedBox(context, _AxisAlignedBoundingBox, _TextureIndex, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
 		}
 	}
 

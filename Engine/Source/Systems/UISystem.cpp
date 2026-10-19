@@ -11,6 +11,12 @@
 */
 void UISystem::Initialize() NOEXCEPT
 {
+	//Set the reference resolution.
+	{
+		const Resolution resolution{ RenderingSystem::Instance->GetFullResolution() };
+		SetReferenceResolution(Vector2<float32>(static_cast<float32>(resolution._Width), static_cast<float32>(resolution._Height)));
+	}
+
 	//Register the storage buffer.
 	RenderingSystem::Instance->GetBufferManager()->RegisterStorageBuffer
 	(
@@ -184,6 +190,7 @@ void UISystem::UpdateWidgets(const MouseState *const RESTRICT mouse_state) NOEXC
 {
 	//Cache the mouse data.
 	const Vector2<float32> mouse_position{ Vector2<float32>(mouse_state->_CurrentX, mouse_state->_CurrentY) * _ReferenceResolution };
+	const Vector2<float32> mouse_delta{ Vector2<float32>(mouse_state->_DeltaX, mouse_state->_DeltaY) * _ReferenceResolution };
 	const ButtonState mouse_button_state{ mouse_state->_Left };
 	const int8 mouse_scroll_wheel_step{ mouse_state->_ScrollWheelStep };
 
@@ -210,6 +217,7 @@ void UISystem::UpdateWidgets(const MouseState *const RESTRICT mouse_state) NOEXC
 					for (UI::ClickableInterface *clickable_interface : widget->GetClickableInterfaces())
 					{
 						clickable_interface->SetMousePosition(mouse_position);
+						clickable_interface->SetMouseDelta(mouse_delta);
 					}
 
 					if (!widget->IsEnabled())
@@ -259,7 +267,7 @@ void UISystem::UpdateWidgets(const MouseState *const RESTRICT mouse_state) NOEXC
 								have_consumed_click_input = true;
 							}
 
-							else
+							else if (clickable_interface->GetState() == UI::ClickableInterface::State::HOVERED || mouse_button_state == ButtonState::RELEASED || mouse_button_state == ButtonState::RELEASED_HELD)
 							{
 								clickable_interface->SetState(widget, UI::ClickableInterface::State::IDLE);
 							}

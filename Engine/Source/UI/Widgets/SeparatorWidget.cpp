@@ -54,7 +54,7 @@ namespace UI
 	void SeparatorWidget::Render(const UI::RenderContext &context) NOEXCEPT
 	{
 		//Render the box.
-		RenderBox(context, _AxisAlignedBoundingBox, _Parent->_Parent->GetStyle()._UncheckedHoveredColor, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Parent->_Parent->GetStyle()._Rounding);
+		RenderRoundedBox(context, _AxisAlignedBoundingBox, _Parent->_Parent->GetStyle()._UncheckedHoveredColor, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Parent->_Parent->GetStyle()._Rounding);
 	}
 
 }

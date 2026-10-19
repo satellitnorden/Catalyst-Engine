@@ -122,7 +122,7 @@ namespace UI
 		const float32 current_animator_value{ _Animator.Update(context._DeltaTime) };
 
 		//Render the base box.
-		RenderBox(context, button_axis_aligned_bounding_box, BaseMath::LinearlyInterpolate(GetColor(_SourceState), GetColor(_DestinationState), current_animator_value), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
+		RenderRoundedBox(context, button_axis_aligned_bounding_box, BaseMath::LinearlyInterpolate(GetColor(_SourceState), GetColor(_DestinationState), current_animator_value), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
 
 		//Draw the overlay box.
 		if (current_animator_value < 1.0f)
@@ -158,7 +158,7 @@ namespace UI
 
 			color._A *= (1.0f - current_animator_value);
 
-			RenderBox(context, axis_aligned_bounding_box, color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
+			RenderRoundedBox(context, axis_aligned_bounding_box, color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
 		}
 
 		//Render the text.
@@ -170,7 +170,6 @@ namespace UI
 				text_axis_aligned_bounding_box,
 				_Parent->_Parent->GetFont(),
 				_Text.Data(),
-				_Text.Length(),
 				_TextScale,
 				UI::HorizontalAlignment::CENTER,
 				UI::VerticalAlignment::CENTER

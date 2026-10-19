@@ -168,15 +168,64 @@ namespace UI
 		AxisAlignedBoundingBox2D _AxisAlignedBoundingBox;
 
 		/*
-		*	Renders a box with the given parameters.
+		*	Renders a solid box with the given parameters.
 		*/
-		void RenderBox
+		void RenderSolidBox
+		(
+			const UI::RenderContext &context,
+			const AxisAlignedBoundingBox2D &axis_aligned_bounding_box,
+			const ColorOrTexture &color_or_texture,
+			const Vector4<float32> &color_opacity = Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f)
+		) NOEXCEPT;
+
+		/*
+		*	Renders a rounded box with the given parameters.
+		*/
+		void RenderRoundedBox
 		(
 			const UI::RenderContext &context,
 			const AxisAlignedBoundingBox2D &axis_aligned_bounding_box,
 			const ColorOrTexture &color_or_texture,
 			const Vector4<float32> &color_opacity = Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f),
 			const float32 radius = 0.0f
+		) NOEXCEPT;
+
+		/*
+		*	Renders a solid circle with the given parameters.
+		*/
+		void RenderSolidCircle
+		(
+			const UI::RenderContext &context,
+			const Vector2<float32> center,
+			const float32 radius,
+			const ColorOrTexture &color_or_texture,
+			const Vector4<float32> &color_opacity = Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f)
+		) NOEXCEPT;
+
+		/*
+		*	Renders a hollow circle with the given parameters.
+		*/
+		void RenderHollowCircle
+		(
+			const UI::RenderContext &context,
+			const Vector2<float32> center,
+			const float32 outer_radius,
+			const float32 inner_radius,
+			const ColorOrTexture &color_or_texture,
+			const Vector4<float32> &color_opacity = Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f)
+		) NOEXCEPT;
+
+		/*
+		*	Renders a solid line with the given parameters.
+		*/
+		void RenderSolidLine
+		(
+			const UI::RenderContext &context,
+			const Vector2<float32> start,
+			const Vector2<float32> end,
+			const float32 thickness,
+			const ColorOrTexture &color_or_texture,
+			const Vector4<float32> &color_opacity = Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f)
 		) NOEXCEPT;
 
 		/*
@@ -188,7 +237,6 @@ namespace UI
 			const AxisAlignedBoundingBox2D &axis_aligned_bounding_box,
 			AssetPointer<FontAsset> font,
 			const char *const RESTRICT text,
-			const uint64 text_length,
 			const float32 scale,
 			const UI::HorizontalAlignment horizontal_alignment = UI::HorizontalAlignment::CENTER,
 			const UI::VerticalAlignment vertical_alignment = UI::VerticalAlignment::CENTER,

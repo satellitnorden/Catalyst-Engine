@@ -1,6 +1,3 @@
-//Constants.
-#define REFERENCE_RESOLUTION (vec2(1920.0f, 1080.0f))
-
 /*
 *	Converts clip coordinates to pixel coordinates.
 */
@@ -9,7 +6,7 @@ vec2 ClipToPixel(vec2 coordinates)
 	coordinates = coordinates * 0.5f + 0.5f;
 	coordinates.y = 1.0f - coordinates.y;
 
-	return coordinates * REFERENCE_RESOLUTION;
+	return coordinates * FULL_MAIN_RESOLUTION;
 }
 
 /*

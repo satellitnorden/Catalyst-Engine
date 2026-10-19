@@ -28,7 +28,6 @@ namespace UI
 			_AxisAlignedBoundingBox,
 			_Parent->_Parent->GetFont(),
 			_Text.Data(),
-			_Text.Length(),
 			_TextScale,
 			_HorizontalAlignment,
 			_VerticalAlignment,

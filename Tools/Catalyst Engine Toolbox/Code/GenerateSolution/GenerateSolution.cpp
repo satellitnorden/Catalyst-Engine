@@ -825,12 +825,27 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 			file << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
 			file << std::endl;
 
+			file << "//Audio." << std::endl;
+			file << "#include <Audio/Effects/Utilities/PluginHandler.h>" << std::endl;
+			file << std::endl;
+
 			file << "//Platform." << std::endl;
 			file << "#include <Platform/Windows/CatalystPlatformWindows.h>" << std::endl;
 			file << std::endl;
 
 			file << "//Systems." << std::endl;
 			file << "#include <Systems/CatalystEngineSystem.h>" << std::endl;
+			file << "#include <Systems/AudioSystem.h>" << std::endl;
+			file << "#include <Systems/UISystem.h>" << std::endl;
+			file << std::endl;
+
+			file << "//Audio." << std::endl;
+			file << "#include <AudioPluginGlue.Generated.h>" << std::endl;
+			file << "#include <" << audio_plugin._Name.c_str() << "Plugin.h>" << std::endl;
+			file << std::endl;
+
+			file << "//The plugin." << std::endl;
+			file << audio_plugin._Name.c_str() << "Plugin PLUGIN;" << std::endl;
 			file << std::endl;
 
 			file << "/*" << std::endl;
@@ -843,7 +858,7 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 			file << std::endl;
 
 			file << "\tconfiguration->_RenderingConfiguration._InitialFullScreen = false;" << std::endl;
-			file << "\tconfiguration->_RenderingConfiguration._Resolution = Resolution(" <<audio_plugin._Resolution._Width << ", " << audio_plugin._Resolution._Height << ");" << std::endl;
+			file << "\tconfiguration->_RenderingConfiguration._Resolution = AudioPluginGlue::GetResolution();" << std::endl;
 
 			file << "}" << std::endl;
 			file << std::endl;
@@ -858,6 +873,17 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 
 			file << "\t//Initialize the engine system." << std::endl;
 			file << "\tCatalystEngineSystem::Instance->Initialize(configuration);" << std::endl;
+			file << std::endl;
+
+			file << "\t//Initialize the plugin." << std::endl;
+			file << "\tAudio::Plugin::InitializeContext context;" << std::endl;
+			file << "\tcontext._UISystem = UISystem::Instance;" << std::endl;
+			file << "\tPLUGIN.CallInitialize(context);" << std::endl;
+			file << std::endl;
+
+			file << "\t//Add the plugin handler." << std::endl;
+			file << "\tPluginHandler *const RESTRICT plugin_handler{ AudioSystem::Instance->CreateAudioEffect<PluginHandler>(&PLUGIN) };" << std::endl;
+			file << "\tAudioSystem::Instance->AddMasterAudioEffect(plugin_handler);" << std::endl;
 			file << std::endl;
 
 			file << "\t//Main game loop." << std::endl;
@@ -888,6 +914,10 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 			file << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
 			file << std::endl;
 
+			file << "//Rendering." << std::endl;
+			file << "#include <Rendering/Native/Resolution.h>" << std::endl;
+			file << std::endl;
+
 			file << "//Audio plugin." << std::endl;
 			file << "#include <" << audio_plugin._ClassName.c_str() << ".h>" << std::endl;
 			file << std::endl;
@@ -899,7 +929,7 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 			file << "\t/*" << std::endl;
 			file << "\t*\tReturns the identifier of the plugin." << std::endl;
 			file << "\t*/" << std::endl;
-			file << "\tFORCE_INLINE constexpr const char *const RESTRICT Identifier() NOEXCEPT" << std::endl;
+			file << "\tFORCE_INLINE constexpr const char *const RESTRICT GetIdentifier() NOEXCEPT" << std::endl;
 			file << "\t{" << std::endl;
 			file << "\t\treturn \"com." << project_settings._DeveloperNameNoSpaces.c_str() << "." << audio_plugin._NameNoSpaces.c_str() << "\";" << std::endl;
 			file << "\t}" << std::endl;
@@ -908,7 +938,7 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 			file << "\t/*" << std::endl;
 			file << "\t*\tReturns the name of the plugin." << std::endl;
 			file << "\t*/" << std::endl;
-			file << "\tFORCE_INLINE constexpr const char *const RESTRICT Name() NOEXCEPT" << std::endl;
+			file << "\tFORCE_INLINE constexpr const char *const RESTRICT GetName() NOEXCEPT" << std::endl;
 			file << "\t{" << std::endl;
 			file << "\t\treturn \"" << audio_plugin._Name.c_str() << "\";" << std::endl;
 			file << "\t}" << std::endl;
@@ -917,9 +947,18 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 			file << "\t/*" << std::endl;
 			file << "\t*\tReturns the vendor of the plugin." << std::endl;
 			file << "\t*/" << std::endl;
-			file << "\tFORCE_INLINE constexpr const char *const RESTRICT Vendor() NOEXCEPT" << std::endl;
+			file << "\tFORCE_INLINE constexpr const char *const RESTRICT GetVendor() NOEXCEPT" << std::endl;
 			file << "\t{" << std::endl;
 			file << "\t\treturn \"" << project_settings._DeveloperNameNoSpaces.c_str() << "\";" << std::endl;
+			file << "\t}" << std::endl;
+			file << std::endl;
+
+			file << "\t/*" << std::endl;
+			file << "\t*\tReturns the resolution of the plugin." << std::endl;
+			file << "\t*/" << std::endl;
+			file << "\tFORCE_INLINE constexpr Resolution GetResolution() NOEXCEPT" << std::endl;
+			file << "\t{" << std::endl;
+			file << "\t\treturn Resolution(" << audio_plugin._Resolution._Width << ", " << audio_plugin._Resolution._Height << ");" << std::endl;
 			file << "\t}" << std::endl;
 			file << std::endl;
 
@@ -974,6 +1013,12 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 				file << std::endl;
 
 				file << "\t/*" << std::endl;
+				file << "\t*\tDefault constructor." << std::endl;
+				file << "\t*/" << std::endl;
+				file << "\t" << audio_plugin._Name.c_str() << "Plugin() NOEXCEPT;" << std::endl;
+				file << std::endl;
+
+				file << "\t/*" << std::endl;
 				file << "\t*\tReturns the resolution." << std::endl;
 				file << "\t*/" << std::endl;
 				file << "\tFORCE_INLINE NO_DISCARD Resolution GetResolution() const NOEXCEPT override" << std::endl;
@@ -1018,6 +1063,15 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 
 				file << "//Header file." << std::endl;
 				file << "#include <" << audio_plugin._ClassName.c_str() <<".h>" << std::endl;
+				file << std::endl;
+
+				file << "/*" << std::endl;
+				file << "*\tDefault constructor." << std::endl;
+				file << "*/" << std::endl;
+				file << "" << audio_plugin._Name.c_str() << "Plugin::" << audio_plugin._Name.c_str() << "Plugin() NOEXCEPT" << std::endl;
+				file << "{" << std::endl;
+				file << std::endl;
+				file << "}";
 				file << std::endl;
 
 				file << "/*" << std::endl;

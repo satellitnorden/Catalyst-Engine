@@ -2347,19 +2347,23 @@
             "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Render Pipelines\\UI.render_pipeline",
             "Identifier": 16435931295455023610,
             "Version": 3,
-            "LastChangedTime": 13410703873,
+            "LastChangedTime": 13436891591,
             "Dependencies": [
                 {
                     "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Global Render Data\\GlobalRenderData.global_render_data",
                     "LastChangedTime": 13403342371
                 },
                 {
+                    "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Uniform Buffer Definitions\\General.uniform_buffer_definition",
+                    "LastChangedTime": 13377169706
+                },
+                {
                     "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Storage Buffer Definitions\\UI.storage_buffer_definition",
-                    "LastChangedTime": 13410540673
+                    "LastChangedTime": 13436890550
                 },
                 {
                     "FilePath": "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering\\Shader Function Libraries\\UI.shader_function_library",
-                    "LastChangedTime": 13410625436
+                    "LastChangedTime": 13436881973
                 }
             ]
         },

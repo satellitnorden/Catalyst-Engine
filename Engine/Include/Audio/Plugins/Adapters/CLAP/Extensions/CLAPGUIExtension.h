@@ -79,7 +79,7 @@ namespace CLAPGUIExtension
 		CLAPPluginData *const RESTRICT plugin_data{ static_cast<CLAPPluginData *const RESTRICT>(plugin->plugin_data) };
 
 		//Retrieve the resolution.
-		const Resolution resolution{ plugin_data->_Plugin->GetResolution() };
+		const Resolution resolution{ AudioPluginGlue::GetResolution() };
 
 		//Set the width and height and return success.
 		*width = resolution._Width;
@@ -129,7 +129,7 @@ namespace CLAPGUIExtension
 		CLAPPluginData *const RESTRICT plugin_data{ static_cast<CLAPPluginData *const RESTRICT>(plugin->plugin_data) };
 
 		//Return if the child window was created successfully.
-		return plugin_data->_PluginWindow.Create(window->win32, plugin_data->_Plugin->GetResolution());
+		return plugin_data->_PluginWindow.Create(window->win32, AudioPluginGlue::GetResolution());
 	}
 
 	/*
@@ -207,7 +207,7 @@ namespace CLAPGUIExtension
 		CLAPPluginData *const RESTRICT plugin_data{ static_cast<CLAPPluginData *const RESTRICT>(plugin->plugin_data) };
 
 		//This extension is supported if the resolution is non-zero.
-		const Resolution resolution{ plugin_data->_Plugin->GetResolution() };
+		const Resolution resolution{ AudioPluginGlue::GetResolution() };
 
 		return resolution._Width > 0 && resolution._Height > 0;
 	}

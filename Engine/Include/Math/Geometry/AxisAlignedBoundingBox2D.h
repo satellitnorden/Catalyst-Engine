@@ -137,6 +137,16 @@ public:
 	}
 
 	/*
+	*	Returns the length of the longest side.
+	*/
+	FORCE_INLINE NO_DISCARD float32 LongestSide() const NOEXCEPT
+	{
+		const Vector2<float32> dimensions{ Dimensions() };
+
+		return BaseMath::Maximum<float32>(dimensions._X, dimensions._Y);
+	}
+
+	/*
 	*	Expands this axis aligned bounding box with the position.
 	*/
 	FORCE_INLINE constexpr void Expand(const Vector2<float32> &position) NOEXCEPT

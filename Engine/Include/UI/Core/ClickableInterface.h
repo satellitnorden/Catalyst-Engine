@@ -142,6 +142,22 @@ namespace UI
 			_MousePosition = value;
 		}
 
+		/*
+		*	Returns the mouse delta.
+		*/
+		FORCE_INLINE NO_DISCARD Vector2<float32> GetMouseDelta() const NOEXCEPT
+		{
+			return _MouseDelta;
+		}
+
+		/*
+		*	Sets the mouse delta.
+		*/
+		FORCE_INLINE void SetMouseDelta(const Vector2<float32> value) NOEXCEPT
+		{
+			_MouseDelta = value;
+		}
+
 	private:
 
 		//The state.
@@ -161,6 +177,9 @@ namespace UI
 
 		//The mouse position.
 		Vector2<float32> _MousePosition{ 0.0f, 0.0f };
+
+		//The mouse delta.
+		Vector2<float32> _MouseDelta{ 0.0f, 0.0f };
 
 	};
 

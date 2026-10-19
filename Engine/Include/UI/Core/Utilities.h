@@ -29,7 +29,6 @@ namespace UI
 			const Vector2<float32> &original_maximum,
 			AssetPointer<FontAsset> font,
 			const char *const RESTRICT text,
-			const uint64 text_length,
 			const float32 scale,
 			const UI::HorizontalAlignment horizontal_alignment,
 			const UI::VerticalAlignment vertical_alignment,
@@ -53,7 +52,7 @@ namespace UI
 			Vector2<float32> text_minimum{ 0.0f, original_center._Y - (baseline_height * 0.5f) };
 			Vector2<float32> text_maximum{ 0.0f, original_center._Y + (baseline_height * 0.5f) };
 
-			for (uint64 i{ 0 }, length{ text_length }; i < length; ++i)
+			for (uint64 i{ 0 };; ++i)
 			{
 				//Cache the chartacter.
 				const char character{ text[i] };
@@ -61,6 +60,11 @@ namespace UI
 				if (character < 0)
 				{
 					continue;
+				}
+
+				if (character == '\0')
+				{
+					break;
 				}
 
 				//Advance the maximum on the X axis..

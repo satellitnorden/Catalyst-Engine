@@ -6,6 +6,9 @@
 //Audio.
 #include <Audio/Plugins/Adapters/Core/PluginRenderBackends/PluginRenderBackend.h>
 
+//Math.
+#include <Math/Geometry/AxisAlignedBoundingBox2D.h>
+
 //Rendering.
 #include <Rendering/Native/Texture2D.h>
 
@@ -47,5 +50,21 @@ private:
 
 	//The buffer.
 	Texture2D<uint32> _Buffer;
+
+	/*
+	*	Rasterizes the given render command.
+	*/
+	void Rasterize(const UI::RenderCommand &render_command) NOEXCEPT;
+
+	/*
+	*	The fragment function.
+	*/
+	NO_DISCARD Vector4<float32> Fragment
+	(
+		const UI::RenderCommand &render_command,
+		const AxisAlignedBoundingBox2D &bounding_box,
+		const Vector2<float32> pixel_position,
+		const Vector2<float32> texture_coordinate
+	) NOEXCEPT;
 
 };

@@ -34,7 +34,7 @@ void PluginRenderer::Initialize(Audio::Plugin *const RESTRICT plugin, const Plug
 
 		context._UISystem = &_UISystem;
 
-		_Plugin->Initialize(context);
+		_Plugin->CallInitialize(context);
 	}
 }
 

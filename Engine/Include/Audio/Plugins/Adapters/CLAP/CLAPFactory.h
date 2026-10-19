@@ -1,7 +1,7 @@
 #if defined(AUDIO_PLUGIN_CLAP)
 #pragma once
 //Audio plugin.
-#include <AudioPluginGlue.h>
+#include <AudioPluginGlue.Generated.h>
 
 //Audio.
 #include <Audio/Plugins/Adapters/CLAP/CLAPPlugin.h>
@@ -28,16 +28,16 @@ const char *PLUGIN_FEATURES[]
 };
 const clap_plugin_descriptor_t PLUGIN_DESCRIPTOR
 {
-	CLAP_VERSION,					//clap_version
-	AudioPluginGlue::Identifier(),	//id
-	AudioPluginGlue::Name(),		//name
-	AudioPluginGlue::Vendor(),		//vendor
-	nullptr,						//url
-	nullptr,						//manual_url
-	nullptr,						//support_url
-	"1.0",							//version
-	"A plugin. (:",					//description
-	PLUGIN_FEATURES					//features
+	CLAP_VERSION,						//clap_version
+	AudioPluginGlue::GetIdentifier(),	//id
+	AudioPluginGlue::GetName(),			//name
+	AudioPluginGlue::GetVendor(),		//vendor
+	nullptr,							//url
+	nullptr,							//manual_url
+	nullptr,							//support_url
+	"1.0",								//version
+	"A plugin. (:",						//description
+	PLUGIN_FEATURES						//features
 };
 
 const clap_plugin_descriptor_t *CLAP_ABI get_plugin_descriptor(const struct clap_plugin_factory *factory, uint32_t index)

@@ -162,7 +162,7 @@ namespace UI
 			const float32 current_animator_value{ _Animators[clickable_interface_index].Update(context._DeltaTime)};
 
 			//Render the base box.
-			RenderBox(context, _ClickableInterfaceData[clickable_interface_index]._AxisAlignedBoundingBox, BaseMath::LinearlyInterpolate(GetColor(_SourceStates[clickable_interface_index]), GetColor(_DestinationStates[clickable_interface_index]), current_animator_value), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
+			RenderRoundedBox(context, _ClickableInterfaceData[clickable_interface_index]._AxisAlignedBoundingBox, BaseMath::LinearlyInterpolate(GetColor(_SourceStates[clickable_interface_index]), GetColor(_DestinationStates[clickable_interface_index]), current_animator_value), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
 
 			//Draw the overlay box.
 			if (current_animator_value < 1.0f)
@@ -198,7 +198,7 @@ namespace UI
 
 				color._A *= (1.0f - current_animator_value);
 
-				RenderBox(context, axis_aligned_bounding_box, color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
+				RenderRoundedBox(context, axis_aligned_bounding_box, color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
 			}
 
 			{
@@ -213,7 +213,6 @@ namespace UI
 					indicator_axis_aligned_bounding_box,
 					_Parent->_Parent->GetFont(),
 					clickable_interface_index == 0 ? "<" : ">",
-					1,
 					indicator_size * (1.0f + 1.0f - 0.5f + 0.25f),
 					UI::HorizontalAlignment::LEFT,
 					UI::VerticalAlignment::BOTTOM
@@ -260,7 +259,6 @@ namespace UI
 				text_axis_aligned_bounding_box,
 				_Parent->_Parent->GetFont(),
 				buffer,
-				StringUtilities::StringLength(buffer),
 				_TextScale,
 				UI::HorizontalAlignment::CENTER,
 				UI::VerticalAlignment::CENTER

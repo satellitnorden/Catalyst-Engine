@@ -30,6 +30,17 @@ namespace UI
 			TEXT
 		};
 
+		//Enumeration covering all shapes.
+		enum class Shape : uint32
+		{
+			NONE,
+
+			SOLID_BOX,
+			ROUNDED_BOX,
+			SOLID_CIRCLE,
+			HOLLOW_CIRCLE
+		};
+
 		/*
 		*	The positions.
 		*	Not a simple bounding box to better handle rotated boxes and such.
@@ -49,17 +60,39 @@ namespace UI
 		uint32 _ColorOpacity;
 
 		/*
-		*	Parameter 1.
-		*	Radius (rounded corners) for image.
-		*	Radius (rounded corners) for texture.
+		*	Mode parameter 1.
 		*	Smoothing factor for text.
 		*/
 		union
 		{
-			uint32 _Parameter1_uint32;
-			float32 _Parameter1_float32;
+			uint32 _ModeParameter1_uint32;
+			float32 _ModeParameter1_float32;
 		};
 
+		//The shape.
+		Shape _Shape;
+
+		/*
+		*	Shape parameter 1.
+		*	Radius for rounded box.
+		*	Radius for solid circle.
+		*	Outer radius for hollow circle
+		*/
+		union
+		{
+			uint32 _ShapeParameter1_uint32;
+			float32 _ShapeParameter1_float32;
+		};
+
+		/*
+		*	Shape parameter 2.
+		*	Inner radius for hollow circle.
+		*/
+		union
+		{
+			uint32 _ShapeParameter2_uint32;
+			float32 _ShapeParameter2_float32;
+		};
 	};
 
 }
