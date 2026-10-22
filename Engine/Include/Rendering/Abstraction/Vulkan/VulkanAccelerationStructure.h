@@ -1,3 +1,4 @@
+#if defined(CATALYST_HAS_VULKAN)
 #pragma once
 
 //Core.
@@ -72,3 +73,4 @@ private:
 	VkDeviceSize _ScratchBufferSize{ 0 };
 
 };
+#endif

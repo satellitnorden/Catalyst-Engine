@@ -1,3 +1,4 @@
+#if defined(CATALYST_HAS_VULKAN)
 //Header file.
 #include <Rendering/Abstraction/Vulkan/VulkanAccelerationStructure.h>
 
@@ -294,3 +295,4 @@ void VulkanAccelerationStructure::Release() NOEXCEPT
 		_ScratchBuffer.Release();
 	}
 }
+#endif

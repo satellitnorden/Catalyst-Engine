@@ -1,3 +1,4 @@
+#if defined(CATALYST_HAS_VULKAN)
 //Header file.
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>
 
@@ -501,4 +502,5 @@ PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR vkGetPhysicalDeviceWin32Prese
 PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallbackEXT;
 PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT;
 PFN_vkDebugReportMessageEXT vkDebugReportMessageEXT;
+#endif
 #endif

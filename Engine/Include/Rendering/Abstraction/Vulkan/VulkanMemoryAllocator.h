@@ -1,3 +1,4 @@
+#if defined(CATALYST_HAS_VULKAN)
 #pragma once
 
 //Core.
@@ -8,3 +9,4 @@
 
 //The Vulkan memory allocator.
 extern VmaAllocator VULKAN_MEMORY_ALLOCATOR;
+#endif

@@ -23,8 +23,12 @@
 #include <Rendering/Native/TextureData.h>
 #include <Rendering/Native/NativeRenderPassManager.h>
 #include <Rendering/Native/RenderPasses/DebugRenderPass.h>
-#include <Rendering/Translation/OpenGL/OpenGLSubRenderingSystem.h>
-#include <Rendering/Translation/Vulkan/VulkanSubRenderingSystem.h>
+#if defined(CATALYST_HAS_OPEN_GL)
+	#include <Rendering/Translation/OpenGL/OpenGLSubRenderingSystem.h>
+#endif
+#if defined(CATALYST_HAS_VULKAN)
+	#include <Rendering/Translation/Vulkan/VulkanSubRenderingSystem.h>
+#endif
 
 //Systems.
 #include <Systems/AnimationSystem.h>
@@ -37,7 +41,6 @@
 #include <Systems/DebugSystem.h>
 #endif
 #include <Systems/PathTracingSystem.h>
-#include <Systems/ResourceSystem.h>
 #include <Systems/TaskSystem.h>
 #include <Systems/WorldSystem.h>
 
@@ -64,19 +67,30 @@ void RenderingSystem::Initialize() NOEXCEPT
 	//Create the sub rendering system.
 	switch (_Configuration._SubRenderingSystem)
 	{
+		case SubRenderingSystem::NONE:
+		{
+			_SubRenderingSystem = nullptr;
+
+			break;
+		}
+
+#if defined(CATALYST_HAS_OPEN_GL)
 		case SubRenderingSystem::OPEN_GL:
 		{
 			_SubRenderingSystem = new OpenGLSubRenderingSystem();
 
 			break;
 		}
+#endif
 
+#if defined(CATALYST_HAS_VULKAN)
 		case SubRenderingSystem::VULKAN:
 		{
 			_SubRenderingSystem = new VulkanSubRenderingSystem();
 
 			break;
 		}
+#endif
 
 		default:
 		{
@@ -499,6 +513,12 @@ void RenderingSystem::PostInitialize() NOEXCEPT
 */
 void RenderingSystem::RenderUpdate() NOEXCEPT
 {
+	//If we don't have a rendering path, do nothing.
+	if (_CurrentRenderingPath == RenderingPath::NONE)
+	{
+		return;
+	}
+
 	//Update the general uniform data.
 	_GeneralUniformData._FullResolution = Vector2<float32>(static_cast<float32>(GetScaledResolution(0)._Width), static_cast<float32>(GetScaledResolution(0)._Height));
 	_GeneralUniformData._InverseFullResolution = Vector2<float32>(1.0f / _GeneralUniformData._FullResolution._X, 1.0f / _GeneralUniformData._FullResolution._Y);
@@ -1003,7 +1023,10 @@ void RenderingSystem::DestroyAccelerationStructure(AccelerationStructureHandle *
 */
 void RenderingSystem::CreateBuffer(const uint64 size, const BufferUsage usage, const MemoryProperty memory_properties, BufferHandle *const RESTRICT handle) const NOEXCEPT
 {
-	_SubRenderingSystem->CreateBuffer(size, usage, memory_properties, handle);
+	if (_SubRenderingSystem)
+	{
+		_SubRenderingSystem->CreateBuffer(size, usage, memory_properties, handle);
+	}
 }
 
 /*
@@ -1011,7 +1034,10 @@ void RenderingSystem::CreateBuffer(const uint64 size, const BufferUsage usage, c
 */
 void RenderingSystem::UploadDataToBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT data_sizes, const uint8 data_chunks, BufferHandle *const RESTRICT handle) const NOEXCEPT
 {
-	_SubRenderingSystem->UploadDataToBuffer(data, data_sizes, data_chunks, handle);
+	if (_SubRenderingSystem)
+	{
+		_SubRenderingSystem->UploadDataToBuffer(data, data_sizes, data_chunks, handle);
+	}
 }
 
 /*
@@ -1166,7 +1192,10 @@ NO_DISCARD uint64 RenderingSystem::GetExecutionTime(const QueryPoolHandle query_
 */
 void RenderingSystem::CreateShader(const ArrayProxy<byte> &data, const ShaderStage stage, ShaderHandle *const RESTRICT handle) const NOEXCEPT
 {
-	_SubRenderingSystem->CreateShader(data, stage, handle);
+	if (_SubRenderingSystem)
+	{
+		_SubRenderingSystem->CreateShader(data, stage, handle);
+	}
 }
 
 /*
@@ -1288,7 +1317,10 @@ void RenderingSystem::CreateSampler(const SamplerProperties &properties, Sampler
 */
 void RenderingSystem::CreateTexture2D(const TextureData &data, Texture2DHandle *const RESTRICT handle) const NOEXCEPT
 {
-	_SubRenderingSystem->CreateTexture2D(data, handle);
+	if (_SubRenderingSystem)
+	{
+		_SubRenderingSystem->CreateTexture2D(data, handle);
+	}
 }
 
 /*

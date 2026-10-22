@@ -1,3 +1,4 @@
+#if defined(CATALYST_HAS_OPEN_GL)
 #pragma once
 
 //Core.
@@ -303,3 +304,4 @@ public:
 	void EndFrame(const CommandBuffer *const RESTRICT frame_command_buffer) NOEXCEPT override;
 
 };
+#endif

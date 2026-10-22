@@ -658,7 +658,7 @@ private:
 	RenderingConfiguration _RenderingConfiguration;
 
 	//The sub rendering system.
-	SubRenderingSystemInterface *RESTRICT _SubRenderingSystem;
+	SubRenderingSystemInterface *RESTRICT _SubRenderingSystem{ nullptr };
 
 	//The current rendering path.
 	RenderingPath _CurrentRenderingPath;

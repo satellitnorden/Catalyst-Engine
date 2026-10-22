@@ -1,4 +1,4 @@
-#if defined(CATALYST_RENDERING_VULKAN)
+#if defined(CATALYST_HAS_VULKAN)
 //Header file.
 #include <Rendering/Abstraction/Vulkan/VulkanInterface.h>
 

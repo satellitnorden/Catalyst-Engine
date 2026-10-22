@@ -79,8 +79,15 @@ enum class RenderingPlatformEvent : uint8
 */
 enum class SubRenderingSystem : uint8
 {
+	NONE,
+
+#if defined(CATALYST_HAS_OPEN_GL)
 	OPEN_GL,
-	VULKAN
+#endif
+
+#if defined(CATALYST_HAS_VULKAN)
+	VULKAN,
+#endif
 };
 
 //Enumeration covering all rendering paths.

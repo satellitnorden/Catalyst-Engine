@@ -1,4 +1,4 @@
-#if defined(CATALYST_RENDERING_VULKAN)
+#if defined(CATALYST_HAS_OPEN_GL)
 //Header file.
 #include <Rendering/Translation/OpenGL/OpenGLSubRenderingSystem.h>
 

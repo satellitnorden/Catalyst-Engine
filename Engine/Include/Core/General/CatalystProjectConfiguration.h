@@ -104,7 +104,16 @@ public:
 	/*
 	*	Determines the sub rendering system.
 	*/
-	OptionalWithDefault<SubRenderingSystem> _SubRenderingSystem{ SubRenderingSystem::VULKAN };
+	OptionalWithDefault<SubRenderingSystem> _SubRenderingSystem
+	{
+#if defined(CATALYST_HAS_VULKAN)
+		SubRenderingSystem::VULKAN
+#elif defined(CATALYST_HAS_OPEN_GL)
+		SubRenderingSystem::OPEN_GL
+#else
+		SubRenderingSystem::NONE
+#endif
+	};
 
 	/*
 	*	The initial rendering path.

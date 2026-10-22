@@ -1,3 +1,4 @@
+#if defined(CATALYST_HAS_VULKAN)
 #pragma once
 
 //Core.
@@ -58,3 +59,4 @@ public:
 	static void Terminate() NOEXCEPT;
 
 };
+#endif

@@ -1,4 +1,4 @@
-#if defined(CATALYST_PLATFORM_WINDOWS)
+#if defined(CATALYST_PLATFORM_WINDOWS) && defined(CATALYST_HAS_VULKAN)
 //Header file.
 #include <Rendering/Abstraction/Vulkan/VulkanPlatform.h>
 
