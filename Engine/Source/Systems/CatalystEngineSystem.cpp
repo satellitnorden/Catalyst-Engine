@@ -13,11 +13,6 @@
 //Profiling.
 #include <Profiling/Profiling.h>
 
-//Resources.
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-#include <Resources/Building/CatalystEngineResourceBuilding.h>
-#endif
-
 //Systems.
 #if defined(CATALYST_EDITOR)
 #include <Systems/CatalystEditorSystem.h>
@@ -26,7 +21,6 @@
 #include <Systems/LogSystem.h>
 #include <Systems/MemorySystem.h>
 #include <Systems/RenderingSystem.h>
-#include <Systems/ResourceSystem.h>
 #include <Systems/SaveSystem.h>
 #include <Systems/TaskSystem.h>
 
@@ -67,11 +61,6 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 
 	//Set whether or not to run the engine single-threaded.
 	_SingleThreaded = _ProjectConfiguration._ConcurrencyConfiguration._NumberOfTaskExecutors.Valid() && _ProjectConfiguration._ConcurrencyConfiguration._NumberOfTaskExecutors.Get() == 0;
-
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-	//Build the Catalyst Engine resources.
-	CatalystEngineResourceBuilding::BuildResources(_ProjectConfiguration);
-#endif
 
 	//Initialize the platform.
 	{

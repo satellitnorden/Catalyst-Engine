@@ -8,7 +8,6 @@
 //Systems.
 #include <Systems/ContentSystem.h>
 #include <Systems/RenderingSystem.h>
-#include <Systems/ResourceSystem.h>
 
 /*
 *	Initializes this graphics pipeline.

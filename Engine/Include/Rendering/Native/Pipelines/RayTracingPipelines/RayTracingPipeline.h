@@ -6,9 +6,6 @@
 //Rendering.
 #include <Rendering/Native/Pipelines/Core/Pipeline.h>
 
-//Resources.
-#include <Resources/Core/ResourcePointer.h>
-
 class RayTracingPipeline : public Pipeline
 {
 
