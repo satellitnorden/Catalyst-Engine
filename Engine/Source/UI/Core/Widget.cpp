@@ -390,19 +390,15 @@ namespace UI
 
 		positions[0] = start;
 		positions[0] -= cross_direction * thickness * 0.5f;
-		//positions[0] -= direction * thickness * 0.5f;
 
 		positions[1] = end;
 		positions[1] -= cross_direction * thickness * 0.5f;
-		//positions[1] += direction * thickness * 0.5f;
 
 		positions[2] = end;
 		positions[2] += cross_direction * thickness * 0.5f;
-		//positions[2] += direction * thickness * 0.5f;
 
 		positions[3] = start;
 		positions[3] += cross_direction * thickness * 0.5f;
-		//positions[3] -= direction * thickness * 0.5f;
 
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{

@@ -1,4 +1,20 @@
 /*
+*	Rotates the given vector.
+*/
+vec2 Rotate(vec2 X, float angle)
+{
+    float cosine = cos(angle);
+	float sine = sin(angle);
+
+    vec2 value;
+
+    value.x = X.x * cosine - X.y * sine;
+    value.y = X.x * sine + X.y * cosine;
+
+    return value;
+}
+
+/*
 *	Rotates the given vector around the yaw.
 */
 vec3 RotateYaw(vec3 X, float angle)
@@ -22,4 +38,20 @@ mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
     vec3 random_bitangent = cross(normal, random_tangent);
 
     return mat3(random_tangent, random_bitangent, normal);
+}
+
+/*
+*   Returns the closest point on the given line segment.
+*/
+vec2 ClosestPointOnLineSegment(vec2 start, vec2 end, vec2 point)
+{
+    vec2 end_to_start = end - start ;
+    vec2 point_to_start = point - start;
+
+	float end_to_start_length = LengthSquared2(end_to_start);
+	float end_to_start_length_reciprocal = 1.0f / end_to_start_length;
+
+	float projection = dot(point_to_start, end_to_start) * end_to_start_length_reciprocal;
+
+	return mix(start, end, clamp(projection, 0.0f, 1.0f));
 }

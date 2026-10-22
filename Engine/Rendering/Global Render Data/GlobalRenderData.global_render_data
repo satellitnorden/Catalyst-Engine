@@ -26,6 +26,7 @@
 #define DIVIDE_BY_ZERO_SAFE_EPSILON (FLOAT32_EPSILON * 1.0f)
 
 #define PI (3.141592f)
+#define HALF_PI (PI * 0.5f)
 #define TAU (6.283184f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 
@@ -219,6 +220,14 @@ float Square(float X)
 float InverseSquare(float X)
 {
 	return 1.0f - Square(1.0f - X);
+}
+
+/*
+*   Returns the length of a vector with three components squared.
+*/
+float LengthSquared2(vec2 vector)
+{
+    return vector.x * vector.x + vector.y * vector.y;
 }
 
 /*

@@ -490,6 +490,83 @@ private:
 };
 
 /*
+*	Specialized function for sampling Texture2D<byte> texures with bilinear filtering.
+*/
+FORCE_INLINE NO_DISCARD float32 SampleConvert(const Texture2D<byte> &texture, const Vector2<float32> &coordinate) NOEXCEPT
+{
+	//Cache the width/height.
+	const uint32 width{ texture.GetWidth() };
+	const uint32 height{ texture.GetHeight() };
+
+	//Assume REPEAT address mode.
+	Vector2<float32> actual_coordinate;
+
+	actual_coordinate._X = BaseMath::Fractional(coordinate._X);
+	actual_coordinate._Y = BaseMath::Fractional(coordinate._Y);
+
+	//Calculate the coordinates.
+	Vector2<uint32> lower_left_coordinate
+	{
+		BaseMath::Minimum<uint32>(static_cast<uint32>(actual_coordinate._X * static_cast<float32>(width)), width - 1),
+		BaseMath::Minimum<uint32>(static_cast<uint32>(actual_coordinate._Y * static_cast<float32>(height)), height - 1)
+	};
+	Vector2<uint32> upper_left_coordinate
+	{
+		lower_left_coordinate._X,
+		BaseMath::Minimum<uint32>(lower_left_coordinate._Y + 1, height - 1)
+	};
+	Vector2<uint32> lower_right_coordinate
+	{
+		BaseMath::Minimum<uint32>(lower_left_coordinate._X + 1, width - 1),
+		lower_left_coordinate._Y
+	};
+	Vector2<uint32> upper_right_coordinate
+	{
+		BaseMath::Minimum<uint32>(lower_left_coordinate._X + 1, width - 1),
+		BaseMath::Minimum<uint32>(lower_left_coordinate._Y + 1, height - 1)
+	};
+
+	//Sample the values.
+	float32 lower_left_value;
+
+	{
+		const byte &_lower_left_value{ texture.At(lower_left_coordinate._X, lower_left_coordinate._Y) };
+		lower_left_value = static_cast<float32>(_lower_left_value) / static_cast<float32>(BYTE_MAXIMUM);
+	}
+
+	float32 upper_left_value;
+
+	{
+		const byte &_upper_left_value{ texture.At(upper_left_coordinate._X, upper_left_coordinate._Y) };
+		upper_left_value = static_cast<float32>(_upper_left_value) / static_cast<float32>(BYTE_MAXIMUM);
+	}
+
+	float32 lower_right_value;
+
+	{
+		const byte &_lower_right_value{ texture.At(lower_right_coordinate._X, lower_right_coordinate._Y) };
+		lower_right_value = static_cast<float32>(_lower_right_value) / static_cast<float32>(BYTE_MAXIMUM);
+	}
+
+	float32 upper_right_value;
+
+	{
+		const byte &_upper_right_value{ texture.At(upper_right_coordinate._X, upper_right_coordinate._Y) };
+		upper_right_value = static_cast<float32>(_upper_right_value) / static_cast<float32>(BYTE_MAXIMUM);
+	}
+
+	//Calculate the blend values.
+	const float32 horizontal_blend{ BaseMath::Fractional(coordinate._X * static_cast<float32>(width)) };
+	const float32 vertical_blend{ BaseMath::Fractional(coordinate._Y * static_cast<float32>(height)) };
+
+	//Perform the blends.
+	const float32 blend_1{ BaseMath::LinearlyInterpolate<float32>(lower_left_value, lower_right_value, horizontal_blend) };
+	const float32 blend_2{ BaseMath::LinearlyInterpolate<float32>(upper_left_value, upper_right_value, horizontal_blend) };
+
+	return BaseMath::LinearlyInterpolate<float32>(blend_1, blend_2, vertical_blend);
+}
+
+/*
 *	Specialized function for sampling Texture2D<Vector4<byte>> texures with bilinear filtering.
 */
 FORCE_INLINE NO_DISCARD Vector4<float32> SampleConvert(const Texture2D<Vector4<byte>> &texture, const Vector2<float32> &coordinate) NOEXCEPT

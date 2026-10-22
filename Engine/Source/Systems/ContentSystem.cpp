@@ -65,6 +65,12 @@ bool UNCOMPRESSED_TEXTURES_WINDOW_OPEN{ false };
 */
 void ContentSystem::Initialize() NOEXCEPT
 {
+	//If we have already been initialized, skip.
+	if (_Initialized)
+	{
+		return;
+	}
+
 	//Register the native asset compilers
 	RegisterAssetCompiler(AnimatedModelAssetCompiler::Instance);
 	RegisterAssetCompiler(AnimationAssetCompiler::Instance);
@@ -135,6 +141,9 @@ void ContentSystem::Initialize() NOEXCEPT
 		nullptr
 	);
 #endif
+
+	//We have not been initialized.
+	_Initialized = true;
 }
 
 /*
@@ -220,7 +229,7 @@ void ContentSystem::LoadAssetCollection(const char *const RESTRICT file_path) NO
 			
 			if (input_file.IsMapped())
 			{
-				stream_archive.SetData(static_cast<byte* const RESTRICT>(const_cast<void* const RESTRICT>(input_file.GetMappedData())), input_file.Size());
+				stream_archive.SetData(static_cast<byte *const RESTRICT>(const_cast<void* const RESTRICT>(input_file.GetMappedData())), input_file.Size());
 			}
 
 			else
@@ -246,53 +255,57 @@ void ContentSystem::LoadAssetCollection(const char *const RESTRICT file_path) NO
 		AssetHeader asset_header;
 		stream_archive.Read(&asset_header, sizeof(AssetHeader), &stream_archive_position);
 
-		//Find the asset compiler for this asset type.
-		AssetCompiler *RESTRICT asset_compiler;
-
+		//If we already have the asset loaded, skip it.
+		if (!HasAsset(asset_header._AssetTypeIdentifier, asset_header._AssetIdentifier))
 		{
-			AssetCompiler *const RESTRICT *const RESTRICT _asset_compiler{ _AssetCompilers.Find(asset_header._AssetTypeIdentifier) };
-			asset_compiler = _asset_compiler ? *_asset_compiler : nullptr;
+			//Find the asset compiler for this asset type.
+			AssetCompiler *RESTRICT asset_compiler;
+
+			{
+				AssetCompiler *const RESTRICT *const RESTRICT _asset_compiler{ _AssetCompilers.Find(asset_header._AssetTypeIdentifier) };
+				asset_compiler = _asset_compiler ? *_asset_compiler : nullptr;
+			}
+
+			//Couldn't find an asset compiler, ignore!
+			if (!asset_compiler)
+			{
+				ASSERT(false, "Couldn't find asset compiler!");
+
+				stream_archive_position = original_stream_archive_position + file_size + sizeof(uint64);
+
+				continue;
+			}
+
+			//Allocate the load data.
+			LoadData *const RESTRICT load_data{ new (_LoadDataAllocator.Allocate()) LoadData() };
+
+			//Set the asset compiler.
+			load_data->_AssetCompiler = asset_compiler;
+
+			//Set up the load context.
+			load_data->_Context._StreamArchive = &stream_archive;
+			load_data->_Context._StreamArchivePosition = stream_archive_position;
+			load_data->_Context._Asset = asset_compiler->AllocateAsset();
+
+			//Copy the asset header.
+			Memory::Copy(&load_data->_Context._Asset->_Header, &asset_header, sizeof(AssetHeader));
+
+			//Set up the task.
+			load_data->_Task._Function = [](void *const RESTRICT arguments)
+			{
+				LoadData *const RESTRICT load_data{ static_cast<LoadData *const RESTRICT>(arguments) };
+
+				load_data->_AssetCompiler->Load(load_data->_Context);
+			};
+			load_data->_Task._Arguments = load_data;
+			load_data->_Task._ExecutableOnSameThread = false;
+
+			//Execute the task!
+			TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, &load_data->_Task);
+
+			//Add the load data.
+			_LoadData.Emplace(load_data);
 		}
-
-		//Couldn't find an asset compiler, ignore!
-		if (!asset_compiler)
-		{
-			ASSERT(false, "Couldn't find asset compiler!");
-
-			stream_archive_position = original_stream_archive_position + file_size + sizeof(uint64);
-
-			continue;
-		}
-
-		//Allocate the load data.
-		LoadData *const RESTRICT load_data{ new (_LoadDataAllocator.Allocate()) LoadData() };
-
-		//Set the asset compiler.
-		load_data->_AssetCompiler = asset_compiler;
-
-		//Set up the load context.
-		load_data->_Context._StreamArchive = &stream_archive;
-		load_data->_Context._StreamArchivePosition = stream_archive_position;
-		load_data->_Context._Asset = asset_compiler->AllocateAsset();
-
-		//Copy the asset header.
-		Memory::Copy(&load_data->_Context._Asset->_Header, &asset_header, sizeof(AssetHeader));
-
-		//Set up the task.
-		load_data->_Task._Function = [](void *const RESTRICT arguments)
-		{
-			LoadData *const RESTRICT load_data{ static_cast<LoadData *const RESTRICT>(arguments) };
-
-			load_data->_AssetCompiler->Load(load_data->_Context);
-		};
-		load_data->_Task._Arguments = load_data;
-		load_data->_Task._ExecutableOnSameThread = false;
-
-		//Execute the task!
-		TaskSystem::Instance->ExecuteTask(Task::Priority::LOW, &load_data->_Task);
-
-		//Add the load data.
-		_LoadData.Emplace(load_data);
 
 		//Advance the stream archive position.
 		stream_archive_position = original_stream_archive_position + file_size + sizeof(uint64);

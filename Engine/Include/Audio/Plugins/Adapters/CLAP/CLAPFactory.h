@@ -59,14 +59,8 @@ const clap_plugin_t *CLAP_ABI create_plugin(const struct clap_plugin_factory *fa
 
 	plugin->desc = &PLUGIN_DESCRIPTOR;
 	plugin->plugin_data = new CLAPPluginData(AudioPluginGlue::Create());
-	plugin->init = [](const struct clap_plugin *plugin)
-	{
-		return true;
-	};
-	plugin->destroy = [](const struct clap_plugin *plugin)
-	{
-
-	};
+	plugin->init = CLAPPlugin::init;
+	plugin->destroy = CLAPPlugin::destroy;
 	plugin->activate = []
 	(
 		const struct clap_plugin *plugin,
@@ -93,8 +87,8 @@ const clap_plugin_t *CLAP_ABI create_plugin(const struct clap_plugin_factory *fa
 	{
 
 	};
-	plugin->process = process;
-	plugin->get_extension = get_extension;
+	plugin->process = CLAPPlugin::process;
+	plugin->get_extension = CLAPPlugin::get_extension;
 	plugin->on_main_thread = [](const struct clap_plugin* plugin)
 	{
 

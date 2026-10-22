@@ -301,7 +301,7 @@ namespace Audio
 
 			case Parameter::Type::GAIN:
 			{
-				sprintf_s(buffer, buffer_capacity, "%.1fB", value);
+				sprintf_s(buffer, buffer_capacity, "%.1fdB", value);
 
 				return true;
 			}

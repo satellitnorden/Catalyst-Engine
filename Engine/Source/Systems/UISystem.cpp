@@ -195,7 +195,7 @@ void UISystem::UpdateWidgets(const MouseState *const RESTRICT mouse_state) NOEXC
 	const int8 mouse_scroll_wheel_step{ mouse_state->_ScrollWheelStep };
 
 	//Remember if we have already consumed input.
-	bool have_consumed_click_input{ false };
+	bool have_consumed_mouse_input{ false };
 	bool have_consumed_scroll_input{ false };
 
 	//Iterate through all scenes.
@@ -226,51 +226,16 @@ void UISystem::UpdateWidgets(const MouseState *const RESTRICT mouse_state) NOEXC
 					}
 
 					//Update clickable interfaces.
-					for (UI::ClickableInterface *const RESTRICT clickable_interface : widget->GetClickableInterfaces())
+					ArrayProxy<UI::ClickableInterface *const RESTRICT> clickable_interfaces{ widget->GetClickableInterfaces() };
+
+					if (!clickable_interfaces.Empty())
 					{
-						if (have_consumed_click_input)
+						for (int64 clickable_interface_index{ static_cast<int64>(clickable_interfaces.Size() - 1) }; clickable_interface_index >= 0; --clickable_interface_index)
 						{
-							clickable_interface->SetState(widget, UI::ClickableInterface::State::IDLE);
-						}
+							UI::ClickableInterface *const RESTRICT clickable_interface{ clickable_interfaces[clickable_interface_index] };
 
-						else
-						{
-							if (clickable_interface->_IsInside(widget, clickable_interface, mouse_position) && !AnyWidgetBlockingPosition(mouse_position, widget))
-							{
-								if (mouse_button_state == ButtonState::PRESSED)
-								{
-									if (clickable_interface->GetState() == UI::ClickableInterface::State::HOVERED)
-									{
-										clickable_interface->SetState(widget, UI::ClickableInterface::State::PRESSED);
-									}
-
-									else
-									{
-										clickable_interface->SetState(widget, UI::ClickableInterface::State::HOVERED);
-									}
-								}
-
-								else if (mouse_button_state == ButtonState::PRESSED_HELD)
-								{
-									//The clickable can only go from hovered to pressed if it was first hovered, and then actually pressed.
-									if (clickable_interface->GetState() != UI::ClickableInterface::State::PRESSED)
-									{
-										clickable_interface->SetState(widget, UI::ClickableInterface::State::HOVERED);
-									}
-								}
-
-								else
-								{
-									clickable_interface->SetState(widget, UI::ClickableInterface::State::HOVERED);
-								}
-
-								have_consumed_click_input = true;
-							}
-
-							else if (clickable_interface->GetState() == UI::ClickableInterface::State::HOVERED || mouse_button_state == ButtonState::RELEASED || mouse_button_state == ButtonState::RELEASED_HELD)
-							{
-								clickable_interface->SetState(widget, UI::ClickableInterface::State::IDLE);
-							}
+							const bool is_inside{ clickable_interface->_IsInside(widget, clickable_interface, mouse_position) && !AnyWidgetBlockingPosition(mouse_position, widget) };
+							have_consumed_mouse_input = UpdateClickableInterfaceState(widget, clickable_interface, mouse_button_state, is_inside, have_consumed_mouse_input);
 						}
 					}
 
@@ -334,4 +299,270 @@ NO_DISCARD bool UISystem::AnyWidgetBlockingPosition(const Vector2<float32> posit
 	}
 
 	return false;
+}
+
+/*
+*	Updates the state of the given clickable interface with the given parameters.
+*	Returns if the mouse input was consumed.
+*/
+NO_DISCARD bool UISystem::UpdateClickableInterfaceState
+(
+	UI::Widget *const RESTRICT widget,
+	UI::ClickableInterface *const RESTRICT clickable_interface,
+	const ButtonState mouse_button_state,
+	const bool is_inside,
+	bool mouse_input_consumed
+) NOEXCEPT
+{
+	if (mouse_input_consumed)
+	{
+		clickable_interface->SetState(widget, UI::ClickableInterface::State::IDLE);
+
+		return mouse_input_consumed;
+	}
+
+	switch (clickable_interface->GetState())
+	{
+		case UI::ClickableInterface::State::IDLE:
+		{
+			switch (mouse_button_state)
+			{
+				case ButtonState::PRESSED:
+				{
+					if (is_inside)
+					{
+						clickable_interface->SetState(widget, UI::ClickableInterface::State::PRESSED);
+					}
+
+					else
+					{
+						//Do nothing. (:
+					}
+
+					break;
+				}
+
+				case ButtonState::PRESSED_HELD:
+				{
+					if (is_inside)
+					{
+						//Do nothing. (:
+					}
+
+					else
+					{
+						//Do nothing. (:
+					}
+
+					break;
+				}
+
+				case ButtonState::RELEASED:
+				{
+					if (is_inside)
+					{
+						clickable_interface->SetState(widget, UI::ClickableInterface::State::HOVERED);
+
+						mouse_input_consumed = true;
+					}
+
+					else
+					{
+						//Do nothing. (:
+					}
+
+					break;
+				}
+
+				case ButtonState::RELEASED_HELD:
+				{
+					if (is_inside)
+					{
+						clickable_interface->SetState(widget, UI::ClickableInterface::State::HOVERED);
+
+						mouse_input_consumed = true;
+					}
+
+					else
+					{
+						//Do nothing. (:
+					}
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+
+			break;
+		}
+
+		case UI::ClickableInterface::State::HOVERED:
+		{
+			switch (mouse_button_state)
+			{
+				case ButtonState::PRESSED:
+				{
+					if (is_inside)
+					{
+						clickable_interface->SetState(widget, UI::ClickableInterface::State::PRESSED);
+
+						mouse_input_consumed = true;
+					}
+
+					else
+					{
+						clickable_interface->SetState(widget, UI::ClickableInterface::State::IDLE);
+					}
+
+					break;
+				}
+
+				case ButtonState::PRESSED_HELD:
+				{
+					if (is_inside)
+					{
+						//Do nothing. (:
+					}
+
+					else
+					{
+						clickable_interface->SetState(widget, UI::ClickableInterface::State::IDLE);
+					}
+
+					break;
+				}
+
+				case ButtonState::RELEASED:
+				{
+					if (is_inside)
+					{
+						//Do nothing. (:
+					}
+
+					else
+					{
+						clickable_interface->SetState(widget, UI::ClickableInterface::State::IDLE);
+					}
+
+					break;
+				}
+
+				case ButtonState::RELEASED_HELD:
+				{
+					if (is_inside)
+					{
+						mouse_input_consumed = true;
+					}
+
+					else
+					{
+						clickable_interface->SetState(widget, UI::ClickableInterface::State::IDLE);
+					}
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+
+			break;
+		}
+
+		case UI::ClickableInterface::State::PRESSED:
+		{
+			switch (mouse_button_state)
+			{
+				case ButtonState::PRESSED:
+				{
+					if (is_inside)
+					{
+						//Do nothing. (:
+					}
+
+					else
+					{
+						//Do nothing. (:
+					}
+
+					break;
+				}
+
+				case ButtonState::PRESSED_HELD:
+				{
+					if (is_inside)
+					{
+						//Do nothing. (:
+					}
+
+					else
+					{
+						//Do nothing. (:
+					}
+
+					break;
+				}
+
+				case ButtonState::RELEASED:
+				{
+					if (is_inside)
+					{
+						clickable_interface->SetState(widget, UI::ClickableInterface::State::HOVERED);
+
+						mouse_input_consumed = true;
+					}
+
+					else
+					{
+						clickable_interface->SetState(widget, UI::ClickableInterface::State::IDLE);
+					}
+
+					break;
+				}
+
+				case ButtonState::RELEASED_HELD:
+				{
+					if (is_inside)
+					{
+						clickable_interface->SetState(widget, UI::ClickableInterface::State::HOVERED);
+					}
+
+					else
+					{
+						clickable_interface->SetState(widget, UI::ClickableInterface::State::IDLE);
+					}
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+
+	return mouse_input_consumed;
 }

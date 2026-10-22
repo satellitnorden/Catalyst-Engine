@@ -10,6 +10,9 @@
 #include <Math/General/Vector.h>
 #include <Math/Geometry/AxisAlignedBoundingBox2D.h>
 
+//Rendering.
+#include <Rendering/Native/Texture2D.h>
+
 class FontAsset final : public Asset
 {
 
@@ -51,5 +54,8 @@ public:
 
 	//The default height.
 	float32 _DefaultHeight;
+
+	//The texture 2D.
+	Texture2D<byte> _Texture2D;
 
 };

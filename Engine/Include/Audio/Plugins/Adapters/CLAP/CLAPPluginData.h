@@ -3,8 +3,7 @@
 
 //Audio.
 #include <Audio/Plugins/Core/Plugin.h>
-#include <Audio/Plugins/Adapters/Core/PluginWindow.h>
-#include <Audio/Plugins/Adapters/Core/PluginRenderer.h>
+#include <Audio/Plugins/Editor/PluginEditor.h>
 
 /*
 *	CLAP Plugin Data class definition.
@@ -21,27 +20,20 @@ public:
 		:
 		_Plugin(plugin)
 	{
-		//Initialize the plugin window.
-		_PluginWindow.Initialize(&_PluginRenderer);
-
-		//Initialize the plugin renderer.
-		_PluginRenderer.Initialize(_Plugin, &_PluginWindow);
+		
 	}
 
 	//The plugin.
 	Audio::Plugin *RESTRICT _Plugin;
+
+	//The editor.
+	Audio::PluginEditor _Editor;
 
 	//The inputs.
 	DynamicArray<DynamicArray<float32>> _Inputs;
 
 	//The outputs.
 	DynamicArray<DynamicArray<float32>> _Outputs;
-
-	//The plugin renderer.
-	PluginRenderer _PluginRenderer;
-
-	//The plugin window.
-	PluginWindow _PluginWindow;
 
 };
 #endif

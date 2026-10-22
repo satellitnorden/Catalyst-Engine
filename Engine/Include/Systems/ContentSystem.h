@@ -80,6 +80,23 @@ public:
 	void LoadAssetCollection(const char *const RESTRICT file_path) NOEXCEPT;
 
 	/*
+	*	Returns if an asset exist of the given type and the given identifier.
+	*/
+	FORCE_INLINE NO_DISCARD bool HasAsset(const HashString asset_type_identifier, const HashString asset_identifier) NOEXCEPT
+	{
+		HashTable<HashString, Asset *RESTRICT> *const RESTRICT assets{ _Assets.Find(asset_type_identifier) };
+
+		if (!assets)
+		{
+			return false;
+		}
+
+		Asset *const RESTRICT *const RESTRICT asset{ assets->Find(asset_identifier) };
+
+		return asset != nullptr;
+	}
+
+	/*
 	*	Tries to return the asset with the given asset identifier.
 	*/
 	template <typename TYPE>
@@ -182,6 +199,9 @@ private:
 		bool _TriggerRecompile{ false };
 
 	};
+
+	//Denotes whether or not the content system has been initialized.
+	bool _Initialized{ false };
 
 	//The asset compilers.
 	HashTable<HashString, AssetCompiler *const RESTRICT> _AssetCompilers;

@@ -8,6 +8,7 @@
 #include <objbase.h>
 
 //STD.
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 
@@ -50,11 +51,27 @@ std::string GetConfigurationPlatformConditionString(const std::string &configura
 /*
 *	Generates!
 */
-void GenerateVisualStudioSolution::Generate(const Parameters &parameters)
+void GenerateVisualStudioSolution::Generate(Parameters parameters)
 {
     //Generate the GUID's.
     const std::string solution_guid{ GenerateGUID() };
     const std::string project_guid{ GenerateGUID() };
+
+    //Generate the resources file.
+    if (!parameters._EmbeddedResources.empty())
+    {
+        GenerateResourceFile(parameters);
+    }
+
+    //If we have embedded resources, add a new directory containing the resource file.
+    if (!parameters._EmbeddedResources.empty())
+    {
+        Parameters::Directory &directory{ parameters._Directories.emplace_back() };
+
+        directory._Name = "Resources";
+        directory._Files.emplace_back("Resources\\resource.h");
+        directory._Files.emplace_back("Resources\\Resources.rc");
+    }
 
     //Generate the project file.
     GenerateProjectFile(parameters, project_guid);
@@ -64,6 +81,155 @@ void GenerateVisualStudioSolution::Generate(const Parameters &parameters)
 
     //Generate the solution file.
     GenerateSolutionFile(parameters, solution_guid, project_guid);
+}
+
+/*
+*	Generates the resource file.
+*/
+void GenerateVisualStudioSolution::GenerateResourceFile(const Parameters &parameters)
+{
+    //Figure out the directory.
+    char directory_buffer[256];
+    sprintf_s(directory_buffer, "%s\\Resources", parameters._DirectoryPath.c_str());
+
+    //Create the directory.
+    std::filesystem::create_directories(std::string(directory_buffer));
+
+    //Create the "resource.h" file.
+    {
+        //Figure out the project file path.
+        char file_path_buffer[256];
+        sprintf_s(file_path_buffer, "%s\\resource.h", directory_buffer);
+
+        //Open the file.
+        std::ofstream file{ file_path_buffer };
+
+        //Just a bunch of boilerplate...
+        file << "//{{NO_DEPENDENCIES}}" << std::endl;
+        file << "// Microsoft Visual C++ generated include file." << std::endl;
+        file << "// Used by Resources.rc" << std::endl;
+        file << "//" << std::endl;
+        file << std::endl;
+
+        file << "// Next default values for new objects" << std::endl;
+        file << "//" << std::endl;
+        file << "#ifdef APSTUDIO_INVOKED" << std::endl;
+        file << "#ifndef APSTUDIO_READONLY_SYMBOLS" << std::endl;
+        file << "#define _APS_NEXT_RESOURCE_VALUE        102" << std::endl;
+        file << "#define _APS_NEXT_COMMAND_VALUE         40001" << std::endl;
+        file << "#define _APS_NEXT_SYMED_VALUE           101" << std::endl;
+        file << "#endif" << std::endl;
+        file << "#endif" << std::endl;
+        
+        //Close the file.
+        file.close();
+    }
+
+    //Generate the "Resources.rc" file.
+    {
+        //Figure out the project file path.
+        char file_path_buffer[256];
+        sprintf_s(file_path_buffer, "%s\\Resources.rc", directory_buffer);
+
+        //Open the file.
+        std::ofstream file{ file_path_buffer };
+
+        //Just a bunch of boilerplate...
+        file << "// Microsoft Visual C++ generated resource script." << std::endl;
+        file << "//" << std::endl;
+        file << "#include \"resource.h\"" << std::endl;
+        file << std::endl;
+
+        file << "#define APSTUDIO_READONLY_SYMBOLS" << std::endl;
+        file << "/////////////////////////////////////////////////////////////////////////////" << std::endl;
+        file << "//" << std::endl;
+        file << "// Generated from the TEXTINCLUDE 2 resource." << std::endl;
+        file << "//" << std::endl;
+        file << "#include \"winres.h\"" << std::endl;
+        file << std::endl;
+
+        file << "/////////////////////////////////////////////////////////////////////////////" << std::endl;
+        file << "#undef APSTUDIO_READONLY_SYMBOLS" << std::endl;
+        file << std::endl;
+
+        file << "/////////////////////////////////////////////////////////////////////////////" << std::endl;
+        file << "// English (United States) resources" << std::endl;
+        file << std::endl;
+
+        file << "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)" << std::endl;
+        file << "LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US" << std::endl;
+        file << std::endl;
+
+        file << "#ifdef APSTUDIO_INVOKED" << std::endl;
+        file << "/////////////////////////////////////////////////////////////////////////////" << std::endl;
+        file << "//" << std::endl;
+        file << "// TEXTINCLUDE" << std::endl;
+        file << "//" << std::endl;
+        file << std::endl;
+
+        file << "1 TEXTINCLUDE " << std::endl;
+        file << "BEGIN" << std::endl;
+        file << "    \"resource.h\\0\"" << std::endl;
+        file << "END" << std::endl;
+        file << std::endl;
+
+        file << "2 TEXTINCLUDE " << std::endl;
+        file << "BEGIN" << std::endl;
+        file << "    \"#include \"\"winres.h\"\"\\r\\n\"" << std::endl;
+        file << "    \"\\0\"" << std::endl;
+        file << "END" << std::endl;
+        file << std::endl;
+
+        file << "3 TEXTINCLUDE " << std::endl;
+        file << "BEGIN" << std::endl;
+        file << "    \"\\r\\n\"" << std::endl;
+        file << "    \"\\0\"" << std::endl;
+        file << "END" << std::endl;
+        file << std::endl;
+
+        file << "#endif    // APSTUDIO_INVOKED" << std::endl;
+        file << std::endl;
+
+        file << "/////////////////////////////////////////////////////////////////////////////" << std::endl;
+        file << "//" << std::endl;
+        file << "// RCDATA" << std::endl;
+        file << "//" << std::endl;
+        file << std::endl;
+
+        file << "#endif    // English (United States) resources" << std::endl;
+        file << "/////////////////////////////////////////////////////////////////////////////" << std::endl;
+        file << std::endl;
+
+        file << "#ifndef APSTUDIO_INVOKED" << std::endl;
+        file << "/////////////////////////////////////////////////////////////////////////////" << std::endl;
+        file << "//" << std::endl;
+        file << "// Generated from the TEXTINCLUDE 3 resource." << std::endl;
+        file << "//" << std::endl;
+        file << std::endl;
+
+        //Now we finally get to the actually important stuff - Adding the resources. (:
+        for (size_t embedded_resource_index{ 0 }; embedded_resource_index < parameters._EmbeddedResources.size(); ++embedded_resource_index)
+        {
+            const std::string &embedded_resource{ parameters._EmbeddedResources[embedded_resource_index] };
+
+            const char *string{ &embedded_resource[embedded_resource.length() - 1] };
+
+            while ((*string) != '\\' && (*string) != '/')
+            {
+                --string;
+            }
+
+            ++string;
+
+            file << string << " RCDATA \"" << embedded_resource.c_str() << "\"" << std::endl;
+        }
+
+        file << "/////////////////////////////////////////////////////////////////////////////" << std::endl;
+        file << "#endif    // not APSTUDIO_INVOKED" << std::endl;
+
+        //Close the file.
+        file.close();
+    }
 }
 
 /*
@@ -489,9 +655,15 @@ void GenerateVisualStudioSolution::AddCompileFiles(const Parameters &parameters,
     {
         const std::string extension{ compile_file._Path.substr(compile_file._Path.find_last_of('.')) };
 
+        const bool is_resource_file{ extension == ".rc" };
         const bool is_compile_file{ extension == ".cpp" || extension == ".c" };
 
-        if (is_compile_file)
+        if (is_resource_file)
+        {
+            file << "\t\t<ResourceCompile Include=\"" << compile_file._Path.c_str() << "\">" << std::endl;
+        }
+
+        else  if (is_compile_file)
         {
             file << "\t\t<ClCompile Include=\"" << compile_file._Path.c_str() << "\">" << std::endl;
         }
@@ -526,7 +698,12 @@ void GenerateVisualStudioSolution::AddCompileFiles(const Parameters &parameters,
             file << "\t\t\t<WarningLevel>TurnOffAllWarnings</WarningLevel>" << std::endl;
         }
 
-        if (is_compile_file)
+        if (is_resource_file)
+        {
+            file << "\t\t</ResourceCompile>" << std::endl;
+        }
+
+        else if (is_compile_file)
         {
             file << "\t\t</ClCompile>" << std::endl;
         }
@@ -558,6 +735,13 @@ void GenerateVisualStudioSolution::AddFilterFiles(std::ofstream &file, const Par
             file << "\t\t<ClCompile Include=\"" << compile_file._Path.c_str() << "\">" << std::endl;
             file << "\t\t\t<Filter>" << filter_string.c_str() << "</Filter>" << std::endl;
             file << "\t\t</ClCompile>" << std::endl;
+        }
+
+        else if (extension == ".rc")
+        {
+            file << "\t\t<ResourceCompile Include=\"" << compile_file._Path.c_str() << "\">" << std::endl;
+            file << "\t\t\t<Filter>" << filter_string.c_str() << "</Filter>" << std::endl;
+            file << "\t\t</ResourceCompile>" << std::endl;
         }
 
         else

@@ -7,6 +7,9 @@
 //Concurrency.
 #include <Concurrency/AtomicQueue.h>
 
+//Input.
+#include <Input/InputCore.h>
+
 //UI.
 #include <UI/Core/RenderCommand.h>
 #include <UI/Core/Scene.h>
@@ -103,5 +106,18 @@ private:
 	*	Returns if any widget is blocking the given position for the given widget.
 	*/
 	NO_DISCARD bool AnyWidgetBlockingPosition(const Vector2<float32> position, const UI::Widget *const RESTRICT widget) NOEXCEPT;
+
+	/*
+	*	Updates the state of the given clickable interface with the given parameters.
+	*	Returns if the mouse input was consumed.
+	*/
+	NO_DISCARD bool UpdateClickableInterfaceState
+	(
+		UI::Widget *const RESTRICT widget,
+		UI::ClickableInterface *const RESTRICT clickable_interface,
+		const ButtonState mouse_button_state,
+		const bool is_inside,
+		bool mouse_input_consumed
+	) NOEXCEPT;
 
 };

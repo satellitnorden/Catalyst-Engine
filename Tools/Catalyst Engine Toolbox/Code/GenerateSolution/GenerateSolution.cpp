@@ -33,7 +33,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 	{
 		preprocessor_definitions->emplace_back("_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_DEBUG");
-		preprocessor_definitions->emplace_back("CATALYST_ENABLE_RESOURCE_BUILDING");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_VULKAN");
 		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
 		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
@@ -43,7 +43,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 	{
 		preprocessor_definitions->emplace_back("_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_DEBUG");
-		preprocessor_definitions->emplace_back("CATALYST_ENABLE_RESOURCE_BUILDING");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_VULKAN");
 		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
 		preprocessor_definitions->emplace_back("CATALYST_EDITOR");
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
@@ -54,7 +54,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 	{
 		preprocessor_definitions->emplace_back("NDEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_PROFILE");
-		preprocessor_definitions->emplace_back("CATALYST_ENABLE_RESOURCE_BUILDING");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_VULKAN");
 		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
 		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
@@ -64,7 +64,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 	{
 		preprocessor_definitions->emplace_back("NDEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_PROFILE");
-		preprocessor_definitions->emplace_back("CATALYST_ENABLE_RESOURCE_BUILDING");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_VULKAN");
 		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
 		preprocessor_definitions->emplace_back("CATALYST_EDITOR");
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
@@ -75,12 +75,15 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 	{
 		preprocessor_definitions->emplace_back("NDEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_FINAL");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_VULKAN");
 	}
 
 	else if (strcmp(configuration_name, "Debug Static") == 0)
 	{
 		preprocessor_definitions->emplace_back("_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_DEBUG");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_VULKAN");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
 		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
 	}
@@ -89,6 +92,8 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 	{
 		preprocessor_definitions->emplace_back("NDEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_PROFILE");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_VULKAN");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
 		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
 	}
@@ -97,13 +102,14 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 	{
 		preprocessor_definitions->emplace_back("NDEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_FINAL");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_VULKAN");
 	}
 
 	else if (strcmp(configuration_name, "Standalone Debug") == 0)
 	{
 		preprocessor_definitions->emplace_back("_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_DEBUG");
-		preprocessor_definitions->emplace_back("CATALYST_ENABLE_RESOURCE_BUILDING");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_VULKAN");
 		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
 		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
@@ -113,7 +119,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 	{
 		preprocessor_definitions->emplace_back("NDEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_PROFILE");
-		preprocessor_definitions->emplace_back("CATALYST_ENABLE_RESOURCE_BUILDING");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_VULKAN");
 		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
 		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
@@ -123,6 +129,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 	{
 		preprocessor_definitions->emplace_back("NDEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_FINAL");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_VULKAN");
 	}
 
 	else if (strcmp(configuration_name, "CLAP Debug") == 0)
@@ -141,13 +148,13 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 	{
 		preprocessor_definitions->emplace_back("_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_DEBUG");
-		}
+	}
 
 	else if (strcmp(configuration_name, "VST3 Final") == 0)
 	{
 		preprocessor_definitions->emplace_back("NDEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_FINAL");
-		}
+	}
 
 	else
 	{
@@ -161,7 +168,6 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 	preprocessor_definitions->emplace_back("__WINDOWS_MM__");
 	preprocessor_definitions->emplace_back("CATALYST_DISTRIBUTION_NULL");
 	preprocessor_definitions->emplace_back("CATALYST_PLATFORM_WINDOWS");
-	preprocessor_definitions->emplace_back("CATALYST_RENDERING_VULKAN");
 	preprocessor_definitions->emplace_back("NAM_ENABLE_A2_FAST");
 
 	switch (project_settings._Physics)
@@ -203,6 +209,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 	//Add configuration specific library includes.
 	if (strcmp(configuration_name, "Debug") == 0)
 	{
+		library_includes->emplace_back("vulkan-1.lib");
 		library_includes->emplace_back("Debug\\shaderc_shared.lib");
 		library_includes->emplace_back("Debug\\libsoundwave.lib");
 		library_includes->emplace_back("Debug\\assimp-vc143-mtd.lib");
@@ -210,6 +217,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "Debug Editor") == 0)
 	{
+		library_includes->emplace_back("vulkan-1.lib");
 		library_includes->emplace_back("Debug\\shaderc_shared.lib");
 		library_includes->emplace_back("Debug\\libsoundwave.lib");
 		library_includes->emplace_back("Debug\\assimp-vc143-mtd.lib");
@@ -217,6 +225,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "Profile") == 0)
 	{
+		library_includes->emplace_back("vulkan-1.lib");
 		library_includes->emplace_back("Profile\\shaderc_shared.lib");
 		library_includes->emplace_back("Profile\\libsoundwave.lib");
 		library_includes->emplace_back("Profile\\assimp-vc143-mt.lib");
@@ -224,6 +233,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "Profile Editor") == 0)
 	{
+		library_includes->emplace_back("vulkan-1.lib");
 		library_includes->emplace_back("Profile\\shaderc_shared.lib");
 		library_includes->emplace_back("Profile\\libsoundwave.lib");
 		library_includes->emplace_back("Profile\\assimp-vc143-mt.lib");
@@ -231,11 +241,13 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "Final") == 0)
 	{
+		library_includes->emplace_back("vulkan-1.lib");
 		library_includes->emplace_back("Final\\libsoundwave.lib");
 	}
 
 	else if (strcmp(configuration_name, "Debug Static") == 0)
 	{
+		library_includes->emplace_back("vulkan-1.lib");
 		library_includes->emplace_back("Debug\\shaderc_shared.lib");
 		library_includes->emplace_back("Debug\\libsoundwave.lib");
 		library_includes->emplace_back("Debug\\assimp-vc143-mtd.lib");
@@ -243,6 +255,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "Profile Static") == 0)
 	{
+		library_includes->emplace_back("vulkan-1.lib");
 		library_includes->emplace_back("Profile\\shaderc_shared.lib");
 		library_includes->emplace_back("Profile\\libsoundwave.lib");
 		library_includes->emplace_back("Profile\\assimp-vc143-mt.lib");
@@ -250,11 +263,13 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "Final Static") == 0)
 	{
+		library_includes->emplace_back("vulkan-1.lib");
 		library_includes->emplace_back("Final\\libsoundwave.lib");
 	}
 
 	else if (strcmp(configuration_name, "Standalone Debug") == 0)
 	{
+		library_includes->emplace_back("vulkan-1.lib");
 		library_includes->emplace_back("Debug\\shaderc_shared.lib");
 		library_includes->emplace_back("Debug\\libsoundwave.lib");
 		library_includes->emplace_back("Debug\\assimp-vc143-mtd.lib");
@@ -262,6 +277,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "Standalone Profile") == 0)
 	{
+		library_includes->emplace_back("vulkan-1.lib");
 		library_includes->emplace_back("Profile\\shaderc_shared.lib");
 		library_includes->emplace_back("Profile\\libsoundwave.lib");
 		library_includes->emplace_back("Profile\\assimp-vc143-mt.lib");
@@ -269,6 +285,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "Standalone Final") == 0)
 	{
+		library_includes->emplace_back("vulkan-1.lib");
 		library_includes->emplace_back("Final\\libsoundwave.lib");
 	}
 
@@ -300,7 +317,6 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 	}
 
 	//Add global library includes.
-	library_includes->emplace_back("vulkan-1.lib");
 	library_includes->emplace_back("Winmm.lib");
 	library_includes->emplace_back("xinput.lib");
 
@@ -827,6 +843,7 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 
 			file << "//Audio." << std::endl;
 			file << "#include <Audio/Effects/Utilities/PluginHandler.h>" << std::endl;
+			file << "#include <Audio/Plugins/Editor/PluginEditor.h>" << std::endl;
 			file << std::endl;
 
 			file << "//Platform." << std::endl;
@@ -836,7 +853,6 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 			file << "//Systems." << std::endl;
 			file << "#include <Systems/CatalystEngineSystem.h>" << std::endl;
 			file << "#include <Systems/AudioSystem.h>" << std::endl;
-			file << "#include <Systems/UISystem.h>" << std::endl;
 			file << std::endl;
 
 			file << "//Audio." << std::endl;
@@ -848,6 +864,10 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 			file << audio_plugin._Name.c_str() << "Plugin PLUGIN;" << std::endl;
 			file << std::endl;
 
+			file << "//The plugin editor." << std::endl;
+			file << "Audio::PluginEditor PLUGIN_EDITOR;" << std::endl;
+			file << std::endl;
+
 			file << "/*" << std::endl;
 			file << "*\tCreates the Catalyst project configuration." << std::endl;
 			file << "*/" << std::endl;
@@ -857,6 +877,17 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 			file << "\tconfiguration->_GeneralConfiguration._ProjectName = \"" << audio_plugin._Name.c_str() << "\";" << std::endl;
 			file << std::endl;
 
+			file << "\tif (Audio::PluginEditor::USE_INTERNAL_RENDERING)" << std::endl;
+			file << "\t{" << std::endl;
+			file << "\t\tconfiguration->_RenderingConfiguration._InitialRenderingPath = RenderingPath::NONE;" << std::endl;
+			file << "\t}" << std::endl;
+			file << std::endl;
+
+			file << "\telse" << std::endl;
+			file << "\t{" << std::endl;
+			file << "\t\tconfiguration->_RenderingConfiguration._InitialRenderingPath = RenderingPath::DEFAULT;" << std::endl;
+			file << "\t}" << std::endl;
+			file << std::endl;
 			file << "\tconfiguration->_RenderingConfiguration._InitialFullScreen = false;" << std::endl;
 			file << "\tconfiguration->_RenderingConfiguration._Resolution = AudioPluginGlue::GetResolution();" << std::endl;
 
@@ -875,10 +906,9 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 			file << "\tCatalystEngineSystem::Instance->Initialize(configuration);" << std::endl;
 			file << std::endl;
 
-			file << "\t//Initialize the plugin." << std::endl;
-			file << "\tAudio::Plugin::InitializeContext context;" << std::endl;
-			file << "\tcontext._UISystem = UISystem::Instance;" << std::endl;
-			file << "\tPLUGIN.CallInitialize(context);" << std::endl;
+			file << "\t//Initialize the plugin editor." << std::endl;
+			file << "\tPLUGIN_EDITOR.Initialize(&PLUGIN);" << std::endl;
+			file << "\tPLUGIN_EDITOR.CreateEditor(CatalystPlatformWindows::_MainWindow);" << std::endl;
 			file << std::endl;
 
 			file << "\t//Add the plugin handler." << std::endl;
@@ -888,6 +918,10 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 
 			file << "\t//Main game loop." << std::endl;
 			file << "\twhile (CatalystEngineSystem::Instance->Update());" << std::endl;
+			file << std::endl;
+
+			file << "\t//Terminate the plugin editor." << std::endl;
+			file << "\tPLUGIN_EDITOR.DestroyEditor();" << std::endl;
 			file << std::endl;
 
 			file << "\t//Terminate the engine system." << std::endl;
@@ -1117,6 +1151,15 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 
 	//Generate the code generation file.
 	GenerateRunCodeGenerationBatchFile(AudioPluginDirectory(audio_plugin), project_settings, false);
+
+	//Embed some resources.
+	parameters._EmbeddedResources.emplace_back("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Collections\\Base.cac");
+
+	//Define that we have embedded resource.
+	for (GenerateVisualStudioSolution::Parameters::Configuration &configuration : parameters._Configurations)
+	{
+		configuration._PreprocessorDefinitions.emplace_back("CATALYST_HAS_EMBEDDED_RESOURCES");
+	}
 
 	//Generate!
 	GenerateVisualStudioSolution::Generate(parameters);

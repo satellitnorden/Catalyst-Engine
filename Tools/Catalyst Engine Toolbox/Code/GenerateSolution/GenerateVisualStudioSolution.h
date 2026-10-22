@@ -139,14 +139,22 @@ public:
 		//The directories.
 		std::vector<Directory> _Directories;
 
+		//The embedded resources.
+		std::vector<std::string> _EmbeddedResources;
+
 	};
 
 	/*
 	*	Generates!
 	*/
-	static void Generate(const Parameters &parameters);
+	static void Generate(Parameters parameters);
 
 private:
+
+	/*
+	*	Generates the resource file.
+	*/
+	static void GenerateResourceFile(const Parameters &parameters);
 
 	/*
 	*	Generates the project file.

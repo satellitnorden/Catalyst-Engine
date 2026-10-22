@@ -45,7 +45,7 @@ namespace CLAPGUIExtension
 	*/
 	bool CLAP_ABI create(const clap_plugin_t *plugin, const char *api, bool is_floating)
 	{
-		//Don't think we need to do anything here yet?
+		//Return success.
 		return true;
 	}
 
@@ -57,8 +57,8 @@ namespace CLAPGUIExtension
 		//Cache the plugin data.
 		CLAPPluginData *const RESTRICT plugin_data{ static_cast<CLAPPluginData *const RESTRICT>(plugin->plugin_data) };
 
-		//Destroy the window.
-		plugin_data->_PluginWindow.Destroy();
+		//Terminate the editor.
+		plugin_data->_Editor.DestroyEditor();
 	}
 
 	/*
@@ -128,8 +128,11 @@ namespace CLAPGUIExtension
 		//Cache the plugin data.
 		CLAPPluginData *const RESTRICT plugin_data{ static_cast<CLAPPluginData *const RESTRICT>(plugin->plugin_data) };
 
-		//Return if the child window was created successfully.
-		return plugin_data->_PluginWindow.Create(window->win32, AudioPluginGlue::GetResolution());
+		//Create the editor.
+		plugin_data->_Editor.CreateEditor(window->win32);
+
+		//Return success for now.
+		return true;
 	}
 
 	/*
@@ -156,8 +159,8 @@ namespace CLAPGUIExtension
 		//Cache the plugin data.
 		CLAPPluginData *const RESTRICT plugin_data{ static_cast<CLAPPluginData *const RESTRICT>(plugin->plugin_data) };
 
-		//Show the window.
-		plugin_data->_PluginWindow.Show();
+		//Show the editor window.
+		plugin_data->_Editor.ShowEditorWindow();
 
 		//Return success!
 		return true;
@@ -171,8 +174,8 @@ namespace CLAPGUIExtension
 		//Cache the plugin data.
 		CLAPPluginData *const RESTRICT plugin_data{ static_cast<CLAPPluginData *const RESTRICT>(plugin->plugin_data) };
 
-		//Hide the window.
-		plugin_data->_PluginWindow.Hide();
+		//Hide the editor window.
+		plugin_data->_Editor.HideEditorWindow();
 
 		//Return success!
 		return true;

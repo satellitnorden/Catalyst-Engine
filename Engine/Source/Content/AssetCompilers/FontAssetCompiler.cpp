@@ -437,4 +437,8 @@ void FontAssetCompiler::Load(const LoadContext &load_context) NOEXCEPT
 			new_asset->_DefaultHeight = 0.1f;
 		}
 	}
+
+	//Create the texture 2D.
+	new_asset->_Texture2D.Initialize(texture_width, texture_height);
+	Memory::Copy(new_asset->_Texture2D.Data(), texture_data[0].Data(), texture_width* texture_height * sizeof(byte));
 }

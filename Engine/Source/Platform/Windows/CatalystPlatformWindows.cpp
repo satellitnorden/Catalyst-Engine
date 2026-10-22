@@ -340,15 +340,29 @@ void *const RESTRICT CatalystPlatform::CreatePlatformWindow(const char *const RE
 	{
 		case WindowType::DEFAULT:
 		{
+			//Define constants.
+			constexpr DWORD STYLE{ WS_CAPTION | WS_SYSMENU };
+
+			//Set up the rectangle for the window.
+			RECT rectangle;
+
+			rectangle.left = 0;
+			rectangle.top = 0;
+			rectangle.right = width;
+			rectangle.bottom = height;
+
+			//Adjust the rectangle.
+			AdjustWindowRect(&rectangle, STYLE, FALSE);
+
 			window = CreateWindow
 			(
 				CatalystPlatformWindows::_WindowInfo.lpszClassName,
 				_T(name),
-				WS_MAXIMIZE | WS_SYSMENU | WS_EX_TRANSPARENT,
+				STYLE,
 				CW_USEDEFAULT,
 				CW_USEDEFAULT,
-				width,
-				height,
+				rectangle.right - rectangle.left,
+				rectangle.bottom - rectangle.top,
 				nullptr,
 				nullptr,
 				CatalystPlatformWindows::_Instance,

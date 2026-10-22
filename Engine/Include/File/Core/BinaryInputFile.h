@@ -12,7 +12,7 @@ class BinaryInputFile final
 	
 public:
 
-	constexpr static uint64 ANY_SIZE{ 80 };
+	constexpr static uint64 ANY_SIZE{ 96 };
 
 	/*
 	*	Default constructor - prohibited, must be constructed with the proper arguments.
