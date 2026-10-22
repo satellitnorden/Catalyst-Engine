@@ -67,9 +67,6 @@ namespace UI
 	*/
 	void PianoRollWidget::Render(const UI::RenderContext &context) NOEXCEPT
 	{
-        //Define constants.
-        constexpr float32 ROUNDING{ 2.0f };
-
         //Set up the key information.
         SetupKeyInformation();
 
@@ -91,7 +88,7 @@ namespace UI
                 AxisAlignedBoundingBox2D bounding_box{ key_information._BoundingBox };
 
                 //Render!
-                RenderRoundedBox(context, bounding_box, color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), ROUNDING);
+                RenderSolidBox(context, bounding_box, color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
             }
         
             //Add a smaller box at the bottom to simulate some form of lighting.
@@ -104,7 +101,7 @@ namespace UI
                 const Vector4<float32> _color{ color * Vector4<float32>(0.5f, 0.5f, 0.5f, 1.0f) };
 
                 //Render!
-                RenderRoundedBox(context, bounding_box, _color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), ROUNDING);
+                RenderSolidBox(context, bounding_box, _color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
             }
         }
 
@@ -126,7 +123,7 @@ namespace UI
                 AxisAlignedBoundingBox2D bounding_box{ key_information._BoundingBox };
 
                 //Render!
-                RenderRoundedBox(context, bounding_box, color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), ROUNDING);
+                RenderSolidBox(context, bounding_box, color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
             }
 
             //Add a smaller box at the bottom to simulate some form of lighting.
@@ -139,7 +136,7 @@ namespace UI
                 const Vector4<float32> _color{ color * Vector4<float32>(1.5f, 1.5f, 1.5f, 1.0f) };
 
                 //Render!
-                RenderRoundedBox(context, bounding_box, _color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), ROUNDING);
+                RenderSolidBox(context, bounding_box, _color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f));
             }
         }
 	}
@@ -180,6 +177,9 @@ namespace UI
 		constexpr uint8 TOTAL_NUMBER_OF_WHITE_BUTTONS{ 75 };
         constexpr float32 WHITE_BUTTON_PADDING{ 1.0f };
 		
+        //Calculate the black button width.
+        const float32 black_button_width{ BaseMath::Round<float32>(_AxisAlignedBoundingBox.Dimensions()._X / static_cast<float32>(TOTAL_NUMBER_OF_WHITE_BUTTONS) * 0.75f) };
+
 		//TODO: See if we can do this only once.
         const KeyInformation *RESTRICT last_white_key_information{ nullptr };
         uint8 number_of_white_buttons{ 0 };
@@ -196,14 +196,13 @@ namespace UI
             if (is_black)
             {
                 const KeyInformation &previous_key_information{ _KeyInformation[i - 1] };
-                const float32 previous_key_width{ previous_key_information._BoundingBox._Maximum._X - previous_key_information._BoundingBox._Minimum._X };
-                const float32 previous_key_height{ previous_key_information._BoundingBox._Maximum._Y - previous_key_information._BoundingBox._Minimum._Y };
+                const float32 center{ previous_key_information._BoundingBox._Maximum._X + WHITE_BUTTON_PADDING * 0.5f };
 
-                key_information._BoundingBox._Minimum._X = previous_key_information._BoundingBox._Maximum._X - (previous_key_width * 0.375f);
-                key_information._BoundingBox._Minimum._Y = previous_key_information._BoundingBox._Minimum._Y + previous_key_height * 0.375f;
+                key_information._BoundingBox._Minimum._X = center - black_button_width * 0.5f;
+                key_information._BoundingBox._Minimum._Y = _AxisAlignedBoundingBox._Minimum._Y + _AxisAlignedBoundingBox.Dimensions()._Y * 0.4f;
 
-                key_information._BoundingBox._Maximum._X = previous_key_information._BoundingBox._Maximum._X + (previous_key_width * 0.375f);
-                key_information._BoundingBox._Maximum._Y = previous_key_information._BoundingBox._Maximum._Y;
+                key_information._BoundingBox._Maximum._X = center + black_button_width * 0.5f;
+                key_information._BoundingBox._Maximum._Y = _AxisAlignedBoundingBox._Maximum._Y;
             }
 
             else
