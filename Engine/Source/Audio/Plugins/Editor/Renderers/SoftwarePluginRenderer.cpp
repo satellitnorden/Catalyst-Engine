@@ -44,11 +44,7 @@ namespace Audio
 
 		//Clear the buffers.
 		Memory::Set(_Buffer.Data(), 0, _Buffer.GetWidth() * _Buffer.GetHeight() * sizeof(uint32));
-		
-		{
-			PROFILING_SCOPE("Clear last rendered command buffer");
-			Memory::Set(_LastRenderedCommandBuffer.Data(), 0, _LastRenderedCommandBuffer.GetWidth() * _LastRenderedCommandBuffer.GetHeight() * sizeof(uint32));
-		}
+		Memory::Set(_LastRenderedCommandBuffer.Data(), 0, _LastRenderedCommandBuffer.GetWidth() * _LastRenderedCommandBuffer.GetHeight() * sizeof(uint32));
 
 		//Process each render command.
 		for (uint64 i{ 0 }; i < render_commands.Size(); ++i)
@@ -90,12 +86,14 @@ namespace Audio
 	*/
 	NO_DISCARD Vector4<float32> SoftwarePluginRenderer::UnpackColor(const uint32 color) NOEXCEPT
 	{
+		constexpr float32 MULTIPLIER{ 1.0f / static_cast<float32>(UINT8_MAXIMUM) };
+
 		Vector4<float32> output{ 0.0f, 0.0f, 0.0f, 1.0f };
 
-		output._B = static_cast<float32>(color & UINT8_MAXIMUM) / static_cast<float32>(UINT8_MAXIMUM);
-		output._G = static_cast<float32>((color >> 8) & UINT8_MAXIMUM) / static_cast<float32>(UINT8_MAXIMUM);
-		output._R = static_cast<float32>((color >> 16) & UINT8_MAXIMUM) / static_cast<float32>(UINT8_MAXIMUM);
-		output._A = static_cast<float32>((color >> 24) & UINT8_MAXIMUM) / static_cast<float32>(UINT8_MAXIMUM);
+		output._B = static_cast<float32>(color & UINT8_MAXIMUM) * MULTIPLIER;
+		output._G = static_cast<float32>((color >> 8) & UINT8_MAXIMUM) * MULTIPLIER;
+		output._R = static_cast<float32>((color >> 16) & UINT8_MAXIMUM) * MULTIPLIER;
+		output._A = static_cast<float32>((color >> 24) & UINT8_MAXIMUM) * MULTIPLIER;
 
 		return output;
 	}

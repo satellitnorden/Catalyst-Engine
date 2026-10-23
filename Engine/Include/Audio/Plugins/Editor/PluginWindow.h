@@ -36,6 +36,30 @@ namespace Audio
 		void Initialize(const Resolution resolution, void *const RESTRICT parent_window) NOEXCEPT;
 
 		/*
+		*	Sets the device context.
+		*/
+		FORCE_INLINE void SetDeviceContext(void *const RESTRICT value) NOEXCEPT
+		{
+			_DeviceContext = value;
+		}
+
+		/*
+		*	Returns whether or not this window supports OpenGL.
+		*/
+		FORCE_INLINE NO_DISCARD bool GetSupportsOpenGL() const NOEXCEPT
+		{
+			return _SupportsOpenGL;
+		}
+
+		/*
+		*	Sets whether or not this window supports OpenGL.
+		*/
+		FORCE_INLINE void SetSupportsOpenGL(const bool value) NOEXCEPT
+		{
+			_SupportsOpenGL = value;
+		}
+
+		/*
 		*	Shows this plugin window.
 		*/
 		void Show();
@@ -87,6 +111,11 @@ namespace Audio
 		NO_DISCARD const MouseState *const RESTRICT GetMouseState() NOEXCEPT;
 
 		/*
+		*	Swaps the buffers.
+		*/
+		void SwapBuffers() NOEXCEPT;
+
+		/*
 		*	Renders to this window.
 		*/
 		void RenderTo(const uint32 *const RESTRICT data) NOEXCEPT;
@@ -104,6 +133,12 @@ namespace Audio
 
 		//The window.
 		void *RESTRICT _Window{ nullptr };
+
+		//The device context.
+		void *RESTRICT _DeviceContext{ nullptr };
+
+		//Denotes whether or not this window supports OpenGL.
+		bool _SupportsOpenGL{ false };
 
 		//The mouse state.
 		MouseState _MouseState;

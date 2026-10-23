@@ -1,4 +1,4 @@
-#if defined(CATALYST_HAS_OPEN_GL)
+#if defined(CATALYST_HAS_OPEN_GL) && !defined(CATALYST_HAS_VULKAN)
 //Header file.
 #include <Rendering/Native/CommandBuffer.h>
 

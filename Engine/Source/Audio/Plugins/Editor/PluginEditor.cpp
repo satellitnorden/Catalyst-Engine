@@ -3,6 +3,7 @@
 #include <Audio/Plugins/Editor/PluginEditor.h>
 
 //Audio.
+#include <Audio/Plugins/Editor/Renderers/OpenGLPluginRenderer.h>
 #include <Audio/Plugins/Editor/Renderers/SoftwarePluginRenderer.h>
 
 //Profiling.
@@ -74,7 +75,21 @@ namespace Audio
 #endif
 
 			//Create the renderer.
-			_Renderer = new SoftwarePluginRenderer();
+			if (OpenGLPluginRenderer::IsSupported(&_Window))
+			{
+				_Renderer = new OpenGLPluginRenderer();
+			}
+			
+			else if (SoftwarePluginRenderer::IsSupported(&_Window))
+			{
+				_Renderer = new SoftwarePluginRenderer();
+			}
+
+			else
+			{
+				ASSERT(false, "Could not create a renderer!");
+				_Renderer = nullptr;
+			}
 
 			//Initialize the renderer.
 			_Renderer->Initialize(_Plugin->GetResolution(), &_Window);

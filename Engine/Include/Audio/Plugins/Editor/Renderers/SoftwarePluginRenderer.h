@@ -20,6 +20,15 @@ namespace Audio
 	public:
 
 		/*
+		*	Returns if this plugin renderer is supported.
+		*/
+		FORCE_INLINE static NO_DISCARD bool IsSupported(const Audio::PluginWindow* const RESTRICT window) NOEXCEPT
+		{
+			//This is always supported. (:
+			return true;
+		}
+
+		/*
 		*	Initializes this plugin renderer.
 		*/
 		void Initialize(const Resolution resolution, Audio::PluginWindow *const RESTRICT window) NOEXCEPT override;

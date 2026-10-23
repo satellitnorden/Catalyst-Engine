@@ -110,6 +110,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 		preprocessor_definitions->emplace_back("_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_HAS_VULKAN");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_OPEN_GL");
 		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
 		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
@@ -120,6 +121,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 		preprocessor_definitions->emplace_back("NDEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_PROFILE");
 		preprocessor_definitions->emplace_back("CATALYST_HAS_VULKAN");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_OPEN_GL");
 		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
 		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
@@ -130,30 +132,35 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 		preprocessor_definitions->emplace_back("NDEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_FINAL");
 		preprocessor_definitions->emplace_back("CATALYST_HAS_VULKAN");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_OPEN_GL");
 	}
 
 	else if (strcmp(configuration_name, "CLAP Debug") == 0)
 	{
 		preprocessor_definitions->emplace_back("_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_DEBUG");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_OPEN_GL");
 	}
 
 	else if (strcmp(configuration_name, "CLAP Final") == 0)
 	{
 		preprocessor_definitions->emplace_back("NDEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_FINAL");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_OPEN_GL");
 	}
 
 	else if (strcmp(configuration_name, "VST3 Debug") == 0)
 	{
 		preprocessor_definitions->emplace_back("_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_DEBUG");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_OPEN_GL");
 	}
 
 	else if (strcmp(configuration_name, "VST3 Final") == 0)
 	{
 		preprocessor_definitions->emplace_back("NDEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_FINAL");
+		preprocessor_definitions->emplace_back("CATALYST_HAS_OPEN_GL");
 	}
 
 	else
@@ -270,6 +277,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 	else if (strcmp(configuration_name, "Standalone Debug") == 0)
 	{
 		library_includes->emplace_back("vulkan-1.lib");
+		library_includes->emplace_back("opengl32.lib");
 		library_includes->emplace_back("Debug\\shaderc_shared.lib");
 		library_includes->emplace_back("Debug\\libsoundwave.lib");
 		library_includes->emplace_back("Debug\\assimp-vc143-mtd.lib");
@@ -278,6 +286,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 	else if (strcmp(configuration_name, "Standalone Profile") == 0)
 	{
 		library_includes->emplace_back("vulkan-1.lib");
+		library_includes->emplace_back("opengl32.lib");
 		library_includes->emplace_back("Profile\\shaderc_shared.lib");
 		library_includes->emplace_back("Profile\\libsoundwave.lib");
 		library_includes->emplace_back("Profile\\assimp-vc143-mt.lib");
@@ -286,28 +295,33 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 	else if (strcmp(configuration_name, "Standalone Final") == 0)
 	{
 		library_includes->emplace_back("vulkan-1.lib");
+		library_includes->emplace_back("opengl32.lib");
 		library_includes->emplace_back("Final\\libsoundwave.lib");
 	}
 
 	else if (strcmp(configuration_name, "CLAP Debug") == 0)
 	{
+		library_includes->emplace_back("opengl32.lib");
 		library_includes->emplace_back("Debug\\shaderc_shared.lib");
 		library_includes->emplace_back("Debug\\libsoundwave.lib");
 	}
 
 	else if (strcmp(configuration_name, "CLAP Final") == 0)
 	{
+		library_includes->emplace_back("opengl32.lib");
 		library_includes->emplace_back("Final\\libsoundwave.lib");
 	}
 
 	else if (strcmp(configuration_name, "VST3 Debug") == 0)
 	{
+		library_includes->emplace_back("opengl32.lib");
 		library_includes->emplace_back("Debug\\shaderc_shared.lib");
 		library_includes->emplace_back("Debug\\libsoundwave.lib");
 	}
 
 	else if (strcmp(configuration_name, "VST3 Final") == 0)
 	{
+		library_includes->emplace_back("opengl32.lib");
 		library_includes->emplace_back("Final\\libsoundwave.lib");
 	}
 
