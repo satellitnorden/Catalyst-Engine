@@ -59,14 +59,14 @@ namespace Shaders
 		"#define SHAPE_ROUNDED_BOX uint(2)\n"
 		"#define SHAPE_SOLID_CIRCLE uint(3)\n"
 		"#define SHAPE_HOLLOW_CIRCLE uint(4)\n"
+		"#define SHAPE_LINE uint(5)\n"
 		"\n"
 		"\nin vec2 TEXTURE_COORDINATE;"
 		"\nin vec2 PIXEL_POSITION;"
 		"\n"
 		"uniform vec2 RESOLUTION;\n"
 		"\n"
-		"uniform vec2 MINIMUM;\n"
-		"uniform vec2 MAXIMUM;\n"
+		"uniform vec2 CORNERS[4];\n"
 		"uniform vec2 CENTER;\n"
 		"\n"
 		"uniform uint MODE;\n"
@@ -79,6 +79,14 @@ namespace Shaders
 		"uniform float SHAPE_PARAMETER_2;\n"
 		"\n"
 		"out vec4 FRAGMENT;\n"
+		"\n"
+		"float DistanceToLineSegment(vec2 start, vec2 end, vec2 point)\n"
+		"{\n"
+		"	vec2 point_to_start = point - start;\n"
+		"	vec2 end_to_start = end - start;\n"
+		"	float factor = clamp(dot(point_to_start, end_to_start) / dot(end_to_start, end_to_start), 0.0f, 1.0f);\n"
+		"	return length(point_to_start - end_to_start * factor);\n"
+		"}\n"
 		"\n"
 		"void main()\n"
 		"{\n"
@@ -129,6 +137,20 @@ namespace Shaders
 		"			float signed_distance_1 = distance_to_center - SHAPE_PARAMETER_1;\n"
 		"			float signed_distance_2 = (distance_to_center - SHAPE_PARAMETER_2) * -1.0f;\n"
 		"			float signed_distance = max(signed_distance_1, signed_distance_2);\n"
+		"			float anti_aliasing = fwidth(signed_distance);\n"
+		"			color.a *= 1.0f - smoothstep(0.0f, anti_aliasing, signed_distance);\n"
+		"\n"
+		"			break;\n"
+		"		}\n"
+		"\n"
+		"		case SHAPE_LINE:\n"
+		"		{\n"
+		"			vec2 start = mix(CORNERS[0], CORNERS[3], 0.5f);\n"
+		"			vec2 end = mix(CORNERS[1], CORNERS[2], 0.5f);\n"
+		"			vec2 line_direction = normalize(end - start);\n"
+		"			start += line_direction * (SHAPE_PARAMETER_1 + 1.0f);\n"
+		"			end -= line_direction * (SHAPE_PARAMETER_1 + 1.0f);\n"
+		"			float signed_distance = DistanceToLineSegment(start, end, PIXEL_POSITION) - SHAPE_PARAMETER_1;\n"
 		"			float anti_aliasing = fwidth(signed_distance);\n"
 		"			color.a *= 1.0f - smoothstep(0.0f, anti_aliasing, signed_distance);\n"
 		"\n"
@@ -187,6 +209,7 @@ namespace Audio
 				char info_log[512];
 				OPEN_GL_CALL(glGetProgramInfoLog(_Program, ARRAY_LENGTH(info_log), nullptr, info_log));
 				LOG_ERROR(info_log);
+				BREAKPOINT();
 			}
 		}
 
@@ -292,31 +315,39 @@ namespace Audio
 			OPEN_GL_CALL(glUniform2f(resolution_uniform_location, resolution._X, resolution._Y));
 		}
 
-		//Push the minimum/maximum/center uniform.
+		//Push the corners and the center uniform.
 		{
-			OPEN_GL_CALL(const int32 minimum_uniform_location{ glGetUniformLocation(_Program, "MINIMUM") });
+			OPEN_GL_CALL(const int32 corners_uniform_location{ glGetUniformLocation(_Program, "CORNERS") });
 
-			const Vector2<float32> minimum
+			const Vector2<float32> corners[4]
 			{
-				(render_command._Positions[0]._X * 0.5f + 0.5f) * static_cast<float32>(_Resolution._Width),
-				(1.0f - (render_command._Positions[0]._Y * 0.5f + 0.5f)) * static_cast<float32>(_Resolution._Height)
+				Vector2<float32>
+				(
+					(render_command._Positions[0]._X * 0.5f + 0.5f) * static_cast<float32>(_Resolution._Width),
+					(1.0f - (render_command._Positions[0]._Y * 0.5f + 0.5f)) * static_cast<float32>(_Resolution._Height)
+				),
+				Vector2<float32>
+				(
+					(render_command._Positions[1]._X * 0.5f + 0.5f) * static_cast<float32>(_Resolution._Width),
+					(1.0f - (render_command._Positions[1]._Y * 0.5f + 0.5f)) * static_cast<float32>(_Resolution._Height)
+				),
+				Vector2<float32>
+				(
+					(render_command._Positions[2]._X * 0.5f + 0.5f) * static_cast<float32>(_Resolution._Width),
+					(1.0f - (render_command._Positions[2]._Y * 0.5f + 0.5f)) * static_cast<float32>(_Resolution._Height)
+				),
+				Vector2<float32>
+				(
+					(render_command._Positions[3]._X * 0.5f + 0.5f) * static_cast<float32>(_Resolution._Width),
+					(1.0f - (render_command._Positions[3]._Y * 0.5f + 0.5f)) * static_cast<float32>(_Resolution._Height)
+				),
 			};
 
-			OPEN_GL_CALL(glUniform2f(minimum_uniform_location, minimum._X, minimum._Y));
-
-			OPEN_GL_CALL(const int32 maximum_uniform_location{ glGetUniformLocation(_Program, "MAXIMUM") });
-
-			const Vector2<float32> maximum
-			{
-				(render_command._Positions[2]._X * 0.5f + 0.5f) * static_cast<float32>(_Resolution._Width),
-				(1.0f - (render_command._Positions[2]._Y * 0.5f + 0.5f)) * static_cast<float32>(_Resolution._Height)
-			};
-
-			OPEN_GL_CALL(glUniform2f(maximum_uniform_location, maximum._X, maximum._Y));
+			OPEN_GL_CALL(glUniform2fv(corners_uniform_location, 4, reinterpret_cast<const float32 *const RESTRICT>(corners)));
 
 			OPEN_GL_CALL(const int32 center_uniform_location{ glGetUniformLocation(_Program, "CENTER") });
 
-			const Vector2<float32> center{ BaseMath::LinearlyInterpolate(minimum, maximum, 0.5f) };
+			const Vector2<float32> center{ BaseMath::LinearlyInterpolate(corners[0], corners[2], 0.5f)};
 
 			OPEN_GL_CALL(glUniform2f(center_uniform_location, center._X, center._Y));
 		}

@@ -5,6 +5,7 @@ IncludeUniformBuffer(General);
 IncludeStorageBuffer(UI);
 
 //Declare shader function library includes.
+IncludeShaderFunctionLibrary(Math);
 IncludeShaderFunctionLibrary(UI);
 
 //Declare output render targets.
@@ -157,6 +158,36 @@ Fragment
             float signed_distance_2 = (distance_to_center - RENDER_COMMANDS[InInstanceIndex]._ShapeParameter2) * -1.0f;
 
             float signed_distance = max(signed_distance_1, signed_distance_2);
+
+            //Calculate anti aliasing from the signed distance.
+            float anti_aliasing = fwidth(signed_distance);
+
+            //Modify the opacity depending on the signed distance.
+            color.a *= 1.0f - smoothstep(0.0f, anti_aliasing, signed_distance);
+
+            break;
+        }
+
+        case RENDER_COMMAND_SHAPE_LINE:
+        {
+            //Figure out the start/end positions.
+            vec2 corners[4];
+            
+            corners[0] = ClipToPixel(RENDER_COMMANDS[InInstanceIndex]._Positions[0].xy);
+            corners[1] = ClipToPixel(RENDER_COMMANDS[InInstanceIndex]._Positions[1].xy);
+            corners[2] = ClipToPixel(RENDER_COMMANDS[InInstanceIndex]._Positions[2].xy);
+            corners[3] = ClipToPixel(RENDER_COMMANDS[InInstanceIndex]._Positions[3].xy);
+            
+            vec2 start = mix(corners[0], corners[3], 0.5f);
+            vec2 end = mix(corners[1], corners[2], 0.5f);
+
+            vec2 line_direction = normalize(end - start);
+            
+            start += line_direction * (RENDER_COMMANDS[InInstanceIndex]._ShapeParameter1 + 1.0f);
+            end -= line_direction * (RENDER_COMMANDS[InInstanceIndex]._ShapeParameter1 + 1.0f);
+
+            //Calculate the signed distance to the line.
+            float signed_distance = DistanceToLineSegment(start, end, InPixelPosition) - RENDER_COMMANDS[InInstanceIndex]._ShapeParameter1;
 
             //Calculate anti aliasing from the signed distance.
             float anti_aliasing = fwidth(signed_distance);

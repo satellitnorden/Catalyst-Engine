@@ -11,6 +11,7 @@
 #define RENDER_COMMAND_SHAPE_ROUNDED_BOX (2)
 #define RENDER_COMMAND_SHAPE_SOLID_CIRCLE (3)
 #define RENDER_COMMAND_SHAPE_HOLLOW_CIRCLE (4)
+#define RENDER_COMMAND_SHAPE_LINE (5)
 
 //UI render command struct definition.
 struct RenderCommand

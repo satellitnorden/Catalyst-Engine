@@ -38,7 +38,8 @@ namespace UI
 			SOLID_BOX,
 			ROUNDED_BOX,
 			SOLID_CIRCLE,
-			HOLLOW_CIRCLE
+			HOLLOW_CIRCLE,
+			LINE
 		};
 
 		/*

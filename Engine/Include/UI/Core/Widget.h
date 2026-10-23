@@ -216,9 +216,9 @@ namespace UI
 		) NOEXCEPT;
 
 		/*
-		*	Renders a solid line with the given parameters.
+		*	Renders a line with the given parameters.
 		*/
-		void RenderSolidLine
+		void RenderLine
 		(
 			const UI::RenderContext &context,
 			const Vector2<float32> start,

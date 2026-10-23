@@ -41,17 +41,12 @@ mat3 CalculateGramSchmidtRotationMatrix(vec3 normal, vec3 random_tilt)
 }
 
 /*
-*   Returns the closest point on the given line segment.
+*   Returns the distance to the given line segment from the given point.
 */
-vec2 ClosestPointOnLineSegment(vec2 start, vec2 end, vec2 point)
+float DistanceToLineSegment(vec2 start, vec2 end, vec2 point)
 {
-    vec2 end_to_start = end - start ;
     vec2 point_to_start = point - start;
-
-	float end_to_start_length = LengthSquared2(end_to_start);
-	float end_to_start_length_reciprocal = 1.0f / end_to_start_length;
-
-	float projection = dot(point_to_start, end_to_start) * end_to_start_length_reciprocal;
-
-	return mix(start, end, clamp(projection, 0.0f, 1.0f));
+    vec2 end_to_start = end - start;
+    float factor = clamp(dot(point_to_start, end_to_start) / dot(end_to_start, end_to_start), 0.0f, 1.0f);
+    return length(point_to_start - end_to_start * factor);
 }

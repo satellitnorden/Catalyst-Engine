@@ -89,8 +89,8 @@ namespace UI
 		const float32 outer_circle_radius{ height * 0.5f * (1.0f - (KnobWidgetConstants::TEXT_FRACTION * 2.0f)) };
 		const float32 inner_circle_radius{ outer_circle_radius * 0.95f };
 
-		//Calculate the indicator thickness.
-		const float32 indicator_thickness{ outer_circle_radius - inner_circle_radius };
+		//Calculate the indicator radius.
+		const float32 indicator_radius{ (outer_circle_radius - inner_circle_radius) * 0.5f };
 
 		//Render the inner circle.
 		{
@@ -117,7 +117,7 @@ namespace UI
 
 			//Calculate the start/end.
 			const Vector2<float32> start{ center + up_direction * outer_circle_radius * 0.1f };
-			const Vector2<float32> end{ center + up_direction * outer_circle_radius };
+			const Vector2<float32> end{ center + up_direction * inner_circle_radius };
 
 			//Calculate the color.
 			Vector4<float32> color{ GetOuterColor(_ClickableInterface.GetState()) };
@@ -125,12 +125,12 @@ namespace UI
 			//Always draw at full opacity for the outer circle.
 			color._A = 1.0f;
 
-			RenderSolidLine
+			RenderLine
 			(
 				context,
 				start,
 				end,
-				indicator_thickness,
+				indicator_radius,
 				color
 			);
 		}

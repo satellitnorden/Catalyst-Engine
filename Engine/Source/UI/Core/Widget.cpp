@@ -362,18 +362,21 @@ namespace UI
 	}
 
 	/*
-	*	Renders a solid line with the given parameters.
+	*	Renders a line with the given parameters.
 	*/
-	void Widget::RenderSolidLine
+	void Widget::RenderLine
 	(
 		const UI::RenderContext &context,
 		const Vector2<float32> start,
 		const Vector2<float32> end,
-		const float32 thickness,
+		const float32 radius,
 		const ColorOrTexture &color_or_texture,
 		const Vector4<float32> &color_opacity
 	) NOEXCEPT
 	{
+		//Define constants.
+		constexpr float32 PADDING{ 1.0f };
+
 		//Calculate the direction.
 		const Vector2<float32> direction{ Vector2<float32>::Normalize(end - start) };
 
@@ -389,16 +392,20 @@ namespace UI
 		Vector2<float32> positions[4];
 
 		positions[0] = start;
-		positions[0] -= cross_direction * thickness * 0.5f;
+		positions[0] -= cross_direction * (radius + PADDING);
+		positions[0] -= direction * (radius + PADDING);
 
 		positions[1] = end;
-		positions[1] -= cross_direction * thickness * 0.5f;
+		positions[1] -= cross_direction * (radius + PADDING);
+		positions[1] += direction * (radius + PADDING);
 
 		positions[2] = end;
-		positions[2] += cross_direction * thickness * 0.5f;
+		positions[2] += cross_direction * (radius + PADDING);
+		positions[2] += direction * (radius + PADDING);
 
 		positions[3] = start;
-		positions[3] += cross_direction * thickness * 0.5f;
+		positions[3] += cross_direction * (radius + PADDING);
+		positions[3] -= direction * (radius + PADDING);
 
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{
@@ -437,10 +444,10 @@ namespace UI
 		command._ModeParameter1_uint32 = 0;
 
 		//Set the shape.
-		command._Shape = UI::RenderCommand::Shape::SOLID_BOX;
+		command._Shape = UI::RenderCommand::Shape::LINE;
 
 		//Set shape parameter 1.
-		command._ShapeParameter1_uint32 = 0;
+		command._ShapeParameter1_float32 = radius;
 
 		//Set shape parameter 2.
 		command._ShapeParameter2_uint32 = 0;
