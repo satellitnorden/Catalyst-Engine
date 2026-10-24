@@ -164,9 +164,9 @@ namespace Audio
 		) NOEXCEPT;
 
 		/*
-		*	Callback for this plugin when it receives MIDI messages.
+		*	Callback for this plugin when it receives a MIDI message.
 		*/
-		FORCE_INLINE virtual void OnMIDIMessages(const MIDIMessage *const RESTRICT messages, const uint64 number_of_messages) NOEXCEPT;
+		FORCE_INLINE virtual void OnMIDIMessage(const MIDIMessage &message) NOEXCEPT;
 
 		/*
 		*	Processes requests.
@@ -318,14 +318,31 @@ namespace Audio
 	public:
 
 		/*
-		*	Adds MIDI messages, optionally with a list of sample offsets.
+		*	MIDI note state class definition.
 		*/
-		FORCE_INLINE void AddMIDIMessages
+		class MIDINoteState final
+		{
+
+		public:
+
+			//Denotes whether or not this note is pressed.
+			Atomic<bool> _Pressed{ false };
+
+		};
+
+		/*
+		*	Adds a MIDI message, optionally with a list of sample offsets.
+		*/
+		FORCE_INLINE void AddMIDIMessage
 		(
-			const MIDIMessage *const RESTRICT messages,
-			const uint64 number_of_messages,
-			const uint32 *const RESTRICT sample_offsets = nullptr
+			const MIDIMessage &messages,
+			const uint32 *const RESTRICT sample_offset = nullptr
 		) NOEXCEPT;
+
+		/*
+		*	Retrieves the note state for the given MIDI note.
+		*/
+		FORCE_INLINE NO_DISCARD const MIDINoteState &GetMIDINoteState(const uint8 note) const NOEXCEPT;
 
 	private:
 
@@ -347,6 +364,9 @@ namespace Audio
 
 		//The queued MIDI messages.
 		DynamicArray<QueuedMIDIMessage> _QueuedMIDIMessages;
+
+		//The MIDI note states.
+		StaticArray<MIDINoteState, 128> _MIDINoteStates;
 
 		/*
 		*	Adds a MIDI message internally.

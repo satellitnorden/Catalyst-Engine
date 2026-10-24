@@ -94,6 +94,11 @@ namespace UI
 		void SetupKeyInformation() NOEXCEPT;
 
 		/*
+		*	Returns the state for the given key.
+		*/
+		NO_DISCARD UI::ClickableInterface::State GetKeyState(const KeyInformation &key_information) NOEXCEPT;
+
+		/*
 		*	Returns the key color.
 		*/
 		NO_DISCARD Vector4<float32> GetKeyColor(const UI::ClickableInterface::State state, const bool is_black) NOEXCEPT;

@@ -93,8 +93,11 @@ namespace UI
                 continue;
             }
 
+            //Retrieve the key state.
+            const UI::ClickableInterface::State key_state{ GetKeyState(key_information) };
+
             //Cache the color.
-            const Vector4<float32> color{ GetKeyColor(key_information._ClickableInterface->GetState(), false) };
+            const Vector4<float32> color{ GetKeyColor(key_state, false) };
 
             //Render the base box.
             {
@@ -109,7 +112,7 @@ namespace UI
             {
                 //Calculate the bounding box.
                 AxisAlignedBoundingBox2D bounding_box{ key_information._BoundingBox };
-                bounding_box._Maximum._Y = bounding_box._Minimum._Y + bounding_box.Dimensions()._Y * 0.075f * (key_information._ClickableInterface->GetState() == UI::ClickableInterface::State::PRESSED ? 0.625f : 1.0f);
+                bounding_box._Maximum._Y = bounding_box._Minimum._Y + bounding_box.Dimensions()._Y * 0.075f * (key_state == UI::ClickableInterface::State::PRESSED ? 0.625f : 1.0f);
 
                 //Calculate the color.
                 const Vector4<float32> _color{ color * Vector4<float32>(0.5f, 0.5f, 0.5f, 1.0f) };
@@ -128,8 +131,11 @@ namespace UI
                 continue;
             }
 
+            //Retrieve the key state.
+            const UI::ClickableInterface::State key_state{ GetKeyState(key_information) };
+
             //Cache the color.
-            const Vector4<float32> color{ GetKeyColor(key_information._ClickableInterface->GetState(), true) };
+            const Vector4<float32> color{ GetKeyColor(key_state, true) };
 
             //Render the base box.
             {
@@ -144,7 +150,7 @@ namespace UI
             {
                 //Calculate the bounding box.
                 AxisAlignedBoundingBox2D bounding_box{ key_information._BoundingBox };
-                bounding_box._Maximum._Y = bounding_box._Minimum._Y + bounding_box.Dimensions()._Y * 0.125f * (key_information._ClickableInterface->GetState() == UI::ClickableInterface::State::PRESSED ? 0.625f : 1.0f);
+                bounding_box._Maximum._Y = bounding_box._Minimum._Y + bounding_box.Dimensions()._Y * 0.125f * (key_state == UI::ClickableInterface::State::PRESSED ? 0.625f : 1.0f);
 
                 //Calculate the color.
                 const Vector4<float32> _color{ color * Vector4<float32>(1.5f, 1.5f, 1.5f, 1.0f) };
@@ -257,6 +263,29 @@ namespace UI
 	}
 
     /*
+    *	Returns the state for the given key.
+    */
+    NO_DISCARD UI::ClickableInterface::State PianoRollWidget::GetKeyState(const KeyInformation &key_information) NOEXCEPT
+    {
+        //First get the state from the key's clickable interface.
+        UI::ClickableInterface::State state{ key_information._ClickableInterface->GetState() };
+
+        //If we have an audio plugin, and the note state says it's pressed, use that instead.
+        if (_AudioPlugin)
+        {
+            const Audio::Plugin::MIDINoteState &note_state{ _AudioPlugin->GetMIDINoteState(key_information._Note) };
+
+            if (note_state._Pressed.Load())
+            {
+                state = UI::ClickableInterface::State::PRESSED;
+            }
+        }
+
+        //Return the state.
+        return state;
+    }
+
+    /*
     *	Returns the key color.
     */
     NO_DISCARD Vector4<float32> PianoRollWidget::GetKeyColor(const UI::ClickableInterface::State state, const bool is_black) NOEXCEPT
@@ -346,7 +375,7 @@ namespace UI
         message._NoteOnVelocity = 127; //TODO: Calculate this. (:
 
         //Add the message!
-        _AudioPlugin->AddMIDIMessages(&message, 1);
+        _AudioPlugin->AddMIDIMessage(message);
     }
 
     /*
@@ -368,7 +397,7 @@ namespace UI
         message._NoteOffNote = key_information._Note;
 
         //Add the message!
-        _AudioPlugin->AddMIDIMessages(&message, 1);
+        _AudioPlugin->AddMIDIMessage(message);
     }
 
 }

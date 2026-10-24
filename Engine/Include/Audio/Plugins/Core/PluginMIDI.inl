@@ -6,27 +6,44 @@ namespace Audio
 	//////////
 
 	/*
-	*	Adds MIDI messages, optionally with a list of sample offsets.
+	*	Adds a MIDI message, optionally with a list of sample offsets.
 	*/
-	FORCE_INLINE void Plugin::AddMIDIMessages
+	FORCE_INLINE void Plugin::AddMIDIMessage
 	(
-		const MIDIMessage *const RESTRICT messages,
-		const uint64 number_of_messages,
-		const uint32 *const RESTRICT sample_offsets
+		const MIDIMessage &message,
+		const uint32 *const RESTRICT sample_offset
 	) NOEXCEPT
 	{
 		//Add the requests.
-		SCOPED_LOCK(_RequestsLock);
-
-		for (uint64 message_index{ 0 }; message_index < number_of_messages; ++message_index)
 		{
+			SCOPED_LOCK(_RequestsLock);
+
 			_Requests.Emplace();
-			Request &request{ _Requests.Back() };
+			Request& request{ _Requests.Back() };
 
 			request._Type = Request::Type::ADD_MIDI_MESSAGE;
-			request._AddMIDIMessageData._Message = messages[message_index];
-			request._AddMIDIMessageData._SampleOffset = sample_offsets ? sample_offsets[message_index] : 0;
+			request._AddMIDIMessageData._Message = message;
+			request._AddMIDIMessageData._SampleOffset = sample_offset ? (*sample_offset) : 0;
 		}
+
+		//Update the MIDI note states.
+		if (message._Type == MIDIMessage::Type::NOTE_ON)
+		{
+			_MIDINoteStates[message._NoteOnNote]._Pressed.Store(true);
+		}
+
+		else if (message._Type == MIDIMessage::Type::NOTE_OFF)
+		{
+			_MIDINoteStates[message._NoteOffNote]._Pressed.Store(false);
+		}
+	}
+
+	/*
+	*	Retrieves the note state for the given MIDI note.
+	*/
+	FORCE_INLINE NO_DISCARD const Plugin::MIDINoteState &Plugin::GetMIDINoteState(const uint8 note) const NOEXCEPT
+	{
+		return _MIDINoteStates[note];
 	}
 
 	/*

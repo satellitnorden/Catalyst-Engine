@@ -5,6 +5,7 @@
 #include <Audio/Plugins/Core/Plugin.h>
 #include <Audio/Plugins/Adapters/CLAP/Extensions/CLAPAudioPortsExtension.h>
 #include <Audio/Plugins/Adapters/CLAP/Extensions/CLAPGUIExtension.h>
+#include <Audio/Plugins/Adapters/CLAP/Extensions/CLAPNotePortsExtension.h>
 #include <Audio/Plugins/Adapters/CLAP/Extensions/CLAPParamsExtension.h>
 #include <Audio/Plugins/Adapters/CLAP/CLAPPluginData.h>
 
@@ -109,7 +110,7 @@ namespace CLAPPlugin
 							message._NoteOnNote = event->key;
 							message._NoteOnVelocity = static_cast<uint8>(event->velocity * 127.0f);
 
-							plugin_data->_Plugin->AddMIDIMessages(&message, 1, &event->header.time);
+							plugin_data->_Plugin->AddMIDIMessage(message, &event->header.time);
 
 							break;
 						}
@@ -124,7 +125,7 @@ namespace CLAPPlugin
 							message._NoteOffChannel = event->channel;
 							message._NoteOffNote = event->key;
 
-							plugin_data->_Plugin->AddMIDIMessages(&message, 1, &event->header.time);
+							plugin_data->_Plugin->AddMIDIMessage(message, &event->header.time);
 
 							break;
 						}
@@ -176,6 +177,11 @@ namespace CLAPPlugin
 		else if (strcmp(id, CLAP_EXT_GUI) == 0 && CLAPGUIExtension::IsSupported(plugin))
 		{
 			return &CLAPGUIExtension::EXTENSION;
+		}
+
+		else if (strcmp(id, CLAP_EXT_NOTE_PORTS) == 0 && CLAPNotePortsExtension::IsSupported(plugin))
+		{
+			return &CLAPNotePortsExtension::EXTENSION;
 		}
 
 		else if (strcmp(id, CLAP_EXT_PARAMS) == 0 && CLAPParamsExtension::IsSupported(plugin))

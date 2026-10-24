@@ -138,7 +138,7 @@ namespace Audio
 				{
 					if (queued_midi_message._SampleOffset == sample_index)
 					{
-						OnMIDIMessages(&queued_midi_message._Message, 1);
+						OnMIDIMessage(queued_midi_message._Message);
 
 						should_output = true;
 					}
@@ -230,9 +230,9 @@ namespace Audio
 	}
 
 	/*
-	*	Callback for this plugin when it receives MIDI messages.
+	*	Callback for this plugin when it receives a MIDI message.
 	*/
-	FORCE_INLINE void Plugin::OnMIDIMessages(const MIDIMessage *const RESTRICT messages, const uint64 number_of_messages) NOEXCEPT
+	FORCE_INLINE void Plugin::OnMIDIMessage(const MIDIMessage &message) NOEXCEPT
 	{
 
 	}
