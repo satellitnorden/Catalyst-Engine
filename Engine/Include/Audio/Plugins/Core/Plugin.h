@@ -41,6 +41,22 @@ namespace Audio
 
 	public:
 
+		//Enumeration covering all main categories.
+		enum class MainCategory : uint8
+		{
+			NONE,
+
+			INSTRUMENT
+		};
+
+		//Enumeration covering all sub categories.
+		enum class SubCategory : uint8
+		{
+			NONE,
+
+			SYNTHESIZER
+		};
+
 		/*
 		*	Initialize context class definition.
 		*/
@@ -58,6 +74,16 @@ namespace Audio
 		*	Default destructor.
 		*/
 		FORCE_INLINE virtual ~Plugin() NOEXCEPT;
+
+		/*
+		*	Returns the main category.
+		*/
+		FORCE_INLINE virtual NO_DISCARD MainCategory GetMainCategory() const NOEXCEPT;
+
+		/*
+		*	Returns the sub category.
+		*/
+		FORCE_INLINE virtual NO_DISCARD SubCategory GetSubCategory() const NOEXCEPT;
 
 		/*
 		*	Returns the resolution.

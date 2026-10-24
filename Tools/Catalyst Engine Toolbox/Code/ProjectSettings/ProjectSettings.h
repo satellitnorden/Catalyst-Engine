@@ -28,6 +28,9 @@ public:
 
 	public:
 
+		//Denotes whether or not this audio plugin is locked.
+		bool _Locked;
+
 		//The name.
 		std::string _Name;
 
@@ -37,8 +40,11 @@ public:
 		//The class name.
 		std::string _ClassName;
 
-		//The directory path.
-		std::string _DirectoryPath;
+		//The main category.
+		std::string _MainCategory;
+
+		//The sub category.
+		std::string _SubCategory;
 
 		//The resolution.
 		struct

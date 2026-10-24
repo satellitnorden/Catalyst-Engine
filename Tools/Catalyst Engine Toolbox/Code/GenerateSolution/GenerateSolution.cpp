@@ -16,11 +16,27 @@
 #define CHECK_ERROR_CODE() if (error_code) { std::cerr << "Error at " << __LINE__ << ": " << error_code.message() << std::endl; }
 
 /*
-*	Returns the directory for the given audio plugin.
+*	Returns the code directory for the given audio plugin.
 */
-std::string AudioPluginDirectory(const ProjectSettings::AudioPlugin & audio_plugin)
+std::string AudioPluginCodeDirectory(const ProjectSettings::AudioPlugin &audio_plugin)
+{
+	return "..\\AudioPlugins\\" + audio_plugin._NameNoSpaces;
+}
+
+/*
+*	Returns the solution directory for the given audio plugin.
+*/
+std::string AudioPluginSolutionDirectory(const ProjectSettings::AudioPlugin &audio_plugin)
 {
 	return audio_plugin._NameNoSpaces + "\\Win64";
+}
+
+/*
+*	Returns if the given audio plugin does MIDI in.
+*/
+bool AudioPluginDoesMIDIIn(const ProjectSettings::AudioPlugin &audio_plugin)
+{
+	return audio_plugin._MainCategory == "INSTRUMENT";
 }
 
 /*
@@ -714,12 +730,12 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 {
 	//Figure out the project name.
 	char project_name[256];
-	sprintf_s(project_name, "%s_Win64", audio_plugin._Name.c_str());
+	sprintf_s(project_name, "%s_Win64", audio_plugin._NameNoSpaces.c_str());
 
 	//Set up the parameters.
 	GenerateVisualStudioSolution::Parameters parameters;
 
-	parameters._DirectoryPath = AudioPluginDirectory(audio_plugin);
+	parameters._DirectoryPath = AudioPluginSolutionDirectory(audio_plugin);
 	parameters._ProjectName = project_name;
 
 	{
@@ -842,10 +858,116 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 
 	//Generate the audio plugin files.
 	{
+		//Ensure the directories exist.
+		std::filesystem::create_directories(AudioPluginCodeDirectory(audio_plugin));
+
+		//Generate the "AudioPluginGlue.Generated.h" file.
+		{
+			char buffer[256];
+			sprintf_s(buffer, "%s\\AudioPluginGlue.Generated.h", AudioPluginCodeDirectory(audio_plugin).c_str());
+
+			std::ofstream file{ buffer };
+
+			file << "#pragma once" << std::endl;
+			file << std::endl;
+
+			file << "//Core." << std::endl;
+			file << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
+			file << std::endl;
+
+			file << "//Rendering." << std::endl;
+			file << "#include <Rendering/Native/Resolution.h>" << std::endl;
+			file << std::endl;
+
+			file << "//Audio plugin." << std::endl;
+			file << "#include <" << audio_plugin._ClassName.c_str() << ".h>" << std::endl;
+			file << std::endl;
+
+			file << "namespace AudioPluginGlue" << std::endl;
+			file << "{" << std::endl;
+			file << std::endl;
+
+			file << "\t/*" << std::endl;
+			file << "\t*\tReturns the identifier of the plugin." << std::endl;
+			file << "\t*/" << std::endl;
+			file << "\tFORCE_INLINE constexpr const char *const RESTRICT GetIdentifier() NOEXCEPT" << std::endl;
+			file << "\t{" << std::endl;
+			file << "\t\treturn \"com." << project_settings._DeveloperNameNoSpaces.c_str() << "." << audio_plugin._NameNoSpaces.c_str() << "\";" << std::endl;
+			file << "\t}" << std::endl;
+			file << std::endl;
+
+			file << "\t/*" << std::endl;
+			file << "\t*\tReturns the name of the plugin." << std::endl;
+			file << "\t*/" << std::endl;
+			file << "\tFORCE_INLINE constexpr const char *const RESTRICT GetName() NOEXCEPT" << std::endl;
+			file << "\t{" << std::endl;
+			file << "\t\treturn \"" << audio_plugin._Name.c_str() << "\";" << std::endl;
+			file << "\t}" << std::endl;
+			file << std::endl;
+
+			file << "\t/*" << std::endl;
+			file << "\t*\tReturns the vendor of the plugin." << std::endl;
+			file << "\t*/" << std::endl;
+			file << "\tFORCE_INLINE constexpr const char *const RESTRICT GetVendor() NOEXCEPT" << std::endl;
+			file << "\t{" << std::endl;
+			file << "\t\treturn \"" << project_settings._DeveloperNameNoSpaces.c_str() << "\";" << std::endl;
+			file << "\t}" << std::endl;
+			file << std::endl;
+
+			file << "\t/*" << std::endl;
+			file << "\t*\tReturns the main category of the plugin." << std::endl;
+			file << "\t*/" << std::endl;
+			file << "\tFORCE_INLINE constexpr Audio::Plugin::MainCategory GetMainCategory() NOEXCEPT" << std::endl;
+			file << "\t{" << std::endl;
+			file << "\t\treturn Audio::Plugin::MainCategory::" << audio_plugin._MainCategory.c_str() << ";" << std::endl;
+			file << "\t}" << std::endl;
+			file << std::endl;
+
+			file << "\t/*" << std::endl;
+			file << "\t*\tReturns the sub category of the plugin." << std::endl;
+			file << "\t*/" << std::endl;
+			file << "\tFORCE_INLINE constexpr Audio::Plugin::SubCategory GetSubCategory() NOEXCEPT" << std::endl;
+			file << "\t{" << std::endl;
+			file << "\t\treturn Audio::Plugin::SubCategory::" << audio_plugin._SubCategory.c_str() << ";" << std::endl;
+			file << "\t}" << std::endl;
+			file << std::endl;
+
+			file << "\t/*" << std::endl;
+			file << "\t*\tReturns the resolution of the plugin." << std::endl;
+			file << "\t*/" << std::endl;
+			file << "\tFORCE_INLINE constexpr Resolution GetResolution() NOEXCEPT" << std::endl;
+			file << "\t{" << std::endl;
+			file << "\t\treturn Resolution(" << audio_plugin._Resolution._Width << ", " << audio_plugin._Resolution._Height << ");" << std::endl;
+			file << "\t}" << std::endl;
+			file << std::endl;
+
+			file << "\t/*" << std::endl;
+			file << "\t*\tCreates an instance of the plugin." << std::endl;
+			file << "\t*/" << std::endl;
+			file << "\tFORCE_INLINE Audio::Plugin *const RESTRICT Create() NOEXCEPT" << std::endl;
+			file << "\t{" << std::endl;
+			file << "\t\treturn new " << audio_plugin._ClassName.c_str() << "();" << std::endl;
+			file << "\t}" << std::endl;
+			file << std::endl;
+
+			file << "\t/*" << std::endl;
+			file << "\t*\tDestroys an instance of the plugin." << std::endl;
+			file << "\t*/" << std::endl;
+			file << "\tFORCE_INLINE void Destroy(Audio::Plugin *const RESTRICT plugin) NOEXCEPT" << std::endl;
+			file << "\t{" << std::endl;
+			file << "\t\tdelete plugin;" << std::endl;
+			file << "\t}" << std::endl;
+			file << std::endl;
+
+			file << "}";
+
+			file.close();
+		}
+
 		//Generate the "StandaloneMain.Generated.cpp" file.
 		{
 			char buffer[256];
-			sprintf_s(buffer, "%s\\StandaloneMain.Generated.cpp", std::string(std::string("..\\") + audio_plugin._DirectoryPath).c_str());
+			sprintf_s(buffer, "%s\\StandaloneMain.Generated.cpp", AudioPluginCodeDirectory(audio_plugin).c_str());
 
 			std::ofstream file{ buffer };
 
@@ -871,11 +993,11 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 
 			file << "//Audio." << std::endl;
 			file << "#include <AudioPluginGlue.Generated.h>" << std::endl;
-			file << "#include <" << audio_plugin._Name.c_str() << "Plugin.h>" << std::endl;
+			file << "#include <" << audio_plugin._NameNoSpaces.c_str() << "Plugin.h>" << std::endl;
 			file << std::endl;
 
 			file << "//The plugin." << std::endl;
-			file << audio_plugin._Name.c_str() << "Plugin PLUGIN;" << std::endl;
+			file << audio_plugin._NameNoSpaces.c_str() << "Plugin PLUGIN;" << std::endl;
 			file << std::endl;
 
 			file << "//The plugin editor." << std::endl;
@@ -948,97 +1070,12 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 			file.close();
 		}
 
-		//Generate the "AudioPluginGlue.Generated.h" file.
-		{
-			char buffer[256];
-			sprintf_s(buffer, "%s\\AudioPluginGlue.Generated.h", std::string(std::string("..\\") + audio_plugin._DirectoryPath).c_str());
-
-			std::ofstream file{ buffer };
-
-			file << "#pragma once" << std::endl;
-			file << std::endl;
-
-			file << "//Core." << std::endl;
-			file << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
-			file << std::endl;
-
-			file << "//Rendering." << std::endl;
-			file << "#include <Rendering/Native/Resolution.h>" << std::endl;
-			file << std::endl;
-
-			file << "//Audio plugin." << std::endl;
-			file << "#include <" << audio_plugin._ClassName.c_str() << ".h>" << std::endl;
-			file << std::endl;
-
-			file << "namespace AudioPluginGlue" << std::endl;
-			file << "{" << std::endl;
-			file << std::endl;
-
-			file << "\t/*" << std::endl;
-			file << "\t*\tReturns the identifier of the plugin." << std::endl;
-			file << "\t*/" << std::endl;
-			file << "\tFORCE_INLINE constexpr const char *const RESTRICT GetIdentifier() NOEXCEPT" << std::endl;
-			file << "\t{" << std::endl;
-			file << "\t\treturn \"com." << project_settings._DeveloperNameNoSpaces.c_str() << "." << audio_plugin._NameNoSpaces.c_str() << "\";" << std::endl;
-			file << "\t}" << std::endl;
-			file << std::endl;
-
-			file << "\t/*" << std::endl;
-			file << "\t*\tReturns the name of the plugin." << std::endl;
-			file << "\t*/" << std::endl;
-			file << "\tFORCE_INLINE constexpr const char *const RESTRICT GetName() NOEXCEPT" << std::endl;
-			file << "\t{" << std::endl;
-			file << "\t\treturn \"" << audio_plugin._Name.c_str() << "\";" << std::endl;
-			file << "\t}" << std::endl;
-			file << std::endl;
-
-			file << "\t/*" << std::endl;
-			file << "\t*\tReturns the vendor of the plugin." << std::endl;
-			file << "\t*/" << std::endl;
-			file << "\tFORCE_INLINE constexpr const char *const RESTRICT GetVendor() NOEXCEPT" << std::endl;
-			file << "\t{" << std::endl;
-			file << "\t\treturn \"" << project_settings._DeveloperNameNoSpaces.c_str() << "\";" << std::endl;
-			file << "\t}" << std::endl;
-			file << std::endl;
-
-			file << "\t/*" << std::endl;
-			file << "\t*\tReturns the resolution of the plugin." << std::endl;
-			file << "\t*/" << std::endl;
-			file << "\tFORCE_INLINE constexpr Resolution GetResolution() NOEXCEPT" << std::endl;
-			file << "\t{" << std::endl;
-			file << "\t\treturn Resolution(" << audio_plugin._Resolution._Width << ", " << audio_plugin._Resolution._Height << ");" << std::endl;
-			file << "\t}" << std::endl;
-			file << std::endl;
-
-			file << "\t/*" << std::endl;
-			file << "\t*\tCreates an instance of the plugin." << std::endl;
-			file << "\t*/" << std::endl;
-			file << "\tFORCE_INLINE Audio::Plugin *const RESTRICT Create() NOEXCEPT" << std::endl;
-			file << "\t{" << std::endl;
-			file << "\t\treturn new " << audio_plugin._ClassName.c_str() << "();" << std::endl;
-			file << "\t}" << std::endl;
-			file << std::endl;
-
-			file << "\t/*" << std::endl;
-			file << "\t*\tDestroys an instance of the plugin." << std::endl;
-			file << "\t*/" << std::endl;
-			file << "\tFORCE_INLINE void Destroy(Audio::Plugin *const RESTRICT plugin) NOEXCEPT" << std::endl;
-			file << "\t{" << std::endl;
-			file << "\t\tdelete plugin;" << std::endl;
-			file << "\t}" << std::endl;
-			file << std::endl;
-
-			file << "}";
-
-			file.close();
-		}
-
 		//Generate the audio plugin header file.
 		{
 			char buffer[256];
-			sprintf_s(buffer, "%s\\%s.h", std::string(std::string("..\\") + audio_plugin._DirectoryPath).c_str(), audio_plugin._ClassName.c_str());
+			sprintf_s(buffer, "%s\\%s.h", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._ClassName.c_str());
 
-			if (!std::filesystem::exists(buffer))
+			if (!audio_plugin._Locked)
 			{
 				std::ofstream file{ buffer };
 
@@ -1053,6 +1090,10 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 				file << "#include <Audio/Plugins/Core/Plugin.h>" << std::endl;
 				file << std::endl;
 
+				file << "//Forward declarations." << std::endl;
+				file << "class " << audio_plugin._NameNoSpaces.c_str() << "UIScene;" << std::endl;
+				file << std::endl;
+
 				file << "class " << audio_plugin._ClassName.c_str() << " final : public Audio::Plugin" << std::endl;
 				file << "{" << std::endl;
 
@@ -1063,7 +1104,25 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 				file << "\t/*" << std::endl;
 				file << "\t*\tDefault constructor." << std::endl;
 				file << "\t*/" << std::endl;
-				file << "\t" << audio_plugin._Name.c_str() << "Plugin() NOEXCEPT;" << std::endl;
+				file << "\t" << audio_plugin._NameNoSpaces.c_str() << "Plugin() NOEXCEPT;" << std::endl;
+				file << std::endl;
+
+				file << "\t/*" << std::endl;
+				file << "\t*\tReturns the main category." << std::endl;
+				file << "\t*/" << std::endl;
+				file << "\tFORCE_INLINE NO_DISCARD Audio::Plugin::MainCategory GetMainCategory() const NOEXCEPT override" << std::endl;
+				file << "\t{" << std::endl;
+				file << "\t\treturn Audio::Plugin::MainCategory::" << audio_plugin._MainCategory.c_str() << ";" << std::endl;
+				file << "\t}" << std::endl;
+				file << std::endl;
+
+				file << "\t/*" << std::endl;
+				file << "\t*\tReturns the sub category." << std::endl;
+				file << "\t*/" << std::endl;
+				file << "\tFORCE_INLINE NO_DISCARD Audio::Plugin::SubCategory GetSubCategory() const NOEXCEPT override" << std::endl;
+				file << "\t{" << std::endl;
+				file << "\t\treturn Audio::Plugin::SubCategory::" << audio_plugin._SubCategory.c_str() << ";" << std::endl;
+				file << "\t}" << std::endl;
 				file << std::endl;
 
 				file << "\t/*" << std::endl;
@@ -1072,13 +1131,19 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 				file << "\tFORCE_INLINE NO_DISCARD Resolution GetResolution() const NOEXCEPT override" << std::endl;
 				file << "\t{" << std::endl;
 				file << "\t\treturn Resolution(" << audio_plugin._Resolution._Width << ", " << audio_plugin._Resolution._Height << ");" << std::endl;
-				file << "\t} NOEXCEPT override;" << std::endl;
+				file << "\t}" << std::endl;
 				file << std::endl;
 
 				file << "\t/*" << std::endl;
 				file << "\t*\tInitializes this plugin." << std::endl;
 				file << "\t*/" << std::endl;
 				file << "\tvoid Initialize(const InitializeContext &context) NOEXCEPT override;" << std::endl;
+				file << std::endl;
+
+				file << "\t/*" << std::endl;
+				file << "\t*\tPost-initializes this plugin." << std::endl;
+				file << "\t*/" << std::endl;
+				file << "\tvoid PostInitialize(const InitializeContext &context) NOEXCEPT override;" << std::endl;
 				file << std::endl;
 
 				file << "\t/*" << std::endl;
@@ -1094,6 +1159,22 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 				file << "\t) NOEXCEPT override;" << std::endl;
 				file << std::endl;
 
+				if (AudioPluginDoesMIDIIn(audio_plugin))
+				{
+					file << "\t/*" << std::endl;
+					file << "\t*\tCallback for this plugin when it receives a MIDI message." << std::endl;
+					file << "\t*/" << std::endl;
+					file << "\tvoid OnMIDIMessage(const MIDIMessage &message) NOEXCEPT override;" << std::endl;
+					file << std::endl;
+				}
+
+				file << "private:" << std::endl;
+				file << std::endl;
+
+				file << "\t//The UI scene." << std::endl;
+				file << "\t" << audio_plugin._NameNoSpaces.c_str() << "UIScene *RESTRICT _UIScene;" << std::endl;
+				file << std::endl;
+
 				file << "};";
 
 				file.close();
@@ -1103,9 +1184,9 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 		//Generate the audio plugin CPP file.
 		{
 			char buffer[256];
-			sprintf_s(buffer, "%s\\%s.cpp", std::string(std::string("..\\") + audio_plugin._DirectoryPath).c_str(), audio_plugin._ClassName.c_str());
+			sprintf_s(buffer, "%s\\%s.cpp", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._ClassName.c_str());
 
-			if (!std::filesystem::exists(buffer))
+			if (!audio_plugin._Locked)
 			{
 				std::ofstream file{ buffer };
 
@@ -1113,13 +1194,21 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 				file << "#include <" << audio_plugin._ClassName.c_str() <<".h>" << std::endl;
 				file << std::endl;
 
+				file << "//Systems." << std::endl;
+				file << "#include <Systems/UISystem.h>" << std::endl;
+				file << std::endl;
+
+				file << "//" << audio_plugin._Name.c_str() << "." << std::endl;
+				file << "#include <" << audio_plugin._NameNoSpaces.c_str() << "UIScene.h>" << std::endl;
+				file << std::endl;
+
 				file << "/*" << std::endl;
 				file << "*\tDefault constructor." << std::endl;
 				file << "*/" << std::endl;
-				file << "" << audio_plugin._Name.c_str() << "Plugin::" << audio_plugin._Name.c_str() << "Plugin() NOEXCEPT" << std::endl;
+				file << "" << audio_plugin._NameNoSpaces.c_str() << "Plugin::" << audio_plugin._NameNoSpaces.c_str() << "Plugin() NOEXCEPT" << std::endl;
 				file << "{" << std::endl;
 				file << std::endl;
-				file << "}";
+				file << "}" << std::endl;
 				file << std::endl;
 
 				file << "/*" << std::endl;
@@ -1128,7 +1217,19 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 				file << "void " << audio_plugin._ClassName.c_str() << "::Initialize(const InitializeContext &context) NOEXCEPT" << std::endl;
 				file << "{" << std::endl;
 				file << std::endl;
-				file << "}";
+				file << "}" << std::endl;
+				file << std::endl;
+
+				file << "/*" << std::endl;
+				file << "*\tPost-initializes this plugin." << std::endl;
+				file << "*/" << std::endl;
+				file << "void " << audio_plugin._ClassName.c_str() << "::PostInitialize(const InitializeContext &context) NOEXCEPT" << std::endl;
+				file << "{" << std::endl;
+				file << "\t//Add the UI scene." << std::endl;
+				file << "\t_UIScene = context._UISystem->AddScene<" << audio_plugin._NameNoSpaces.c_str() << "UIScene>();" << std::endl;
+				file << "\t_UIScene->SetPlugin(this);" << std::endl;
+				file << "}" << std::endl;
+				file << std::endl;
 
 				file << "/*" << std::endl;
 				file << "*\tCallback for this plugin to process the given buffer." << std::endl;
@@ -1143,7 +1244,158 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 				file << ") NOEXCEPT" << std::endl;
 				file << "{" << std::endl;
 				file << std::endl;
-				file << "}";
+				file << "}" << std::endl;
+				file << std::endl;
+
+				if (AudioPluginDoesMIDIIn(audio_plugin))
+				{
+					file << "/*" << std::endl;
+					file << "*\tCallback for this plugin when it receives a MIDI message." << std::endl;
+					file << "*/" << std::endl;
+					file << "void " << audio_plugin._ClassName.c_str() << "::OnMIDIMessage(const MIDIMessage &message) NOEXCEPT" << std::endl;
+					file << "{" << std::endl;
+					file << std::endl;
+					file << "}";
+				}
+
+				file.close();
+			}
+		}
+
+		//Generate the audio plugin UI scene header file.
+		{
+			char buffer[256];
+			sprintf_s(buffer, "%s\\%sUIScene.h", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
+
+			if (!audio_plugin._Locked)
+			{
+				std::ofstream file{ buffer };
+
+				file << "#pragma once" << std::endl;
+				file << std::endl;
+
+				file << "//Core." << std::endl;
+				file << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
+				file << std::endl;
+
+				file << "//UI." << std::endl;
+				file << "#include <UI/Core/Scene.h>" << std::endl;
+				file << std::endl;
+
+				file << "//Forward declarations." << std::endl;
+				file << "class " << audio_plugin._ClassName.c_str() << ";" << std::endl;
+				file << std::endl;
+
+				file << "class " << audio_plugin._NameNoSpaces.c_str() << "UIScene final : public UI::Scene" << std::endl;
+				file << "{" << std::endl;
+
+				file << std::endl;
+				file << "public:" << std::endl;
+				file << std::endl;
+
+				file << "\t/*" << std::endl;
+				file << "\t*\tSets the plugin." << std::endl;
+				file << "\t*/" << std::endl;
+				file << "\tvoid SetPlugin(" << audio_plugin._ClassName.c_str() << " *const RESTRICT value) NOEXCEPT;" << std::endl;
+				file << std::endl;
+
+				file << "\t/*" << std::endl;
+				file << "\t*\tBuilds this scene." << std::endl;
+				file << "\t*/" << std::endl;
+				file << "\tvoid Build(const UI::BuildContext &context) NOEXCEPT override;" << std::endl;
+				file << std::endl;
+
+				file << "private:" << std::endl;
+				file << std::endl;
+
+				file << "\t//The plugin." << std::endl;
+				file << "\t" << audio_plugin._ClassName.c_str() << " *RESTRICT _Plugin;" << std::endl;
+				file << std::endl;
+
+				file << "};";
+
+				file.close();
+			}
+		}
+
+		//Generate the audio plugin UI scene source file.
+		{
+			char buffer[256];
+			sprintf_s(buffer, "%s\\%sUIScene.cpp", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
+
+			if (!audio_plugin._Locked)
+			{
+				std::ofstream file{ buffer };
+
+				file << "//Header file." << std::endl;
+				file << "#include <" << audio_plugin._NameNoSpaces << "UIScene.h>" << std::endl;
+				file << std::endl;
+
+				if (AudioPluginDoesMIDIIn(audio_plugin))
+				{
+					file << "//UI." << std::endl;
+					file << "#include <UI/Widgets/PianoRollWidget.h>" << std::endl;
+					file << std::endl;
+				}
+
+				file << "//" << audio_plugin._Name.c_str() << "." << std::endl;
+				file << "#include <" << audio_plugin._ClassName.c_str() << ".h>" << std::endl;
+				file << std::endl;
+
+				file << "/*" << std::endl;
+				file << "*\tSets the plugin." << std::endl;
+				file << "*/" << std::endl;
+				file << "void " << audio_plugin._NameNoSpaces.c_str() << "UIScene::SetPlugin(" << audio_plugin._ClassName.c_str() << " *const RESTRICT value) NOEXCEPT" << std::endl;
+				file << "{" << std::endl;
+				file << "\t//Set the plugin." << std::endl;
+				file << "\t_Plugin = value;" << std::endl;
+				file << "}" << std::endl;
+				file << std::endl;
+
+				file << "/*" << std::endl;
+				file << "*\tBuilds this scene.." << std::endl;
+				file << "*/" << std::endl;
+				file << "void " << audio_plugin._NameNoSpaces.c_str() << "UIScene::Build(const UI::BuildContext &context) NOEXCEPT" << std::endl;
+				file << "{" << std::endl;
+				file << "\t//Start the container." << std::endl;
+				file << "\t{" << std::endl;
+				file << "\t\tconstexpr UI::Identifier IDENTIFIER{ \"Container\" };" << std::endl;
+				file << "\t\tconstexpr UI::Anchor ANCHOR{ UI::Anchor::CENTER };" << std::endl;
+				file << "\t\tconstexpr UI::Container::Layout LAYOUT{ UI::Container::Layout::TOP_TO_BOTTOM };" << std::endl;
+				file << "\t\tconst AxisAlignedBoundingBox2D AXIS_ALIGNED_BOUNDING_BOX" << std::endl;
+				file << "\t\t{" << std::endl;
+				file << "\t\t\tVector2<float32>(0.0f, 0.0f)," << std::endl;
+				file << "\t\t\tVector2<float32>(GetReferenceResolution()._X, GetReferenceResolution()._Y)" << std::endl;
+				file << "\t\t};" << std::endl;
+				file << std::endl;
+				file << "\t\tStartContainer(context, UI::Identifier(IDENTIFIER), ANCHOR, LAYOUT, AXIS_ALIGNED_BOUNDING_BOX);" << std::endl;
+				file << "\t}" << std::endl;
+				file << std::endl;
+
+				if (AudioPluginDoesMIDIIn(audio_plugin))
+				{
+					file << "\t//Add the piano roll." << std::endl;
+					file << "\t{" << std::endl;
+					file << "\t\t//Set the bounding box." << std::endl;
+					file << "\t\tconst AxisAlignedBoundingBox2D bounding_box" << std::endl;
+					file << "\t\t{" << std::endl;
+					file << "\t\t\tVector2<float32>(0.0f, 0.0f)," << std::endl;
+					file << "\t\t\tVector2<float32>(GetReferenceResolution()._X, GetReferenceResolution()._Y * 0.1f)" << std::endl;
+					file << "\t\t};" << std::endl;
+					file << std::endl;
+					file << "\t\tSetContainerNextWidgetBoundingBox(bounding_box);" << std::endl;
+					file << std::endl;
+					file << "\t\t//Add the widget." << std::endl;
+					file << "\t\tAddWidget<UI::PianoRollWidget>(context, UI::Identifier(\"Piano Roll\"))" << std::endl;
+					file << "\t\t->SetAudioPlugin(_Plugin);" << std::endl;
+					file << "\t}" << std::endl;
+					file << std::endl;
+				}
+
+				file << "\t//Start the container." << std::endl;
+				file << "\tEndContainer(context);" << std::endl;
+				file << "}" << std::endl;
+				file << std::endl;
 
 				file.close();
 			}
@@ -1151,20 +1403,20 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 	}
 
 	//Add the code include path.
-	parameters._CodeIncludePaths.emplace_back(std::string(std::string("..\\..\\..\\") + audio_plugin._DirectoryPath));
+	parameters._CodeIncludePaths.emplace_back(std::string("..\\..\\") + AudioPluginCodeDirectory(audio_plugin));
 
 	//Add the audio plugin directory.
 	{
 		GenerateVisualStudioSolution::Parameters::Directory &directory{ parameters._Directories.emplace_back() };
 		directory._Name = audio_plugin._NameNoSpaces;
-		ScanDirectory(&directory, std::string(std::string("..\\") + audio_plugin._DirectoryPath).c_str());
+		ScanDirectory(&directory, AudioPluginCodeDirectory(audio_plugin).c_str());
 	}
 
 	//Add common paramaters.
 	AddCommonParameters(project_settings, &parameters);
 
 	//Generate the code generation file.
-	GenerateRunCodeGenerationBatchFile(AudioPluginDirectory(audio_plugin), project_settings, false);
+	GenerateRunCodeGenerationBatchFile(AudioPluginSolutionDirectory(audio_plugin), project_settings, false);
 
 	//Embed some resources.
 	parameters._EmbeddedResources.emplace_back("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Collections\\Base.cac");
@@ -1188,9 +1440,9 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 	}
 
 	//Copy assimp-vc143-mt.dll.
-	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", std::string(AudioPluginDirectory(audio_plugin) + std::string("\\Standalone Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(AudioPluginDirectory(audio_plugin) + std::string("\\Standalone Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(AudioPluginDirectory(audio_plugin) + std::string("\\Standalone Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", std::string(AudioPluginSolutionDirectory(audio_plugin) + std::string("\\Standalone Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(AudioPluginSolutionDirectory(audio_plugin) + std::string("\\Standalone Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(AudioPluginSolutionDirectory(audio_plugin) + std::string("\\Standalone Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 
 	//Copy onnxruntime.dll.
 	if (project_settings._IncludeONNXRuntimeLibrary)
@@ -1215,7 +1467,7 @@ void GenerateSolution::Run(const ProjectSettings &project_settings)
 
 	for (const ProjectSettings::AudioPlugin &audio_plugin : project_settings._AudioPlugins)
 	{
-		std::filesystem::create_directories(AudioPluginDirectory(audio_plugin));
+		std::filesystem::create_directories(AudioPluginSolutionDirectory(audio_plugin));
 	}
 
 	//Generate the "RunCodeGeneration.bat" file.
@@ -1254,9 +1506,9 @@ void GenerateSolution::Clean(const ProjectSettings &project_settings)
 
 	for (const ProjectSettings::AudioPlugin &audio_plugin : project_settings._AudioPlugins)
 	{
-		if (std::filesystem::exists(audio_plugin._Name.c_str()))
+		if (std::filesystem::exists(AudioPluginSolutionDirectory(audio_plugin)))
 		{
-			std::filesystem::remove_all(audio_plugin._Name.c_str(), error_code); CHECK_ERROR_CODE()
+			std::filesystem::remove_all(AudioPluginSolutionDirectory(audio_plugin), error_code); CHECK_ERROR_CODE()
 		}
 	}
 

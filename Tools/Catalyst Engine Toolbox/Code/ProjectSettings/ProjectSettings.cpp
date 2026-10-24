@@ -87,14 +87,16 @@ void ProjectSettings::Read(const char *file_path)
 		{
 			AudioPlugin &audio_plugin{ _AudioPlugins.emplace_back() };
 
-			audio_plugin._Name = audio_plugin_entry["Name"];
+			audio_plugin._Locked = audio_plugin_entry["Locked"].get<bool>();
+			audio_plugin._Name = audio_plugin_entry["Name"].get<std::string>();
 
 			audio_plugin._NameNoSpaces = audio_plugin._Name;
 			audio_plugin._NameNoSpaces.erase(std::remove_if(audio_plugin._NameNoSpaces.begin(), audio_plugin._NameNoSpaces.end(), [](unsigned char x) { return std::isspace(x); }), audio_plugin._NameNoSpaces.end());
 
 			audio_plugin._ClassName = audio_plugin._NameNoSpaces + std::string("Plugin");
 
-			audio_plugin._DirectoryPath = audio_plugin_entry["DirectoryPath"];
+			audio_plugin._MainCategory = audio_plugin_entry["MainCategory"];
+			audio_plugin._SubCategory = audio_plugin_entry["SubCategory"];
 
 			const nlohmann::ordered_json &resolution_entry{ audio_plugin_entry["Resolution"] };
 

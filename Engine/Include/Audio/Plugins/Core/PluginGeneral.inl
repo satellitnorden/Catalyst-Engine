@@ -14,6 +14,22 @@ namespace Audio
 	}
 
 	/*
+	*	Returns the main category.
+	*/
+	FORCE_INLINE NO_DISCARD Plugin::MainCategory Plugin::GetMainCategory() const NOEXCEPT
+	{
+		return Plugin::MainCategory::NONE;
+	}
+
+	/*
+	*	Returns the sub category.
+	*/
+	FORCE_INLINE NO_DISCARD Plugin::SubCategory Plugin::GetSubCategory() const NOEXCEPT
+	{
+		return Plugin::SubCategory::NONE;
+	}
+
+	/*
 	*	Returns the resolution.
 	*/
 	FORCE_INLINE NO_DISCARD Resolution Plugin::GetResolution() const NOEXCEPT
