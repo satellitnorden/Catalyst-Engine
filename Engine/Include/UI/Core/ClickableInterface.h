@@ -63,11 +63,6 @@ namespace UI
 					_OnStateChanged(widget, this, previous_state, new_state);
 				}
 
-				if (previous_state == State::IDLE && _OnStartHoveredCallback)
-				{
-					_OnStartHoveredCallback(widget, _UserData);
-				}
-
 				if (previous_state == State::HOVERED && _OnEndHoveredCallback)
 				{
 					_OnEndHoveredCallback(widget, _UserData);
@@ -76,6 +71,16 @@ namespace UI
 				if (previous_state == State::PRESSED && _OnEndPressCallback)
 				{
 					_OnEndPressCallback(widget, _UserData);
+				}
+
+				if (new_state == State::HOVERED && _OnStartHoveredCallback)
+				{
+					_OnStartHoveredCallback(widget, _UserData);
+				}
+
+				if (new_state == State::PRESSED && _OnStartPressCallback)
+				{
+					_OnStartPressCallback(widget, _UserData);
 				}
 
 				_State = state;
@@ -114,6 +119,15 @@ namespace UI
 		FORCE_INLINE ClickableInterface *const RESTRICT SetOnEndHoveredCallback(const Callback callback) NOEXCEPT
 		{
 			_OnEndHoveredCallback = callback;
+			return this;
+		}
+
+		/*
+		*	Sets the on starrt press callback.
+		*/
+		FORCE_INLINE ClickableInterface *const RESTRICT SetOnStartPressCallback(const Callback callback) NOEXCEPT
+		{
+			_OnStartPressCallback = callback;
 			return this;
 		}
 
@@ -173,6 +187,9 @@ namespace UI
 		Callback _OnEndHoveredCallback{ nullptr };
 
 		//The on start press callback.
+		Callback _OnStartPressCallback{ nullptr };
+
+		//The on end press callback.
 		Callback _OnEndPressCallback{ nullptr };
 
 		//The mouse position.

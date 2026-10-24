@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//STD.
+#include <cmath>
+
 namespace MIDI
 {
 
@@ -147,5 +150,13 @@ namespace MIDI
 		"F#9",
 		"G9"
 	};
+
+	/*
+	*	Converts a note to a frequency.
+	*/
+	FORCE_INLINE NO_DISCARD float32 NoteToFrequency(const uint8 note) NOEXCEPT
+	{
+		return 440.0f * std::pow(2.0f, (static_cast<float32>(note) - 69.0f) / 12.0f);
+	}
 
 }

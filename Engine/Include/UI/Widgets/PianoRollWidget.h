@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Audio.
+#include <Audio/Plugins/Core/Plugin.h>
+
 //UI.
 #include <UI/Core/Widget.h>
 
@@ -35,6 +38,15 @@ namespace UI
 		*/
 		void Render(const UI::RenderContext &context) NOEXCEPT override;
 
+		/*
+		*	Sets the audio plugin.
+		*/
+		FORCE_INLINE NO_DISCARD PianoRollWidget *const RESTRICT SetAudioPlugin(Audio::Plugin *const RESTRICT value) NOEXCEPT
+		{
+			_AudioPlugin = value;
+			return this;
+		}
+
 	private:
 
 		/*
@@ -54,6 +66,9 @@ namespace UI
 			//Denotes whether or not this key is black.
 			bool _IsBlack;
 
+			//The note.
+			uint8 _Note;
+
 		};
 
 		//The key information.
@@ -64,6 +79,9 @@ namespace UI
 
 		//The clickable interface pointers.
 		StaticArray<UI::ClickableInterface *RESTRICT, 128> _ClickableInterfacePointers;
+
+		//The audio plugin.
+		Audio::Plugin *RESTRICT _AudioPlugin{ nullptr };
 
 		/*
 		*	Returns if the given key is black.
@@ -79,6 +97,16 @@ namespace UI
 		*	Returns the key color.
 		*/
 		NO_DISCARD Vector4<float32> GetKeyColor(const UI::ClickableInterface::State state, const bool is_black) NOEXCEPT;
+
+		/*
+		*	Callback for when a key starts being pressed.
+		*/
+		void OnKeyStartPress(const KeyInformation &key_information) NOEXCEPT;
+
+		/*
+		*	Callback for when a key end being pressed.
+		*/
+		void OnKeyEndPress(const KeyInformation &key_information) NOEXCEPT;
 
 	};
 

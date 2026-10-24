@@ -53,6 +53,20 @@ namespace UI
                 const KeyInformation *const RESTRICT key_information{ static_cast<const KeyInformation *const RESTRICT>(clickable_interface->GetUserData()) };
                 return key_information->_BoundingBox.IsInside(position);
             };
+            _ClickableInterfaces[key_index].SetOnStartPressCallback
+            (
+                [](UI::Widget *const RESTRICT widget, void *const RESTRICT user_data)
+                {
+                    static_cast<PianoRollWidget *const RESTRICT>(widget)->OnKeyStartPress(*static_cast<const KeyInformation *const RESTRICT>(user_data));
+                }
+            );
+            _ClickableInterfaces[key_index].SetOnEndPressCallback
+            (
+                [](UI::Widget *const RESTRICT widget, void *const RESTRICT user_data)
+                {
+                    static_cast<PianoRollWidget *const RESTRICT>(widget)->OnKeyEndPress(*static_cast<const KeyInformation *const RESTRICT>(user_data));
+                }
+            );
         }
 
         //Set up the clickable interface pointers.
@@ -231,6 +245,9 @@ namespace UI
             //Set if this key is black.
             key_information._IsBlack = is_black;
 
+            //Set the note.
+            key_information._Note = i;
+
             //Update the number of white buttons.
             if (!is_black)
             {
@@ -307,6 +324,51 @@ namespace UI
                 }
             }
         }
+    }
+
+    /*
+    *	Callback for when a key starts being pressed.
+    */
+    void PianoRollWidget::OnKeyStartPress(const KeyInformation &key_information) NOEXCEPT
+    {
+        //Only valid if we have a plugin right now.
+        if (!_AudioPlugin)
+        {
+            return;
+        }
+
+        //Construct the message.
+        MIDIMessage message;
+
+        message._Type = MIDIMessage::Type::NOTE_ON;
+        message._NoteOnChannel = 0;
+        message._NoteOnNote = key_information._Note;
+        message._NoteOnVelocity = 127; //TODO: Calculate this. (:
+
+        //Add the message!
+        _AudioPlugin->AddMIDIMessages(&message, 1);
+    }
+
+    /*
+    *	Callback for when a key end being pressed.
+    */
+    void PianoRollWidget::OnKeyEndPress(const KeyInformation &key_information) NOEXCEPT
+    {
+        //Only valid if we have a plugin right now.
+        if (!_AudioPlugin)
+        {
+            return;
+        }
+
+        //Construct the message.
+        MIDIMessage message;
+
+        message._Type = MIDIMessage::Type::NOTE_OFF;
+        message._NoteOffChannel = 0;
+        message._NoteOffNote = key_information._Note;
+
+        //Add the message!
+        _AudioPlugin->AddMIDIMessages(&message, 1);
     }
 
 }

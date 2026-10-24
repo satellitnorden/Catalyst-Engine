@@ -9,6 +9,7 @@
 //Audio.
 #include <Audio/Core/Audio.h>
 #include <Audio/Core/AudioProcessContext.h>
+#include <Audio/MIDI/MIDIMessage.h>
 
 //Concurrency.
 #include <Concurrency/Atomic.h>
@@ -95,7 +96,8 @@ namespace Audio
 			{
 				NONE,
 
-				SET_PARAMETER
+				SET_PARAMETER,
+				ADD_MIDI_MESSAGE
 			};
 
 			//The type.
@@ -104,7 +106,7 @@ namespace Audio
 			//The data
 			union
 			{
-				//The set parameter value.
+				//The set parameter value data.
 				struct
 				{
 					//The index.
@@ -113,6 +115,16 @@ namespace Audio
 					//The value.
 					float32 _Value;
 				} _SetParameterValueData;
+
+				//The add MIDI message data.
+				struct
+				{
+					//The message.
+					MIDIMessage _Message;
+
+					//The sample offset.
+					uint32 _SampleOffset;
+				} _AddMIDIMessageData;
 			};
 
 		};
@@ -122,6 +134,12 @@ namespace Audio
 
 		//The requests.
 		DynamicArray<Request> _Requests;
+
+		//The inputs.
+		DynamicArray<DynamicArray<float32>> _Inputs;
+
+		//The outputs.
+		DynamicArray<DynamicArray<float32>> _Outputs;
 
 		/*
 		*	Initializes this plugin.
@@ -144,6 +162,11 @@ namespace Audio
 			const uint8 number_of_channels,
 			const uint32 number_of_samples
 		) NOEXCEPT;
+
+		/*
+		*	Callback for this plugin when it receives MIDI messages.
+		*/
+		FORCE_INLINE virtual void OnMIDIMessages(const MIDIMessage *const RESTRICT messages, const uint64 number_of_messages) NOEXCEPT;
 
 		/*
 		*	Processes requests.
@@ -288,9 +311,53 @@ namespace Audio
 		*/
 		FORCE_INLINE NO_DISCARD float32 ParameterDataToPlain(const void *const RESTRICT data, const Parameter::Type type);
 
+		//////////
+		// MIDI //
+		//////////
+
+	public:
+
+		/*
+		*	Adds MIDI messages, optionally with a list of sample offsets.
+		*/
+		FORCE_INLINE void AddMIDIMessages
+		(
+			const MIDIMessage *const RESTRICT messages,
+			const uint64 number_of_messages,
+			const uint32 *const RESTRICT sample_offsets = nullptr
+		) NOEXCEPT;
+
+	private:
+
+		/*
+		*	Queued MIDI message class definition.
+		*/
+		class QueuedMIDIMessage final
+		{
+
+		public:
+
+			//The message.
+			MIDIMessage _Message;
+
+			//The sample offset.
+			uint32 _SampleOffset;
+
+		};
+
+		//The queued MIDI messages.
+		DynamicArray<QueuedMIDIMessage> _QueuedMIDIMessages;
+
+		/*
+		*	Adds a MIDI message internally.
+		*/
+		FORCE_INLINE void AddMIDIMessageInternal(const MIDIMessage &message, const uint32 sample_offset) NOEXCEPT;
+
 	};
 
 }
 
 //Inline.
-#include "Plugin.inl"
+#include "PluginGeneral.inl"
+#include "PluginParameters.inl"
+#include "PluginMIDI.inl"

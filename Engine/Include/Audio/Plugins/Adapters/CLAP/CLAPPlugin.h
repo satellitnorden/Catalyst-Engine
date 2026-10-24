@@ -98,6 +98,37 @@ namespace CLAPPlugin
 				{
 					switch (event_header->type)
 					{
+						case CLAP_EVENT_NOTE_ON:
+						{
+							const clap_event_note *const event{ reinterpret_cast<const clap_event_note *RESTRICT>(event_header) };
+
+							MIDIMessage message;
+
+							message._Type = MIDIMessage::Type::NOTE_ON;
+							message._NoteOnChannel = event->channel;
+							message._NoteOnNote = event->key;
+							message._NoteOnVelocity = static_cast<uint8>(event->velocity * 127.0f);
+
+							plugin_data->_Plugin->AddMIDIMessages(&message, 1, &event->header.time);
+
+							break;
+						}
+
+						case CLAP_EVENT_NOTE_OFF:
+						{
+							const clap_event_note *const event{ reinterpret_cast<const clap_event_note *RESTRICT>(event_header) };
+
+							MIDIMessage message;
+
+							message._Type = MIDIMessage::Type::NOTE_OFF;
+							message._NoteOffChannel = event->channel;
+							message._NoteOffNote = event->key;
+
+							plugin_data->_Plugin->AddMIDIMessages(&message, 1, &event->header.time);
+
+							break;
+						}
+
 						case CLAP_EVENT_PARAM_VALUE:
 						{
 							const clap_event_param_value *const event{ reinterpret_cast<const clap_event_param_value *RESTRICT>(event_header) };
