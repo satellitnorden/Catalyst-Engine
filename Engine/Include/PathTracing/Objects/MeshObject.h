@@ -34,9 +34,9 @@ namespace PathTracing
 
 		/*
 		*	Traces against this object.
-		*	Should return if it hits, and if so, fill in the passed in result.
+		*	Should return if it hits, and if so, fill in the surface information.
 		*/
-		NO_DISCARD bool Trace(const Ray &ray) const NOEXCEPT override;
+		NO_DISCARD bool Trace(const Ray &ray, PathTracing::SurfaceInformation *const RESTRICT surface_information) const NOEXCEPT override;
 
 	private:
 

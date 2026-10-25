@@ -18,9 +18,30 @@ namespace PathTracing
 	public:
 
 		/*
+		*	Default constructor.
+		*/
+		OrthographicCamera
+		(
+			const Vector3<float32> &position,
+			const Vector3<float32> &direction,
+			const Vector2<float32> bounds
+		) NOEXCEPT;
+
+		/*
 		*	Generates a ray from the given coordinate.
 		*/
 		NO_DISCARD Ray GenerateRay(const Vector2<float32> coordinate) NOEXCEPT override;
+
+	private:
+
+		//The position.
+		Vector3<float32> _Position;
+
+		//The direction.
+		Vector3<float32> _Direction;
+
+		//The bounds.
+		Vector2<float32> _Bounds;
 
 	};
 

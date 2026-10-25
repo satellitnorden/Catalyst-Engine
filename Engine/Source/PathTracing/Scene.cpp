@@ -62,7 +62,13 @@ namespace PathTracing
 			}
 		}
 
+		//Calculate the total number of pixels.
+		const uint32 total_number_of_pixels{ texture.GetWidth() * texture.GetHeight() };
+
 		//Iterate over the pixels.
+		uint32 rendered_pixels{ 0 };
+		uint32 last_reported_percent{ 0 };
+
 		for (uint32 Y{ 0 }; Y < texture.GetHeight(); ++Y)
 		{
 			for (uint32 X{ 0 }; X < texture.GetWidth(); ++X)
@@ -78,7 +84,7 @@ namespace PathTracing
 				const Ray ray{ _Camera->GenerateRay(coordinate) };
 
 				//See if any objects hit.
-				bool any_object_hit{ false };
+				PathTracing::SurfaceInformation closest_surface_information;
 
 				for (const PathTracing::Object *const RESTRICT object : _Objects)
 				{
@@ -88,12 +94,36 @@ namespace PathTracing
 						continue;
 					}
 
-					any_object_hit = any_object_hit || object->Trace(ray);
+					PathTracing::SurfaceInformation surface_information;
+
+					if (object->Trace(ray, &surface_information) && surface_information._HitDistance < closest_surface_information._HitDistance)
+					{
+						closest_surface_information = surface_information;
+					}
 				}
 
-				if (any_object_hit)
+				if (closest_surface_information._HitDistance != FLOAT32_MAXIMUM)
 				{
-					texture.At(X, Y) = Vector4<float32>(1.0f, 0.0f, 0.0f, 1.0f);
+					texture.At(X, Y) = Vector4<float32>
+					(
+						closest_surface_information._Normal._X * 0.5f + 0.5f,
+						closest_surface_information._Normal._Y * 0.5f + 0.5f,
+						closest_surface_information._Normal._Z * 0.5f + 0.5f,
+						1.0f
+					);
+				}
+
+				//Increment the rendered pixels.
+				++rendered_pixels;
+
+				//Calculate the current percent.
+				const uint32 current_percent{ BaseMath::Floor<uint32>(static_cast<float32>(rendered_pixels) / static_cast<float32>(total_number_of_pixels) * 100.0f) };
+
+				//Report the progress.
+				if (current_percent > last_reported_percent)
+				{
+					LOG_INFORMATION("%u%%...", current_percent);
+					last_reported_percent = current_percent;
 				}
 			}
 		}

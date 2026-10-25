@@ -7,6 +7,9 @@
 #include <Math/Geometry/AxisAlignedBoundingBox3D.h>
 #include <Math/Geometry/Ray.h>
 
+//Path tracing.
+#include <PathTracing/SurfaceInformation.h>
+
 namespace PathTracing
 {
 
@@ -35,9 +38,9 @@ namespace PathTracing
 
 		/*
 		*	Traces against this object.
-		*	Should return if it hits, and if so, fill in the passed in result.
+		*	Should return if it hits, and if so, fill in the surface information.
 		*/
-		virtual NO_DISCARD bool Trace(const Ray &ray) const NOEXCEPT = 0;
+		virtual NO_DISCARD bool Trace(const Ray &ray, PathTracing::SurfaceInformation *const RESTRICT surface_information) const NOEXCEPT = 0;
 
 	};
 

@@ -33,11 +33,14 @@ namespace PathTracing
 
 	/*
 	*	Traces against this object.
-	*	Should return if it hits, and if so, fill in the passed in result.
+	*	Should return if it hits, and if so, fill in the surface information.
 	*/
-	NO_DISCARD bool MeshObject::Trace(const Ray &ray) const NOEXCEPT
+	NO_DISCARD bool MeshObject::Trace(const Ray &ray, PathTracing::SurfaceInformation *const RESTRICT surface_information) const NOEXCEPT
 	{
 		//Trace against each triangle.
+		float32 closest_hit_distance{ FLOAT32_MAXIMUM };
+		bool found_hit{ false };
+
 		for (uint64 index_index{ 0 }; index_index < _Indices.Size(); index_index += 3)
 		{
 			//Retrieve the vertices.
@@ -56,14 +59,30 @@ namespace PathTracing
 			triangle._Vertices[2] = vertices[2]._Position;
 
 			//Check if there is an intersection.
-			if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle))
+			float32 hit_distance{ FLOAT32_MAXIMUM };
+
+			if (CatalystGeometryMath::RayTriangleIntersection(ray, triangle, &hit_distance) && hit_distance < closest_hit_distance)
 			{
-				return true;
+				//Calculate the hit position.
+				const Vector3<float32> hit_position{ ray._Origin + ray._Direction * hit_distance };
+
+				//Calculate the barycentric coordinates.
+				const Vector3<float32> barcentric_coordinates{ CatalystGeometryMath::CalculateBarycentricCoordinates(triangle, hit_position) };
+
+				//Fill in the surface information.
+				surface_information->_HitDistance = hit_distance;
+				surface_information->_Position = ray._Origin + ray._Direction * hit_distance;
+				surface_information->_Normal =	vertices[0]._Normal * barcentric_coordinates[0]
+												+ vertices[1]._Normal * barcentric_coordinates[1]
+												+ vertices[2]._Normal * barcentric_coordinates[2];
+				surface_information->_Normal.Normalize();
+
+				closest_hit_distance = hit_distance;
+				found_hit = true;
 			}
 		}
 
-		//None hit.
-		return false;
+		return found_hit;
 	}
 
 }
