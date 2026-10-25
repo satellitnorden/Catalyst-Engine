@@ -7,9 +7,6 @@
 #include <Core/General/HashString.h>
 #include <Core/General/StaticString.h>
 
-//Content.
-#include <Content/Core/ContentCore.h>
-
 //Memory.
 #include <Memory/PoolAllocator.h>
 
@@ -59,8 +56,11 @@ public:
 
 	public:
 
-		//The compilation domain.
-		CompilationDomain _CompilationDomain;
+		//The source directory path.
+		const char *RESTRICT _SourceDirectoryPath;
+
+		//The compiled directory path.
+		const char *RESTRICT _CompiledDirectoryPath;
 
 		//The collection.
 		StaticString<64> _Collection;
@@ -138,7 +138,7 @@ public:
 	/*
 	*	Runs before compilation in the specified domain has finished.
 	*/
-	FORCE_INLINE virtual void PreCompile(const CompilationDomain compilation_domain) NOEXCEPT
+	FORCE_INLINE virtual void PreCompile() NOEXCEPT
 	{
 
 	}
@@ -151,7 +151,7 @@ public:
 	/*
 	*	Runs after compilation in the specified domain has finished.
 	*/
-	FORCE_INLINE virtual void PostCompile(const CompilationDomain compilation_domain) NOEXCEPT
+	FORCE_INLINE virtual void PostCompile() NOEXCEPT
 	{
 
 	}
@@ -183,86 +183,6 @@ public:
 		return false;
 	}
 #endif
-
-protected:
-
-	/*
-	*	Returns the source directory for the given compilation domain.
-	*/
-	FORCE_INLINE NO_DISCARD const char *const RESTRICT GetSourceDirectoryPath(const CompilationDomain compilation_domain) NOEXCEPT
-	{
-		switch (compilation_domain)
-		{
-			case CompilationDomain::ENGINE:
-			{
-				return "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Source";
-			}
-
-			case CompilationDomain::GAME:
-			{
-				return "..\\..\\..\\Content\\Source";
-			}
-
-			default:
-			{
-				ASSERT(false, "Invalid case!");
-
-				return "";
-			}
-		}
-	}
-
-	/*
-	*	Returns the assets directory for the given compilation domain.
-	*/
-	FORCE_INLINE NO_DISCARD const char *const RESTRICT GetAssetsDirectoryPath(const CompilationDomain compilation_domain) NOEXCEPT
-	{
-		switch (compilation_domain)
-		{
-			case CompilationDomain::ENGINE:
-			{
-				return "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Assets";
-			}
-
-			case CompilationDomain::GAME:
-			{
-				return "..\\..\\..\\Content\\Assets";
-			}
-
-			default:
-			{
-				ASSERT(false, "Invalid case!");
-
-				return "";
-			}
-		}
-	}
-
-	/*
-	*	Returns the compiled directory for the given compilation domain.
-	*/
-	FORCE_INLINE NO_DISCARD const char *const RESTRICT GetCompiledDirectoryPath(const CompilationDomain compilation_domain) NOEXCEPT
-	{
-		switch (compilation_domain)
-		{
-			case CompilationDomain::ENGINE:
-			{
-				return "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Compiled";
-			}
-
-			case CompilationDomain::GAME:
-			{
-				return "..\\..\\..\\Content\\Compiled";
-			}
-
-			default:
-			{
-				ASSERT(false, "Invalid case!");
-
-				return "";
-			}
-		}
-	}
 
 };
 

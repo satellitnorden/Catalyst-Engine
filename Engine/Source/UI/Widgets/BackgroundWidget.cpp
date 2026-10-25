@@ -9,6 +9,15 @@ namespace UI
 	*/
 	void BackgroundWidget::Position() NOEXCEPT
 	{
+		//If the parent has a next widget bounding box, just use that.
+		if (_Parent->_NextWidgetBoundingBox.Valid())
+		{
+			_AxisAlignedBoundingBox = _Parent->_NextWidgetBoundingBox.Get();
+			_Parent->_NextWidgetBoundingBox.Invalidate();
+
+			return;
+		}
+
 		//Just grab the parent axis aligned bounding box.
 		_AxisAlignedBoundingBox = _Parent->_AxisAlignedBoundingBox;
 	}

@@ -69,12 +69,12 @@ void SettingsAssetCompiler::Compile(const CompileContext &compile_context) NOEXC
 
 	if (compile_context._Collection)
 	{
-		sprintf_s(collection_directory_path, "%s\\COLLECTION %s", GetCompiledDirectoryPath(compile_context._CompilationDomain), compile_context._Collection.Data());
+		sprintf_s(collection_directory_path, "%s\\COLLECTION %s", compile_context._CompiledDirectoryPath, compile_context._Collection.Data());
 	}
 
 	else
 	{
-		sprintf_s(collection_directory_path, "%s\\COLLECTION Default", GetCompiledDirectoryPath(compile_context._CompilationDomain));
+		sprintf_s(collection_directory_path, "%s\\COLLECTION Default", compile_context._CompiledDirectoryPath);
 	}
 
 	//Create the compiled directory, if it doesn't exist.

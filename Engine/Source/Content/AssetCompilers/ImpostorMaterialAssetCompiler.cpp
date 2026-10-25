@@ -747,7 +747,7 @@ void ImpostorMaterialAssetCompiler::Compile(const CompileContext &compile_contex
 		//Determine the directory.
 		char directory_path[MAXIMUM_FILE_PATH_LENGTH];
 
-		sprintf_s(directory_path, "%s\\ImpostorTextures", GetSourceDirectoryPath(compile_context._CompilationDomain));
+		sprintf_s(directory_path, "%s\\ImpostorTextures", compile_context._SourceDirectoryPath);
 
 		//Create the directory, if it doesn't exist.
 		File::CreateDirectory(directory_path);

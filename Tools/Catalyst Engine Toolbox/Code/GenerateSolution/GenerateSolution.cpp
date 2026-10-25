@@ -20,7 +20,15 @@
 */
 std::string AudioPluginCodeDirectory(const ProjectSettings::AudioPlugin &audio_plugin)
 {
-	return "..\\AudioPlugins\\" + audio_plugin._NameNoSpaces;
+	return "..\\AudioPlugins\\" + audio_plugin._NameNoSpaces + "\\Code";
+}
+
+/*
+*	Returns the content directory for the given audio plugin.
+*/
+std::string AudioPluginContentDirectory(const ProjectSettings::AudioPlugin &audio_plugin)
+{
+	return "..\\AudioPlugins\\" + audio_plugin._NameNoSpaces + "\\Content";
 }
 
 /*
@@ -1454,7 +1462,7 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 					file << "\t\tconst AxisAlignedBoundingBox2D bounding_box" << std::endl;
 					file << "\t\t{" << std::endl;
 					file << "\t\t\tVector2<float32>(0.0f, 0.0f)," << std::endl;
-					file << "\t\t\tVector2<float32>(GetReferenceResolution()._X, GetReferenceResolution()._Y * 0.1f)" << std::endl;
+					file << "\t\t\tVector2<float32>(GetReferenceResolution()._X, BaseMath::Round<float32>(GetReferenceResolution()._Y * 0.1f))" << std::endl;
 					file << "\t\t};" << std::endl;
 					file << std::endl;
 					file << "\t\tSetContainerNextWidgetBoundingBox(bounding_box);" << std::endl;
@@ -1495,6 +1503,22 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 	//Embed some resources.
 	parameters._EmbeddedResources.emplace_back("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Collections\\Base.cac");
 
+	{
+		const std::string collections_directory{ AudioPluginContentDirectory(audio_plugin) + "\\Collections" };
+
+		if (std::filesystem::exists(collections_directory))
+		{
+			for (const auto &entry : std::filesystem::directory_iterator(collections_directory))
+			{
+				const std::string file_path{ entry.path().string() };
+
+				if (file_path.ends_with(".cac"))
+				{
+					parameters._EmbeddedResources.emplace_back("..\\..\\" + file_path);
+				}
+			}
+		}
+	}
 	//Define that we have embedded resource.
 	for (GenerateVisualStudioSolution::Parameters::Configuration &configuration : parameters._Configurations)
 	{

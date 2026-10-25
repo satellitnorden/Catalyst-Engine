@@ -9,7 +9,6 @@
 #include <Concurrency/Task.h>
 
 //Content.
-#include <Content/Core/ContentCore.h>
 #include <Content/Core/Asset.h>
 #include <Content/Core/AssetCompiler.h>
 #include <Content/Core/AssetPointer.h>
@@ -62,13 +61,22 @@ public:
 	void RegisterOnAssetCompiledCallback(OnAssetCompiledCallback callback) NOEXCEPT;
 
 	/*
+	*	Compiles the content in the given directory.
+	*	Should be the top level "Contents" directory, with the "Assets" directory as a sub-directory.
+	*	Returns if new content was compiled.
+	*/
+	bool Compile(const char *const RESTRICT directory_path) NOEXCEPT;
+	
+	/*
 	*	Compiles the content for engine.
+	*	Utility function that just calls 'Compile' with the proper directory path.
 	*	Returns if new content was compiled.
 	*/
 	bool CompileEngine() NOEXCEPT;
 
 	/*
 	*	Compiles the content for game.
+	*	Utility function that just calls 'Compile' with the proper directory path.
 	*	Returns if new content was compiled.
 	*/
 	bool CompileGame() NOEXCEPT;
@@ -225,17 +233,12 @@ private:
 	DynamicArray<OnAssetCompiledCallback> _OnAssetCompiledCallbacks;
 
 	/*
-	*	Compiles internally.
-	*	Returns if new content was compiled.
-	*/
-	NO_DISCARD bool CompileInternal(const CompilationDomain compilation_domain) NOEXCEPT;
-
-	/*
 	*	Compiles assets in the given directory.
 	*/
 	void CompileAssetsInDirectory
 	(
-		const CompilationDomain compilation_domain,
+		const char *const RESTRICT source_directory_path,
+		const char *const RESTRICT compiled_directory_path,
 		ContentCache *const RESTRICT content_cache,
 		const char *const RESTRICT directory_path,
 		const char *const RESTRICT collection,

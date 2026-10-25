@@ -9,6 +9,9 @@
 //Profiling.
 #include <Profiling/Profiling.h>
 
+//Systems.
+#include <Systems/ContentSystem.h>
+
 namespace Audio
 {
 
@@ -17,6 +20,12 @@ namespace Audio
 	*/
 	void PluginEditor::Initialize(Audio::Plugin *const RESTRICT plugin) NOEXCEPT
 	{
+		//Initialize the content system.
+		ContentSystem::Instance->Initialize();
+
+		//Load the engine base assets.
+		ContentSystem::Instance->LoadAssetCollection("Base.cac");
+
 		//Set the plugin.
 		_Plugin = plugin;
 

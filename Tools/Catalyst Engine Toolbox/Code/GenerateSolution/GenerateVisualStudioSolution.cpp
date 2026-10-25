@@ -212,16 +212,32 @@ void GenerateVisualStudioSolution::GenerateResourceFile(const Parameters &parame
         {
             const std::string &embedded_resource{ parameters._EmbeddedResources[embedded_resource_index] };
 
-            const char *string{ &embedded_resource[embedded_resource.length() - 1] };
+            const char *identifier{ &embedded_resource[embedded_resource.length() - 1] };
 
-            while ((*string) != '\\' && (*string) != '/')
+            while ((*identifier) != '\\' && (*identifier) != '/')
             {
-                --string;
+                --identifier;
             }
 
-            ++string;
+            ++identifier;
 
-            file << string << " RCDATA \"" << embedded_resource.c_str() << "\"" << std::endl;
+            std::string file_path;
+
+            for (const char character : embedded_resource)
+            {
+                if (character == '\\')
+                {
+                    file_path += '\\';
+                    file_path += '\\';
+                }
+
+                else
+                {
+                    file_path += character;
+                }
+            }
+
+            file << identifier << " RCDATA \"" << file_path.c_str() << "\"" << std::endl;
         }
 
         file << "/////////////////////////////////////////////////////////////////////////////" << std::endl;

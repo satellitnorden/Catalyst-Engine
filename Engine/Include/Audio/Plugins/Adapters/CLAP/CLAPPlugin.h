@@ -9,9 +9,6 @@
 #include <Audio/Plugins/Adapters/CLAP/Extensions/CLAPParamsExtension.h>
 #include <Audio/Plugins/Adapters/CLAP/CLAPPluginData.h>
 
-//Systems.
-#include <Systems/ContentSystem.h>
-
 //Third party.
 #include <ThirdParty/CLAP/clap.h>
 
@@ -25,12 +22,6 @@ namespace CLAPPlugin
 	{
 		//Cache the plugin data.
 		CLAPPluginData *const RESTRICT plugin_data{ static_cast<CLAPPluginData *const RESTRICT>(plugin->plugin_data) };
-
-		//Initialize the content system.
-		ContentSystem::Instance->Initialize();
-
-		//Load the engine base assets.
-		ContentSystem::Instance->LoadAssetCollection("Base.cac");
 
 		//Initialize the editor.
 		plugin_data->_Editor.Initialize(plugin_data->_Plugin);

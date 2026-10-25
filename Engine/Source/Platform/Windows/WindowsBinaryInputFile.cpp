@@ -143,17 +143,17 @@ BinaryInputFile::BinaryInputFile(const char *const RESTRICT file_path) NOEXCEPT
 	implementation->_FilePath = file_path;
 
 	//Try to open the file from different locations.
+	if (!implementation->_CouldBeOpened)
+	{
+		implementation->_CouldBeOpened = TryOpenFromDisk(file_path, implementation);
+	}
+
 #if defined(CATALYST_HAS_EMBEDDED_RESOURCES)
 	if (!implementation->_CouldBeOpened)
 	{
 		implementation->_CouldBeOpened = TryOpenFromEmbeddedResource(file_path, implementation);
 	}
 #endif
-
-	if (!implementation->_CouldBeOpened)
-	{
-		implementation->_CouldBeOpened = TryOpenFromDisk(file_path, implementation);
-	}
 
 	//If we could open the file, set up it's initial state.
 	if (implementation->_CouldBeOpened)
