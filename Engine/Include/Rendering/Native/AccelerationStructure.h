@@ -183,7 +183,7 @@ public:
 	*	If an intersection is detected, it returns the intersected triangle data.
 	*	If no interseaction was found, it returns nullptr.
 	*/
-	FORCE_INLINE RESTRICTED NO_DISCARD const TriangleData *const RESTRICT TraceSurface(const Ray& ray, float *const RESTRICT intersection_distance) const NOEXCEPT
+	FORCE_INLINE RESTRICTED NO_DISCARD const TriangleData *const RESTRICT TraceSurface(const Ray &ray, float *const RESTRICT intersection_distance) const NOEXCEPT
 	{
 		return TraceSurface(ray, _Root, intersection_distance);
 	}

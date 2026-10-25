@@ -15,8 +15,8 @@
 //Memory.
 #include <Memory/PoolAllocator.h>
 
-//Path tracing.
-#include <PathTracing/PathTracingCore.h>
+//Rendering.
+#include <Rendering/Native/PathTracing/PathTracingCore.h>
 
 //Systems.
 #include <Systems/LogSystem.h>

@@ -1,13 +1,11 @@
 //Header file.
 #include <Components/Components/TerrainComponent.h>
 
-//Path tracing.
-#include <PathTracing/PathTracingCore.h>
-
 //Profiling.
 #include <Profiling/Profiling.h>
 
 //Rendering.
+#include <Rendering/Native/PathTracing/PathTracingCore.h>
 #include <Rendering/Native/Culling.h>
 
 //Systems.

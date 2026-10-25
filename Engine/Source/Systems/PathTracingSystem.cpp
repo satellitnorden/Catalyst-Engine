@@ -15,11 +15,9 @@
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
 
-//Path tracing.
-#include <PathTracing/PathTracingCore.h>
-#include <PathTracing/PathTracingAccelerationStructure.h>
-
 //Rendering.
+#include <Rendering/Native/PathTracing/PathTracingCore.h>
+#include <Rendering/Native/PathTracing/PathTracingAccelerationStructure.h>
 #include <Rendering/Native/Shader/CatalystToneMapping.h>
 #include <Rendering/Native/RenderingUtilities.h>
 

@@ -991,8 +991,9 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 			file << "#include <Systems/AudioSystem.h>" << std::endl;
 			file << std::endl;
 
-			file << "//Audio." << std::endl;
+			file << "//" << audio_plugin._Name.c_str() << "." << std::endl;
 			file << "#include <AudioPluginGlue.Generated.h>" << std::endl;
+			file << "#include <" << audio_plugin._NameNoSpaces.c_str() << "StandaloneMain.h>" << std::endl;
 			file << "#include <" << audio_plugin._NameNoSpaces.c_str() << "Plugin.h>" << std::endl;
 			file << std::endl;
 
@@ -1033,6 +1034,10 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 			file << "MAIN_FUNCTION" << std::endl;
 			file << "(" << std::endl;
 
+			file << "\t//Call the pre-initialize standalone function." << std::endl;
+			file << "\t" << audio_plugin._NameNoSpaces.c_str() << "PreInitialize();" << std::endl;
+			file << std::endl;
+
 			file << "\t//Create the Catalyst project configuration." << std::endl;
 			file << "\tCatalystProjectConfiguration configuration;" << std::endl;
 			file << "\tCreateCatalystProjectConfiguration(&configuration);" << std::endl;
@@ -1040,6 +1045,10 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 
 			file << "\t//Initialize the engine system." << std::endl;
 			file << "\tCatalystEngineSystem::Instance->Initialize(configuration);" << std::endl;
+			file << std::endl;
+
+			file << "\t//Call the post-initialize standalone function." << std::endl;
+			file << "\t" << audio_plugin._NameNoSpaces.c_str() << "PostInitialize();" << std::endl;
 			file << std::endl;
 
 			file << "\t//Initialize the plugin editor." << std::endl;
@@ -1257,6 +1266,71 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 					file << std::endl;
 					file << "}";
 				}
+
+				file.close();
+			}
+		}
+
+		//Generate the audio plugin standalone main header file.
+		{
+			char buffer[256];
+			sprintf_s(buffer, "%s\\%sStandaloneMain.h", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
+
+			if (!audio_plugin._Locked)
+			{
+				std::ofstream file{ buffer };
+
+				file << "#pragma once" << std::endl;
+				file << std::endl;
+
+				file << "//Core." << std::endl;
+				file << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
+				file << std::endl;
+
+				file << "/*" << std::endl;
+				file << "*\tPre-initializes the " << audio_plugin._Name.c_str() << " plugin." << std::endl;
+				file << "*/" << std::endl;
+				file << "void " << audio_plugin._NameNoSpaces.c_str() << "PreInitialize() NOEXCEPT;" << std::endl;
+				file << std::endl;
+
+				file << "/*" << std::endl;
+				file << "*\tPost-initializes the " << audio_plugin._Name.c_str() << " plugin." << std::endl;
+				file << "*/" << std::endl;
+				file << "void " << audio_plugin._NameNoSpaces.c_str() << "PostInitialize() NOEXCEPT;";
+
+				file.close();
+			}
+		}
+
+		//Generate the audio plugin standalone main source file.
+		{
+			char buffer[256];
+			sprintf_s(buffer, "%s\\%sStandaloneMain.cpp", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
+
+			if (!audio_plugin._Locked)
+			{
+				std::ofstream file{ buffer };
+
+				file << "//Header file." << std::endl;
+				file << "#include <" << audio_plugin._NameNoSpaces << "StandaloneMain.h>" << std::endl;
+				file << std::endl;
+
+				file << "/*" << std::endl;
+				file << "*\tPre-initializes the " << audio_plugin._Name.c_str() << " plugin." << std::endl;
+				file << "*/" << std::endl;
+				file << "void " << audio_plugin._NameNoSpaces.c_str() << "PreInitialize() NOEXCEPT" << std::endl;
+				file << "{" << std::endl;
+				file << std::endl;
+				file << "}" << std::endl;
+				file << std::endl;
+
+				file << "/*" << std::endl;
+				file << "*\tPost-initializes the " << audio_plugin._Name.c_str() << " plugin." << std::endl;
+				file << "*/" << std::endl;
+				file << "void " << audio_plugin._NameNoSpaces.c_str() << "PostInitialize() NOEXCEPT" << std::endl;
+				file << "{" << std::endl;
+				file << std::endl;
+				file << "}";
 
 				file.close();
 			}

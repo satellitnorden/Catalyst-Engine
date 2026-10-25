@@ -10,10 +10,8 @@
 //Math.
 #include <Math/Core/CatalystRandomMath.h>
 
-//Path tracing.
-#include <PathTracing/PathTracingCore.h>
-
 //Rendering.
+#include <Rendering/Native/PathTracing/PathTracingCore.h>
 #include <Rendering/Native/Culling.h>
 #include <Rendering/Native/RenderingUtilities.h>
 

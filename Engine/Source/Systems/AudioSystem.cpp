@@ -1132,7 +1132,7 @@ void AudioSystem::MixerDebugWindow(DebugCommand *const RESTRICT command) NOEXCEP
 		AudioTrack &audio_track{ _MainThreadAudioTracks[audio_track_index] };
 
 		//Push the ID.
-		ImGui::PushID(audio_track_index);
+		ImGui::PushID(static_cast<int32>(audio_track_index));
 
 		//Add some spacing.
 		for (uint32 i{ 0 }; i < command->_State._CustomState._Depth; ++i)
