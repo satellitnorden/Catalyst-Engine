@@ -298,7 +298,8 @@ namespace Audio
 
 				BOOL,
 				ENUMERATION,
-				GAIN
+				GAIN,
+				TIME
 			};
 
 			//The name.

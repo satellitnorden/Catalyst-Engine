@@ -172,7 +172,7 @@ namespace UI
 					bounding_box,
 					_Parent->_Parent->GetFont(),
 					text,
-					bounding_box.Dimensions()._Y
+					bounding_box.Dimensions()._Y - 1.0f
 				);
 			}
 		}
@@ -201,7 +201,7 @@ namespace UI
 					bounding_box,
 					_Parent->_Parent->GetFont(),
 					text,
-					bounding_box.Dimensions()._Y
+					bounding_box.Dimensions()._Y - 1.0f
 				);
 			}
 		}

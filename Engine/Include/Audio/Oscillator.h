@@ -64,6 +64,38 @@ namespace Audio
 		}
 
 		/*
+		*	Sets the attack time.
+		*/
+		FORCE_INLINE void SetAttackTime(const float32 value) NOEXCEPT
+		{
+			_Envelope.SetAttackTime(value);
+		}
+
+		/*
+		*	Sets the decay time.
+		*/
+		FORCE_INLINE void SetDecayTime(const float32 value) NOEXCEPT
+		{
+			_Envelope.SetDecayTime(value);
+		}
+
+		/*
+		*	Sets the sustain gain.
+		*/
+		FORCE_INLINE void SetSustainGain(const float32 value) NOEXCEPT
+		{
+			_Envelope.SetSustainGain(value);
+		}
+
+		/*
+		*	Sets the release time.
+		*/
+		FORCE_INLINE void SetReleaseTime(const float32 value) NOEXCEPT
+		{
+			_Envelope.SetReleaseTime(value);
+		}
+
+		/*
 		*	Starts this oscillator.
 		*/
 		FORCE_INLINE void Start() NOEXCEPT

@@ -154,6 +154,76 @@ public:
 	}
 
 	/*
+	*	Sets the attack time.
+	*/
+	FORCE_INLINE void SetAttackTime(const float32 value) NOEXCEPT
+	{
+		if (_AttackTime == value)
+		{
+			return;
+		}
+
+		_AttackTime = value;
+
+		if (_Stage == Stage::ATTACK)
+		{
+			_SampleUntilNextStage = Audio::TimeToSamples(_AttackTime, _SampleRate);
+			_SampleUntilNextStageReciprocal = 1.0f / static_cast<float32>(_SampleUntilNextStage);
+		}
+	}
+
+	/*
+	*	Sets the decay time.
+	*/
+	FORCE_INLINE void SetDecayTime(const float32 value) NOEXCEPT
+	{
+		if (_DecayTime == value)
+		{
+			return;
+		}
+
+		_DecayTime = value;
+
+		if (_Stage == Stage::DECAY)
+		{
+			_SampleUntilNextStage = Audio::TimeToSamples(_DecayTime, _SampleRate);
+			_SampleUntilNextStageReciprocal = 1.0f / static_cast<float32>(_SampleUntilNextStage);
+		}
+	}
+
+	/*
+	*	Sets the sustain gain.
+	*/
+	FORCE_INLINE void SetSustainGain(const float32 value) NOEXCEPT
+	{
+		if (_SustainGain == value)
+		{
+			return;
+		}
+
+		_SustainGain = value;
+	}
+
+	/*
+	*	Sets the release time.
+	*/
+	FORCE_INLINE void SetReleaseTime(const float32 value) NOEXCEPT
+	{
+		if (_ReleaseTime == value)
+		{
+			return;
+		}
+
+		_ReleaseTime = value;
+
+		if (_Stage == Stage::RELEASE)
+		{
+			_SampleUntilNextStage = Audio::TimeToSamples(_ReleaseTime, _SampleRate);
+			_SampleUntilNextStageReciprocal = 1.0f / static_cast<float32>(_SampleUntilNextStage);
+		}
+	}
+
+	/*
 	*	Sets the stage of this ADSR envelope to ATTACK.
 	*/
 	FORCE_INLINE void SetAttack() NOEXCEPT

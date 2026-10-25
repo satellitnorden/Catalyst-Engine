@@ -71,6 +71,7 @@ namespace Audio
 			}
 
 			case Parameter::Type::GAIN:
+			case Parameter::Type::TIME:
 			{
 				return false;
 			}
@@ -141,6 +142,11 @@ namespace Audio
 			}
 
 			case Parameter::Type::GAIN:
+			{
+				return 0.0f;
+			}
+
+			case Parameter::Type::TIME:
 			{
 				return 0.0f;
 			}
@@ -262,6 +268,21 @@ namespace Audio
 				return true;
 			}
 
+			case Parameter::Type::TIME:
+			{
+				if (value >= 1'000.0f)
+				{
+					sprintf_s(buffer, buffer_capacity, "%.1fs", value / 1'000.0f);
+				}
+				
+				else
+				{
+					sprintf_s(buffer, buffer_capacity, "%.0fms", value);
+				}
+
+				return true;
+			}
+
 			default:
 			{
 				ASSERT(false, "Invalid case!");
@@ -306,6 +327,13 @@ namespace Audio
 				break;
 			}
 
+			case Parameter::Type::TIME:
+			{
+				*static_cast<float32 *const RESTRICT>(_Parameters[index]._Data) = value / 1'000.0f;
+
+				break;
+			}
+
 			default:
 			{
 				ASSERT(false, "Invalid case!");
@@ -342,6 +370,11 @@ namespace Audio
 			case Parameter::Type::GAIN:
 			{
 				return Audio::GainToDecibels(*static_cast<const float32 *const RESTRICT>(data));
+			}
+
+			case Parameter::Type::TIME:
+			{
+				return *static_cast<const float32 *const RESTRICT>(data) * 1'000.0f;
 			}
 
 			default:
