@@ -64,14 +64,18 @@ namespace UI
 			constexpr float32 SLOW_SPEED{ REGULAR_SPEED * 0.25f };
 
 			//Convert the delta to normalized coordinates.
-			const float32 delta{ _ClickableInterface.GetMouseDelta()._Y / _Parent->_Parent->GetReferenceResolution()._Y };
+			const float32 delta{ _ClickableInterface.GetMouseDelta()._Y / _Parent->_Parent->GetReferenceResolution()._Y * REGULAR_SPEED };
 
-			if (delta != 0.0f)
+			//Add to the accumulated change.
+			_AccumulatedChange += delta;
+
+			//Try to set a new value.
+			if (_AudioPlugin != nullptr && _AudioPluginParameterIndex != UINT64_MAXIMUM)
 			{
-				//Try to set a new value.
-				if (_AudioPlugin != nullptr && _AudioPluginParameterIndex != UINT64_MAXIMUM)
+				if (BaseMath::Absolute<float32>(_AccumulatedChange) >= _AudioPlugin->GetParameterStepNormalized(_AudioPluginParameterIndex))
 				{
-					_AudioPlugin->SetParameterNormalized(_AudioPluginParameterIndex, _AudioPlugin->GetParameterCurrentNormalized(_AudioPluginParameterIndex) + delta * REGULAR_SPEED);
+					_AudioPlugin->SetParameterNormalized(_AudioPluginParameterIndex, _AudioPlugin->GetParameterCurrentNormalized(_AudioPluginParameterIndex) + _AccumulatedChange);
+					_AccumulatedChange = 0.0f;
 				}
 			}
 		}
@@ -154,7 +158,7 @@ namespace UI
 
 			if (_AudioPlugin != nullptr && _AudioPluginParameterIndex != UINT64_MAXIMUM)
 			{
-				text = _AudioPlugin->GetParameterName(_AudioPluginParameterIndex);
+				text = _AudioPlugin->GetParameterDisplayName(_AudioPluginParameterIndex);
 			}
 
 			if (text)

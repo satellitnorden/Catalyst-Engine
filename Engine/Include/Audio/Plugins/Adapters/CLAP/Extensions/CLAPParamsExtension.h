@@ -43,7 +43,18 @@ namespace CLAPParamsExtension
 
 		//Fill in the info.
 		param_info->id = param_index;
-		param_info->flags = 0; //TODO!
+		param_info->flags = 0;
+
+		if (plugin_data->_Plugin->IsParameterStepped(param_index))
+		{
+			param_info->flags |= CLAP_PARAM_IS_STEPPED;
+		}
+
+		if (plugin_data->_Plugin->IsParameterEnumeration(param_index))
+		{
+			param_info->flags |= CLAP_PARAM_IS_ENUM;
+		}
+
 		param_info->cookie = nullptr; //TODO!
 		sprintf_s(param_info->name, plugin_data->_Plugin->GetParameterName(param_index));
 		sprintf_s(param_info->module, plugin_data->_Plugin->GetParameterName(param_index));

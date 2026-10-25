@@ -71,6 +71,9 @@ namespace UI
 		//The audio plugin parameter index.
 		uint64 _AudioPluginParameterIndex{ UINT64_MAXIMUM };
 
+		//The accumulated change in the value. This widget will commit the accumulated change at each "step".
+		float32 _AccumulatedChange{ 0.0f };
+
 		/*
 		*	Resets the animation.
 		*/

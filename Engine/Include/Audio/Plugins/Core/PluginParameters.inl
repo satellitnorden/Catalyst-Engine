@@ -43,6 +43,56 @@ namespace Audio
 	}
 
 	/*
+	*	Returns the parameter display name at the given index.
+	*/
+	FORCE_INLINE NO_DISCARD const char *const RESTRICT Plugin::GetParameterDisplayName(const uint64 index) const NOEXCEPT
+	{
+		return _Parameters[index]._DisplayName ? _Parameters[index]._DisplayName.Data() : _Parameters[index]._Name.Data();
+	}
+
+	/*
+	*	Returns if the parameter is stepped.
+	*/
+	FORCE_INLINE NO_DISCARD bool Plugin::IsParameterStepped(const uint64 index) const NOEXCEPT
+	{
+		switch (_Parameters[index]._Type)
+		{
+			case Parameter::Type::NONE:
+			{
+				ASSERT(false, "Parameter needs a type!");
+
+				return false;
+			}
+
+			case Parameter::Type::BOOL:
+			case Parameter::Type::ENUMERATION:
+			{
+				return true;
+			}
+
+			case Parameter::Type::GAIN:
+			{
+				return false;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				return false;
+			}
+		}
+	}
+
+	/*
+	*	Returns if the parameter is an enumeration.
+	*/
+	FORCE_INLINE NO_DISCARD bool Plugin::IsParameterEnumeration(const uint64 index) const NOEXCEPT
+	{
+		return _Parameters[index]._Type == Parameter::Type::ENUMERATION;
+	}
+
+	/*
 	*	Returns the parameter minimum at the given index.
 	*/
 	FORCE_INLINE NO_DISCARD float32 Plugin::GetParameterMinimum(const uint64 index) const NOEXCEPT
@@ -64,6 +114,44 @@ namespace Audio
 	FORCE_INLINE NO_DISCARD float32 Plugin::GetParameterDefault(const uint64 index) const NOEXCEPT
 	{
 		return _ParameterState[index]._Default;
+	}
+
+	/*
+	*	Returns the parameter step normalized at the given index.
+	*/
+	FORCE_INLINE NO_DISCARD float32 Plugin::GetParameterStepNormalized(const uint64 index) const NOEXCEPT
+	{
+		switch (_Parameters[index]._Type)
+		{
+			case Parameter::Type::NONE:
+			{
+				ASSERT(false, "Parameter needs a type!");
+
+				return 0.0f;
+			}
+
+			case Parameter::Type::BOOL:
+			{
+				return 1.0f;
+			}
+
+			case Parameter::Type::ENUMERATION:
+			{
+				return 1.0f / (_Parameters[index]._Maximum - _Parameters[index]._Minimum);
+			}
+
+			case Parameter::Type::GAIN:
+			{
+				return 0.0f;
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				return false;
+			}
+		}
 	}
 
 	/*
@@ -153,6 +241,20 @@ namespace Audio
 				return false;
 			}
 
+			case Parameter::Type::BOOL:
+			{
+				sprintf_s(buffer, buffer_capacity, "%s", value >= 0.5f ? "On" : "Off");
+
+				return true;
+			}
+
+			case Parameter::Type::ENUMERATION:
+			{
+				sprintf_s(buffer, buffer_capacity, "%s", _Parameters[index]._EnumerationNames[BaseMath::Round<uint32>(value)].Data());
+
+				return true;
+			}
+
 			case Parameter::Type::GAIN:
 			{
 				sprintf_s(buffer, buffer_capacity, "%.1fdB", value);
@@ -179,6 +281,20 @@ namespace Audio
 			case Parameter::Type::NONE:
 			{
 				ASSERT(false, "Parameter needs a type!");
+
+				break;
+			}
+
+			case Parameter::Type::BOOL:
+			{
+				*static_cast<bool *const RESTRICT>(_Parameters[index]._Data) = value >= 0.5f;
+
+				break;
+			}
+
+			case Parameter::Type::ENUMERATION:
+			{
+				*static_cast<uint32 *const RESTRICT>(_Parameters[index]._Data) = BaseMath::Round<uint32>(value);
 
 				break;
 			}
@@ -211,6 +327,16 @@ namespace Audio
 				ASSERT(false, "Parameter needs a type!");
 
 				return 0.0f;
+			}
+
+			case Parameter::Type::BOOL:
+			{
+				return static_cast<float32>(*static_cast<const bool *const RESTRICT>(data));
+			}
+
+			case Parameter::Type::ENUMERATION:
+			{
+				return static_cast<float32>(*static_cast<const uint32 *const RESTRICT>(data));
 			}
 
 			case Parameter::Type::GAIN:

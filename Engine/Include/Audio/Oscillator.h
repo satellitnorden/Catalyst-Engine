@@ -6,6 +6,9 @@
 //Audio.
 #include <Audio/ADSREnvelope.h>
 
+//Math.
+#include <Math/General/RandomNumberGenerator.h>
+
 namespace Audio
 {
 
@@ -18,11 +21,12 @@ namespace Audio
 	public:
 
 		//Enumeration covering all types.
-		enum class Type : uint8
+		enum class Type : uint32
 		{
-			NONE,
-
-			SINE
+			SINE,
+			TRIANGLE,
+			SQUARE,
+			WHITE_NOISE
 		};
 
 		/*
@@ -77,18 +81,31 @@ namespace Audio
 
 			switch (_Type)
 			{
-				case Type::NONE:
+				case Type::SINE:
 				{
-					ASSERT(false, "Oscillator needs a type!");
-
-					sample = 0.0f;
+					sample = std::sin(_Phase);
 
 					break;
 				}
 
-				case Type::SINE:
+				case Type::TRIANGLE:
 				{
-					sample = std::sin(_Phase);
+					const float32 phase{ _Phase / BaseMathConstants::DOUBLE_PI };
+					sample = 1.0f - 4.0f * BaseMath::Absolute(phase - 0.25f);
+
+					break;
+				}
+
+				case Type::SQUARE:
+				{
+					sample = _Phase >= BaseMathConstants::PI ? 1.0f : -1.0f;
+
+					break;
+				}
+
+				case Type::WHITE_NOISE:
+				{
+					sample = _RandomNumberGenerator.RandomFloatInRange(-1.0f, 1.0f);
 
 					break;
 				}
@@ -151,6 +168,9 @@ namespace Audio
 
 		//The phase.
 		float32 _Phase{ 0.0f };
+
+		//The random number generator.
+		RandomNumberGenerator _RandomNumberGenerator;
 
 		//The envelope.
 		ADSREnvelope _Envelope;

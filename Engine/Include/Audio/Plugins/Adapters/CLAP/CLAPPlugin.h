@@ -106,8 +106,8 @@ namespace CLAPPlugin
 							MIDIMessage message;
 
 							message._Type = MIDIMessage::Type::NOTE_ON;
-							message._NoteOnChannel = event->channel;
-							message._NoteOnNote = event->key;
+							message._NoteOnChannel = static_cast<uint8>(event->channel);
+							message._NoteOnNote = static_cast<uint8>(event->key);
 							message._NoteOnVelocity = static_cast<uint8>(event->velocity * 127.0f);
 
 							plugin_data->_Plugin->AddMIDIMessage(message, &event->header.time);
@@ -122,8 +122,8 @@ namespace CLAPPlugin
 							MIDIMessage message;
 
 							message._Type = MIDIMessage::Type::NOTE_OFF;
-							message._NoteOffChannel = event->channel;
-							message._NoteOffNote = event->key;
+							message._NoteOffChannel = static_cast<uint8>(event->channel);
+							message._NoteOffNote = static_cast<uint8>(event->key);
 
 							plugin_data->_Plugin->AddMIDIMessage(message, &event->header.time);
 

@@ -222,6 +222,21 @@ namespace Audio
 		FORCE_INLINE NO_DISCARD const char *const RESTRICT GetParameterName(const uint64 index) const NOEXCEPT;
 
 		/*
+		*	Returns the parameter display name at the given index.
+		*/
+		FORCE_INLINE NO_DISCARD const char *const RESTRICT GetParameterDisplayName(const uint64 index) const NOEXCEPT;
+
+		/*
+		*	Returns if the parameter is stepped.
+		*/
+		FORCE_INLINE NO_DISCARD bool IsParameterStepped(const uint64 index) const NOEXCEPT;
+
+		/*
+		*	Returns if the parameter is an enumeration.
+		*/
+		FORCE_INLINE NO_DISCARD bool IsParameterEnumeration(const uint64 index) const NOEXCEPT;
+
+		/*
 		*	Returns the parameter minimum at the given index.
 		*/
 		FORCE_INLINE NO_DISCARD float32 GetParameterMinimum(const uint64 index) const NOEXCEPT;
@@ -235,6 +250,11 @@ namespace Audio
 		*	Returns the parameter default at the given index.
 		*/
 		FORCE_INLINE NO_DISCARD float32 GetParameterDefault(const uint64 index) const NOEXCEPT;
+
+		/*
+		*	Returns the parameter step normalized at the given index.
+		*/
+		FORCE_INLINE NO_DISCARD float32 GetParameterStepNormalized(const uint64 index) const NOEXCEPT;
 
 		/*
 		*	Returns the parameter current plain at the given index.
@@ -276,11 +296,16 @@ namespace Audio
 			{
 				NONE,
 
+				BOOL,
+				ENUMERATION,
 				GAIN
 			};
 
 			//The name.
 			StaticString<64> _Name;
+
+			//The display name.
+			StaticString<64> _DisplayName;
 
 			//The data.
 			void *RESTRICT _Data;
@@ -293,6 +318,9 @@ namespace Audio
 
 			//The maximum.
 			float32 _Maximum;
+
+			//The enumeration names. Only used when type is ENUMERATION.
+			DynamicArray<StaticString<64>> _EnumerationNames;
 
 		};
 
