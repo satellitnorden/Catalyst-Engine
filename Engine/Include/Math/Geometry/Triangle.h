@@ -15,7 +15,7 @@ public:
 	/*
 	*	Calculates the center of a triangle.
 	*/
-	FORCE_INLINE static NO_DISCARD Vector3<float> CalculateCenter(const Triangle &triangle) NOEXCEPT
+	FORCE_INLINE static NO_DISCARD Vector3<float32> CalculateCenter(const Triangle &triangle) NOEXCEPT
 	{
 		//Define constants.
 		constexpr float RECIPROCAL{ 1.0f / 3.0f };
@@ -24,7 +24,7 @@ public:
 	}
 
 	//The vertices.
-	StaticArray<Vector3<float>, 3> _Vertices;
+	StaticArray<Vector3<float32>, 3> _Vertices;
 
 	/*
 	*	Default constructor.
@@ -37,7 +37,7 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	FORCE_INLINE Triangle(const StaticArray<Vector3<float>, 3> &initial_vertices) NOEXCEPT
+	FORCE_INLINE Triangle(const StaticArray<Vector3<float32>, 3> &initial_vertices) NOEXCEPT
 		:
 		_Vertices(initial_vertices)
 	{

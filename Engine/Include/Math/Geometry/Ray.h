@@ -12,13 +12,13 @@ class Ray final
 public:
 
 	//The origin.
-	Vector3<float> _Origin;
+	Vector3<float32> _Origin;
 
 	//The direction.
-	Vector3<float> _Direction;
+	Vector3<float32> _Direction;
 
 	//The reciprocals.
-	Vector3<float> _Reciprocals;
+	Vector3<float32> _Reciprocals;
 
 	//The signs.
 	Vector3<uint8> _Signs;

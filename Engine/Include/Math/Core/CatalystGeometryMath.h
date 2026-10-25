@@ -118,7 +118,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD bool RayBoxIntersection(	const Ray &ray,
 																		const AxisAlignedBoundingBox3D &box,
-																		float *const RESTRICT intersection_distance) NOEXCEPT
+																		float *const RESTRICT intersection_distance = nullptr) NOEXCEPT
 	{
 		//Find the minimum/maximum.
 		float32 minimum{ -FLOAT32_MAXIMUM };
@@ -237,7 +237,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD bool RayTriangleIntersection(	const Ray &ray,
 																			const Triangle &triangle,
-																			float *const RESTRICT intersection_distance) NOEXCEPT
+																			float *const RESTRICT intersection_distance = nullptr) NOEXCEPT
 	{
 		constexpr float EPSILON{ 0.0000001f };
 
@@ -277,7 +277,10 @@ public:
 
 		if (t > EPSILON)
 		{
-			*intersection_distance = t;
+			if (intersection_distance)
+			{
+				*intersection_distance = t;
+			}
 
 			return true;
 		}
