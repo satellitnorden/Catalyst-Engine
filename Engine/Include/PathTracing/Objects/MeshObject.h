@@ -26,7 +26,7 @@ namespace PathTracing
 		/*
 		*	Default constructor.
 		*/
-		MeshObject(const DynamicArray<Vertex> &vertices, const DynamicArray<uint32> &indices) NOEXCEPT;
+		MeshObject(const PathTracing::Material *const RESTRICT material, const DynamicArray<Vertex> &vertices, const DynamicArray<uint32> &indices) NOEXCEPT;
 
 		/*
 		*	Returns the bounding box of this object.

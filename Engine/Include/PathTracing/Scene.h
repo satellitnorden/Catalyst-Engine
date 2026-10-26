@@ -10,6 +10,7 @@
 //Path tracing.
 #include <PathTracing/AccelerationStructure.h>
 #include <PathTracing/Camera.h>
+#include <PathTracing/Material.h>
 #include <PathTracing/Object.h>
 
 //Rendering.
@@ -51,9 +52,19 @@ namespace PathTracing
 
 			_Camera = new TYPE(std::forward<Arguments>(arguments)...);
 		}
+		
+		/*
+		*	Adds a material to the scene.
+		*/
+		FORCE_INLINE NO_DISCARD PathTracing::Material *const RESTRICT AddMaterial() NOEXCEPT
+		{
+			PathTracing::Material *const RESTRICT material{ new Material() };
+			_Materials.Emplace(material);
+			return material;
+		}
 
 		/*
-		*	Adds an object to the scene - Returns a pointer to the newly created object so that is can be initialized in-place.
+		*	Adds an object to the scene.
 		*/
 		template <typename TYPE, class... Arguments>
 		FORCE_INLINE void AddObject(Arguments&&... arguments) NOEXCEPT
@@ -89,6 +100,9 @@ namespace PathTracing
 
 		//The camera.
 		PathTracing::Camera *RESTRICT _Camera{ nullptr };
+
+		//The materials.
+		DynamicArray<PathTracing::Material *RESTRICT> _Materials;
 
 		//The objects.
 		DynamicArray<PathTracing::Object *RESTRICT> _Objects;

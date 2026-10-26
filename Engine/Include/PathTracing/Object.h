@@ -5,6 +5,7 @@
 
 //Path tracing.
 #include <PathTracing/AccelerationStructure.h>
+#include <PathTracing/Material.h>
 
 namespace PathTracing
 {
@@ -20,11 +21,29 @@ namespace PathTracing
 	public:
 
 		/*
+		*	Default constructor.
+		*/
+		FORCE_INLINE Object(const PathTracing::Material *const RESTRICT material) NOEXCEPT
+			:
+			_Material(material)
+		{
+
+		}
+
+		/*
 		*	Default destructor.
 		*/
 		FORCE_INLINE virtual ~Object() NOEXCEPT
 		{
 
+		}
+
+		/*
+		*	Returns the material.
+		*/
+		FORCE_INLINE NO_DISCARD const PathTracing::Material *const RESTRICT GetMaterial() const NOEXCEPT
+		{
+			return _Material;
 		}
 
 		/*
@@ -36,6 +55,11 @@ namespace PathTracing
 		*	Adds the primitives for this object to the given acceleration structure.
 		*/
 		virtual void AddPrimitives(PathTracing::AccelerationStructure *const RESTRICT acceleration_structure) const NOEXCEPT = 0;
+
+	private:
+
+		//The material.
+		const PathTracing::Material *RESTRICT _Material;
 
 	};
 

@@ -10,7 +10,9 @@ namespace PathTracing
 	/*
 	*	Default constructor.
 	*/
-	TrianglePrimitive::TrianglePrimitive(const StaticArray<Vertex, 3> &vertices) NOEXCEPT
+	TrianglePrimitive::TrianglePrimitive(const PathTracing::Material *const RESTRICT material, const StaticArray<Vertex, 3> &vertices) NOEXCEPT
+		:
+		Primitive(material)
 	{
 		//Set up the triangle.
 		_Triangle._Vertices[0] = vertices[0]._Position;
@@ -21,6 +23,16 @@ namespace PathTracing
 		_Normals[0] = vertices[0]._Normal;
 		_Normals[1] = vertices[1]._Normal;
 		_Normals[2] = vertices[2]._Normal;
+
+		//Set up the tangents.
+		_Tangents[0] = vertices[0]._Tangent;
+		_Tangents[1] = vertices[1]._Tangent;
+		_Tangents[2] = vertices[2]._Tangent;
+
+		//Set up the texture coordinates.
+		_TextureCoordinates[0] = vertices[0]._TextureCoordinate;
+		_TextureCoordinates[1] = vertices[1]._TextureCoordinate;
+		_TextureCoordinates[2] = vertices[2]._TextureCoordinate;
 	}
 
 	/*
@@ -65,10 +77,20 @@ namespace PathTracing
 
 			//Fill in the surface information.
 			surface_information->_HitDistance = hit_distance;
-			surface_information->_Position = ray._Origin + ray._Direction * hit_distance;
-			surface_information->_Normal =	_Normals[0] * barycentric_coordinates[0]
-											+ _Normals[1] * barycentric_coordinates[1]
-											+ _Normals[2] * barycentric_coordinates[2];
+			surface_information->_HitPosition = ray._Origin + ray._Direction * hit_distance;
+			surface_information->_GeometryNormal =	_Normals[0] * barycentric_coordinates[0]
+													+ _Normals[1] * barycentric_coordinates[1]
+													+ _Normals[2] * barycentric_coordinates[2];
+			surface_information->_GeometryNormal.Normalize();
+			surface_information->_Tangent = _Tangents[0] * barycentric_coordinates[0]
+											+ _Tangents[1] * barycentric_coordinates[1]
+											+ _Tangents[2] * barycentric_coordinates[2];
+			surface_information->_Tangent.Normalize();
+			surface_information->_TextureCoordinate =	_TextureCoordinates[0] * barycentric_coordinates[0]
+														+ _TextureCoordinates[1] * barycentric_coordinates[1]
+														+ _TextureCoordinates[2] * barycentric_coordinates[2];
+
+			surface_information->FillInMaterialData(GetMaterial());
 
 			//Return that the ray hit this triangle!
 			return true;

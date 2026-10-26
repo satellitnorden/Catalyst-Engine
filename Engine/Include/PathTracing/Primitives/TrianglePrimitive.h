@@ -26,7 +26,7 @@ namespace PathTracing
 		/*
 		*	Default constructor.
 		*/
-		TrianglePrimitive(const StaticArray<Vertex, 3> &vertices) NOEXCEPT;
+		TrianglePrimitive(const PathTracing::Material *const RESTRICT material, const StaticArray<Vertex, 3> &vertices) NOEXCEPT;
 
 		/*
 		*	Returns the center of this primitive.
@@ -57,6 +57,12 @@ namespace PathTracing
 
 		//The normals.
 		StaticArray<Vector3<float32>, 3> _Normals;
+
+		//The tangents.
+		StaticArray<Vector3<float32>, 3> _Tangents;
+
+		//The texture coordinates.
+		StaticArray<Vector2<float32>, 3> _TextureCoordinates;
 
 	};
 

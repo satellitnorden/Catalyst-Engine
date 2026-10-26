@@ -7,7 +7,9 @@ namespace PathTracing
 	/*
 	*	Default constructor.
 	*/
-	MeshObject::MeshObject(const DynamicArray<Vertex> &vertices, const DynamicArray<uint32> &indices) NOEXCEPT
+	MeshObject::MeshObject(const PathTracing::Material *const RESTRICT material, const DynamicArray<Vertex> &vertices, const DynamicArray<uint32> &indices) NOEXCEPT
+		:
+		Object(material)
 	{
 		//Set up the primitives.
 		_Primitives.Reserve(indices.Size() / 3);
@@ -23,7 +25,7 @@ namespace PathTracing
 			};
 
 			//Add the primitive.
-			_Primitives.Emplace(_vertices);
+			_Primitives.Emplace(GetMaterial(), _vertices);
 		}
 		//Calculate the bounding box.
 		for (const PathTracing::TrianglePrimitive &primitive : _Primitives)

@@ -9,6 +9,7 @@
 #include <Math/Geometry/Ray.h>
 
 //Path tracing.
+#include <PathTracing/Material.h>
 #include <PathTracing/SurfaceInformation.h>
 
 namespace PathTracing
@@ -24,11 +25,29 @@ namespace PathTracing
 	public:
 
 		/*
+		*	Default constructor.
+		*/
+		FORCE_INLINE Primitive(const PathTracing::Material *const RESTRICT material) NOEXCEPT
+			:
+			_Material(material)
+		{
+
+		}
+
+		/*
 		*	Default destructor.
 		*/
 		FORCE_INLINE virtual ~Primitive() NOEXCEPT
 		{
 
+		}
+
+		/*
+		*	Returns the material.
+		*/
+		FORCE_INLINE NO_DISCARD const PathTracing::Material *const RESTRICT GetMaterial() const NOEXCEPT
+		{
+			return _Material;
 		}
 
 		/*
@@ -52,6 +71,11 @@ namespace PathTracing
 		*	Should return if it hits.
 		*/
 		virtual NO_DISCARD bool TraceOcclusion(const Ray &ray) const NOEXCEPT = 0;
+
+	private:
+
+		//The material.
+		const PathTracing::Material *RESTRICT _Material;
 
 	};
 }

@@ -1,8 +1,14 @@
 //Header file.
 #include <PathTracing/Scene.h>
 
+//Lighting.
+#include <Lighting/PhysicallyBasedLighting.h>
+
 //Path tracing.
 #include <PathTracing/RayGeneration.h>
+
+//Rendering.
+#include <Rendering/Native/Shader/CatalystToneMapping.h>
 
 //Systems.
 #include <Systems/LogSystem.h>
@@ -19,6 +25,12 @@ namespace PathTracing
 		if (_Camera)
 		{
 			delete _Camera;
+		}
+
+		//Destroy all materials.
+		for (PathTracing::Material *const RESTRICT material : _Materials)
+		{
+			delete material;
 		}
 
 		//Destroy all objects.
@@ -78,6 +90,9 @@ namespace PathTracing
 		//Log the start.
 		LOG_INFORMATION("Starting to render path tracing scene...");
 
+		//Calculate the temporary light direction.
+		const Vector3<float32> fake_light_direction{ Vector3<float32>::Normalize(Vector3<float32>(1.0f, -1.0f, 1.0f)) };
+
 		//Render all samples!
 		for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
 		{
@@ -103,7 +118,22 @@ namespace PathTracing
 					if (_AccelerationStructure.TraceSurface(ray, &surface_information))
 					{
 						//Calculate the offset position.
-						const Vector3<float32> offset_position{ OffsetHitPosition(surface_information._Position, surface_information._Normal) };
+						const Vector3<float32> offset_position{ OffsetHitPosition(surface_information._HitPosition, surface_information._GeometryNormal) };
+
+						//Calculate the incoming radiance.
+						Vector3<float32> incoming_radiance
+						{
+							Vector3<float32>(1.0f, 1.0f, 1.0f) * PhysicallyBasedLighting::BidirectionalReflectanceDistribution
+							(
+								-ray._Direction,
+								surface_information._Albedo,
+								surface_information._ShadingNormal,
+								surface_information._Roughness,
+								surface_information._Metallic,
+								1.0f,
+								fake_light_direction
+							)
+						};
 
 						//Calculate the ambient occlusion.
 						float32 ambient_occlusion{ 1.0f };
@@ -116,7 +146,7 @@ namespace PathTracing
 							ray.SetOrigin(offset_position);
 
 							//Set the dirrection.
-							ray.SetDirection(PathTracing::RayGeneration::RandomHemisphereUniform(surface_information._Normal, &_RandomNumberGenerator));
+							ray.SetDirection(PathTracing::RayGeneration::RandomHemisphereUniform(surface_information._GeometryNormal, &_RandomNumberGenerator));
 
 							//Do the trace!
 							if (_AccelerationStructure.TraceOcclusion(ray))
@@ -125,11 +155,15 @@ namespace PathTracing
 							}
 						}
 
+						//Multiply the incoming radiance with the ambient occlusion.
+						incoming_radiance *= ambient_occlusion;
+
+						//Write to the intermediate render target.
 						intermediate_render_target.At(X, Y) += Vector4<float64>
 						(
-							static_cast<float64>(ambient_occlusion),
-							static_cast<float64>(ambient_occlusion),
-							static_cast<float64>(ambient_occlusion),
+							incoming_radiance._R,
+							incoming_radiance._G,
+							incoming_radiance._B,
 							1.0
 						);
 					}
@@ -243,6 +277,19 @@ namespace PathTracing
 				{
 					texture->At(X, Y)[i] = static_cast<float32>(render_target.At(X, Y)[i] / static_cast<float64>(number_of_samples));
 				}
+
+				Vector3<float32> tonemapped
+				{
+					texture->At(X, Y)._R,
+					texture->At(X, Y)._G,
+					texture->At(X, Y)._B
+				};
+
+				tonemapped = CatalystToneMapping::ApplyToneMapping(tonemapped);
+
+				texture->At(X, Y)._R = tonemapped._R;
+				texture->At(X, Y)._G = tonemapped._G;
+				texture->At(X, Y)._B = tonemapped._B;
 			}
 		}
 	}
