@@ -1,6 +1,9 @@
 //Header file.
 #include <PathTracing/Scene.h>
 
+//Path tracing.
+#include <PathTracing/RayGeneration.h>
+
 //Systems.
 #include <Systems/LogSystem.h>
 
@@ -43,90 +46,109 @@ namespace PathTracing
 	/*
 	*	Renders this scene.
 	*/
-	NO_DISCARD Texture2D<Vector4<float32>> Scene::Render(const Resolution resolution) NOEXCEPT
+	NO_DISCARD Texture2D<Vector4<float32>> Scene::Render
+	(
+		const Resolution resolution,
+		const uint32 number_of_samples
+	) NOEXCEPT
 	{
 		//Sanity check that we are ready for rendering.
 		ASSERT(IsReadyForRendering(), "Scene is not ready for rendering!");
 
+		//Gather the primitives from the objects.
+		{
+			LOG_INFORMATION("Gathering primitives for path tracing scene...");
+
+			for (const PathTracing::Object *const RESTRICT object : _Objects)
+			{
+				object->AddPrimitives(&_AccelerationStructure);
+			}
+		}
+
+		//Build the acceleration structure.
+		{
+			LOG_INFORMATION("Building acceleration structure for path tracing scene...");
+			_AccelerationStructure.Build();
+		}
+
+		//Initialize the intermediate render target.
+		Texture2D<Vector4<float64>> intermediate_render_target{ resolution._Width, resolution._Height };
+		Memory::Set(intermediate_render_target.Data(), 0, resolution._Width * resolution._Height * sizeof(Vector4<float64>));
+
 		//Log the start.
 		LOG_INFORMATION("Starting to render path tracing scene...");
 
-		//Initialize the texture.
-		Texture2D<Vector4<float32>> texture{ resolution._Width, resolution._Height };
-		
-		for (uint32 Y{ 0 }; Y < texture.GetHeight(); ++Y)
+		//Render all samples!
+		for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
 		{
-			for (uint32 X{ 0 }; X < texture.GetWidth(); ++X)
+			LOG_INFORMATION("Rendering sample %u of %u", sample_index + 1, number_of_samples);
+
+			for (uint32 Y{ 0 }; Y < resolution._Height; ++Y)
 			{
-				texture.At(X, Y) = Vector4<float32>(0.0f, 0.0f, 0.0f, 1.0f);
-			}
-		}
-
-		//Calculate the total number of pixels.
-		const uint32 total_number_of_pixels{ texture.GetWidth() * texture.GetHeight() };
-
-		//Iterate over the pixels.
-		uint32 rendered_pixels{ 0 };
-		uint32 last_reported_percent{ 0 };
-
-		for (uint32 Y{ 0 }; Y < texture.GetHeight(); ++Y)
-		{
-			for (uint32 X{ 0 }; X < texture.GetWidth(); ++X)
-			{
-				//Calculate the coordinate.
-				const Vector2<float32> coordinate
+				for (uint32 X{ 0 }; X < resolution._Width; ++X)
 				{
-					(static_cast<float32>(X) + 0.5f) / static_cast<float32>(texture.GetWidth()),
-					(static_cast<float32>(Y) + 0.5f) / static_cast<float32>(texture.GetHeight())
-				};
-
-				//Generate the ray.
-				const Ray ray{ _Camera->GenerateRay(coordinate) };
-
-				//See if any objects hit.
-				PathTracing::SurfaceInformation closest_surface_information;
-
-				for (const PathTracing::Object *const RESTRICT object : _Objects)
-				{
-					//Check if the ray even hits the bounding box first.
-					if (!CatalystGeometryMath::RayBoxIntersection(ray, object->BoundingBox()))
+					//Calculate the coordinate.
+					const Vector2<float32> coordinate
 					{
-						continue;
-					}
+						(static_cast<float32>(X) + _RandomNumberGenerator.RandomFloat<float32>()) / static_cast<float32>(resolution._Width),
+						(static_cast<float32>(Y) + _RandomNumberGenerator.RandomFloat<float32>()) / static_cast<float32>(resolution._Height)
+					};
 
+					//Generate the ray.
+					const Ray ray{ _Camera->GenerateRay(coordinate) };
+
+					//Trace against the acceleration structure.
 					PathTracing::SurfaceInformation surface_information;
 
-					if (object->Trace(ray, &surface_information) && surface_information._HitDistance < closest_surface_information._HitDistance)
+					if (_AccelerationStructure.TraceSurface(ray, &surface_information))
 					{
-						closest_surface_information = surface_information;
+						//Calculate the offset position.
+						const Vector3<float32> offset_position{ OffsetHitPosition(surface_information._Position, surface_information._Normal) };
+
+						//Calculate the ambient occlusion.
+						float32 ambient_occlusion{ 1.0f };
+
+						{
+							//Set up the ray.
+							Ray ray;
+
+							//Set the origin.
+							ray.SetOrigin(offset_position);
+
+							//Set the dirrection.
+							ray.SetDirection(PathTracing::RayGeneration::RandomHemisphereUniform(surface_information._Normal, &_RandomNumberGenerator));
+
+							//Do the trace!
+							if (_AccelerationStructure.TraceOcclusion(ray))
+							{
+								ambient_occlusion = 0.0f;
+							}
+						}
+
+						intermediate_render_target.At(X, Y) += Vector4<float64>
+						(
+							static_cast<float64>(ambient_occlusion),
+							static_cast<float64>(ambient_occlusion),
+							static_cast<float64>(ambient_occlusion),
+							1.0
+						);
 					}
 				}
+			}
 
-				if (closest_surface_information._HitDistance != FLOAT32_MAXIMUM)
-				{
-					texture.At(X, Y) = Vector4<float32>
-					(
-						closest_surface_information._Normal._X * 0.5f + 0.5f,
-						closest_surface_information._Normal._Y * 0.5f + 0.5f,
-						closest_surface_information._Normal._Z * 0.5f + 0.5f,
-						1.0f
-					);
-				}
+			//Call the partial render callback, if one is set.
+			if (_PartialRenderCallback && ShouldCallPartialRenderCallback(sample_index + 1))
+			{
+				Texture2D<Vector4<float32>> texture;
+				AverageRenderTarget(intermediate_render_target, sample_index + 1, &texture);
 
-				//Increment the rendered pixels.
-				++rendered_pixels;
-
-				//Calculate the current percent.
-				const uint32 current_percent{ BaseMath::Floor<uint32>(static_cast<float32>(rendered_pixels) / static_cast<float32>(total_number_of_pixels) * 100.0f) };
-
-				//Report the progress.
-				if (current_percent > last_reported_percent)
-				{
-					LOG_INFORMATION("%u%%...", current_percent);
-					last_reported_percent = current_percent;
-				}
+				_PartialRenderCallback(sample_index + 1, texture, _PartialRenderCallbackUserData);
 			}
 		}
+
+		//Average into the texture.
+		Texture2D<Vector4<float32>> texture;
+		AverageRenderTarget(intermediate_render_target, number_of_samples, &texture);
 
 		//Log the end.
 		LOG_INFORMATION("Finished path tracing scene!");
@@ -154,6 +176,75 @@ namespace PathTracing
 
 		//All checks passed!
 		return true;
+	}
+
+	/*
+	*	Offsets the given hit position.
+	*/
+	NO_DISCARD Vector3<float32> Scene::OffsetHitPosition(const Vector3<float32> &hit_position, const Vector3<float32> &geometry_normal) NOEXCEPT
+	{
+#if 1
+		return hit_position + geometry_normal * FLOAT32_EPSILON * 2.0f;
+#else
+		Vector3<float32> result{ hit_position };
+
+		for (uint8 axis_index{ 0 }; axis_index < 3; ++axis_index)
+		{
+			if (geometry_normal[axis_index] > 0.0f)
+			{
+				result[axis_index] = NextFloat32(result[axis_index]);
+			}
+
+			else if (geometry_normal[axis_index] < 0.0f)
+			{
+				result[axis_index] = PreviousFloat32(result[axis_index]);
+			}
+		}
+
+		return result;
+#endif
+	}
+
+	/*
+	*	Returns if the partial render callback should be called.
+	*/
+	NO_DISCARD bool Scene::ShouldCallPartialRenderCallback(const uint32 number_of_samples) NOEXCEPT
+	{
+		if (number_of_samples < 64)
+		{
+			return BaseMath::IsPowerOfTwo(number_of_samples);
+		}
+
+		else
+		{
+			return (number_of_samples & (64 - 1)) == 0;
+		}
+	}
+
+	/*
+	*	Averages the given render target into a texture.
+	*/
+	void Scene::AverageRenderTarget
+	(
+		const Texture2D<Vector4<float64>> &render_target,
+		const uint32 number_of_samples,
+		Texture2D<Vector4<float32>> *const RESTRICT texture
+	) NOEXCEPT
+	{
+		//Initialize the texture.
+		texture->Initialize(render_target.GetWidth(), render_target.GetHeight());
+
+		//Do the averaging.
+		for (uint32 Y{ 0 }; Y < render_target.GetHeight(); ++Y)
+		{
+			for (uint32 X{ 0 }; X < render_target.GetWidth(); ++X)
+			{
+				for (uint8 i{ 0 }; i < 4; ++i)
+				{
+					texture->At(X, Y)[i] = static_cast<float32>(render_target.At(X, Y)[i] / static_cast<float64>(number_of_samples));
+				}
+			}
+		}
 	}
 
 }

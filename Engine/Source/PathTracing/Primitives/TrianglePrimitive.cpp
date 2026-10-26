@@ -47,15 +47,15 @@ namespace PathTracing
 	}
 
 	/*
-	*	Traces against this primitive.
+	*	Traces a surface ray against this primitive.
 	*	Should return if it hits, and if so, fill in the surface information.
 	*/
-	NO_DISCARD bool TrianglePrimitive::Trace(const Ray &ray, PathTracing::SurfaceInformation *const RESTRICT surface_information) const NOEXCEPT
+	NO_DISCARD bool TrianglePrimitive::TraceSurface(const Ray &ray, PathTracing::SurfaceInformation *const RESTRICT surface_information) const NOEXCEPT
 	{
 		//Do the intersection.
 		float32 hit_distance{ FLOAT32_MAXIMUM };
 
-		if (CatalystGeometryMath::RayTriangleIntersection(ray, _Triangle, &hit_distance))
+		if (CatalystGeometryMath::RayTriangleIntersection(ray, _Triangle, &hit_distance) && hit_distance < surface_information->_HitDistance)
 		{
 			//Calculate the hit position.
 			const Vector3<float32> hit_position{ ray._Origin + ray._Direction * hit_distance };
@@ -79,6 +79,15 @@ namespace PathTracing
 			//Return that the ray not hit this triangle.
 			return false;
 		}
+	}
+
+	/*
+	*	Traces an occlusion ray against this primitive.
+	*	Should return if it hits.
+	*/
+	NO_DISCARD bool TrianglePrimitive::TraceOcclusion(const Ray &ray) const NOEXCEPT
+	{
+		return CatalystGeometryMath::RayTriangleIntersection(ray, _Triangle);
 	}
 
 }

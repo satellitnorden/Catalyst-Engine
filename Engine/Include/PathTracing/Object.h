@@ -3,12 +3,8 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Math.
-#include <Math/Geometry/AxisAlignedBoundingBox3D.h>
-#include <Math/Geometry/Ray.h>
-
 //Path tracing.
-#include <PathTracing/SurfaceInformation.h>
+#include <PathTracing/AccelerationStructure.h>
 
 namespace PathTracing
 {
@@ -37,10 +33,9 @@ namespace PathTracing
 		virtual NO_DISCARD AxisAlignedBoundingBox3D BoundingBox() const NOEXCEPT = 0;
 
 		/*
-		*	Traces against this object.
-		*	Should return if it hits, and if so, fill in the surface information.
+		*	Adds the primitives for this object to the given acceleration structure.
 		*/
-		virtual NO_DISCARD bool Trace(const Ray &ray, PathTracing::SurfaceInformation *const RESTRICT surface_information) const NOEXCEPT = 0;
+		virtual void AddPrimitives(PathTracing::AccelerationStructure *const RESTRICT acceleration_structure) const NOEXCEPT = 0;
 
 	};
 

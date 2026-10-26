@@ -42,10 +42,16 @@ namespace PathTracing
 		virtual NO_DISCARD AxisAlignedBoundingBox3D BoundingBox() const NOEXCEPT = 0;
 
 		/*
-		*	Traces against this primitive.
+		*	Traces a surface ray against this primitive.
 		*	Should return if it hits, and if so, fill in the surface information.
 		*/
-		virtual NO_DISCARD bool Trace(const Ray &ray, PathTracing::SurfaceInformation *const RESTRICT surface_information) const NOEXCEPT = 0;
+		virtual NO_DISCARD bool TraceSurface(const Ray &ray, PathTracing::SurfaceInformation *const RESTRICT surface_information) const NOEXCEPT = 0;
+
+		/*
+		*	Traces an occlusion ray against this primitive.
+		*	Should return if it hits.
+		*/
+		virtual NO_DISCARD bool TraceOcclusion(const Ray &ray) const NOEXCEPT = 0;
 
 	};
 }

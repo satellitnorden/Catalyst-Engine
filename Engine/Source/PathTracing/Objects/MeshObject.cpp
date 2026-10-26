@@ -41,29 +41,14 @@ namespace PathTracing
 	}
 
 	/*
-	*	Traces against this object.
-	*	Should return if it hits, and if so, fill in the surface information.
+	*	Adds the primitives for this object to the given acceleration structure.
 	*/
-	NO_DISCARD bool MeshObject::Trace(const Ray &ray, PathTracing::SurfaceInformation *const RESTRICT surface_information) const NOEXCEPT
+	void MeshObject::AddPrimitives(PathTracing::AccelerationStructure *const RESTRICT acceleration_structure) const NOEXCEPT
 	{
-		//Trace against each triangle.
-		float32 closest_hit_distance{ FLOAT32_MAXIMUM };
-		bool found_hit{ false };
-
 		for (const PathTracing::TrianglePrimitive &primitive : _Primitives)
 		{
-			PathTracing::SurfaceInformation _surface_information;
-
-			if (primitive.Trace(ray, &_surface_information) && _surface_information._HitDistance < closest_hit_distance)
-			{
-				*surface_information = _surface_information;
-				
-				closest_hit_distance = surface_information->_HitDistance;
-				found_hit = true;
-			}
+			acceleration_structure->AddPrimitive(&primitive);
 		}
-
-		return found_hit;
 	}
 
 }

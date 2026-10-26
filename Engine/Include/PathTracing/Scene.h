@@ -4,7 +4,11 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
+//Math.
+#include <Math/General/RandomNumberGenerator.h>
+
 //Path tracing.
+#include <PathTracing/AccelerationStructure.h>
 #include <PathTracing/Camera.h>
 #include <PathTracing/Object.h>
 
@@ -23,6 +27,14 @@ namespace PathTracing
 	{
 
 	public:
+
+		//Type aliases.
+		using PartialRenderCallback = void(*)
+		(
+			const uint32 number_of_samples,
+			const Texture2D<Vector4<float32>> &texture,
+			void *const RESTRICT user_data
+		);
 
 		/*
 		*	Default destructor.
@@ -51,6 +63,15 @@ namespace PathTracing
 		}
 
 		/*
+		*	Sets the partial render callback.
+		*/
+		FORCE_INLINE void SetPartialRenderCallback(const PartialRenderCallback callback, void *const RESTRICT user_data = nullptr) NOEXCEPT
+		{
+			_PartialRenderCallback = callback;
+			_PartialRenderCallbackUserData = user_data;
+		}
+
+		/*
 		*	Returns the bounding box of this scene.
 		*/
 		NO_DISCARD AxisAlignedBoundingBox3D BoundingBox() const NOEXCEPT;
@@ -58,7 +79,11 @@ namespace PathTracing
 		/*
 		*	Renders this scene.
 		*/
-		NO_DISCARD Texture2D<Vector4<float32>> Render(const Resolution resolution) NOEXCEPT;
+		NO_DISCARD Texture2D<Vector4<float32>> Render
+		(
+			const Resolution resolution,
+			const uint32 number_of_samples
+		) NOEXCEPT;
 
 	private:
 
@@ -68,10 +93,42 @@ namespace PathTracing
 		//The objects.
 		DynamicArray<PathTracing::Object *RESTRICT> _Objects;
 
+		//The partial render callback.
+		PartialRenderCallback _PartialRenderCallback{ nullptr };
+
+		//The partial render callback user data.
+		void *RESTRICT _PartialRenderCallbackUserData{ nullptr };
+
+		//The acceleration structure.
+		PathTracing::AccelerationStructure _AccelerationStructure;
+
+		//The random number generator.
+		RandomNumberGenerator _RandomNumberGenerator;
+
 		/*
 		*	Returns if this scene is ready for rendering.
 		*/
 		NO_DISCARD bool IsReadyForRendering() const NOEXCEPT;
+
+		/*
+		*	Offsets the given hit position.
+		*/
+		NO_DISCARD Vector3<float32> OffsetHitPosition(const Vector3<float32> &hit_position, const Vector3<float32> &geometry_normal) NOEXCEPT;
+
+		/*
+		*	Returns if the partial render callback should be called.
+		*/
+		NO_DISCARD bool ShouldCallPartialRenderCallback(const uint32 number_of_samples) NOEXCEPT;
+
+		/*
+		*	Averages the given render target into a texture.
+		*/
+		void AverageRenderTarget
+		(
+			const Texture2D<Vector4<float64>> &render_target,
+			const uint32 number_of_samples,
+			Texture2D<Vector4<float32>> *const RESTRICT texture
+		) NOEXCEPT;
 
 	};
 

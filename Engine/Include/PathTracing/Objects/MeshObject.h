@@ -34,10 +34,9 @@ namespace PathTracing
 		NO_DISCARD AxisAlignedBoundingBox3D BoundingBox() const NOEXCEPT override;
 
 		/*
-		*	Traces against this object.
-		*	Should return if it hits, and if so, fill in the surface information.
+		*	Adds the primitives for this object to the given acceleration structure.
 		*/
-		NO_DISCARD bool Trace(const Ray &ray, PathTracing::SurfaceInformation *const RESTRICT surface_information) const NOEXCEPT override;
+		void AddPrimitives(PathTracing::AccelerationStructure *const RESTRICT acceleration_structure) const NOEXCEPT override;
 
 	private:
 
