@@ -6,6 +6,7 @@
 
 //Path tracing.
 #include <PathTracing/Object.h>
+#include <PathTracing/Primitives/TrianglePrimitive.h>
 
 //Rendering.
 #include <Rendering/Native/Vertex.h>
@@ -40,11 +41,8 @@ namespace PathTracing
 
 	private:
 
-		//The vertices.
-		DynamicArray<Vertex> _Vertices;
-
-		//The indices.
-		DynamicArray<uint32> _Indices;
+		//The primitives.
+		DynamicArray<PathTracing::TrianglePrimitive> _Primitives;
 
 		//The bounding box.
 		AxisAlignedBoundingBox3D _BoundingBox;
