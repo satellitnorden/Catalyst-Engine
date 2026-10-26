@@ -10,6 +10,7 @@
 //Path tracing.
 #include <PathTracing/AccelerationStructure.h>
 #include <PathTracing/Camera.h>
+#include <PathTracing/Light.h>
 #include <PathTracing/Material.h>
 #include <PathTracing/Object.h>
 
@@ -74,6 +75,16 @@ namespace PathTracing
 		}
 
 		/*
+		*	Adds a light to the scene.
+		*/
+		template <typename TYPE, class... Arguments>
+		FORCE_INLINE void AddLight(Arguments&&... arguments) NOEXCEPT
+		{
+			//Add the light.
+			_Lights.Emplace(new TYPE(std::forward<Arguments>(arguments)...));
+		}
+
+		/*
 		*	Sets the partial render callback.
 		*/
 		FORCE_INLINE void SetPartialRenderCallback(const PartialRenderCallback callback, void *const RESTRICT user_data = nullptr) NOEXCEPT
@@ -106,6 +117,9 @@ namespace PathTracing
 
 		//The objects.
 		DynamicArray<PathTracing::Object *RESTRICT> _Objects;
+
+		//The lights.
+		DynamicArray<PathTracing::Light *RESTRICT> _Lights;
 
 		//The partial render callback.
 		PartialRenderCallback _PartialRenderCallback{ nullptr };

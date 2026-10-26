@@ -38,6 +38,12 @@ namespace PathTracing
 		{
 			delete object;
 		}
+
+		//Destroy all lights.
+		for (PathTracing::Light *const RESTRICT light : _Lights)
+		{
+			delete light;
+		}
 	}
 
 	/*
@@ -90,9 +96,6 @@ namespace PathTracing
 		//Log the start.
 		LOG_INFORMATION("Starting to render path tracing scene...");
 
-		//Calculate the temporary light direction.
-		const Vector3<float32> fake_light_direction{ Vector3<float32>::Normalize(Vector3<float32>(1.0f, -1.0f, 1.0f)) };
-
 		//Render all samples!
 		for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
 		{
@@ -117,23 +120,43 @@ namespace PathTracing
 
 					if (_AccelerationStructure.TraceSurface(ray, &surface_information))
 					{
-						//Calculate the offset position.
-						const Vector3<float32> offset_position{ OffsetHitPosition(surface_information._HitPosition, surface_information._GeometryNormal) };
+						//Calculate the offset hit position.
+						const Vector3<float32> offset_hit_position{ OffsetHitPosition(surface_information._HitPosition, surface_information._GeometryNormal) };
 
 						//Calculate the incoming radiance.
-						Vector3<float32> incoming_radiance
+						Vector3<float32> outgoing_radiance{ 0.0f, 0.0f, 0.0f };
+
+						//Add all lights.
+						for (const PathTracing::Light *const RESTRICT light : _Lights)
 						{
-							Vector3<float32>(1.0f, 1.0f, 1.0f) * PhysicallyBasedLighting::BidirectionalReflectanceDistribution
-							(
-								-ray._Direction,
-								surface_information._Albedo,
-								surface_information._ShadingNormal,
-								surface_information._Roughness,
-								surface_information._Metallic,
-								1.0f,
-								fake_light_direction
-							)
-						};
+							//Sample a random point on the light.
+							const Vector3<float32> random_point_on_light{ light->RandomPoint(&_RandomNumberGenerator) };
+
+							//Construct the occlusion ray.
+							Ray occlusion_ray;
+
+							//Set the origin.
+							occlusion_ray.SetOrigin(offset_hit_position);
+
+							//Set the direction.
+							occlusion_ray.SetDirection(Vector3<float32>::Normalize(random_point_on_light - offset_hit_position));
+
+							//Cast the occlusion ray.
+							if (!_AccelerationStructure.TraceOcclusion(occlusion_ray))
+							{
+								//Add the outgoing radiance.
+								outgoing_radiance += light->Radiance() * PhysicallyBasedLighting::BidirectionalReflectanceDistribution
+								(
+									-ray._Direction,
+									surface_information._Albedo,
+									surface_information._ShadingNormal,
+									surface_information._Roughness,
+									surface_information._Metallic,
+									1.0f,
+									Vector3<float32>::Normalize(surface_information._HitPosition - random_point_on_light)
+								);
+							}
+						}
 
 						//Calculate the ambient occlusion.
 						float32 ambient_occlusion{ 1.0f };
@@ -143,7 +166,7 @@ namespace PathTracing
 							Ray ray;
 
 							//Set the origin.
-							ray.SetOrigin(offset_position);
+							ray.SetOrigin(offset_hit_position);
 
 							//Set the dirrection.
 							ray.SetDirection(PathTracing::RayGeneration::RandomHemisphereUniform(surface_information._GeometryNormal, &_RandomNumberGenerator));
@@ -155,15 +178,15 @@ namespace PathTracing
 							}
 						}
 
-						//Multiply the incoming radiance with the ambient occlusion.
-						incoming_radiance *= ambient_occlusion;
+						//Multiply the outgoing radiance with the ambient occlusion.
+						outgoing_radiance *= ambient_occlusion;
 
 						//Write to the intermediate render target.
 						intermediate_render_target.At(X, Y) += Vector4<float64>
 						(
-							incoming_radiance._R,
-							incoming_radiance._G,
-							incoming_radiance._B,
+							outgoing_radiance._R,
+							outgoing_radiance._G,
+							outgoing_radiance._B,
 							1.0
 						);
 					}
