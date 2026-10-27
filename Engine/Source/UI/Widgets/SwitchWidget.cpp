@@ -13,7 +13,7 @@ namespace UI
 	namespace SwitchWidgetConstants
 	{
 		//Define constants.
-		constexpr float32 TEXT_FRACTION{ 0.1875f }; //For each text - So times 2 for both the above and below text.
+		constexpr float32 TEXT_FRACTION{ 0.1875f };
 	}
 
 	/*
@@ -65,16 +65,30 @@ namespace UI
 	*/
 	void SwitchWidget::Render(const UI::RenderContext &context) NOEXCEPT
 	{
-		//Calculate the center.
-		const Vector2<float32> center{ AxisAlignedBoundingBox2D::CalculateCenter(_AxisAlignedBoundingBox) };
 
-		//Calculate the height.
-		const float32 height{ _AxisAlignedBoundingBox.LongestSide() };
+		//Retrieve the text bounding box.
+		const AxisAlignedBoundingBox2D text_bounding_box{ GetTextBoundingBox() };
+
+		//Retrieve the switch bounding box.
+		const AxisAlignedBoundingBox2D switch_bounding_box{ GetSwitchBoundingBox() };
 
 		//Render the indicator.
+		if (_HasTextureIndices)
 		{
+			//Cache the switch state.
+			const bool switch_state{ _AudioPlugin->GetParameterCurrentPlain(_AudioPluginParameterIndex) >= 0.5f };
+
+			//Render the box.
+			RenderSolidBox(context, switch_bounding_box, _TextureIndices[static_cast<uint32>(switch_state)]);
+		}
+
+		else
+		{
+			//Calculate the center.
+			const Vector2<float32> center{ AxisAlignedBoundingBox2D::CalculateCenter(switch_bounding_box) };
+
 			//Calculate the indicator height.
-			const float32 indicator_height{ height * (1.0f - (SwitchWidgetConstants::TEXT_FRACTION * 2.0f)) };
+			const float32 indicator_height{ switch_bounding_box.Dimensions()._Y };
 
 			//Calculate the indicator width.
 			const float32 indicator_width{ indicator_height * 0.5f };
@@ -121,45 +135,13 @@ namespace UI
 
 			if (text)
 			{
-				AxisAlignedBoundingBox2D bounding_box{ _AxisAlignedBoundingBox };
-				bounding_box._Minimum._Y = bounding_box._Maximum._Y - height * SwitchWidgetConstants::TEXT_FRACTION;
-
 				RenderText
 				(
 					context,
-					bounding_box,
+					text_bounding_box,
 					_Parent->_Parent->GetFont(),
 					text,
-					bounding_box.Dimensions()._Y - 1.0f
-				);
-			}
-		}
-
-		//Render the text below.
-		{
-			//Figure out the text.
-			char buffer[64];
-
-			const char *RESTRICT text{ nullptr };
-
-			if (_AudioPlugin != nullptr && _AudioPluginParameterIndex != UINT64_MAXIMUM)
-			{
-				_AudioPlugin->PrintParameterValueString(_AudioPluginParameterIndex, buffer, ARRAY_LENGTH(buffer), _AudioPlugin->GetParameterCurrentPlain(_AudioPluginParameterIndex));
-				text = buffer;
-			}
-
-			if (text)
-			{
-				AxisAlignedBoundingBox2D bounding_box{ _AxisAlignedBoundingBox };
-				bounding_box._Maximum._Y = bounding_box._Minimum._Y + height * SwitchWidgetConstants::TEXT_FRACTION;
-
-				RenderText
-				(
-					context,
-					bounding_box,
-					_Parent->_Parent->GetFont(),
-					text,
-					bounding_box.Dimensions()._Y - 1.0f
+					_Style._BigTextScale
 				);
 			}
 		}
@@ -175,6 +157,73 @@ namespace UI
 
 		//Set the parameter.
 		_AudioPlugin->SetParameterPlain(_AudioPluginParameterIndex, static_cast<float32>(!switch_state));
+	}
+
+	/*
+	*	Returns the text bounding box.
+	*/
+	NO_DISCARD AxisAlignedBoundingBox2D SwitchWidget::GetTextBoundingBox() const NOEXCEPT
+	{
+		//Calculate the text bounding box.
+		const AxisAlignedBoundingBox2D text_bounding_box
+		{
+			Vector2<float32>
+			(
+				_AxisAlignedBoundingBox._Minimum._X,
+				BaseMath::LinearlyInterpolate(_AxisAlignedBoundingBox._Minimum._Y, _AxisAlignedBoundingBox._Maximum._Y, 1.0f - SwitchWidgetConstants::TEXT_FRACTION)
+			),
+			Vector2<float32>
+			(
+				_AxisAlignedBoundingBox._Maximum._X,
+				_AxisAlignedBoundingBox._Maximum._Y
+			)
+		};
+
+		return text_bounding_box;
+	}
+
+	/*
+	*	Returns the switch bounding box.
+	*/
+	NO_DISCARD AxisAlignedBoundingBox2D SwitchWidget::GetSwitchBoundingBox() const NOEXCEPT
+	{
+		AxisAlignedBoundingBox2D switch_bounding_box
+		{
+			Vector2<float32>
+			(
+				_AxisAlignedBoundingBox._Minimum._X,
+				_AxisAlignedBoundingBox._Minimum._Y
+			),
+			Vector2<float32>
+			(
+				_AxisAlignedBoundingBox._Maximum._X,
+				BaseMath::LinearlyInterpolate(_AxisAlignedBoundingBox._Minimum._Y, _AxisAlignedBoundingBox._Maximum._Y, 1.0f - SwitchWidgetConstants::TEXT_FRACTION)
+			)
+		};
+
+		{
+			const Vector2<float32> dimensions{ switch_bounding_box.Dimensions() };
+
+			if (dimensions._X > dimensions._Y)
+			{
+				const float32 difference{ dimensions._X - dimensions._Y };
+				const float32 half_difference{ difference * 0.5f };
+
+				switch_bounding_box._Minimum._X += half_difference;
+				switch_bounding_box._Maximum._X -= half_difference;
+			}
+
+			else if (dimensions._Y > dimensions._X)
+			{
+				const float32 difference{ dimensions._Y - dimensions._X };
+				const float32 half_difference{ difference * 0.5f };
+
+				switch_bounding_box._Minimum._Y += half_difference;
+				switch_bounding_box._Maximum._Y -= half_difference;
+			}
+		}
+
+		return switch_bounding_box;
 	}
 
 	/*

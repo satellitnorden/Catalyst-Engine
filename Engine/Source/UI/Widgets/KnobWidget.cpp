@@ -63,7 +63,7 @@ namespace UI
 		if (_ClickableInterface.GetState() == UI::ClickableInterface::State::PRESSED)
 		{
 			//Define constants.
-			constexpr float32 REGULAR_SPEED{ 1.0f };
+			constexpr float32 REGULAR_SPEED{ 2.0f };
 			constexpr float32 SLOW_SPEED{ REGULAR_SPEED * 0.25f };
 
 			//Convert the delta to normalized coordinates.

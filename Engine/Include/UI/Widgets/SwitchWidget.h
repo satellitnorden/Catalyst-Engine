@@ -53,6 +53,17 @@ namespace UI
 		}
 
 		/*
+		*	Sets the texture indices.
+		*/
+		FORCE_INLINE NO_DISCARD SwitchWidget *const RESTRICT SetTextureIndices(const StaticArray<uint32, 2> &value) NOEXCEPT
+		{
+			_HasTextureIndices = true;
+			_TextureIndices = value;
+
+			return this;
+		}
+
+		/*
 		*	Renders this widget.
 		*/
 		void Render(const UI::RenderContext &context) NOEXCEPT override;
@@ -71,10 +82,26 @@ namespace UI
 		//The audio plugin parameter index.
 		uint64 _AudioPluginParameterIndex{ UINT64_MAXIMUM };
 
+		//Denotes whether or not this widget has texture indices.
+		bool _HasTextureIndices{ false };
+
+		//The texture indices.
+		StaticArray<uint32, 2> _TextureIndices;
+
 		/*
 		*	The on end press callback.
 		*/
 		void OnEndPress() NOEXCEPT;
+
+		/*
+		*	Returns the text bounding box.
+		*/
+		NO_DISCARD AxisAlignedBoundingBox2D GetTextBoundingBox() const NOEXCEPT;
+
+		/*
+		*	Returns the switch bounding box.
+		*/
+		NO_DISCARD AxisAlignedBoundingBox2D GetSwitchBoundingBox() const NOEXCEPT;
 
 		/*
 		*	Returns the off color for the given state.
