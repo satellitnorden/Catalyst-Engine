@@ -74,10 +74,10 @@ namespace PathTracing
 	*	Traces an occlusion ray against this acceleration structure.
 	*	Returns if it hits.
 	*/
-	NO_DISCARD bool AccelerationStructure::TraceOcclusion(const Ray &ray) const NOEXCEPT
+	NO_DISCARD bool AccelerationStructure::TraceOcclusion(const Ray &ray, const float32 maximum_distance) const NOEXCEPT
 	{
 		//Trace against the root node.
-		return TraceNodeOcclusion(&_Nodes[0], ray);
+		return TraceNodeOcclusion(&_Nodes[0], ray, maximum_distance);
 	}
 
 	/*
@@ -170,44 +170,6 @@ namespace PathTracing
 			}
 		}
 
-#if 0
-		//To avoid infinite recursion, reject the split based on some criteria.
-		bool accept_split{ true };
-
-		{
-			//If all of the primitives ended up in either child node, it essentially becomes the parent node again, and will be infinitely split.
-			if (_Nodes[_Nodes[node_index]._ChildNodes[0]]._Primitives.Empty() || _Nodes[_Nodes[node_index]._ChildNodes[1]]._Primitives.Empty())
-			{
-				accept_split = false;
-			}
-		}
-
-		//If we don't accept the split, roll it back.
-		if (!accept_split)
-		{
-			//Add back all of the primitives to the parent node.
-			_Nodes[node_index]._Primitives.Reserve(_Nodes[_Nodes[node_index]._ChildNodes[0]]._Primitives.Size() + _Nodes[_Nodes[node_index]._ChildNodes[1]]._Primitives.Size());
-
-			for (uint32 child_index{ 0 }; child_index < 2; ++child_index)
-			{
-				for (const PathTracing::Primitive *const RESTRICT primitive : _Nodes[_Nodes[node_index]._ChildNodes[child_index]]._Primitives)
-				{
-					_Nodes[node_index]._Primitives.Emplace(primitive);
-				}
-			}
-
-			//Remove the children from the parent node.
-			for (uint32 child_index{ 0 }; child_index < 2; ++child_index)
-			{
-				_Nodes[node_index]._ChildNodes[child_index] = UINT64_MAXIMUM;
-				_Nodes.Pop();
-			}
-
-			//Return and don't add the child notes to be split.
-			return;
-		}
-#endif
-
 		//Split each child node.
 		_BuildState._NodesToSplit.Emplace(_Nodes[node_index]._ChildNodes[0]);
 		_BuildState._NodesToSplit.Emplace(_Nodes[node_index]._ChildNodes[1]);
@@ -268,18 +230,21 @@ namespace PathTracing
 	NO_DISCARD bool AccelerationStructure::TraceNodeOcclusion
 	(
 		const Node *const RESTRICT node,
-		const Ray &ray
+		const Ray &ray,
+		const float32 maximum_distance
 	) const NOEXCEPT
 	{
 		//First trace against this node's bounding box.
-		if (CatalystGeometryMath::RayBoxIntersection(ray, node->_BoundingBox))
+		float32 hit_distance{ FLOAT32_MAXIMUM };
+
+		if (CatalystGeometryMath::RayBoxIntersection(ray, node->_BoundingBox, &hit_distance) && hit_distance < maximum_distance)
 		{
 			//If this node has primitives, trace against them.
 			if (!node->_Primitives.Empty())
 			{
 				for (const PathTracing::Primitive *const RESTRICT primitive : node->_Primitives)
 				{
-					if (primitive->TraceOcclusion(ray))
+					if (primitive->TraceOcclusion(ray, maximum_distance))
 					{
 						return true;
 					}
@@ -291,7 +256,7 @@ namespace PathTracing
 			{
 				for (const uint64 child_node_index : node->_ChildNodes)
 				{
-					if (TraceNodeOcclusion(&_Nodes[child_node_index], ray))
+					if (TraceNodeOcclusion(&_Nodes[child_node_index], ray, maximum_distance))
 					{
 						return true;
 					}

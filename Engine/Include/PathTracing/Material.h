@@ -20,6 +20,30 @@ namespace PathTracing
 
 	public:
 
+		//Enumeration covering all flags.
+		enum class Flag : uint8
+		{
+			RECEIVES_LIGHTING = BIT(0),
+			RECEIVES_AMBIENT_OCCLUSION = BIT(1),
+
+			ALL = RECEIVES_LIGHTING | RECEIVES_AMBIENT_OCCLUSION
+		};
+
+		/*
+		*	Returns if this material has the given flag.
+		*/
+		FORCE_INLINE NO_DISCARD bool HasFlag(const Flag flag) const NOEXCEPT;
+
+		/*
+		*	Adds the given flag.
+		*/
+		FORCE_INLINE void AddFlag(const Flag flag) NOEXCEPT;
+
+		/*
+		*	Removes the given flag.
+		*/
+		FORCE_INLINE void RemoveFlag(const Flag flag) NOEXCEPT;
+
 		/*
 		*	Sets the albedo value.
 		*/
@@ -158,6 +182,9 @@ namespace PathTracing
 
 	private:
 
+		//The flags.
+		Flag _Flags{ Flag::ALL };
+
 		//The albedo value.
 		Vector3<float32> _AlbedoValue{ 0.5f, 0.5f, 0.5f };
 
@@ -184,4 +211,30 @@ namespace PathTracing
 
 	};
 
+}
+
+ENUMERATION_BIT_OPERATIONS(PathTracing::Material::Flag);
+
+/*
+*	Returns if this material has the given flag.
+*/
+FORCE_INLINE NO_DISCARD bool PathTracing::Material::HasFlag(const Flag flag) const NOEXCEPT
+{
+	return TEST_BIT(_Flags, flag);
+}
+
+/*
+*	Adds the given flag.
+*/
+FORCE_INLINE void PathTracing::Material::AddFlag(const Flag flag) NOEXCEPT
+{
+	SET_BIT(_Flags, flag);
+}
+
+/*
+*	Removes the given flag.
+*/
+FORCE_INLINE void PathTracing::Material::RemoveFlag(const Flag flag) NOEXCEPT
+{
+	CLEAR_BIT(_Flags, flag);
 }

@@ -58,19 +58,19 @@ namespace UI
 		}
 
 		/*
+		*	Sets the style.
+		*/
+		FORCE_INLINE void SetStyle(const UI::Style &value) NOEXCEPT
+		{
+			_Style = value;
+		}
+
+		/*
 		*	Returns the font for this scene.
 		*/
 		FORCE_INLINE NO_DISCARD const AssetPointer<FontAsset> GetFont() const NOEXCEPT
 		{
 			return _Font;
-		}
-
-		/*
-		*	Returns the text scale for this scene.
-		*/
-		FORCE_INLINE NO_DISCARD float32 GetTextScale() const NOEXCEPT
-		{
-			return _TextScale;
 		}
 
 		/*
@@ -115,14 +115,6 @@ namespace UI
 		FORCE_INLINE void SetFont(const AssetPointer<FontAsset> value) NOEXCEPT
 		{
 			_Font = value;
-		}
-
-		/*
-		*	Sets the text scale for this scene.
-		*/
-		FORCE_INLINE void SetTextScale(const float32 value) NOEXCEPT
-		{
-			_TextScale = value;
 		}
 
 		/*
@@ -235,9 +227,6 @@ namespace UI
 
 		//The font.
 		AssetPointer<FontAsset> _Font;
-
-		//The text scale.
-		float32 _TextScale;
 
 	};
 

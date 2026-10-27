@@ -48,7 +48,7 @@ namespace PathTracing
 		*	Traces an occlusion ray against this primitive.
 		*	Should return if it hits.
 		*/
-		NO_DISCARD bool TraceOcclusion(const Ray &ray) const NOEXCEPT override;
+		NO_DISCARD bool TraceOcclusion(const Ray &ray, const float32 maximum_distance) const NOEXCEPT override;
 
 	private:
 

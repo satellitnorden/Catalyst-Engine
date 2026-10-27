@@ -1022,6 +1022,9 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 			file << "\tconfiguration->_GeneralConfiguration._ProjectName = \"" << audio_plugin._Name.c_str() << "\";" << std::endl;
 			file << std::endl;
 
+			file << "\tconfiguration->_ConcurrencyConfiguration._NumberOfTaskExecutors = " << audio_plugin._NameNoSpaces.c_str() << "NumberOfThreads();" << std::endl;
+			file << std::endl;
+
 			file << "\tif (Audio::PluginEditor::USE_INTERNAL_RENDERING)" << std::endl;
 			file << "\t{" << std::endl;
 			file << "\t\tconfiguration->_RenderingConfiguration._InitialRenderingPath = RenderingPath::NONE;" << std::endl;
@@ -1296,6 +1299,12 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 				file << std::endl;
 
 				file << "/*" << std::endl;
+				file << "*\tReturns the number of threads for the standalone application." << std::endl;
+				file << "*/" << std::endl;
+				file << "NO_DISCARD uint32 " << audio_plugin._NameNoSpaces.c_str() << "NumberOfThreads() NOEXCEPT;" << std::endl;
+				file << std::endl;
+
+				file << "/*" << std::endl;
 				file << "*\tPre-initializes the " << audio_plugin._Name.c_str() << " plugin." << std::endl;
 				file << "*/" << std::endl;
 				file << "void " << audio_plugin._NameNoSpaces.c_str() << "PreInitialize() NOEXCEPT;" << std::endl;
@@ -1321,6 +1330,15 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 
 				file << "//Header file." << std::endl;
 				file << "#include <" << audio_plugin._NameNoSpaces << "StandaloneMain.h>" << std::endl;
+				file << std::endl;
+
+				file << "/*" << std::endl;
+				file << "*\tReturns the number of threads for the standalone application." << std::endl;
+				file << "*/" << std::endl;
+				file << "NO_DISCARD uint32 " << audio_plugin._NameNoSpaces.c_str() << "NumberOfThreads() NOEXCEPT" << std::endl;
+				file << "{" << std::endl;
+				file << "\t return 0;" << std::endl;
+				file << "}" << std::endl;
 				file << std::endl;
 
 				file << "/*" << std::endl;

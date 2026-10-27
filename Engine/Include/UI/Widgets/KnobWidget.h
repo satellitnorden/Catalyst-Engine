@@ -53,6 +53,16 @@ namespace UI
 		}
 
 		/*
+		*	Sets the texture indices.
+		*/
+		FORCE_INLINE NO_DISCARD KnobWidget *const RESTRICT SetTextureIndices(const DynamicArray<uint32> &value) NOEXCEPT
+		{
+			_TextureIndices = value;
+
+			return this;
+		}
+
+		/*
 		*	Renders this widget.
 		*/
 		void Render(const UI::RenderContext &context) NOEXCEPT override;
@@ -74,10 +84,18 @@ namespace UI
 		//The accumulated change in the value. This widget will commit the accumulated change at each "step".
 		float32 _AccumulatedChange{ 0.0f };
 
+		//The texture indices.
+		DynamicArray<uint32> _TextureIndices;
+
 		/*
-		*	Resets the animation.
+		*	Returns the text bounding box.
 		*/
-		void ResetAnimation() NOEXCEPT;
+		NO_DISCARD AxisAlignedBoundingBox2D GetTextBoundingBox() const NOEXCEPT;
+
+		/*
+		*	Returns the knob bounding box.
+		*/
+		NO_DISCARD AxisAlignedBoundingBox2D GetKnobBoundingBox() const NOEXCEPT;
 
 		/*
 		*	Returns the inner color for the given state.

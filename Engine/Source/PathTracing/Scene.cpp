@@ -123,44 +123,10 @@ namespace PathTracing
 						//Calculate the offset hit position.
 						const Vector3<float32> offset_hit_position{ OffsetHitPosition(surface_information._HitPosition, surface_information._GeometryNormal) };
 
-						//Calculate the incoming radiance.
-						Vector3<float32> outgoing_radiance{ 0.0f, 0.0f, 0.0f };
-
-						//Add all lights.
-						for (const PathTracing::Light *const RESTRICT light : _Lights)
-						{
-							//Sample a random point on the light.
-							const Vector3<float32> random_point_on_light{ light->RandomPoint(&_RandomNumberGenerator) };
-
-							//Construct the occlusion ray.
-							Ray occlusion_ray;
-
-							//Set the origin.
-							occlusion_ray.SetOrigin(offset_hit_position);
-
-							//Set the direction.
-							occlusion_ray.SetDirection(Vector3<float32>::Normalize(random_point_on_light - offset_hit_position));
-
-							//Cast the occlusion ray.
-							if (!_AccelerationStructure.TraceOcclusion(occlusion_ray))
-							{
-								//Add the outgoing radiance.
-								outgoing_radiance += light->Radiance() * PhysicallyBasedLighting::BidirectionalReflectanceDistribution
-								(
-									-ray._Direction,
-									surface_information._Albedo,
-									surface_information._ShadingNormal,
-									surface_information._Roughness,
-									surface_information._Metallic,
-									1.0f,
-									Vector3<float32>::Normalize(surface_information._HitPosition - random_point_on_light)
-								);
-							}
-						}
-
 						//Calculate the ambient occlusion.
 						float32 ambient_occlusion{ 1.0f };
 
+						if (surface_information._Material->HasFlag(PathTracing::Material::Flag::RECEIVES_AMBIENT_OCCLUSION))
 						{
 							//Set up the ray.
 							Ray ray;
@@ -172,14 +138,60 @@ namespace PathTracing
 							ray.SetDirection(PathTracing::RayGeneration::RandomHemisphereUniform(surface_information._GeometryNormal, &_RandomNumberGenerator));
 
 							//Do the trace!
-							if (_AccelerationStructure.TraceOcclusion(ray))
+							if (_AccelerationStructure.TraceOcclusion(ray, _MaximumAmbientOcclusionDistance))
 							{
 								ambient_occlusion = 0.0f;
 							}
 						}
 
-						//Multiply the outgoing radiance with the ambient occlusion.
-						outgoing_radiance *= ambient_occlusion;
+						//Calculate the incoming radiance.
+						Vector3<float32> outgoing_radiance{ 0.0f, 0.0f, 0.0f };
+
+						//Add all lights.
+						if (ambient_occlusion > 0.0f && surface_information._Material->HasFlag(PathTracing::Material::Flag::RECEIVES_LIGHTING))
+						{
+							for (const PathTracing::Light *const RESTRICT light : _Lights)
+							{
+								//Sample a random point on the light.
+								const Vector3<float32> random_point_on_light{ light->RandomPoint(&_RandomNumberGenerator) };
+
+								//Construct the occlusion ray.
+								Ray occlusion_ray;
+
+								//Set the origin.
+								occlusion_ray.SetOrigin(offset_hit_position);
+
+								//Set the direction.
+								occlusion_ray.SetDirection(Vector3<float32>::Normalize(random_point_on_light - offset_hit_position));
+
+								//Cast the occlusion ray.
+								if (!_AccelerationStructure.TraceOcclusion(occlusion_ray, FLOAT32_MAXIMUM))
+								{
+									//Add the outgoing radiance.
+									outgoing_radiance += light->Radiance() * PhysicallyBasedLighting::BidirectionalReflectanceDistribution
+									(
+										-ray._Direction,
+										surface_information._Albedo,
+										surface_information._ShadingNormal,
+										surface_information._Roughness,
+										surface_information._Metallic,
+										1.0f,
+										Vector3<float32>::Normalize(surface_information._HitPosition - random_point_on_light)
+									);
+								}
+							}
+						}
+
+						//Calculate the opacity.
+						//TODO: Do this with more clear rules, right now it's hard-coded to a specific case.
+						float32 opacity{ 1.0f };
+
+						if (!surface_information._Material->HasFlag(PathTracing::Material::Flag::RECEIVES_LIGHTING)
+							&&
+							surface_information._Material->HasFlag(PathTracing::Material::Flag::RECEIVES_AMBIENT_OCCLUSION))
+						{
+							opacity = ambient_occlusion == 0.0f ? 1.0f : 0.0f;
+						}
 
 						//Write to the intermediate render target.
 						intermediate_render_target.At(X, Y) += Vector4<float64>
@@ -187,7 +199,7 @@ namespace PathTracing
 							outgoing_radiance._R,
 							outgoing_radiance._G,
 							outgoing_radiance._B,
-							1.0
+							opacity
 						);
 					}
 				}
@@ -241,7 +253,7 @@ namespace PathTracing
 	NO_DISCARD Vector3<float32> Scene::OffsetHitPosition(const Vector3<float32> &hit_position, const Vector3<float32> &geometry_normal) NOEXCEPT
 	{
 #if 1
-		return hit_position + geometry_normal * FLOAT32_EPSILON * 2.0f;
+		return hit_position + geometry_normal * FLOAT32_EPSILON * 32.0f;
 #else
 		Vector3<float32> result{ hit_position };
 

@@ -85,6 +85,14 @@ namespace PathTracing
 		}
 
 		/*
+		*	Sets the maximum ambient occlusion distance.
+		*/
+		FORCE_INLINE void SetMaximumAmbientOcclusionDistance(const float32 value) NOEXCEPT
+		{
+			_MaximumAmbientOcclusionDistance = value;
+		}
+
+		/*
 		*	Sets the partial render callback.
 		*/
 		FORCE_INLINE void SetPartialRenderCallback(const PartialRenderCallback callback, void *const RESTRICT user_data = nullptr) NOEXCEPT
@@ -120,6 +128,9 @@ namespace PathTracing
 
 		//The lights.
 		DynamicArray<PathTracing::Light *RESTRICT> _Lights;
+
+		//The maximum ambient occlusion distance.
+		float32 _MaximumAmbientOcclusionDistance{ FLOAT32_MAXIMUM };
 
 		//The partial render callback.
 		PartialRenderCallback _PartialRenderCallback{ nullptr };

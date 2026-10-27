@@ -38,6 +38,12 @@ namespace UI
 		//The rounding.
 		float32 _Rounding;
 
+		//The big text scale.
+		float32 _BigTextScale;
+
+		//The small text scale.
+		float32 _SmallTextScale;
+
 	};
 
 }

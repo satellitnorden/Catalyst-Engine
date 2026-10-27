@@ -85,7 +85,7 @@ namespace UI
 		_Style = _Parent->_Parent->GetStyle();
 
 		//Grab the text scale from the scene.
-		_TextScale = _Parent->_Parent->GetTextScale();
+		_TextScale = _Parent->_Parent->GetStyle()._BigTextScale;
 	}
 
 	/*

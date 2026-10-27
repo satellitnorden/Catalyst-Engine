@@ -625,8 +625,8 @@ void CatalystPlatform::UpdateMouseState(MouseState *const RESTRICT mouse_state, 
 
 			if (GetClientRect(_window, &rectangle))
 			{
-				mouse_state->_CurrentX = BaseMath::Clamp<float>(static_cast<float>(point.x) / static_cast<float>(rectangle.right - rectangle.left), 0.0f, 1.0f);
-				mouse_state->_CurrentY = BaseMath::Clamp<float>(1.0f - static_cast<float>(point.y) / static_cast<float>(rectangle.bottom - rectangle.top), 0.0f, 1.0f);
+				mouse_state->_CurrentX = static_cast<float32>(point.x) / static_cast<float32>(rectangle.right - rectangle.left);
+				mouse_state->_CurrentY = 1.0f - static_cast<float32>(point.y) / static_cast<float32>(rectangle.bottom - rectangle.top);
 
 				mouse_state->_DeltaX = mouse_state->_CurrentX - mouse_state->_PreviousX;
 				mouse_state->_DeltaY = mouse_state->_CurrentY - mouse_state->_PreviousY;

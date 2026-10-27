@@ -39,7 +39,7 @@ namespace PathTracing
 		*	Traces an occlusion ray against this acceleration structure.
 		*	Returns if it hits.
 		*/
-		NO_DISCARD bool TraceOcclusion(const Ray &ray) const NOEXCEPT;
+		NO_DISCARD bool TraceOcclusion(const Ray &ray, const float32 maximum_distance) const NOEXCEPT;
 
 	private:
 
@@ -107,7 +107,8 @@ namespace PathTracing
 		NO_DISCARD bool TraceNodeOcclusion
 		(
 			const Node *const RESTRICT node,
-			const Ray &ray
+			const Ray &ray,
+			const float32 maximum_distance
 		) const NOEXCEPT;
 
 	};

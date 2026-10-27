@@ -107,9 +107,11 @@ namespace PathTracing
 	*	Traces an occlusion ray against this primitive.
 	*	Should return if it hits.
 	*/
-	NO_DISCARD bool TrianglePrimitive::TraceOcclusion(const Ray &ray) const NOEXCEPT
+	NO_DISCARD bool TrianglePrimitive::TraceOcclusion(const Ray &ray, const float32 maximum_distance) const NOEXCEPT
 	{
-		return CatalystGeometryMath::RayTriangleIntersection(ray, _Triangle);
+		float32 hit_distance{ FLOAT32_MAXIMUM };
+
+		return CatalystGeometryMath::RayTriangleIntersection(ray, _Triangle, &hit_distance) && hit_distance < maximum_distance;
 	}
 
 }

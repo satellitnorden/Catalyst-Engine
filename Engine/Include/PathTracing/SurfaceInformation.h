@@ -43,6 +43,9 @@ namespace PathTracing
 		// MATERIAL DATA //
 		///////////////////
 
+		//The material.
+		const PathTracing::Material *RESTRICT _Material;
+
 		//The albedo.
 		Vector3<float32> _Albedo;
 
@@ -60,6 +63,9 @@ namespace PathTracing
 		*/
 		FORCE_INLINE void FillInMaterialData(const PathTracing::Material *const RESTRICT material) NOEXCEPT
 		{
+			//Set the material.
+			_Material = material;
+
 			//Fill in the albedo.
 			_Albedo = material->SampleAlbedo(_TextureCoordinate);
 
