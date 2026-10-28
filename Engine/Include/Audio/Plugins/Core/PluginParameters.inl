@@ -65,6 +65,7 @@ namespace Audio
 			}
 
 			case Parameter::Type::BOOL:
+			case Parameter::Type::INT32:
 			case Parameter::Type::ENUMERATION:
 			{
 				return true;
@@ -137,9 +138,14 @@ namespace Audio
 				return 1.0f;
 			}
 
+			case Parameter::Type::INT32:
+			{
+				return 1.0f / (_Parameters[index]._Maximum - _Parameters[index]._Minimum + 1.0f);
+			}
+
 			case Parameter::Type::ENUMERATION:
 			{
-				return 1.0f / (_Parameters[index]._Maximum - _Parameters[index]._Minimum);
+				return 1.0f / (_Parameters[index]._Maximum - _Parameters[index]._Minimum + 1.0f);
 			}
 
 			case Parameter::Type::GAIN:
@@ -260,6 +266,13 @@ namespace Audio
 				return true;
 			}
 
+			case Parameter::Type::INT32:
+			{
+				sprintf_s(buffer, buffer_capacity, "%i", BaseMath::Round<int32>(value));
+
+				return true;
+			}
+
 			case Parameter::Type::ENUMERATION:
 			{
 				sprintf_s(buffer, buffer_capacity, "%s", _Parameters[index]._EnumerationNames[BaseMath::Round<uint32>(value)].Data());
@@ -326,6 +339,13 @@ namespace Audio
 				break;
 			}
 
+			case Parameter::Type::INT32:
+			{
+				*static_cast<int32 *const RESTRICT>(_Parameters[index]._Data) = BaseMath::Round<int32>(value);
+
+				break;
+			}
+
 			case Parameter::Type::ENUMERATION:
 			{
 				*static_cast<uint32 *const RESTRICT>(_Parameters[index]._Data) = BaseMath::Round<uint32>(value);
@@ -382,9 +402,14 @@ namespace Audio
 				return static_cast<float32>(*static_cast<const bool *const RESTRICT>(data));
 			}
 
+			case Parameter::Type::INT32:
+			{
+				return BaseMath::Round<int32>(*static_cast<const int32 *const RESTRICT>(data));
+			}
+
 			case Parameter::Type::ENUMERATION:
 			{
-				return static_cast<float32>(*static_cast<const uint32 *const RESTRICT>(data));
+				return BaseMath::Round<int32>(*static_cast<const uint32 *const RESTRICT>(data));
 			}
 
 			case Parameter::Type::GAIN:

@@ -297,6 +297,8 @@ namespace Audio
 				NONE,
 
 				BOOL,
+				INT32,
+
 				ENUMERATION,
 				GAIN,
 				PERCENT,
