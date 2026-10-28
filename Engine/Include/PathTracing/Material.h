@@ -23,10 +23,12 @@ namespace PathTracing
 		//Enumeration covering all flags.
 		enum class Flag : uint8
 		{
-			RECEIVES_LIGHTING = BIT(0),
-			RECEIVES_AMBIENT_OCCLUSION = BIT(1),
+			NONE = 0,
 
-			ALL = RECEIVES_LIGHTING | RECEIVES_AMBIENT_OCCLUSION
+			/*
+			*	This flag makes the material a transparent backdrop - Ambient occlusion will be cast on it, but otherwise will not be rendered.
+			*/
+			TRANSPARENT_BACKDROP = BIT(0)
 		};
 
 		/*
@@ -183,7 +185,7 @@ namespace PathTracing
 	private:
 
 		//The flags.
-		Flag _Flags{ Flag::ALL };
+		Flag _Flags{ Flag::NONE };
 
 		//The albedo value.
 		Vector3<float32> _AlbedoValue{ 0.5f, 0.5f, 0.5f };

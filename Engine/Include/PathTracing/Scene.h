@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 
+//Concurrency.
+#include <Concurrency/Task.h>
+
 //Math.
 #include <Math/General/RandomNumberGenerator.h>
 
@@ -102,6 +105,22 @@ namespace PathTracing
 		}
 
 		/*
+		*	Sets whether or not to do multi-threading.
+		*/
+		FORCE_INLINE void SetDoMultithreading(const bool value) NOEXCEPT
+		{
+			_DoMultithreading = value;
+		}
+
+		/*
+		*	Sets whether or not to do logging.
+		*/
+		FORCE_INLINE void SetDoLogging(const bool value) NOEXCEPT
+		{
+			_DoLogging = value;
+		}
+
+		/*
 		*	Returns the bounding box of this scene.
 		*/
 		NO_DISCARD AxisAlignedBoundingBox3D BoundingBox() const NOEXCEPT;
@@ -116,6 +135,51 @@ namespace PathTracing
 		) NOEXCEPT;
 
 	private:
+
+		/*
+		*	Task data class definition.
+		*/
+		class TaskData final
+		{
+
+		public:
+
+			//The scene.
+			Scene *RESTRICT _Scene;
+
+			//The task.
+			Task _Task;
+
+			//The resolution.
+			Resolution _Resolution;
+
+			//The Y.
+			uint32 _Y;
+
+			//The intermediate render target.
+			Texture2D<Vector4<float64>> *RESTRICT _IntermediateRenderTarget;
+
+		};
+
+		/*
+		*	Radiance result class definition.
+		*	Stores the result of a call to the 'Radiance' function.
+		*/
+		class RadianceResult final
+		{
+
+		public:
+			
+			//Denotes whether or not there was a hit.
+			bool _Hit{ false };
+
+			//The radiance.
+			Vector3<float32> _Radiance{ 0.0f, 0.0f, 0.0f };
+
+			//The opacity.
+			float32 _Opacity{ 0.0f };
+
+		};
 
 		//The camera.
 		PathTracing::Camera *RESTRICT _Camera{ nullptr };
@@ -138,16 +202,29 @@ namespace PathTracing
 		//The partial render callback user data.
 		void *RESTRICT _PartialRenderCallbackUserData{ nullptr };
 
+		//Denotes whether or not to do multi-threading.
+		bool _DoMultithreading{ true };
+
+		//Denotes whether or not to do logging.
+		bool _DoLogging{ true };
+
 		//The acceleration structure.
 		PathTracing::AccelerationStructure _AccelerationStructure;
-
-		//The random number generator.
-		RandomNumberGenerator _RandomNumberGenerator;
 
 		/*
 		*	Returns if this scene is ready for rendering.
 		*/
 		NO_DISCARD bool IsReadyForRendering() const NOEXCEPT;
+
+		/*
+		*	Renders for the given task data.
+		*/
+		void RenderTask(const TaskData &task_data) NOEXCEPT;
+
+		/*
+		*	Returns the outgoing radiance in the opposite direction of the given ray.
+		*/
+		NO_DISCARD RadianceResult Radiance(const Ray &ray, const uint32 depth) NOEXCEPT;
 
 		/*
 		*	Offsets the given hit position.

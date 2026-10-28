@@ -179,7 +179,16 @@ namespace UI
 			widget->OnParentAvailable();
 
 			//Position the widget.
-			widget->Position();
+			if (_ActiveContainer->_NextWidgetBoundingBox.Valid())
+			{
+				widget->SetAxisAlignedBoundingBox(_ActiveContainer->_NextWidgetBoundingBox.Get());
+				_ActiveContainer->_NextWidgetBoundingBox.Invalidate();
+			}
+			
+			else
+			{
+				widget->Position();
+			}
 
 			//Add the widget to the widgets array.
 			_Widgets.Emplace(widget);

@@ -71,6 +71,7 @@ namespace Audio
 			}
 
 			case Parameter::Type::GAIN:
+			case Parameter::Type::PERCENT:
 			case Parameter::Type::TIME:
 			{
 				return false;
@@ -142,6 +143,11 @@ namespace Audio
 			}
 
 			case Parameter::Type::GAIN:
+			{
+				return 0.0f;
+			}
+
+			case Parameter::Type::PERCENT:
 			{
 				return 0.0f;
 			}
@@ -268,6 +274,13 @@ namespace Audio
 				return true;
 			}
 
+			case Parameter::Type::PERCENT:
+			{
+				sprintf_s(buffer, buffer_capacity, "%.1f%%", value);
+
+				return true;
+			}
+
 			case Parameter::Type::TIME:
 			{
 				if (value >= 1'000.0f)
@@ -327,6 +340,13 @@ namespace Audio
 				break;
 			}
 
+			case Parameter::Type::PERCENT:
+			{
+				*static_cast<float32 *const RESTRICT>(_Parameters[index]._Data) = value * 0.01f;
+
+				break;
+			}
+
 			case Parameter::Type::TIME:
 			{
 				*static_cast<float32 *const RESTRICT>(_Parameters[index]._Data) = value / 1'000.0f;
@@ -370,6 +390,11 @@ namespace Audio
 			case Parameter::Type::GAIN:
 			{
 				return Audio::GainToDecibels(*static_cast<const float32 *const RESTRICT>(data));
+			}
+
+			case Parameter::Type::PERCENT:
+			{
+				return (*static_cast<const float32 *const RESTRICT>(data)) * 100.0f;
 			}
 
 			case Parameter::Type::TIME:

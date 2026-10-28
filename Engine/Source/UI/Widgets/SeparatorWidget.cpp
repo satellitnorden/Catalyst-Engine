@@ -8,6 +8,15 @@ namespace UI
 {
 
 	/*
+	*	Callback for when the parent is available.
+	*/
+	void SeparatorWidget::OnParentAvailable() NOEXCEPT
+	{
+		//Grab the color.
+		_Color = _Parent->_Parent->GetStyle()._UncheckedHoveredColor;
+	}
+
+	/*
 	*	Positions this widget. Usually called right after creation.
 	*/
 	void SeparatorWidget::Position() NOEXCEPT
@@ -54,7 +63,7 @@ namespace UI
 	void SeparatorWidget::Render(const UI::RenderContext &context) NOEXCEPT
 	{
 		//Render the box.
-		RenderRoundedBox(context, _AxisAlignedBoundingBox, _Parent->_Parent->GetStyle()._UncheckedHoveredColor, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Parent->_Parent->GetStyle()._Rounding);
+		RenderRoundedBox(context, _AxisAlignedBoundingBox, _Color, Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Parent->_Parent->GetStyle()._Rounding);
 	}
 
 }

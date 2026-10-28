@@ -299,6 +299,7 @@ namespace Audio
 				BOOL,
 				ENUMERATION,
 				GAIN,
+				PERCENT,
 				TIME
 			};
 
