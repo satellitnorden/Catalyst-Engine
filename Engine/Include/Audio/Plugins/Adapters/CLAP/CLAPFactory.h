@@ -111,16 +111,7 @@ const clap_plugin_t *CLAP_ABI create_plugin(const struct clap_plugin_factory *fa
 	plugin->plugin_data = new CLAPPluginData(AudioPluginGlue::Create());
 	plugin->init = CLAPPlugin::init;
 	plugin->destroy = CLAPPlugin::destroy;
-	plugin->activate = []
-	(
-		const struct clap_plugin *plugin,
-		double                    sample_rate,
-		uint32_t                  min_frames_count,
-		uint32_t                  max_frames_count
-	)
-	{
-		return true;
-	};
+	plugin->activate = CLAPPlugin::activate;
 	plugin->deactivate = [](const struct clap_plugin *plugin)
 	{
 

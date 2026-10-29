@@ -45,6 +45,8 @@ namespace Audio
 		{
 			_SampleRate = value;
 			_SampleRateReciprocal = 1.0f / _SampleRate;
+
+			_Envelope.SetSampleRate(value);
 		}
 
 		/*

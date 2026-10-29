@@ -96,6 +96,16 @@ namespace Audio
 		FORCE_INLINE void CallInitialize(const InitializeContext &context) NOEXCEPT;
 
 		/*
+		*	Sets the sample rate.
+		*/
+		FORCE_INLINE void SetSampleRate(const float32 value) NOEXCEPT;
+
+		/*
+		*	Sets the beats per minute.
+		*/
+		FORCE_INLINE void SetBeatsPerMinute(const float32 value) NOEXCEPT;
+
+		/*
 		*	Calls the 'Process()' function.
 		*/
 		FORCE_INLINE void CallProcess
@@ -106,6 +116,14 @@ namespace Audio
 			const uint8 number_of_channels,
 			const uint32 number_of_samples
 		) NOEXCEPT;
+
+	protected:
+
+		//The sample rate.
+		float32 _SampleRate{ Audio::DEFAULT_SAMPLE_RATE };
+
+		//The beats per minute.
+		float32 _BeatsPerMinute{ Audio::DEFAULT_BEATS_PER_MINUTE };
 
 	private:
 
@@ -176,6 +194,16 @@ namespace Audio
 		*	Post-initializes this plugin.
 		*/
 		FORCE_INLINE virtual void PostInitialize(const InitializeContext &context) NOEXCEPT;
+
+		/*
+		*	Callback for when the sample rate changed.
+		*/
+		FORCE_INLINE virtual void OnSampleRateChanged() NOEXCEPT;
+
+		/*
+		*	Callback for when the beats per minute changed.
+		*/
+		FORCE_INLINE virtual void OnBeatsPerMinuteChanged() NOEXCEPT;
 
 		/*
 		*	Callback for this plugin to process the given buffer.

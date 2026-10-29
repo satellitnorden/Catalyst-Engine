@@ -404,12 +404,12 @@ namespace Audio
 
 			case Parameter::Type::INT32:
 			{
-				return BaseMath::Round<int32>(*static_cast<const int32 *const RESTRICT>(data));
+				return BaseMath::Round<float32>(*static_cast<const int32 *const RESTRICT>(data));
 			}
 
 			case Parameter::Type::ENUMERATION:
 			{
-				return BaseMath::Round<int32>(*static_cast<const uint32 *const RESTRICT>(data));
+				return BaseMath::Round<float32>(*static_cast<const uint32 *const RESTRICT>(data));
 			}
 
 			case Parameter::Type::GAIN:

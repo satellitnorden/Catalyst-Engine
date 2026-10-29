@@ -27,4 +27,5 @@
 //Because Windows.h has a function called rectangle, but we have a class called Rectangle...
 #undef Rectangle
 #define Rectangle _Rectangle
+#undef DEFAULT_QUALITY
 #endif

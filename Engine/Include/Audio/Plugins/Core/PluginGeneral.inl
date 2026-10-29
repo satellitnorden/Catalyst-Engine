@@ -69,6 +69,30 @@ namespace Audio
 	}
 
 	/*
+	*	Sets the sample rate.
+	*/
+	FORCE_INLINE void Plugin::SetSampleRate(const float32 value) NOEXCEPT
+	{
+		if (_SampleRate != value)
+		{
+			_SampleRate = value;
+			OnSampleRateChanged();
+		}
+	}
+
+	/*
+	*	Sets the beats per minute.
+	*/
+	FORCE_INLINE void Plugin::SetBeatsPerMinute(const float32 value) NOEXCEPT
+	{
+		if (_BeatsPerMinute != value)
+		{
+			_BeatsPerMinute = value;
+			OnBeatsPerMinuteChanged();
+		}
+	}
+
+	/*
 	*	Calls the 'Process()' function.
 	*/
 	FORCE_INLINE void Plugin::CallProcess
@@ -220,6 +244,22 @@ namespace Audio
 	*	Post-initializes this plugin.
 	*/
 	FORCE_INLINE void Plugin::PostInitialize(const InitializeContext &context) NOEXCEPT
+	{
+
+	}
+
+	/*
+	*	Callback for when the sample rate changed.
+	*/
+	FORCE_INLINE void Plugin::OnSampleRateChanged() NOEXCEPT
+	{
+
+	}
+
+	/*
+	*	Callback for when the beats per minute changed.
+	*/
+	FORCE_INLINE void Plugin::OnBeatsPerMinuteChanged() NOEXCEPT
 	{
 
 	}

@@ -49,6 +49,27 @@ namespace CLAPPlugin
 	}
 
 	/*
+	*	The 'activate' function.
+	*/
+	bool CLAP_ABI activate
+	(
+		const struct clap_plugin *plugin,
+		double                    sample_rate,
+		uint32_t                  min_frames_count,
+		uint32_t                  max_frames_count
+	)
+	{
+		//Cache the plugin data.
+		CLAPPluginData *const RESTRICT plugin_data{ static_cast<CLAPPluginData *const RESTRICT>(plugin->plugin_data) };
+
+		//Set the sample rate.
+		plugin_data->_Plugin->SetSampleRate(static_cast<float32>(sample_rate));
+
+		//Return success.
+		return true;
+	}
+
+	/*
 	*	The 'process' function.
 	*/
 	clap_process_status CLAP_ABI process(const struct clap_plugin *plugin, const clap_process_t *process)
@@ -60,9 +81,15 @@ namespace CLAPPlugin
 		}
 
 		//Cache some data.
-		CLAPPluginData* const RESTRICT plugin_data{ static_cast<CLAPPluginData *const RESTRICT>(plugin->plugin_data) };
+		CLAPPluginData *const RESTRICT plugin_data{ static_cast<CLAPPluginData *const RESTRICT>(plugin->plugin_data) };
 		const uint8 number_of_channels{ static_cast<uint8>(process->audio_inputs[0].channel_count) };
 		const uint32 number_of_samples{ process->frames_count };
+
+		//Set the beats per minute.
+		if (process->transport)
+		{
+			plugin_data->_Plugin->SetBeatsPerMinute(static_cast<float32>(process->transport->tempo));
+		}
 
 		//Set up the inputs/outputs.
 		plugin_data->_Inputs.Resize<true>(number_of_channels);
