@@ -1,10 +1,8 @@
 //Header file.
 #include <PathTracing/Scene.h>
 
-//Lighting.
-#include <Lighting/PhysicallyBasedLighting.h>
-
 //Path tracing.
+#include <PathTracing/BRDF.h>
 #include <PathTracing/RayGeneration.h>
 
 //Rendering.
@@ -89,6 +87,9 @@ namespace PathTracing
 			if (_DoLogging) LOG_INFORMATION("Building acceleration structure for path tracing scene...");
 			_AccelerationStructure.Build();
 		}
+
+		//Set the aspect ratio on the camera.
+		_Camera->SetAspectRatio(static_cast<float32>(resolution._Width) / static_cast<float32>(resolution._Height));
 
 		//Initialize the intermediate render target.
 		Texture2D<Vector4<float64>> intermediate_render_target{ resolution._Width, resolution._Height };
@@ -227,33 +228,30 @@ namespace PathTracing
 			const Ray ray{ _Camera->GenerateRay(coordinate) };
 
 			//Retrieve the outgoing radiance!
-			const RadianceResult result{ Radiance(ray, 0) };
+			const RadianceResult result{ Radiance(ray, 0, 4) };
 
-			//Add to the intermediate render target if there was a hit.
-			if (result._Hit)
-			{
-				//Write to the intermediate render target.
-				task_data._IntermediateRenderTarget->At(X, task_data._Y) += Vector4<float64>
-				(
-					result._Radiance._R,
-					result._Radiance._G,
-					result._Radiance._B,
-					result._Opacity
-				);
-			}
+			//Add to the intermediate render target.
+			//Write to the intermediate render target.
+			task_data._IntermediateRenderTarget->At(X, task_data._Y) += Vector4<float64>
+			(
+				result._Radiance._R,
+				result._Radiance._G,
+				result._Radiance._B,
+				result._Opacity
+			);
 		}
 	}
 
 	/*
 	*	Returns the outgoing radiance in the opposite direction of the given ray.
 	*/
-	NO_DISCARD Scene::RadianceResult Scene::Radiance(const Ray &ray, const uint32 depth) NOEXCEPT
+	NO_DISCARD Scene::RadianceResult Scene::Radiance(const Ray &ray, const uint32 depth, const uint32 max_depth) NOEXCEPT
 	{
 		//TODO: Handle this in a better way?
 		static thread_local RandomNumberGenerator RANDOM_NUMBER_GENERATOR;
 
 		//Terminate if the max depth is reached.
-		if (depth >= 2)
+		if (depth >= max_depth)
 		{
 			return RadianceResult();
 		}
@@ -291,6 +289,9 @@ namespace PathTracing
 			//Calculate the incoming radiance.
 			Vector3<float32> outgoing_radiance{ 0.0f, 0.0f, 0.0f };
 
+			//Add the emissive radiance.
+			outgoing_radiance += surface_information._EmissiveRadiance;
+
 			//Add indirect lighting.
 			if (!surface_information._Material->HasFlag(PathTracing::Material::Flag::TRANSPARENT_BACKDROP))
 			{
@@ -304,19 +305,18 @@ namespace PathTracing
 				indirect_lighting_ray.SetDirection(PathTracing::RayGeneration::RandomHemisphereUniform(surface_information._GeometryNormal, &RANDOM_NUMBER_GENERATOR));
 
 				//Calculate the outgoing radiance along this ray.
-				const RadianceResult result{ Radiance(indirect_lighting_ray, depth + 1) };
+				const RadianceResult result{ Radiance(indirect_lighting_ray, depth + 1, max_depth) };
 
 				//Add it to the outgoing radiance if there was a hit.
 				if (result._Hit)
 				{
-					outgoing_radiance += result._Radiance * PhysicallyBasedLighting::BidirectionalReflectanceDistribution
+					outgoing_radiance += result._Radiance * PathTracing::BRDF::Sample
 					(
 						-ray._Direction,
 						surface_information._Albedo,
 						surface_information._ShadingNormal,
 						surface_information._Roughness,
 						surface_information._Metallic,
-						1.0f,
 						-indirect_lighting_ray._Direction
 					);
 				}
@@ -376,8 +376,12 @@ namespace PathTracing
 
 		else
 		{
-			//TODO: Sample some ambient color?
-			return RadianceResult();
+			return RadianceResult
+			{
+				true,
+				Vector3<float32>(_MissRadiance._R, _MissRadiance._G, _MissRadiance._G),
+				_MissRadiance._A
+			};
 		}
 	}
 

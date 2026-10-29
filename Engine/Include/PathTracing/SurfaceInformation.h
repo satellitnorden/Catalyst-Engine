@@ -58,6 +58,9 @@ namespace PathTracing
 		//The metallic.
 		float32 _Metallic;
 
+		//The emissive radiance.
+		Vector3<float32> _EmissiveRadiance;
+
 		/*
 		*	Fills in the material data from the given material.
 		*/
@@ -91,6 +94,9 @@ namespace PathTracing
 
 			//Fill in the metallic.
 			_Metallic = material->SampleMetallic(_TextureCoordinate);
+
+			//Fill in the emissive radiance.
+			_EmissiveRadiance = material->SampleEmissiveRadiance(_TextureCoordinate);
 		}
 
 	};

@@ -111,6 +111,22 @@ namespace PathTracing
 		}
 
 		/*
+		*	Sets the emissive radiance value.
+		*/
+		FORCE_INLINE void SetEmissiveRadianceValue(const Vector3<float32> &value) NOEXCEPT
+		{
+			_EmissiveRadianceValue = value;
+		}
+
+		/*
+		*	Sets the emissive radiance texture.
+		*/
+		FORCE_INLINE void SetEmissiveRadianceTexture(const Texture2D<Vector3<byte>> &value) NOEXCEPT
+		{
+			_EmissiveRadianceTexture = value;
+		}
+
+		/*
 		*	Samples the albedo.
 		*/
 		FORCE_INLINE NO_DISCARD Vector3<float32> SampleAlbedo(const Vector2<float32> texture_coordinate) const NOEXCEPT
@@ -182,6 +198,24 @@ namespace PathTracing
 			}
 		}
 
+		/*
+		*	Samples the emissive radiance.
+		*/
+		FORCE_INLINE NO_DISCARD Vector3<float32> SampleEmissiveRadiance(const Vector2<float32> texture_coordinate) const NOEXCEPT
+		{
+			//If we have a texture, use that.
+			if (_EmissiveRadianceTexture.GetWidth() > 0 && _EmissiveRadianceTexture.GetHeight() > 0)
+			{
+				return SampleConvert(_EmissiveRadianceTexture, texture_coordinate);
+			}
+
+			//Otherwise, use the constant value.
+			else
+			{
+				return _EmissiveRadianceValue;
+			}
+		}
+
 	private:
 
 		//The flags.
@@ -210,6 +244,12 @@ namespace PathTracing
 
 		//The metallic texture.
 		Texture2D<byte> _MetallicTexture;
+
+		//The emissive radiance value.
+		Vector3<float32> _EmissiveRadianceValue{ 0.0f, 0.0f, 0.0f };
+
+		//The emissive radiance texture.
+		Texture2D<Vector3<byte>> _EmissiveRadianceTexture;
 
 	};
 

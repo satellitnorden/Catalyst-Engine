@@ -88,6 +88,14 @@ namespace PathTracing
 		}
 
 		/*
+		*	Sets the miss radiance.
+		*/
+		FORCE_INLINE void SetMissRadiance(const Vector4<float32> &value) NOEXCEPT
+		{
+			_MissRadiance = value;
+		}
+
+		/*
 		*	Sets the maximum ambient occlusion distance.
 		*/
 		FORCE_INLINE void SetMaximumAmbientOcclusionDistance(const float32 value) NOEXCEPT
@@ -193,6 +201,9 @@ namespace PathTracing
 		//The lights.
 		DynamicArray<PathTracing::Light *RESTRICT> _Lights;
 
+		//The miss radiance.
+		Vector4<float32> _MissRadiance{ 0.0f, 0.0f, 0.0f, 0.0f };
+
 		//The maximum ambient occlusion distance.
 		float32 _MaximumAmbientOcclusionDistance{ FLOAT32_MAXIMUM };
 
@@ -224,7 +235,7 @@ namespace PathTracing
 		/*
 		*	Returns the outgoing radiance in the opposite direction of the given ray.
 		*/
-		NO_DISCARD RadianceResult Radiance(const Ray &ray, const uint32 depth) NOEXCEPT;
+		NO_DISCARD RadianceResult Radiance(const Ray &ray, const uint32 depth, const uint32 max_depth) NOEXCEPT;
 
 		/*
 		*	Offsets the given hit position.
