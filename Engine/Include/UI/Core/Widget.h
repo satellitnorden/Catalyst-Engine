@@ -88,8 +88,9 @@ namespace UI
 				//If we're being disabled, make sure the clickable interface is idle.
 				if (!_Enabled)
 				{
-					for (UI::ClickableInterface *const RESTRICT clickable_interface : GetClickableInterfaces())
+					for (uint64 clickable_interface_index{ 0 }; clickable_interface_index < GetNumberOfClickableInterfaces(); ++clickable_interface_index)
 					{
+						UI::ClickableInterface *const RESTRICT clickable_interface{ GetClickableInterface(clickable_interface_index) };
 						clickable_interface->SetState(this, UI::ClickableInterface::State::IDLE);
 					}
 				}
@@ -133,11 +134,19 @@ namespace UI
 		}
 
 		/*
-		*	Returns the clickable interface (if this widget is clickable.
+		*	Returns the number of clickable interfaces.
 		*/
-		FORCE_INLINE virtual NO_DISCARD ArrayProxy<UI::ClickableInterface *const RESTRICT> GetClickableInterfaces() NOEXCEPT
+		FORCE_INLINE virtual NO_DISCARD uint64 GetNumberOfClickableInterfaces() NOEXCEPT
 		{
-			return ArrayProxy<UI::ClickableInterface *const RESTRICT>();
+			return 0;
+		}
+
+		/*
+		*	Returns the clickable interface at the given index..
+		*/
+		FORCE_INLINE virtual NO_DISCARD UI::ClickableInterface *const RESTRICT GetClickableInterface(const uint64 index) NOEXCEPT
+		{
+			return nullptr;
 		}
 
 		/*

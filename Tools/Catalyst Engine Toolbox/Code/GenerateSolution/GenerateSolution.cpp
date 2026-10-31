@@ -892,6 +892,15 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 			file << std::endl;
 
 			file << "\t/*" << std::endl;
+			file << "\t*\tReturns the default directory of the plugin." << std::endl;
+			file << "\t*/" << std::endl;
+			file << "\tFORCE_INLINE constexpr const char *const RESTRICT GetDefaultDirectory() NOEXCEPT" << std::endl;
+			file << "\t{" << std::endl;
+			file << "\t\treturn \"" << audio_plugin._DefaultDirectory.c_str() << "\";" << std::endl;
+			file << "\t}" << std::endl;
+			file << std::endl;
+
+			file << "\t/*" << std::endl;
 			file << "\t*\tReturns the identifier of the plugin." << std::endl;
 			file << "\t*/" << std::endl;
 			file << "\tFORCE_INLINE constexpr const char *const RESTRICT GetIdentifier() NOEXCEPT" << std::endl;

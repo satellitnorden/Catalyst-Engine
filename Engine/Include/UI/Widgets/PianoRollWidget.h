@@ -26,11 +26,19 @@ namespace UI
 		PianoRollWidget() NOEXCEPT;
 
 		/*
-		*	Returns the clickable interface (if this widget is clickable.
+		*	Returns the number of clickable interfaces.
 		*/
-		FORCE_INLINE NO_DISCARD ArrayProxy<UI::ClickableInterface *const RESTRICT> GetClickableInterfaces() NOEXCEPT override
+		FORCE_INLINE NO_DISCARD uint64 GetNumberOfClickableInterfaces() NOEXCEPT override
 		{
-			return ArrayProxy<UI::ClickableInterface *const RESTRICT>(_ClickableInterfacePointers.Data(), _ClickableInterfacePointers.Size());
+			return _ClickableInterfaces.Size();
+		}
+
+		/*
+		*	Returns the clickable interface at the given index..
+		*/
+		FORCE_INLINE NO_DISCARD UI::ClickableInterface *const RESTRICT GetClickableInterface(const uint64 index) NOEXCEPT override
+		{
+			return &_ClickableInterfaces[index];
 		}
 
 		/*
@@ -76,9 +84,6 @@ namespace UI
 
 		//The clickable interfaces.
 		StaticArray<UI::ClickableInterface, 128> _ClickableInterfaces;
-
-		//The clickable interface pointers.
-		StaticArray<UI::ClickableInterface *RESTRICT, 128> _ClickableInterfacePointers;
 
 		//The audio plugin.
 		Audio::Plugin *RESTRICT _AudioPlugin{ nullptr };

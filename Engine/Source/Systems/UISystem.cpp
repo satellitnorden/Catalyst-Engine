@@ -214,8 +214,10 @@ void UISystem::UpdateWidgets(const MouseState *const RESTRICT mouse_state) NOEXC
 				{
 					UI::Widget *const RESTRICT widget{ widgets[widget_index] };
 
-					for (UI::ClickableInterface *clickable_interface : widget->GetClickableInterfaces())
+					for (uint64 clickable_interface_index{ 0 }; clickable_interface_index < widget->GetNumberOfClickableInterfaces(); ++clickable_interface_index)
 					{
+						UI::ClickableInterface *const RESTRICT clickable_interface{ widget->GetClickableInterface(clickable_interface_index) };
+
 						clickable_interface->SetMousePosition(mouse_position);
 						clickable_interface->SetMouseDelta(mouse_delta);
 					}
@@ -226,13 +228,13 @@ void UISystem::UpdateWidgets(const MouseState *const RESTRICT mouse_state) NOEXC
 					}
 
 					//Update clickable interfaces.
-					ArrayProxy<UI::ClickableInterface *const RESTRICT> clickable_interfaces{ widget->GetClickableInterfaces() };
+					const uint64 number_of_clickable_interfaces{ widget->GetNumberOfClickableInterfaces() };
 
-					if (!clickable_interfaces.Empty())
+					if (number_of_clickable_interfaces > 0)
 					{
-						for (int64 clickable_interface_index{ static_cast<int64>(clickable_interfaces.Size() - 1) }; clickable_interface_index >= 0; --clickable_interface_index)
+						for (int64 clickable_interface_index{ static_cast<int64>(number_of_clickable_interfaces - 1) }; clickable_interface_index >= 0; --clickable_interface_index)
 						{
-							UI::ClickableInterface *const RESTRICT clickable_interface{ clickable_interfaces[clickable_interface_index] };
+							UI::ClickableInterface *const RESTRICT clickable_interface{ widget->GetClickableInterface(clickable_interface_index) };
 
 							const bool is_inside{ clickable_interface->_IsInside(widget, clickable_interface, mouse_position) && !AnyWidgetBlockingPosition(mouse_position, widget) };
 							have_consumed_mouse_input = UpdateClickableInterfaceState(widget, clickable_interface, mouse_button_state, is_inside, have_consumed_mouse_input);

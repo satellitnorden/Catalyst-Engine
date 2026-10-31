@@ -39,13 +39,19 @@ namespace UI
 		void OnDisabled() NOEXCEPT override;
 
 		/*
-		*	Returns the clickable interface (if this widget is clickable.
+		*	Returns the number of clickable interfaces.
 		*/
-		FORCE_INLINE NO_DISCARD ArrayProxy<UI::ClickableInterface *const RESTRICT> GetClickableInterfaces() NOEXCEPT override
+		FORCE_INLINE NO_DISCARD uint64 GetNumberOfClickableInterfaces() NOEXCEPT override
 		{
-			static thread_local UI::ClickableInterface *RESTRICT CLICKABLE_INTERFACE_POINTER;
-			CLICKABLE_INTERFACE_POINTER = &_ClickableInterface;
-			return ArrayProxy<UI::ClickableInterface *const RESTRICT>(CLICKABLE_INTERFACE_POINTER);
+			return 1;
+		}
+
+		/*
+		*	Returns the clickable interface at the given index..
+		*/
+		FORCE_INLINE NO_DISCARD UI::ClickableInterface *const RESTRICT GetClickableInterface(const uint64 index) NOEXCEPT override
+		{
+			return &_ClickableInterface;
 		}
 
 		/*

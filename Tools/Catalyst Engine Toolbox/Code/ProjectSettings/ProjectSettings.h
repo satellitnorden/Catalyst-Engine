@@ -40,6 +40,9 @@ public:
 		//The class name.
 		std::string _ClassName;
 
+		//The default directory.
+		std::string _DefaultDirectory;
+
 		//The main category.
 		std::string _MainCategory;
 

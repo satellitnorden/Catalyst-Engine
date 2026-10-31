@@ -136,8 +136,6 @@ namespace UI
 					static_cast<SelectorWidget *const RESTRICT>(widget)->Increment();
 				}
 			);
-
-			_ClickableInterfacePointers[clickable_interface_index] = &clickable_interface;
 		}
 	}
 

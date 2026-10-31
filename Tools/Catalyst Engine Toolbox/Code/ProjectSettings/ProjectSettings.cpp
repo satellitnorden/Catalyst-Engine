@@ -95,6 +95,8 @@ void ProjectSettings::Read(const char *file_path)
 
 			audio_plugin._ClassName = audio_plugin._NameNoSpaces + std::string("Plugin");
 
+			audio_plugin._DefaultDirectory = audio_plugin_entry.contains("DefaultDirectory") ? audio_plugin_entry["DefaultDirectory"].get<std::string>() : "";
+
 			audio_plugin._MainCategory = audio_plugin_entry["MainCategory"];
 			audio_plugin._SubCategory = audio_plugin_entry["SubCategory"];
 

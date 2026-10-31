@@ -68,12 +68,6 @@ namespace UI
                 }
             );
         }
-
-        //Set up the clickable interface pointers.
-        for (uint8 key_index{ 0 }; key_index < 128; ++key_index)
-        {
-            _ClickableInterfacePointers[key_index] = &_ClickableInterfaces[key_index];
-        }
     }
 
 	/*
