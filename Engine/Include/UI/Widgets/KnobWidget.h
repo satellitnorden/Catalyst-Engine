@@ -87,11 +87,19 @@ namespace UI
 		//The audio plugin parameter index.
 		uint64 _AudioPluginParameterIndex{ UINT64_MAXIMUM };
 
+		//The time since the last prress.
+		float32 _TimeSinceLastPress{ 0.0f };
+
 		//The accumulated change in the value. This widget will commit the accumulated change at each "step".
 		float32 _AccumulatedChange{ 0.0f };
 
 		//The texture indices.
 		DynamicArray<uint32> _TextureIndices;
+
+		/*
+		*	Callback for when this knob is pressed.
+		*/
+		void OnPressed() NOEXCEPT;
 
 		/*
 		*	Returns the text bounding box.

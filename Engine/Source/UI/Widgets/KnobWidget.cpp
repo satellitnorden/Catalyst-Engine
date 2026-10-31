@@ -1,6 +1,9 @@
 //Header file.
 #include <UI/Widgets/KnobWidget.h>
 
+//Input.
+#include <Input/InputCore.h>
+
 //UI.
 #include <UI/Core/Scene.h>
 
@@ -43,6 +46,13 @@ namespace UI
 			//The mouse is inside if it is inside the knob circle.
 			return distance_to_center <= outer_circle_radius_squared;
 		};
+		_ClickableInterface.SetOnStartPressCallback
+		(
+			[](Widget *const RESTRICT widget, void *const RESTRICT /*user_data*/)
+			{
+				static_cast<KnobWidget *const RESTRICT>(widget)->OnPressed();
+			}
+		);
 	}
 
 	/*
@@ -224,6 +234,30 @@ namespace UI
 				);
 			}
 		}
+
+		//Update the time since the last press.
+		_TimeSinceLastPress += context._DeltaTime;
+	}
+
+	/*
+	*	Callback for when this knob is pressed.
+	*/
+	void KnobWidget::OnPressed() NOEXCEPT
+	{
+		//If the time since the last press is lower than the double click threshold, reset the parameter.
+		if (_TimeSinceLastPress < InputConstants::DOUBLE_CLICK_THRESHOLD)
+		{
+			if (_AudioPlugin != nullptr && _AudioPluginParameterIndex != UINT64_MAXIMUM)
+			{
+				_AudioPlugin->SetParameterPlain(_AudioPluginParameterIndex, _AudioPlugin->GetParameterDefault(_AudioPluginParameterIndex));
+			}
+
+			//Also reset the accumulated change.
+			_AccumulatedChange = 0.0f;
+		}
+
+		//Reset the time since the last press.
+		_TimeSinceLastPress = 0.0f;
 	}
 
 	/*

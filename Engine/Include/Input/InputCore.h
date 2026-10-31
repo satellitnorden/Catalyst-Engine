@@ -6,6 +6,7 @@
 //Input constants.
 namespace InputConstants
 {
+	constexpr float32 DOUBLE_CLICK_THRESHOLD{ 0.5f };
 	constexpr float32 GAMEPAD_DEADZONE{ 0.1f }; //0.0025f step.
 	constexpr uint8 MAXIMUM_NUMBER_OF_GAMEPADS{ 4 };
 	constexpr uint64 MAXIMUM_NUMBER_OF_TOUCH_FINGERS{ 4 };
