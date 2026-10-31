@@ -141,7 +141,7 @@ namespace UI
 					text_bounding_box,
 					_Parent->_Parent->GetFont(),
 					text,
-					_Style._BigTextScale
+					_Style._MediumTextScale
 				);
 			}
 		}

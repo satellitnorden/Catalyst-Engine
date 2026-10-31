@@ -31,6 +31,8 @@ namespace Audio
 			}
 		}
 
+		ASSERT(false, "Could not find parameter with name '%s'!", name);
+
 		return UINT64_MAXIMUM;
 	}
 
@@ -145,7 +147,7 @@ namespace Audio
 
 			case Parameter::Type::ENUMERATION:
 			{
-				return 1.0f / (_Parameters[index]._Maximum - _Parameters[index]._Minimum + 1.0f);
+				return 1.0f / (_Parameters[index]._Maximum - _Parameters[index]._Minimum);
 			}
 
 			case Parameter::Type::GAIN:

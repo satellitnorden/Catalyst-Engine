@@ -158,7 +158,7 @@ public:
 	/*
 *	Expands this axis aligned bounding box with the box.
 */
-	FORCE_INLINE constexpr void Expand(const AxisAlignedBoundingBox2D& box) NOEXCEPT
+	FORCE_INLINE constexpr void Expand(const AxisAlignedBoundingBox2D &box) NOEXCEPT
 	{
 		Expand(box._Minimum);
 		Expand(box._Maximum);

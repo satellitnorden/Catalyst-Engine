@@ -30,7 +30,8 @@ namespace UI
 		_Style._CheckedHoveredColor = Vector4<float32>(0.6875f, 0.6875f, 0.6875f, 0.6875f);
 		_Style._CheckedPressedColor = Vector4<float32>(0.875f, 0.875f, 0.875f, 0.875f);
 		_Style._Rounding = 8.0f;
-		_Style._BigTextScale = 32.0f;
+		_Style._BigTextScale = 40.0f;
+		_Style._MediumTextScale = 32.0f;
 		_Style._SmallTextScale = 24.0f;
 
 		//Set the default font.

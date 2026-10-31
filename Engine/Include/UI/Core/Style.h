@@ -41,6 +41,9 @@ namespace UI
 		//The big text scale.
 		float32 _BigTextScale;
 
+		//The medium text scale.
+		float32 _MediumTextScale;
+
 		//The small text scale.
 		float32 _SmallTextScale;
 

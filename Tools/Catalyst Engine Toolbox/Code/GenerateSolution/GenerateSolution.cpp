@@ -736,15 +736,11 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 */
 void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const ProjectSettings::AudioPlugin &audio_plugin)
 {
-	//Figure out the project name.
-	char project_name[256];
-	sprintf_s(project_name, "%s_Win64", audio_plugin._NameNoSpaces.c_str());
-
 	//Set up the parameters.
 	GenerateVisualStudioSolution::Parameters parameters;
 
 	parameters._DirectoryPath = AudioPluginSolutionDirectory(audio_plugin);
-	parameters._ProjectName = project_name;
+	parameters._ProjectName = audio_plugin._Name.c_str();
 
 	{
 		GenerateVisualStudioSolution::Parameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
