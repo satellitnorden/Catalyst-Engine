@@ -265,6 +265,16 @@ namespace Audio
 		FORCE_INLINE NO_DISCARD bool IsParameterEnumeration(const uint64 index) const NOEXCEPT;
 
 		/*
+		*	Converts a parameter value from plain to normalized.
+		*/
+		FORCE_INLINE NO_DISCARD float32 ParameterPlainToNormalized(const uint64 index, const float32 value) const NOEXCEPT;
+
+		/*
+		*	Converts a parameter value from normalized to plain.
+		*/
+		FORCE_INLINE NO_DISCARD float32 ParameterNormalizedToPlain(const uint64 index, const float32 value) const NOEXCEPT;
+
+		/*
 		*	Returns the parameter minimum at the given index.
 		*/
 		FORCE_INLINE NO_DISCARD float32 GetParameterMinimum(const uint64 index) const NOEXCEPT;
@@ -275,9 +285,14 @@ namespace Audio
 		FORCE_INLINE NO_DISCARD float32 GetParameterMaximum(const uint64 index) const NOEXCEPT;
 
 		/*
-		*	Returns the parameter default at the given index.
+		*	Returns the parameter default plain at the given index.
 		*/
-		FORCE_INLINE NO_DISCARD float32 GetParameterDefault(const uint64 index) const NOEXCEPT;
+		FORCE_INLINE NO_DISCARD float32 GetParameterDefaultPlain(const uint64 index) const NOEXCEPT;
+
+		/*
+		*	Returns the parameter default normalized at the given index.
+		*/
+		FORCE_INLINE NO_DISCARD float32 GetParameterDefaultNormalized(const uint64 index) const NOEXCEPT;
 
 		/*
 		*	Returns the parameter step normalized at the given index.
@@ -303,6 +318,11 @@ namespace Audio
 		*	Sets a parameter normalized.
 		*/
 		FORCE_INLINE void SetParameterNormalized(const uint64 index, const float32 value) NOEXCEPT;
+
+		/*
+		*	Gets the parameter post-fix.
+		*/
+		FORCE_INLINE NO_DISCARD const char *const RESTRICT GetParameterPostFix(const uint64 index) NOEXCEPT;
 
 		/*
 		*	Prints the value string for the parameter with the given index.

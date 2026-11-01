@@ -249,7 +249,7 @@ namespace UI
 		{
 			if (_AudioPlugin != nullptr && _AudioPluginParameterIndex != UINT64_MAXIMUM)
 			{
-				_AudioPlugin->SetParameterPlain(_AudioPluginParameterIndex, _AudioPlugin->GetParameterDefault(_AudioPluginParameterIndex));
+				_AudioPlugin->SetParameterPlain(_AudioPluginParameterIndex, _AudioPlugin->GetParameterDefaultPlain(_AudioPluginParameterIndex));
 			}
 
 			//Also reset the accumulated change.

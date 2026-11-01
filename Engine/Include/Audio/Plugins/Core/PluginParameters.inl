@@ -98,6 +98,22 @@ namespace Audio
 	}
 
 	/*
+	*	Converts a parameter value from plain to normalized.
+	*/
+	FORCE_INLINE NO_DISCARD float32 Plugin::ParameterPlainToNormalized(const uint64 index, const float32 value) const NOEXCEPT
+	{
+		return (value - _Parameters[index]._Minimum) / (_Parameters[index]._Maximum - _Parameters[index]._Minimum);
+	}
+
+	/*
+	*	Converts a parameter value from normalized to plain.
+	*/
+	FORCE_INLINE NO_DISCARD float32 Plugin::ParameterNormalizedToPlain(const uint64 index, const float32 value) const NOEXCEPT
+	{
+		return BaseMath::LinearlyInterpolate(_Parameters[index]._Minimum, _Parameters[index]._Maximum, value);
+	}
+
+	/*
 	*	Returns the parameter minimum at the given index.
 	*/
 	FORCE_INLINE NO_DISCARD float32 Plugin::GetParameterMinimum(const uint64 index) const NOEXCEPT
@@ -114,11 +130,19 @@ namespace Audio
 	}
 
 	/*
-	*	Returns the parameter default at the given index.
+	*	Returns the parameter default plain at the given index.
 	*/
-	FORCE_INLINE NO_DISCARD float32 Plugin::GetParameterDefault(const uint64 index) const NOEXCEPT
+	FORCE_INLINE NO_DISCARD float32 Plugin::GetParameterDefaultPlain(const uint64 index) const NOEXCEPT
 	{
 		return _ParameterState[index]._Default;
+	}
+
+	/*
+	*	Returns the parameter default normalized at the given index.
+	*/
+	FORCE_INLINE NO_DISCARD float32 Plugin::GetParameterDefaultNormalized(const uint64 index) const NOEXCEPT
+	{
+		return ParameterPlainToNormalized(index, _ParameterState[index]._Default);
 	}
 
 	/*
@@ -187,11 +211,7 @@ namespace Audio
 	*/
 	FORCE_INLINE NO_DISCARD float32 Plugin::GetParameterCurrentNormalized(const uint64 index) const NOEXCEPT
 	{
-		const float32 current{ GetParameterCurrentPlain(index) };
-		const float32 minimum{ GetParameterMinimum(index) };
-		const float32 maximum{ GetParameterMaximum(index) };
-
-		return (current - minimum) / (maximum - minimum);
+		return ParameterPlainToNormalized(index, GetParameterCurrentPlain(index));
 	}
 
 	/*
@@ -221,15 +241,7 @@ namespace Audio
 	FORCE_INLINE void Plugin::SetParameterNormalized(const uint64 index, const float32 value) NOEXCEPT
 	{
 		//Calculate the value.
-		const float32 _value
-		{
-			BaseMath::LinearlyInterpolate
-			(
-				GetParameterMinimum(index),
-				GetParameterMaximum(index),
-				BaseMath::Clamp<float32>(value, 0.0f, 1.0f)
-			)
-		};
+		const float32 _value{ ParameterNormalizedToPlain(index, value) };
 
 		//Set the parameter state immediately.
 		_ParameterState[index]._Current.Store(_value);
@@ -244,6 +256,59 @@ namespace Audio
 			request._Type = Request::Type::SET_PARAMETER;
 			request._SetParameterValueData._Index = index;
 			request._SetParameterValueData._Value = _value;
+		}
+	}
+
+	/*
+	*	Gets the parameter post-fix.
+	*/
+	FORCE_INLINE NO_DISCARD const char *const RESTRICT Plugin::GetParameterPostFix(const uint64 index) NOEXCEPT
+	{
+		switch (_Parameters[index]._Type)
+		{
+			case Parameter::Type::NONE:
+			{
+				ASSERT(false, "Parameter needs a type!");
+
+				return "";
+			}
+
+			case Parameter::Type::BOOL:
+			{
+				return "";
+			}
+
+			case Parameter::Type::INT32:
+			{
+				return "";
+			}
+
+			case Parameter::Type::ENUMERATION:
+			{
+				return "";
+			}
+
+			case Parameter::Type::GAIN:
+			{
+				return "dB";
+			}
+
+			case Parameter::Type::PERCENT:
+			{
+				return "%%";
+			}
+
+			case Parameter::Type::TIME:
+			{
+				return "ms";
+			}
+
+			default:
+			{
+				ASSERT(false, "Invalid case!");
+
+				return "";
+			}
 		}
 	}
 

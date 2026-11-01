@@ -23,6 +23,9 @@ public:
 	{
 		//Create the plugin.
 		_Plugin = AudioPluginGlue::Create();
+
+		//Initialize the editor.
+		_Editor.Initialize(_Plugin);
 	}
 
 	/*

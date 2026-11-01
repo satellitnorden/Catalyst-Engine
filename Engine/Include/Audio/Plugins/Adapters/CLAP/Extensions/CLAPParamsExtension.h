@@ -60,7 +60,7 @@ namespace CLAPParamsExtension
 		sprintf_s(param_info->module, plugin_data->_Plugin->GetParameterName(param_index));
 		param_info->min_value = static_cast<double>(plugin_data->_Plugin->GetParameterMinimum(param_index));
 		param_info->max_value = static_cast<double>(plugin_data->_Plugin->GetParameterMaximum(param_index));
-		param_info->default_value = static_cast<double>(plugin_data->_Plugin->GetParameterDefault(param_index));
+		param_info->default_value = static_cast<double>(plugin_data->_Plugin->GetParameterDefaultPlain(param_index));
 
 		//Return the number of parameters.
 		return static_cast<uint32_t>(plugin_data->_Plugin->GetNumberOfParameters());
