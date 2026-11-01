@@ -5,9 +5,13 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Algorithms/HashAlgorithms.h>
 
+//Audio.
+#include <Audio/Plugins/Adapters/VST3/VST3Component.h>
+#include <Audio/Plugins/Adapters/VST3/VST3UUID.h>
+
 //Third party.
-#include <uuid/uuid.h>
 #include <VST3/pluginterfaces/base/ipluginbase.h>
+#include <VST3/pluginterfaces/vst/ivstaudioprocessor.h>
 
 //Audio plugin.
 #include <AudioPluginGlue.Generated.h>
@@ -29,6 +33,9 @@ public:
 
 		*obj = nullptr;
 
+		QUERY_INTERFACE(_iid, obj, Steinberg::FUnknown_iid, VST3PluginFactory);
+		QUERY_INTERFACE(_iid, obj, Steinberg::IPluginFactory_iid, VST3PluginFactory);
+
 		return Steinberg::kNoInterface;
 	}
 
@@ -37,7 +44,7 @@ public:
 	*/
 	FORCE_INLINE uint32 PLUGIN_API addRef() override
 	{
-		return ++_NumberOfReferences;
+		return 1;
 	}
 
 	/*
@@ -45,7 +52,7 @@ public:
 	*/
 	FORCE_INLINE uint32 PLUGIN_API release() override
 	{
-		return --_NumberOfReferences;
+		return 1;
 	}
 
 	/*
@@ -83,25 +90,8 @@ public:
 
 		Steinberg::copyTUID(info->cid, _ClassID);
 		info->cardinality = Steinberg::PClassInfo::ClassCardinality::kManyInstances;
-
-		switch (AudioPluginGlue::GetMainCategory())
-		{
-			case Audio::Plugin::MainCategory::INSTRUMENT:
-			{
-				sprintf_s(info->category, "Instrument");
-
-				break;
-			}
-
-			default:
-			{
-				ASSERT(false, "Invalid case!");
-
-				break;
-			}
-		}
-
-		sprintf_s(info->name, AudioPluginGlue::GetName());
+		sprintf_s(info->category, "%s", kVstAudioEffectClass);
+		sprintf_s(info->name, "%s", AudioPluginGlue::GetName());
 
 		return Steinberg::kResultOk;
 	}
@@ -116,13 +106,31 @@ public:
 		void **obj
 	) override
 	{
-		return Steinberg::kNotImplemented;
+		if (!obj)
+		{
+			return Steinberg::kInvalidArgument;
+		}
+
+		*obj = nullptr;
+
+		GenerateClassID();
+
+		if (!Steinberg::FUnknownPrivate::iidEqual(cid, _ClassID))
+		{
+			return Steinberg::kNoInterface;
+		}
+
+		if (Steinberg::FUnknownPrivate::iidEqual(_iid, Steinberg::Vst::IComponent_iid))
+		{
+			*obj = new VST3Component();
+
+			return Steinberg::kResultOk;
+		}
+
+		return Steinberg::kNoInterface;
 	}
 
 private:
-
-	//The number of references.
-	uint32 _NumberOfReferences{ 1 };
 
 	//Denotes if we have the class ID.
 	bool _HasClassID{ false };
@@ -135,28 +143,14 @@ private:
 	*/
 	FORCE_INLINE void GenerateClassID() NOEXCEPT
 	{
-		//This defines the namespace - It was generated once with UUID v4, and should stay constant _forever_.
-		constexpr uuid_t NAMESPACE
-		{
-			68,		221,	94,		127,
-			244,	144,	72,		71,
-			163,	29,		228,	215,
-			57,		4,		31,		233
-		};
-
 		//Don't generate it twice.
 		if (_HasClassID)
 		{
 			return;
 		}
 
-		//Generate the UUID.
-		uuid_t UUID;
-
-		uuid_v5(&NAMESPACE, AudioPluginGlue::GetIdentifier(), StringUtilities::StringLength(AudioPluginGlue::GetIdentifier()), &UUID);
-
-		//Copy it over to the class ID.
-		Memory::Copy(_ClassID, &UUID, sizeof(Steinberg::TUID));
+		//Generate the class ID.
+		VST3UUID::Generate(AudioPluginGlue::GetIdentifier(), &_ClassID);
 
 		//We now have a class ID!
 		_HasClassID = true;
