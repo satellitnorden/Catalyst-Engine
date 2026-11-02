@@ -5,6 +5,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Audio.
+#include <Audio/Plugins/Adapters/VST3/VST3AudioProcessor.h>
 #include <Audio/Plugins/Adapters/VST3/VST3EditController.h>
 #include <Audio/Plugins/Adapters/VST3/VST3PluginData.h>
 
@@ -48,6 +49,15 @@ public:
 		QUERY_INTERFACE(_iid, obj, Steinberg::FUnknown_iid, VST3Component);
 		QUERY_INTERFACE(_iid, obj, Steinberg::IPluginBase_iid, VST3Component);
 		QUERY_INTERFACE(_iid, obj, Steinberg::Vst::IComponent_iid, VST3Component);
+
+		if (Steinberg::FUnknownPrivate::iidEqual(_iid, Steinberg::Vst::IAudioProcessor_iid))
+		{
+			*obj = static_cast<VST3AudioProcessor*>(&_AudioProcessor);
+
+			addRef();
+
+			return Steinberg::kResultOk;
+		}
 
 		if (Steinberg::FUnknownPrivate::iidEqual(_iid, Steinberg::Vst::IEditController_iid))
 		{
@@ -290,6 +300,9 @@ private:
 
 	//The plugin data.
 	VST3PluginData _PluginData;
+
+	//The audio processor.
+	VST3AudioProcessor _AudioProcessor{ &_PluginData };
 
 	//The edit controller.
 	VST3EditController _EditController{ &_PluginData };
