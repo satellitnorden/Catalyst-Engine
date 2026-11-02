@@ -377,6 +377,9 @@ FORCE_INLINE NO_DISCARD void *const RESTRICT TryCreateOpenGLPluginWindow
 	//Set the device context on the window.
 	plugin_window->SetDeviceContext(final_device_context);
 
+	//Set the render context on the window.
+	plugin_window->SetRenderContext(final_render_context);
+
 	//Retrieve the function pointers for OpenGL.
 	OpenGL::RetrieveOpenGLFunctionPointers();
 
@@ -548,6 +551,19 @@ namespace Audio
 	void PluginWindow::CallUpdateFunction() NOEXCEPT
 	{
 		_UpdateFunction(_UpdateArguments);
+	}
+
+	/*
+	*	Prepares rendering.
+	*/
+	void PluginWindow::PrepareRendering() NOEXCEPT
+	{
+		if (!GetSupportsOpenGL() || !_DeviceContext || !_RenderContext)
+		{
+			return;
+		}
+
+		wglMakeCurrent(static_cast<HDC>(_DeviceContext), static_cast<HGLRC>(_RenderContext));
 	}
 
 	/*

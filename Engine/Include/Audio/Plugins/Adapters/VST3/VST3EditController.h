@@ -6,6 +6,7 @@
 
 //Audio.
 #include <Audio/Plugins/Adapters/VST3/VST3PluginData.h>
+#include <Audio/Plugins/Adapters/VST3/VST3PlugView.h>
 
 //Third party.
 #include <VST3/pluginterfaces/base/ustring.h>
@@ -22,7 +23,8 @@ public:
 	*/
 	FORCE_INLINE VST3EditController(VST3PluginData *const RESTRICT plugin_data) NOEXCEPT
 		:
-		_PluginData(plugin_data)
+		_PluginData(plugin_data),
+		_PlugView(plugin_data)
 	{
 
 	}
@@ -246,14 +248,17 @@ public:
 	*/
 	FORCE_INLINE Steinberg::IPlugView *PLUGIN_API createView(Steinberg::FIDString name) override
 	{
-		//Not supported right now, I think.
-		return nullptr;
+		//Return the plug view.
+		return &_PlugView;
 	}
 
 private:
 
 	//The plugin data.
 	VST3PluginData *RESTRICT _PluginData;
+
+	//The plug view.
+	VST3PlugView _PlugView;
 
 };
 #endif

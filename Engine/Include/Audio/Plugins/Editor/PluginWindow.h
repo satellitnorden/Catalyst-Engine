@@ -44,6 +44,14 @@ namespace Audio
 		}
 
 		/*
+		*	Sets the renderr context.
+		*/
+		FORCE_INLINE void SetRenderContext(void *const RESTRICT value) NOEXCEPT
+		{
+			_RenderContext = value;
+		}
+
+		/*
 		*	Returns whether or not this window supports OpenGL.
 		*/
 		FORCE_INLINE NO_DISCARD bool GetSupportsOpenGL() const NOEXCEPT
@@ -111,6 +119,11 @@ namespace Audio
 		NO_DISCARD const MouseState *const RESTRICT GetMouseState() NOEXCEPT;
 
 		/*
+		*	Prepares rendering.
+		*/
+		void PrepareRendering() NOEXCEPT;
+
+		/*
 		*	Swaps the buffers.
 		*/
 		void SwapBuffers() NOEXCEPT;
@@ -136,6 +149,9 @@ namespace Audio
 
 		//The device context.
 		void *RESTRICT _DeviceContext{ nullptr };
+
+		//The render context.
+		void *RESTRICT _RenderContext{ nullptr };
 
 		//Denotes whether or not this window supports OpenGL.
 		bool _SupportsOpenGL{ false };

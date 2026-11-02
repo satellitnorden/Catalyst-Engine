@@ -135,6 +135,9 @@ namespace Audio
 		//Update the UI system.
 		_UISystem.Update(_DeltaTimer.Update(), _Window.GetMouseState());
 
+		//Prepare rendering.
+		_Window.PrepareRendering();
+
 		//Render!
 		_Renderer->Render(_UISystem.GetRenderCommands());
 	}

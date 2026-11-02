@@ -178,7 +178,8 @@ namespace Audio
 				{
 					if (queued_midi_message._SampleOffset == sample_index)
 					{
-						OnMIDIMessage(queued_midi_message._Message);
+						//TODO: Gather multiple messages and call this function once for each group.
+						OnMIDIMessages(&queued_midi_message._Message, 1);
 
 						should_output = true;
 					}
@@ -286,9 +287,9 @@ namespace Audio
 	}
 
 	/*
-	*	Callback for this plugin when it receives a MIDI message.
+	*	Callback for this plugin when it receives  MIDI messages.
 	*/
-	FORCE_INLINE void Plugin::OnMIDIMessage(const MIDIMessage &message) NOEXCEPT
+	FORCE_INLINE void Plugin::OnMIDIMessages(const MIDIMessage *const RESTRICT messages, const uint64 number_of_messages) NOEXCEPT
 	{
 
 	}

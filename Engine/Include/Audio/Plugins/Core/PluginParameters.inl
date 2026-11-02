@@ -102,7 +102,7 @@ namespace Audio
 	*/
 	FORCE_INLINE NO_DISCARD float32 Plugin::ParameterPlainToNormalized(const uint64 index, const float32 value) const NOEXCEPT
 	{
-		return (value - _Parameters[index]._Minimum) / (_Parameters[index]._Maximum - _Parameters[index]._Minimum);
+		return BaseMath::Clamp<float32>((value - _Parameters[index]._Minimum) / (_Parameters[index]._Maximum - _Parameters[index]._Minimum), 0.0f, 1.0f);
 	}
 
 	/*
@@ -110,7 +110,7 @@ namespace Audio
 	*/
 	FORCE_INLINE NO_DISCARD float32 Plugin::ParameterNormalizedToPlain(const uint64 index, const float32 value) const NOEXCEPT
 	{
-		return BaseMath::LinearlyInterpolate(_Parameters[index]._Minimum, _Parameters[index]._Maximum, value);
+		return BaseMath::LinearlyInterpolate(_Parameters[index]._Minimum, _Parameters[index]._Maximum, BaseMath::Clamp<float32>(value, 0.0f, 1.0f));
 	}
 
 	/*

@@ -50,7 +50,7 @@ namespace Audio
 		for (uint64 i{ 0 }; i < render_commands.Size(); ++i)
 		{
 			//Rasterize the render command.
-			Rasterize(i + 1, render_commands[i]);
+			Rasterize(static_cast<uint32>(i + 1), render_commands[i]);
 		}
 
 		//Render to the window!

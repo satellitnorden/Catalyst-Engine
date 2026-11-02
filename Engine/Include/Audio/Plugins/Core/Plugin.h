@@ -218,9 +218,9 @@ namespace Audio
 		) NOEXCEPT;
 
 		/*
-		*	Callback for this plugin when it receives a MIDI message.
+		*	Callback for this plugin when it receives MIDI messages.
 		*/
-		FORCE_INLINE virtual void OnMIDIMessage(const MIDIMessage &message) NOEXCEPT;
+		FORCE_INLINE virtual void OnMIDIMessages(const MIDIMessage *const RESTRICT messages, const uint64 number_of_messages) NOEXCEPT;
 
 		/*
 		*	Processes requests.
