@@ -19,7 +19,9 @@ namespace UI
 		TOP_LEFT,
 		TOP_RIGHT,
 		BOTTOM_RIGHT,
-		BOTTOM_LEFT
+		BOTTOM_LEFT,
+
+		FREE
 	};
 
 	//Enumeration cover all horizontal alignments.

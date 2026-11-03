@@ -132,13 +132,13 @@ namespace UI
 		_ActiveContainer->_Anchor = anchor;
 		_ActiveContainer->_Layout = layout;
 
+		//Calculate commonly used values.
+		const Vector2<float32> center{ BaseMath::LinearlyInterpolate(axis_aligned_bounding_box._Minimum, axis_aligned_bounding_box._Maximum, 0.5f) };
+		const Vector2<float32> size{ axis_aligned_bounding_box._Maximum - axis_aligned_bounding_box._Minimum };
+		const Vector2<float32> half_size{ size * 0.5f };
+
 		//Set up the axis aligned bounding box.
 		{
-			//Calculate commonly used values.
-			const Vector2<float32> center{ BaseMath::LinearlyInterpolate(axis_aligned_bounding_box._Minimum, axis_aligned_bounding_box._Maximum, 0.5f) };
-			const Vector2<float32> size{ axis_aligned_bounding_box._Maximum - axis_aligned_bounding_box._Minimum };
-			const Vector2<float32> half_size{ size * 0.5f };
-
 			//Set up the bounding box differently depending on the anchor.
 			switch (anchor)
 			{
@@ -219,6 +219,13 @@ namespace UI
 					break;
 				}
 
+				case UI::Anchor::FREE:
+				{
+					_ActiveContainer->_AxisAlignedBoundingBox = axis_aligned_bounding_box;
+
+					break;
+				}
+
 				default:
 				{
 					ASSERT(false, "Invalid case!");
@@ -234,7 +241,7 @@ namespace UI
 			case UI::Container::Layout::LEFT_TO_RIGHT:
 			case UI::Container::Layout::RIGHT_TO_LEFT:
 			{
-				_ActiveContainer->_WidgetSize = _ReferenceResolution._X / 12.0f;
+				_ActiveContainer->_WidgetSize = size._Y;
 
 				break;
 			}
