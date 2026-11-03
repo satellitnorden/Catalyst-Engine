@@ -78,6 +78,14 @@ namespace UI
         //Set up the key information.
         SetupKeyInformation();
 
+        //Retrieve the piano roll information.
+        Audio::PianoRollInformation information;
+
+        if (_AudioPlugin)
+        {
+            _AudioPlugin->GetPianoRollInformation(&information);
+        }
+
         //Render all the white keys.
         for (const KeyInformation &key_information : _KeyInformation)
         {
@@ -91,7 +99,10 @@ namespace UI
             const UI::ClickableInterface::State key_state{ GetKeyState(key_information) };
 
             //Cache the color.
-            const Vector4<float32> color{ GetKeyColor(key_state, false) };
+            Vector4<float32> color{ GetKeyColor(key_state, false) };
+
+            //Blend the color.
+            BlendColor(key_information, information, &color);
 
             //Render the base box.
             {
@@ -129,7 +140,10 @@ namespace UI
             const UI::ClickableInterface::State key_state{ GetKeyState(key_information) };
 
             //Cache the color.
-            const Vector4<float32> color{ GetKeyColor(key_state, true) };
+            Vector4<float32> color{ GetKeyColor(key_state, true) };
+
+            //Blend the color.
+            BlendColor(key_information, information, &color);
 
             //Render the base box.
             {
@@ -346,6 +360,35 @@ namespace UI
                     return Vector4<float32>(0.0f, 0.0f, 0.0f, 0.0f);
                 }
             }
+        }
+    }
+
+    /*
+    *	Blends the color together with the piano roll information.
+    */
+    void PianoRollWidget::BlendColor
+    (
+        const KeyInformation &key_information,
+        const Audio::PianoRollInformation &piano_roll_information,
+        Vector4<float32> *const RESTRICT color
+    ) NOEXCEPT
+    {
+        const Audio::PianoRollInformation::KeyInformation &_key_information{ piano_roll_information._KeyInformation[key_information._Note] };
+
+        if
+        (
+            _key_information._Color._R >= 0.0f
+            && _key_information._Color._G >= 0.0f
+            && _key_information._Color._B >= 0.0f
+        )
+        {
+            color->_R = BaseMath::LinearlyInterpolate(color->_R, _key_information._Color._R, 0.1875f);
+            color->_G = BaseMath::LinearlyInterpolate(color->_G, _key_information._Color._G, 0.1875f);
+            color->_B = BaseMath::LinearlyInterpolate(color->_B, _key_information._Color._B, 0.1875f);
+
+            color->_R = BaseMath::Clamp<float32>(color->_R, 0.0f, 1.0f);
+            color->_G = BaseMath::Clamp<float32>(color->_G, 0.0f, 1.0f);
+            color->_B = BaseMath::Clamp<float32>(color->_B, 0.0f, 1.0f);
         }
     }
 

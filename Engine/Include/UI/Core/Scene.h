@@ -9,6 +9,9 @@
 #include <UI/Core/Style.h>
 #include <UI/Core/Widget.h>
 
+//Forward declarations.
+class UISystem;
+
 namespace UI
 {
 
@@ -23,7 +26,7 @@ namespace UI
 		/*
 		*	Default constructor.
 		*/
-		Scene() NOEXCEPT;
+		Scene(UISystem *const RESTRICT system) NOEXCEPT;
 
 		/*
 		*	Default destructor.
@@ -108,6 +111,9 @@ namespace UI
 		}
 
 	protected:
+
+		//The system this scene is a part of.
+		UISystem *RESTRICT _System;
 
 		/*
 		*	Sets the font for this scene.

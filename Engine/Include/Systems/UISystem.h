@@ -13,6 +13,7 @@
 //UI.
 #include <UI/Core/RenderCommand.h>
 #include <UI/Core/Scene.h>
+#include <UI/Core/Style.h>
 #include <UI/Core/WidgetAllocator.h>
 
 //Systems.
@@ -34,10 +35,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	FORCE_INLINE UISystem() NOEXCEPT
-	{
-
-	}
+	UISystem() NOEXCEPT;
 
 	/*
 	*	Sets the reference resolution.
@@ -45,12 +43,28 @@ public:
 	void SetReferenceResolution(const Vector2<float32> value) NOEXCEPT;
 
 	/*
+	*	Returns the style for this scene.
+	*/
+	FORCE_INLINE NO_DISCARD const UI::Style &GetStyle() const NOEXCEPT
+	{
+		return _Style;
+	}
+
+	/*
+	*	Sets the style.
+	*/
+	FORCE_INLINE void SetStyle(const UI::Style &value) NOEXCEPT
+	{
+		_Style = value;
+	}
+
+	/*
 	*	Adds a UI scene of the given type.
 	*/
 	template <typename TYPE>
 	FORCE_INLINE TYPE *const RESTRICT AddScene() NOEXCEPT
 	{
-		TYPE *const RESTRICT scene{ new TYPE() };
+		TYPE *const RESTRICT scene{ new TYPE(this) };
 		scene->SetReferenceResolution(_ReferenceResolution);
 		_AddSceneRequests.Push(scene);
 		return scene;
@@ -81,6 +95,9 @@ private:
 
 	//The reference resolution.
 	Vector2<float32> _ReferenceResolution{ 1'920.0f, 1'080.0f };
+
+	//The style.
+	UI::Style _Style;
 
 	//The widget allocator.
 	UI::WidgetAllocator _WidgetAllocator;

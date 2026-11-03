@@ -42,6 +42,11 @@ public:
 	static void Terminate() NOEXCEPT;
 
 	/*
+	*	Returns the directory path of the current executable.
+	*/
+	static NO_DISCARD const char *const RESTRICT GetExecutableDirectorypath() NOEXCEPT;
+
+	/*
 	*	Returns if the given platform window is alive.
 	*/
 	static NO_DISCARD bool IsPlatformWindowAlive(void *const RESTRICT window) NOEXCEPT;

@@ -12,6 +12,9 @@
 //Systems.
 #include <Systems/ContentSystem.h>
 
+//Audio plugin.
+#include <AudioPluginGlue.Generated.h>
+
 namespace Audio
 {
 
@@ -42,6 +45,16 @@ namespace Audio
 		//Initialize the plugin.
 		{
 			Audio::Plugin::InitializeContext context;
+
+#if defined(AUDIO_PLUGIN_STANDALONE)
+	#if !defined(CATALYST_CONFIGURATION_FINAL)
+			context._Directory = AudioPluginGlue::GetDefaultDirectory();
+	#else
+			context._Directory = CatalystPlatform::GetExecutableDirectorypath();
+	#endif
+#else
+			context._Directory = CatalystPlatform::GetExecutableDirectorypath();
+#endif
 
 			if (USE_INTERNAL_RENDERING)
 			{

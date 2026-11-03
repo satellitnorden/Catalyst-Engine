@@ -109,6 +109,16 @@ namespace UI
 		NO_DISCARD Vector4<float32> GetKeyColor(const UI::ClickableInterface::State state, const bool is_black) NOEXCEPT;
 
 		/*
+		*	Blends the color together with the piano roll information.
+		*/
+		void BlendColor
+		(
+			const KeyInformation &key_information,
+			const Audio::PianoRollInformation &piano_roll_information,
+			Vector4<float32> *const RESTRICT color
+		) NOEXCEPT;
+
+		/*
 		*	Callback for when a key starts being pressed.
 		*/
 		void OnKeyStartPress(const KeyInformation &key_information) NOEXCEPT;

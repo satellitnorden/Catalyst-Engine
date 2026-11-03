@@ -3,9 +3,6 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//Math.
-#include <Math/General/Vector.h>
-
 namespace UI
 {
 

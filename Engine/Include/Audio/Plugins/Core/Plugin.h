@@ -10,6 +10,7 @@
 #include <Audio/Core/Audio.h>
 #include <Audio/Core/AudioProcessContext.h>
 #include <Audio/MIDI/MIDIMessage.h>
+#include <Audio/Miscellaneous/PianoRollInformation.h>
 
 //Concurrency.
 #include <Concurrency/Atomic.h>
@@ -54,6 +55,7 @@ namespace Audio
 		{
 			NONE,
 
+			SAMPLER,
 			SYNTHESIZER
 		};
 
@@ -64,6 +66,9 @@ namespace Audio
 		{
 
 		public:
+
+			//The directory this plugin is executed from.
+			StaticString<MAXIMUM_FILE_PATH_LENGTH> _Directory;
 
 			//The UI system.
 			UISystem *RESTRICT _UISystem;
@@ -116,6 +121,11 @@ namespace Audio
 			const uint8 number_of_channels,
 			const uint32 number_of_samples
 		) NOEXCEPT;
+
+		/*
+		*	Returns the piano roll information.
+		*/
+		FORCE_INLINE virtual void GetPianoRollInformation(Audio::PianoRollInformation *const RESTRICT information) NOEXCEPT;
 
 	protected:
 
@@ -234,6 +244,57 @@ namespace Audio
 	public:
 
 		/*
+		*	Parameter class definition.
+		*/
+		class Parameter final
+		{
+
+		public:
+
+			//Enumeration covering all types.
+			enum class Type : uint8
+			{
+				NONE,
+
+				BOOL,
+				INT32,
+
+				ENUMERATION,
+				GAIN,
+				PERCENT,
+				TIME
+			};
+
+			//The name.
+			StaticString<64> _Name;
+
+			//The display name.
+			StaticString<64> _DisplayName;
+
+			//The tooltip.
+			StaticString<128> _Tooltip;
+
+			//The data.
+			void *RESTRICT _Data;
+
+			//The type.
+			Type _Type;
+
+			//The minimum.
+			float32 _Minimum;
+
+			//The maximum.
+			float32 _Maximum;
+
+			//The enumeration names. Only used when type is ENUMERATION.
+			DynamicArray<StaticString<64>> _EnumerationNames;
+
+			//The enumeration tooltips. Only used when type is ENUMERATION.
+			DynamicArray<StaticString<128>> _EnumerationTooltips;
+
+		};
+
+		/*
 		*	Returns the number of parameters.
 		*/
 		FORCE_INLINE NO_DISCARD uint64 GetNumberOfParameters() const NOEXCEPT;
@@ -330,51 +391,6 @@ namespace Audio
 		FORCE_INLINE NO_DISCARD bool PrintParameterValueString(const uint64 index, char *buffer, const uint64 buffer_capacity, const float32 value) const NOEXCEPT;
 
 	protected:
-
-		/*
-		*	Parameter class definition.
-		*/
-		class Parameter final
-		{
-
-		public:
-
-			//Enumeration covering all types.
-			enum class Type : uint8
-			{
-				NONE,
-
-				BOOL,
-				INT32,
-
-				ENUMERATION,
-				GAIN,
-				PERCENT,
-				TIME
-			};
-
-			//The name.
-			StaticString<64> _Name;
-
-			//The display name.
-			StaticString<64> _DisplayName;
-
-			//The data.
-			void *RESTRICT _Data;
-
-			//The type.
-			Type _Type;
-
-			//The minimum.
-			float32 _Minimum;
-
-			//The maximum.
-			float32 _Maximum;
-
-			//The enumeration names. Only used when type is ENUMERATION.
-			DynamicArray<StaticString<64>> _EnumerationNames;
-
-		};
 
 		//The parameters.
 		DynamicArray<Parameter> _Parameters;

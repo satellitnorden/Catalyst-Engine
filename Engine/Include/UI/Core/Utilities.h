@@ -9,6 +9,7 @@
 
 //Math.
 #include <Math/General/Vector.h>
+#include <Math/Geometry/AxisAlignedBoundingBox2D.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -18,8 +19,22 @@
 
 namespace UI
 {
+
 	namespace Utilities
 	{
+
+		/*
+		*	Applies padding to the given bounding box.
+		*/
+		FORCE_INLINE void ApplyPadding(const float32 padding, AxisAlignedBoundingBox2D *const RESTRICT bounding_box) NOEXCEPT
+		{
+			bounding_box->_Minimum._X += padding;
+			bounding_box->_Minimum._Y += padding;
+
+			bounding_box->_Maximum._X -= padding;
+			bounding_box->_Maximum._Y -= padding;
+		}
+
 		/*
 		*	Calculates an aligned bounding box for text.
 		*/
@@ -132,5 +147,7 @@ namespace UI
 				}
 			}
 		}
+
 	}
+
 }

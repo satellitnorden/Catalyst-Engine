@@ -1187,9 +1187,9 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 				if (AudioPluginDoesMIDIIn(audio_plugin))
 				{
 					file << "\t/*" << std::endl;
-					file << "\t*\tCallback for this plugin when it receives a MIDI message." << std::endl;
+					file << "\t*\tCallback for this plugin when it receives MIDI messages." << std::endl;
 					file << "\t*/" << std::endl;
-					file << "\tvoid OnMIDIMessage(const MIDIMessage &message) NOEXCEPT override;" << std::endl;
+					file << "\tvoid OnMIDIMessages(const MIDIMessage *const RESTRICT messages, const uint64 number_of_messages) NOEXCEPT override;" << std::endl;
 					file << std::endl;
 				}
 
@@ -1275,9 +1275,9 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 				if (AudioPluginDoesMIDIIn(audio_plugin))
 				{
 					file << "/*" << std::endl;
-					file << "*\tCallback for this plugin when it receives a MIDI message." << std::endl;
+					file << "*\tCallback for this plugin when it receives MIDI messages." << std::endl;
 					file << "*/" << std::endl;
-					file << "void " << audio_plugin._ClassName.c_str() << "::OnMIDIMessage(const MIDIMessage &message) NOEXCEPT" << std::endl;
+					file << "void " << audio_plugin._ClassName.c_str() << "::OnMIDIMessages(const MIDIMessage *const RESTRICT messages, const uint64 number_of_messages) NOEXCEPT" << std::endl;
 					file << "{" << std::endl;
 					file << std::endl;
 					file << "}";
@@ -1337,6 +1337,12 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 				file << "#include <" << audio_plugin._NameNoSpaces << "StandaloneMain.h>" << std::endl;
 				file << std::endl;
 
+				file << "#if !defined(CATALYST_CONFIGURATION_FINAL)" << std::endl;
+				file << "//Systems." << std::endl;
+				file << "#include <Systems/ContentSystem.h>" << std::endl;
+				file << "#endif" << std::endl;
+				file << std::endl;
+
 				file << "/*" << std::endl;
 				file << "*\tReturns the number of threads for the standalone application." << std::endl;
 				file << "*/" << std::endl;
@@ -1360,7 +1366,10 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 				file << "*/" << std::endl;
 				file << "void " << audio_plugin._NameNoSpaces.c_str() << "PostInitialize() NOEXCEPT" << std::endl;
 				file << "{" << std::endl;
-				file << std::endl;
+				file << "#if !defined(CATALYST_CONFIGURATION_FINAL)" << std::endl;
+				file << "\t//Compile content." << std::endl;
+				file << "\tContentSystem::Instance->Compile(\"..\\\\..\\\\..\\\\AudioPlugins\\\\" << audio_plugin._NameNoSpaces.c_str() << "\\\\Content\");" << std::endl;
+				file << "#endif" << std::endl;
 				file << "}";
 
 				file.close();
@@ -1477,27 +1486,38 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 				file << "\t}" << std::endl;
 				file << std::endl;
 
+				file << "\t//Set up the bounding box." << std::endl;
+				file << "\tAxisAlignedBoundingBox2D bounding_box" << std::endl;
+				file << "\t{" << std::endl;
+				file << "\t\tVector2<float32>(0.0f, 0.0f)," << std::endl;
+				file << "\t\tVector2<float32>(GetReferenceResolution()._X, GetReferenceResolution()._Y)" << std::endl;
+				file << "\t};" << std::endl;
+				file << std::endl;
+
 				if (AudioPluginDoesMIDIIn(audio_plugin))
 				{
 					file << "\t//Add the piano roll." << std::endl;
 					file << "\t{" << std::endl;
 					file << "\t\t//Set the bounding box." << std::endl;
-					file << "\t\tconst AxisAlignedBoundingBox2D bounding_box" << std::endl;
+					file << "\t\tconst AxisAlignedBoundingBox2D piano_roll_bounding_box" << std::endl;
 					file << "\t\t{" << std::endl;
 					file << "\t\t\tVector2<float32>(0.0f, 0.0f)," << std::endl;
-					file << "\t\t\tVector2<float32>(GetReferenceResolution()._X, BaseMath::Round<float32>(GetReferenceResolution()._Y * 0.1f))" << std::endl;
+					file << "\t\t\tVector2<float32>(bounding_box.Dimensions()._X, BaseMath::Round<float32>(bounding_box.Dimensions()._Y * 0.1f))" << std::endl;
 					file << "\t\t};" << std::endl;
 					file << std::endl;
-					file << "\t\tSetContainerNextWidgetBoundingBox(bounding_box);" << std::endl;
+					file << "\t\tSetContainerNextWidgetBoundingBox(piano_roll_bounding_box);" << std::endl;
 					file << std::endl;
 					file << "\t\t//Add the widget." << std::endl;
 					file << "\t\tAddWidget<UI::PianoRollWidget>(context, UI::Identifier(\"Piano Roll\"))" << std::endl;
 					file << "\t\t->SetAudioPlugin(_Plugin);" << std::endl;
+					file << std::endl;
+					file << "\t\t//Shrink the bounding box to account for the piano roll." << std::endl;
+					file << "\t\tbounding_box._Minimum._Y += piano_roll_bounding_box.Dimensions()._Y;" << std::endl;
 					file << "\t}" << std::endl;
 					file << std::endl;
 				}
 
-				file << "\t//Start the container." << std::endl;
+				file << "\t//End the container." << std::endl;
 				file << "\tEndContainer(context);" << std::endl;
 				file << "}" << std::endl;
 				file << std::endl;

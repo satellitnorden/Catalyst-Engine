@@ -69,6 +69,13 @@ const clap_plugin_descriptor_t PLUGIN_DESCRIPTOR
 				break;
 			}
 
+			case Audio::Plugin::SubCategory::SAMPLER:
+			{
+				FEATURES[1] = CLAP_PLUGIN_FEATURE_SAMPLER;
+
+				break;
+			}
+
 			case Audio::Plugin::SubCategory::SYNTHESIZER:
 			{
 				FEATURES[1] = CLAP_PLUGIN_FEATURE_SYNTHESIZER;

@@ -7,6 +7,24 @@
 #include <Systems/RenderingSystem.h>
 
 /*
+*	Default constructor.
+*/
+UISystem::UISystem() NOEXCEPT
+{
+	//Set up the default style.
+	_Style._UncheckedIdleColor = Vector4<float32>(0.125f, 0.125f, 0.125f, 0.25f);
+	_Style._UncheckedHoveredColor = Vector4<float32>(0.25f, 0.25f, 0.25f, 0.5f);
+	_Style._UncheckedPressedColor = Vector4<float32>(0.5f, 0.5f, 0.5f, 0.75f);
+	_Style._CheckedIdleColor = Vector4<float32>(0.5f, 0.5f, 0.5f, 0.5f);
+	_Style._CheckedHoveredColor = Vector4<float32>(0.6875f, 0.6875f, 0.6875f, 0.6875f);
+	_Style._CheckedPressedColor = Vector4<float32>(0.875f, 0.875f, 0.875f, 0.875f);
+	_Style._Rounding = 8.0f;
+	_Style._BigTextScale = 40.0f;
+	_Style._MediumTextScale = 32.0f;
+	_Style._SmallTextScale = 24.0f;
+}
+
+/*
 *	Initializes the UI system.
 */
 void UISystem::Initialize() NOEXCEPT

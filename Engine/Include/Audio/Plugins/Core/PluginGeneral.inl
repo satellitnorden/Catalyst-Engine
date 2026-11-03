@@ -234,6 +234,14 @@ namespace Audio
 	}
 
 	/*
+	*	Returns the piano roll information.
+	*/
+	FORCE_INLINE void Plugin::GetPianoRollInformation(Audio::PianoRollInformation *const RESTRICT information) NOEXCEPT
+	{
+
+	}
+
+	/*
 	*	Initializes this plugin.
 	*/
 	FORCE_INLINE void Plugin::Initialize(const InitializeContext &context) NOEXCEPT
