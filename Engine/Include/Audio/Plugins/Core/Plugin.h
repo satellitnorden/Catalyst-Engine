@@ -258,6 +258,7 @@ namespace Audio
 
 				BOOL,
 				INT32,
+				UINT32,
 
 				ENUMERATION,
 				GAIN,
@@ -486,6 +487,9 @@ namespace Audio
 
 		//The queued MIDI messages.
 		DynamicArray<QueuedMIDIMessage> _QueuedMIDIMessages;
+
+		//The read MIDI messages.
+		DynamicArray<MIDIMessage> _ReadyMIDIMessages;
 
 		//The MIDI note states.
 		StaticArray<MIDINoteState, 128> _MIDINoteStates;

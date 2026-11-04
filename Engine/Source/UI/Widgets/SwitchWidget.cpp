@@ -8,40 +8,42 @@ namespace UI
 {
 
 	/*
-	*	Switch widget constants.
-	*/
-	namespace SwitchWidgetConstants
-	{
-		//Define constants.
-		constexpr float32 TEXT_FRACTION{ 0.1875f };
-	}
-
-	/*
 	*	Default constructor.
 	*/
 	SwitchWidget::SwitchWidget() NOEXCEPT
 	{
 		//Set up the clickable interface.
-		/*
+		//Set up the clickable interface.
 		_ClickableInterface._IsInside = [](const Widget *const RESTRICT widget, ClickableInterface *const RESTRICT clickable_interface, const Vector2<float32> position)
 		{
+			//Cache the switch widget.
+			const SwitchWidget *const RESTRICT switch_widget{ static_cast<const SwitchWidget *const RESTRICT>(widget) };
+
+			//Retrieve the switch bounding box.
+			AxisAlignedBoundingBox2D switch_bounding_box{ switch_widget->GetSwitchBoundingBox() };
+
+			//If we have texture indices, just return if it is inside.
+			if (switch_widget->_HasTextureIndices)
+			{
+				return switch_bounding_box.IsInside(position);
+			}
+
 			//Calculate the center.
-			const Vector2<float32> center{ AxisAlignedBoundingBox2D::CalculateCenter(widget->GetAxisAlignedBoundingBox()) };
+			const Vector2<float32> center{ AxisAlignedBoundingBox2D::CalculateCenter(switch_bounding_box) };
 
 			//Calculate the height.
-			const float32 height{ widget->GetAxisAlignedBoundingBox().LongestSide() };
+			const float32 height{ switch_bounding_box.Dimensions()._Y };
 
-			//Calculate the outer circle radius, and it's square.
-			const float32 outer_circle_radius{ height * 0.5f * (1.0f - (KnobWidgetConstants::TEXT_FRACTION * 2.0f)) };
-			const float32 outer_circle_radius_squared{ outer_circle_radius * outer_circle_radius };
+			//Calculate the width.
+			const float32 width{ height * 0.5f };
 
-			//Calculate the distance to the center.
-			const float32 distance_to_center{ Vector2<float32>::LengthSquared(center - position) };
+			//Shrink the switch bounding box.
+			switch_bounding_box._Minimum._X = center._X - width * 0.5f;
+			switch_bounding_box._Maximum._X = center._X + width * 0.5f;
 
-			//The mouse is inside if it is inside the knob circle.
-			return distance_to_center <= outer_circle_radius_squared;
+			//Return if the position is inside.
+			return switch_bounding_box.IsInside(position);
 		};
-		*/
 		_ClickableInterface.SetOnEndPressCallback
 		(
 			[](Widget *const RESTRICT widget, void *const RESTRICT /*user_data*/)
@@ -65,66 +67,11 @@ namespace UI
 	*/
 	void SwitchWidget::Render(const UI::RenderContext &context) NOEXCEPT
 	{
-
-		//Retrieve the text bounding box.
-		const AxisAlignedBoundingBox2D text_bounding_box{ GetTextBoundingBox() };
-
-		//Retrieve the switch bounding box.
-		const AxisAlignedBoundingBox2D switch_bounding_box{ GetSwitchBoundingBox() };
-
-		//Render the indicator.
-		if (_HasTextureIndices)
-		{
-			//Cache the switch state.
-			const bool switch_state{ _AudioPlugin->GetParameterCurrentPlain(_AudioPluginParameterIndex) >= 0.5f };
-
-			//Render the box.
-			RenderSolidBox(context, switch_bounding_box, _TextureIndices[static_cast<uint32>(switch_state)]);
-		}
-
-		else
-		{
-			//Calculate the center.
-			const Vector2<float32> center{ AxisAlignedBoundingBox2D::CalculateCenter(switch_bounding_box) };
-
-			//Calculate the indicator height.
-			const float32 indicator_height{ switch_bounding_box.Dimensions()._Y };
-
-			//Calculate the indicator width.
-			const float32 indicator_width{ indicator_height * 0.5f };
-
-			//Render the base box.
-			{
-				//Calculate the bounding box.
-				const AxisAlignedBoundingBox2D bounding_box
-				{
-					Vector2<float32>(center._X - indicator_width * 0.5f, center._Y - indicator_height * 0.5f),
-					Vector2<float32>(center._X + indicator_width * 0.5f, center._Y + indicator_height * 0.5f)
-				};
-
-				//Render the box.
-				RenderRoundedBox(context, bounding_box, GetOffColor(_ClickableInterface.GetState()), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
-			}
-
-			//Render the indicator box.
-			{
-				//Cache the switch state.
-				const bool switch_state{ _AudioPlugin->GetParameterCurrentPlain(_AudioPluginParameterIndex) >= 0.5f };
-
-				//Calculate the bounding box.
-				const AxisAlignedBoundingBox2D bounding_box
-				{
-					Vector2<float32>(center._X - indicator_width * 0.5f, center._Y - indicator_height * 0.5f * static_cast<float32>(!switch_state)),
-					Vector2<float32>(center._X + indicator_width * 0.5f, center._Y + indicator_height * 0.5f * static_cast<float32>(switch_state))
-				};
-
-				//Render the box.
-				RenderRoundedBox(context, bounding_box, GetOnColor(_ClickableInterface.GetState()), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
-			}
-		}
-
 		//Render the text above.
 		{
+			//Retrieve the bounding box.
+			const AxisAlignedBoundingBox2D above_text_bounding_box{ GetAboveTextBoundingBox() };
+
 			//Figure out the text.
 			const char *RESTRICT text{ nullptr };
 
@@ -138,11 +85,122 @@ namespace UI
 				RenderText
 				(
 					context,
-					text_bounding_box,
+					above_text_bounding_box,
 					_Parent->_Parent->GetStyle()._Font,
 					text,
 					_Style._MediumTextScale
 				);
+			}
+		}
+
+		//Render the switch.
+		{
+			//Retrieve the bounding box.
+			const AxisAlignedBoundingBox2D switch_bounding_box{ GetSwitchBoundingBox() };
+
+			//Cache the switch state.
+			const bool switch_state{ _AudioPlugin->GetParameterCurrentPlain(_AudioPluginParameterIndex) >= 0.5f };
+
+			//Render differently depending on if we have texture indices or not.
+			if (!_HasTextureIndices)
+			{
+				//Calculate the center.
+				const Vector2<float32> center{ AxisAlignedBoundingBox2D::CalculateCenter(switch_bounding_box) };
+
+				//Calculate the indicator height.
+				const float32 indicator_height{ switch_bounding_box.Dimensions()._Y };
+
+				//Calculate the indicator width.
+				const float32 indicator_width{ indicator_height * 0.5f };
+
+				//Render the base box.
+				{
+					//Calculate the bounding box.
+					const AxisAlignedBoundingBox2D bounding_box
+					{
+						Vector2<float32>(center._X - indicator_width * 0.5f, center._Y - indicator_height * 0.5f),
+						Vector2<float32>(center._X + indicator_width * 0.5f, center._Y + indicator_height * 0.5f)
+					};
+
+					//Render the box.
+					RenderRoundedBox(context, bounding_box, GetOffColor(_ClickableInterface.GetState()), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
+				}
+
+				//Render the indicator box.
+				{
+					//Cache the switch state.
+					const bool switch_state{ _AudioPlugin->GetParameterCurrentPlain(_AudioPluginParameterIndex) >= 0.5f };
+
+					//Calculate the bounding box.
+					const AxisAlignedBoundingBox2D bounding_box
+					{
+						Vector2<float32>(center._X - indicator_width * 0.5f, center._Y - indicator_height * 0.5f * static_cast<float32>(!switch_state)),
+						Vector2<float32>(center._X + indicator_width * 0.5f, center._Y + indicator_height * 0.5f * static_cast<float32>(switch_state))
+					};
+
+					//Render the box.
+					RenderRoundedBox(context, bounding_box, GetOnColor(_ClickableInterface.GetState()), Vector4<float32>(1.0f, 1.0f, 1.0f, 1.0f), _Style._Rounding);
+				}
+			}
+
+			else
+			{
+				//Render the box.
+				RenderSolidBox(context, switch_bounding_box, _TextureIndices[static_cast<uint32>(switch_state)]);
+			}
+		}
+		
+		//Render the text below.
+		{
+			//Figure out if the text below should be drawn, and if so, which bounding box to use.
+			bool draw_text_below{ true };
+			AxisAlignedBoundingBox2D text_below_bounding_box;
+
+			//If we have texture indices, draw it on top of the swwitch, but only if it's hovered or pressed.
+			if (!_HasTextureIndices)
+			{
+				draw_text_below = true;
+				text_below_bounding_box = GetBelowTextBoundingBox();
+			}
+
+			else
+			{
+				if (_ClickableInterface.GetState() == UI::ClickableInterface::State::HOVERED || _ClickableInterface.GetState() == UI::ClickableInterface::State::PRESSED)
+				{
+					draw_text_below = true;
+					text_below_bounding_box = GetSwitchBoundingBox();
+				}
+
+				else
+				{
+					draw_text_below = false;
+				}
+			}
+
+			if (draw_text_below)
+			{
+				//Figure out the text.
+				char buffer[64];
+
+				const char *RESTRICT text{ nullptr };
+
+				if (_AudioPlugin != nullptr && _AudioPluginParameterIndex != UINT64_MAXIMUM)
+				{
+					_AudioPlugin->PrintParameterValueString(_AudioPluginParameterIndex, buffer, ARRAY_LENGTH(buffer), _AudioPlugin->GetParameterCurrentPlain(_AudioPluginParameterIndex));
+					text = buffer;
+				}
+
+				if (text)
+				{
+					RenderText
+					(
+						context,
+						text_below_bounding_box,
+						_Parent->_Parent->GetStyle()._Font,
+						text,
+						_Parent->_Parent->GetStyle()._MediumTextScale
+					);
+				}
 			}
 		}
 	}
@@ -160,9 +218,9 @@ namespace UI
 	}
 
 	/*
-	*	Returns the text bounding box.
+	*	Returns the above text bounding box.
 	*/
-	NO_DISCARD AxisAlignedBoundingBox2D SwitchWidget::GetTextBoundingBox() const NOEXCEPT
+	NO_DISCARD AxisAlignedBoundingBox2D SwitchWidget::GetAboveTextBoundingBox() const NOEXCEPT
 	{
 		//Calculate the text bounding box.
 		const AxisAlignedBoundingBox2D text_bounding_box
@@ -170,7 +228,7 @@ namespace UI
 			Vector2<float32>
 			(
 				_AxisAlignedBoundingBox._Minimum._X,
-				BaseMath::LinearlyInterpolate(_AxisAlignedBoundingBox._Minimum._Y, _AxisAlignedBoundingBox._Maximum._Y, 1.0f - SwitchWidgetConstants::TEXT_FRACTION)
+				_AxisAlignedBoundingBox._Maximum._Y - _Parent->_Parent->GetStyle()._MediumTextScale
 			),
 			Vector2<float32>
 			(
@@ -183,11 +241,12 @@ namespace UI
 	}
 
 	/*
-	*	Returns the switch bounding box.
+	*	Returns the below text bounding box.
 	*/
-	NO_DISCARD AxisAlignedBoundingBox2D SwitchWidget::GetSwitchBoundingBox() const NOEXCEPT
+	NO_DISCARD AxisAlignedBoundingBox2D SwitchWidget::GetBelowTextBoundingBox() const NOEXCEPT
 	{
-		AxisAlignedBoundingBox2D switch_bounding_box
+		//Calculate the text bounding box.
+		const AxisAlignedBoundingBox2D text_bounding_box
 		{
 			Vector2<float32>
 			(
@@ -197,10 +256,63 @@ namespace UI
 			Vector2<float32>
 			(
 				_AxisAlignedBoundingBox._Maximum._X,
-				BaseMath::LinearlyInterpolate(_AxisAlignedBoundingBox._Minimum._Y, _AxisAlignedBoundingBox._Maximum._Y, 1.0f - SwitchWidgetConstants::TEXT_FRACTION)
+				_AxisAlignedBoundingBox._Minimum._Y + _Parent->_Parent->GetStyle()._MediumTextScale
 			)
 		};
 
+		return text_bounding_box;
+	}
+
+	/*
+	*	Returns the switch bounding box.
+	*/
+	NO_DISCARD AxisAlignedBoundingBox2D SwitchWidget::GetSwitchBoundingBox() const NOEXCEPT
+	{
+		//Define constants.
+		constexpr float32 PADDING{ 4.0f };
+
+		//Handle differently depending on if we have texture indices or not.
+		AxisAlignedBoundingBox2D switch_bounding_box;
+
+		if (!_HasTextureIndices)
+		{
+			switch_bounding_box = AxisAlignedBoundingBox2D
+			{
+				Vector2<float32>
+				(
+					_AxisAlignedBoundingBox._Minimum._X,
+					_AxisAlignedBoundingBox._Minimum._Y + _Parent->_Parent->GetStyle()._MediumTextScale
+				),
+				Vector2<float32>
+				(
+					_AxisAlignedBoundingBox._Maximum._X,
+					_AxisAlignedBoundingBox._Maximum._Y - _Parent->_Parent->GetStyle()._MediumTextScale
+				)
+			};
+
+			switch_bounding_box._Minimum._Y += PADDING;
+			switch_bounding_box._Maximum._Y -= PADDING;
+		}
+
+		else
+		{
+			switch_bounding_box = AxisAlignedBoundingBox2D
+			{
+				Vector2<float32>
+				(
+					_AxisAlignedBoundingBox._Minimum._X,
+					_AxisAlignedBoundingBox._Minimum._Y
+				),
+				Vector2<float32>
+				(
+					_AxisAlignedBoundingBox._Maximum._X,
+					_AxisAlignedBoundingBox._Maximum._Y - _Parent->_Parent->GetStyle()._MediumTextScale
+				)
+			};
+		}
+
+		//Make it square if we have texture indices.
+		if (_HasTextureIndices)
 		{
 			const Vector2<float32> dimensions{ switch_bounding_box.Dimensions() };
 

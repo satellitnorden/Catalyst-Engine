@@ -168,40 +168,42 @@ namespace Audio
 			//Remember the last output index.
 			uint32 last_output_index{ 0 };
 
+			//Remember the start/end MIDI message index.
+			uint64 start_midi_message_index{ 0 };
+
 			//Iterate over each samples, adding to the inputs/outputs and output inbetween.
 			for (uint32 sample_index{ 0 }; sample_index < number_of_samples; ++sample_index)
 			{
 				//Check if any queued MIDI messages need triggering.
-				bool should_output{ false };
-
-				for (const QueuedMIDIMessage &queued_midi_message : _QueuedMIDIMessages)
+				for (uint64 midi_message_index{ start_midi_message_index }; midi_message_index < _QueuedMIDIMessages.Size(); ++midi_message_index)
 				{
-					if (queued_midi_message._SampleOffset == sample_index)
+					if (_QueuedMIDIMessages[midi_message_index]._SampleOffset == sample_index)
 					{
-						//TODO: Gather multiple messages and call this function once for each group.
-						OnMIDIMessages(&queued_midi_message._Message, 1);
-
-						should_output = true;
+						_ReadyMIDIMessages.Emplace(_QueuedMIDIMessages[midi_message_index]._Message);
+						start_midi_message_index = midi_message_index + 1;
 					}
 				}
 
-				//Check if we can output.
-				const bool can_output{ !_Inputs.At(0).Empty() };
-
-				//If we should and can output, then output!
-				if (should_output && can_output)
+				//If we have any MIDI messages to send, output first and then call 'OnMIDIMessages'.
+				if (!_ReadyMIDIMessages.Empty())
 				{
-					Output
-					(
-						this,
-						context,
-						&_Inputs,
-						&_Outputs,
-						outputs,
-						number_of_channels,
-						&last_output_index,
-						sample_index
-					);
+					if (!_Inputs.At(0).Empty())
+					{
+						Output
+						(
+							this,
+							context,
+							&_Inputs,
+							&_Outputs,
+							outputs,
+							number_of_channels,
+							&last_output_index,
+							sample_index
+						);
+					}
+
+					OnMIDIMessages(_ReadyMIDIMessages.Data(), _ReadyMIDIMessages.Size());
+					_ReadyMIDIMessages.Clear();
 				}
 
 				//Add to the buffers.

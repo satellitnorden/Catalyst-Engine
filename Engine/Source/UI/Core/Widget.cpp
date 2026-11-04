@@ -52,6 +52,22 @@ namespace UI
 				break;
 			}
 
+			case UI::Container::Layout::RIGHT_TO_LEFT:
+			{
+				_AxisAlignedBoundingBox._Minimum = Vector2<float32>
+				(
+					_Parent->_AxisAlignedBoundingBox._Maximum._X - (_Parent->_Cursor + _Parent->_ScrollOffset) - _Parent->_WidgetSize,
+					_Parent->_AxisAlignedBoundingBox._Minimum._Y
+				);
+				_AxisAlignedBoundingBox._Maximum = Vector2<float32>
+				(
+					_Parent->_AxisAlignedBoundingBox._Maximum._X - (_Parent->_Cursor + _Parent->_ScrollOffset),
+					_Parent->_AxisAlignedBoundingBox._Maximum._Y
+				);
+
+				break;
+			}
+
 			case UI::Container::Layout::TOP_TO_BOTTOM:
 			{
 				_AxisAlignedBoundingBox._Minimum = Vector2<float32>

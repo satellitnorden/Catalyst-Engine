@@ -68,6 +68,7 @@ namespace Audio
 
 			case Parameter::Type::BOOL:
 			case Parameter::Type::INT32:
+			case Parameter::Type::UINT32:
 			case Parameter::Type::ENUMERATION:
 			{
 				return true;
@@ -166,7 +167,12 @@ namespace Audio
 
 			case Parameter::Type::INT32:
 			{
-				return 1.0f / (_Parameters[index]._Maximum - _Parameters[index]._Minimum + 1.0f);
+				return 1.0f / (_Parameters[index]._Maximum - _Parameters[index]._Minimum);
+			}
+
+			case Parameter::Type::UINT32:
+			{
+				return 1.0f / (_Parameters[index]._Maximum - _Parameters[index]._Minimum);
 			}
 
 			case Parameter::Type::ENUMERATION:
@@ -283,6 +289,11 @@ namespace Audio
 				return "";
 			}
 
+			case Parameter::Type::UINT32:
+			{
+				return "";
+			}
+
 			case Parameter::Type::ENUMERATION:
 			{
 				return "";
@@ -336,6 +347,13 @@ namespace Audio
 			case Parameter::Type::INT32:
 			{
 				sprintf_s(buffer, buffer_capacity, "%i", BaseMath::Round<int32>(value));
+
+				return true;
+			}
+
+			case Parameter::Type::UINT32:
+			{
+				sprintf_s(buffer, buffer_capacity, "%u", BaseMath::Round<uint32>(value));
 
 				return true;
 			}
@@ -413,6 +431,13 @@ namespace Audio
 				break;
 			}
 
+			case Parameter::Type::UINT32:
+			{
+				*static_cast<uint32 *const RESTRICT>(_Parameters[index]._Data) = BaseMath::Round<uint32>(value);
+
+				break;
+			}
+
 			case Parameter::Type::ENUMERATION:
 			{
 				*static_cast<uint32 *const RESTRICT>(_Parameters[index]._Data) = BaseMath::Round<uint32>(value);
@@ -453,7 +478,7 @@ namespace Audio
 	/*
 	*	Converts parameter data to a plain value.
 	*/
-	FORCE_INLINE NO_DISCARD float32 Plugin::ParameterDataToPlain(const void* const RESTRICT data, const Parameter::Type type)
+	FORCE_INLINE NO_DISCARD float32 Plugin::ParameterDataToPlain(const void *const RESTRICT data, const Parameter::Type type)
 	{
 		switch (type)
 		{
@@ -472,6 +497,11 @@ namespace Audio
 			case Parameter::Type::INT32:
 			{
 				return BaseMath::Round<float32>(*static_cast<const int32 *const RESTRICT>(data));
+			}
+
+			case Parameter::Type::UINT32:
+			{
+				return BaseMath::Round<float32>(*static_cast<const uint32 *const RESTRICT>(data));
 			}
 
 			case Parameter::Type::ENUMERATION:

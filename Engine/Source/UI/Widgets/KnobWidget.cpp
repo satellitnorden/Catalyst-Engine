@@ -11,15 +11,6 @@ namespace UI
 {
 
 	/*
-	*	Knob widget constants.
-	*/
-	namespace KnobWidgetConstants
-	{
-		//Define constants.
-		constexpr float32 TEXT_FRACTION{ 0.1875f };
-	}
-
-	/*
 	*	Default constructor.
 	*/
 	KnobWidget::KnobWidget() NOEXCEPT
@@ -34,7 +25,7 @@ namespace UI
 			const Vector2<float32> center{ AxisAlignedBoundingBox2D::CalculateCenter(knob_bounding_box) };
 
 			//Calculate the height.
-			const float32 height{ widget->GetAxisAlignedBoundingBox().LongestSide() };
+			const float32 height{ knob_bounding_box.Dimensions()._Y };
 
 			//Calculate the outer circle radius, and it's square.
 			const float32 outer_circle_radius{ height * 0.5f };
@@ -85,108 +76,32 @@ namespace UI
 			//Try to set a new value.
 			if (_AudioPlugin != nullptr && _AudioPluginParameterIndex != UINT64_MAXIMUM)
 			{
-				if (BaseMath::Absolute<float32>(_AccumulatedChange) >= _AudioPlugin->GetParameterStepNormalized(_AudioPluginParameterIndex))
+				const float32 current{ _AudioPlugin->GetParameterCurrentNormalized(_AudioPluginParameterIndex) };
+
+				if (_AudioPlugin->IsParameterStepped(_AudioPluginParameterIndex))
 				{
-					_AudioPlugin->SetParameterNormalized(_AudioPluginParameterIndex, _AudioPlugin->GetParameterCurrentNormalized(_AudioPluginParameterIndex) + _AccumulatedChange);
+					const float32 parameter_step{ _AudioPlugin->GetParameterStepNormalized(_AudioPluginParameterIndex) };
+
+					if (BaseMath::Absolute<float32>(_AccumulatedChange) >= parameter_step)
+					{
+						_AudioPlugin->SetParameterNormalized(_AudioPluginParameterIndex, current + parameter_step * BaseMath::Signum(_AccumulatedChange));
+						_AccumulatedChange = 0.0f;
+					}
+				}
+				
+				else
+				{
+					_AudioPlugin->SetParameterNormalized(_AudioPluginParameterIndex, current + _AccumulatedChange);
 					_AccumulatedChange = 0.0f;
 				}
 			}
 		}
 
-		//Retrieve the text bounding box.
-		const AxisAlignedBoundingBox2D text_bounding_box{ GetTextBoundingBox() };
-
-		//Retrieve the knob bounding box.
-		const AxisAlignedBoundingBox2D knob_bounding_box{ GetKnobBoundingBox() };
-
-		//If this widget has textures, render the textures instead.
-		if (!_TextureIndices.Empty())
-		{
-			//Figure out the angle factor.
-			float32 angle_factor{ 0.5f };
-
-			if (_AudioPlugin != nullptr && _AudioPluginParameterIndex != UINT64_MAXIMUM)
-			{
-				angle_factor = _AudioPlugin->GetParameterCurrentNormalized(_AudioPluginParameterIndex);
-			}
-
-			//Figure out the texture index.
-			const uint32 texture_index{ static_cast<uint32>(static_cast<float32>(_TextureIndices.LastIndex() * angle_factor)) };
-
-			//Render the box.
-			RenderSolidBox(context, knob_bounding_box, _TextureIndices[texture_index]);
-		}
-
-		else
-		{
-			//Calculate the center.
-			const Vector2<float32> center{ AxisAlignedBoundingBox2D::CalculateCenter(knob_bounding_box) };
-
-			//Calculate the inner/outer circle radius.
-			const float32 outer_circle_radius{ knob_bounding_box.Dimensions()._Y * 0.5f * (1.0f - (KnobWidgetConstants::TEXT_FRACTION * 2.0f)) };
-			const float32 inner_circle_radius{ outer_circle_radius * 0.95f };
-
-			//Render the inner circle.
-			{
-				//Calculate the color.
-				const Vector4<float32> color{ GetInnerColor(_ClickableInterface.GetState()) };
-
-				//Render!
-				RenderSolidCircle(context, center, outer_circle_radius, color);
-			}
-
-			//Draw the indicator.
-			{
-				//Calculate the indicator radius.
-				const float32 indicator_radius{ (outer_circle_radius - inner_circle_radius) * 0.5f };
-
-				//Figure out the angle factor.
-				float32 angle_factor{ 0.5f };
-
-				if (_AudioPlugin != nullptr && _AudioPluginParameterIndex != UINT64_MAXIMUM)
-				{
-					angle_factor = _AudioPlugin->GetParameterCurrentNormalized(_AudioPluginParameterIndex);
-				}
-
-				//Calculate the up direction.
-				Vector2<float32> up_direction{ 0.0f, 1.0f };
-				up_direction.Rotate(-BaseMath::LinearlyInterpolate(BaseMath::DegreesToRadians(-135.0f), BaseMath::DegreesToRadians(135.0f), angle_factor));
-
-				//Calculate the start/end.
-				const Vector2<float32> start{ center + up_direction * outer_circle_radius * 0.1f };
-				const Vector2<float32> end{ center + up_direction * inner_circle_radius };
-
-				//Calculate the color.
-				Vector4<float32> color{ GetOuterColor(_ClickableInterface.GetState()) };
-
-				//Always draw at full opacity for the outer circle.
-				color._A = 1.0f;
-
-				RenderLine
-				(
-					context,
-					start,
-					end,
-					indicator_radius,
-					color
-				);
-			}
-
-			//Render the outer circle.
-			{
-				//Calculate the color.
-				Vector4<float32> color{ GetOuterColor(_ClickableInterface.GetState()) };
-
-				//Always draw at full opacity for the outer circle.
-				color._A = 1.0f;
-
-				//Render!
-				RenderHollowCircle(context, center, outer_circle_radius, inner_circle_radius, color);
-			}
-		}
-
 		//Render the text above.
 		{
+			//Retrieve the bounding box.
+			const AxisAlignedBoundingBox2D above_text_bounding_box{ GetAboveTextBoundingBox() };
+
 			//Figure out the text.
 			const char *RESTRICT text{ nullptr };
 
@@ -200,7 +115,7 @@ namespace UI
 				RenderText
 				(
 					context,
-					text_bounding_box,
+					above_text_bounding_box,
 					_Parent->_Parent->GetStyle()._Font,
 					text,
 					_Parent->_Parent->GetStyle()._MediumTextScale
@@ -208,30 +123,141 @@ namespace UI
 			}
 		}
 
-		//Render the text below.
-		if (_ClickableInterface.GetState() == UI::ClickableInterface::State::HOVERED || _ClickableInterface.GetState() == UI::ClickableInterface::State::PRESSED)
+		//Render the knob.
 		{
-			//Figure out the text.
-			char buffer[64];
+			//Retrieve the bounding box.
+			const AxisAlignedBoundingBox2D knob_bounding_box{ GetKnobBoundingBox() };
 
-			const char *RESTRICT text{ nullptr };
+			//Figure out the angle factor.
+			float32 angle_factor{ 0.5f };
 
 			if (_AudioPlugin != nullptr && _AudioPluginParameterIndex != UINT64_MAXIMUM)
 			{
-				_AudioPlugin->PrintParameterValueString(_AudioPluginParameterIndex, buffer, ARRAY_LENGTH(buffer), _AudioPlugin->GetParameterCurrentPlain(_AudioPluginParameterIndex));
-				text = buffer;
+				angle_factor = _AudioPlugin->GetParameterCurrentNormalized(_AudioPluginParameterIndex);
 			}
 
-			if (text)
+			//Render differently depending on if we have texture indices or not.
+			if (_TextureIndices.Empty())
 			{
-				RenderText
-				(
-					context,
-					knob_bounding_box,
-					_Parent->_Parent->GetStyle()._Font,
-					text,
-					_Parent->_Parent->GetStyle()._SmallTextScale
-				);
+				//Calculate the center.
+				const Vector2<float32> center{ AxisAlignedBoundingBox2D::CalculateCenter(knob_bounding_box) };
+
+				//Calculate the inner/outer circle radius.
+				const float32 outer_circle_radius{ knob_bounding_box.Dimensions()._Y * 0.5f };
+				const float32 inner_circle_radius{ outer_circle_radius * 0.95f };
+
+				//Render the inner circle.
+				{
+					//Calculate the color.
+					const Vector4<float32> color{ GetInnerColor(_ClickableInterface.GetState()) };
+
+					//Render!
+					RenderSolidCircle(context, center, outer_circle_radius, color);
+				}
+
+				//Draw the indicator.
+				{
+					//Calculate the indicator radius.
+					const float32 indicator_radius{ (outer_circle_radius - inner_circle_radius) * 0.5f };
+
+					//Calculate the up direction.
+					Vector2<float32> up_direction{ 0.0f, 1.0f };
+					up_direction.Rotate(-BaseMath::LinearlyInterpolate(BaseMath::DegreesToRadians(-135.0f), BaseMath::DegreesToRadians(135.0f), angle_factor));
+
+					//Calculate the start/end.
+					const Vector2<float32> start{ center + up_direction * outer_circle_radius * 0.1f };
+					const Vector2<float32> end{ center + up_direction * inner_circle_radius };
+
+					//Calculate the color.
+					Vector4<float32> color{ GetOuterColor(_ClickableInterface.GetState()) };
+
+					//Always draw at full opacity for the outer circle.
+					color._A = 1.0f;
+
+					RenderLine
+					(
+						context,
+						start,
+						end,
+						indicator_radius,
+						color
+					);
+				}
+
+				//Render the outer circle.
+				{
+					//Calculate the color.
+					Vector4<float32> color{ GetOuterColor(_ClickableInterface.GetState()) };
+
+					//Always draw at full opacity for the outer circle.
+					color._A = 1.0f;
+
+					//Render!
+					RenderHollowCircle(context, center, outer_circle_radius, inner_circle_radius, color);
+				}
+			}
+
+			else
+			{
+				//Figure out the texture index.
+				const uint32 texture_index{ static_cast<uint32>(static_cast<float32>(_TextureIndices.LastIndex() * angle_factor)) };
+
+				//Render the box.
+				RenderSolidBox(context, knob_bounding_box, _TextureIndices[texture_index]);
+			}
+		}
+
+		//Render the text below.
+		{
+			//Figure out if the text below should be drawn, and if so, which bounding box to use.
+			bool draw_text_below{ true };
+			AxisAlignedBoundingBox2D text_below_bounding_box;
+
+			//If we have texture indices, draw it on top of the knob, but only if it's hovered or pressed.
+			if (_TextureIndices.Empty())
+			{
+				draw_text_below = true;
+				text_below_bounding_box = GetBelowTextBoundingBox();
+			}
+
+			else
+			{
+				if (_ClickableInterface.GetState() == UI::ClickableInterface::State::HOVERED || _ClickableInterface.GetState() == UI::ClickableInterface::State::PRESSED)
+				{
+					draw_text_below = true;
+					text_below_bounding_box = GetKnobBoundingBox();
+				}
+
+				else
+				{
+					draw_text_below = false;
+				}
+			}
+
+			if (draw_text_below)
+			{
+				//Figure out the text.
+				char buffer[64];
+
+				const char *RESTRICT text{ nullptr };
+
+				if (_AudioPlugin != nullptr && _AudioPluginParameterIndex != UINT64_MAXIMUM)
+				{
+					_AudioPlugin->PrintParameterValueString(_AudioPluginParameterIndex, buffer, ARRAY_LENGTH(buffer), _AudioPlugin->GetParameterCurrentPlain(_AudioPluginParameterIndex));
+					text = buffer;
+				}
+
+				if (text)
+				{
+					RenderText
+					(
+						context,
+						text_below_bounding_box,
+						_Parent->_Parent->GetStyle()._Font,
+						text,
+						_Parent->_Parent->GetStyle()._MediumTextScale
+					);
+				}
 			}
 		}
 
@@ -261,9 +287,9 @@ namespace UI
 	}
 
 	/*
-	*	Returns the text bounding box.
+	*	Returns the above text bounding box.
 	*/
-	NO_DISCARD AxisAlignedBoundingBox2D KnobWidget::GetTextBoundingBox() const NOEXCEPT
+	NO_DISCARD AxisAlignedBoundingBox2D KnobWidget::GetAboveTextBoundingBox() const NOEXCEPT
 	{
 		//Calculate the text bounding box.
 		const AxisAlignedBoundingBox2D text_bounding_box
@@ -271,7 +297,7 @@ namespace UI
 			Vector2<float32>
 			(
 				_AxisAlignedBoundingBox._Minimum._X,
-				BaseMath::LinearlyInterpolate(_AxisAlignedBoundingBox._Minimum._Y, _AxisAlignedBoundingBox._Maximum._Y, 1.0f - KnobWidgetConstants::TEXT_FRACTION)
+				_AxisAlignedBoundingBox._Maximum._Y - _Parent->_Parent->GetStyle()._MediumTextScale
 			),
 			Vector2<float32>
 			(
@@ -284,11 +310,12 @@ namespace UI
 	}
 
 	/*
-	*	Returns the knob bounding box.
+	*	Returns the below text bounding box.
 	*/
-	NO_DISCARD AxisAlignedBoundingBox2D KnobWidget::GetKnobBoundingBox() const NOEXCEPT
+	NO_DISCARD AxisAlignedBoundingBox2D KnobWidget::GetBelowTextBoundingBox() const NOEXCEPT
 	{
-		AxisAlignedBoundingBox2D knob_bounding_box
+		//Calculate the text bounding box.
+		const AxisAlignedBoundingBox2D text_bounding_box
 		{
 			Vector2<float32>
 			(
@@ -298,10 +325,62 @@ namespace UI
 			Vector2<float32>
 			(
 				_AxisAlignedBoundingBox._Maximum._X,
-				BaseMath::LinearlyInterpolate(_AxisAlignedBoundingBox._Minimum._Y, _AxisAlignedBoundingBox._Maximum._Y, 1.0f - KnobWidgetConstants::TEXT_FRACTION)
+				_AxisAlignedBoundingBox._Minimum._Y + _Parent->_Parent->GetStyle()._MediumTextScale
 			)
 		};
 
+		return text_bounding_box;
+	}
+
+	/*
+	*	Returns the knob bounding box.
+	*/
+	NO_DISCARD AxisAlignedBoundingBox2D KnobWidget::GetKnobBoundingBox() const NOEXCEPT
+	{
+		//Define constants.
+		constexpr float32 PADDING{ 4.0f };
+
+		//Handle differently depending on if we have texture indices or not.
+		AxisAlignedBoundingBox2D knob_bounding_box;
+
+		if (_TextureIndices.Empty())
+		{
+			knob_bounding_box = AxisAlignedBoundingBox2D
+			{
+				Vector2<float32>
+				(
+					_AxisAlignedBoundingBox._Minimum._X,
+					_AxisAlignedBoundingBox._Minimum._Y + _Parent->_Parent->GetStyle()._MediumTextScale
+				),
+				Vector2<float32>
+				(
+					_AxisAlignedBoundingBox._Maximum._X,
+					_AxisAlignedBoundingBox._Maximum._Y - _Parent->_Parent->GetStyle()._MediumTextScale
+				)
+			};
+
+			knob_bounding_box._Minimum._Y += PADDING;
+			knob_bounding_box._Maximum._Y -= PADDING;
+		}
+
+		else
+		{
+			knob_bounding_box = AxisAlignedBoundingBox2D
+			{
+				Vector2<float32>
+				(
+					_AxisAlignedBoundingBox._Minimum._X,
+					_AxisAlignedBoundingBox._Minimum._Y
+				),
+				Vector2<float32>
+				(
+					_AxisAlignedBoundingBox._Maximum._X,
+					_AxisAlignedBoundingBox._Maximum._Y - _Parent->_Parent->GetStyle()._MediumTextScale
+				)
+			};
+		}
+
+		//Always make it square.
 		{
 			const Vector2<float32> dimensions{ knob_bounding_box.Dimensions() };
 

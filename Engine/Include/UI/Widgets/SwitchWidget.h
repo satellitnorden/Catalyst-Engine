@@ -100,9 +100,14 @@ namespace UI
 		void OnEndPress() NOEXCEPT;
 
 		/*
-		*	Returns the text bounding box.
+		*	Returns the above text bounding box.
 		*/
-		NO_DISCARD AxisAlignedBoundingBox2D GetTextBoundingBox() const NOEXCEPT;
+		NO_DISCARD AxisAlignedBoundingBox2D GetAboveTextBoundingBox() const NOEXCEPT;
+
+		/*
+		*	Returns the below text bounding box.
+		*/
+		NO_DISCARD AxisAlignedBoundingBox2D GetBelowTextBoundingBox() const NOEXCEPT;
 
 		/*
 		*	Returns the switch bounding box.
