@@ -2,6 +2,7 @@
 #include <GenerateSolution/GenerateSolution.h>
 
 //Generate solution.
+#include <GenerateSolution/GenerateCMake.h>
 #include <GenerateSolution/GenerateVisualStudioCodeWorkspace.h>
 #include <GenerateSolution/GenerateVisualStudioSolution.h>
 
@@ -30,6 +31,14 @@ std::string AudioPluginCodeDirectory(const ProjectSettings::AudioPlugin &audio_p
 std::string AudioPluginContentDirectory(const ProjectSettings::AudioPlugin &audio_plugin)
 {
 	return "..\\AudioPlugins\\" + audio_plugin._NameNoSpaces + "\\Content";
+}
+
+/*
+*	Returns the CMake directory for the given audio plugin.
+*/
+std::string AudioPluginCMakeDirectory(const ProjectSettings::AudioPlugin &audio_plugin)
+{
+	return audio_plugin._NameNoSpaces + "\\CMake";
 }
 
 /*
@@ -1579,16 +1588,22 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 		configuration._PreprocessorDefinitions.emplace_back("CATALYST_HAS_EMBEDDED_RESOURCES");
 	}
 
-	//Generate the visual studio solution.
+	//Generate the CMake file.
 	{
-		parameters._DirectoryPath = AudioPluginVisualStudioSolutionDirectory(audio_plugin);
-		GenerateVisualStudioSolution::Generate(parameters);
+		parameters._DirectoryPath = AudioPluginCMakeDirectory(audio_plugin);
+		GenerateCMake::Generate(parameters);
 	}
 
 	//Generate the visual studio code workspace.
 	{
 		parameters._DirectoryPath = AudioPluginVisualStudioCodeWorkspaceDirectory(audio_plugin);
 		GenerateVisualStudioCodeWorkspace::Generate(parameters);
+	}
+
+	//Generate the visual studio solution.
+	{
+		parameters._DirectoryPath = AudioPluginVisualStudioSolutionDirectory(audio_plugin);
+		GenerateVisualStudioSolution::Generate(parameters);
 	}
 
 	//Remember the error code for filesystem functions.

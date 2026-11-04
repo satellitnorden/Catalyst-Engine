@@ -33,6 +33,9 @@
     <ClCompile Include="..\Code\GenerateSolution\GenerateVisualStudioCodeWorkspace.cpp">
       <Filter>GenerateSolution</Filter>
     </ClCompile>
+    <ClCompile Include="..\Code\GenerateSolution\GenerateCMake.cpp">
+      <Filter>GenerateSolution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Core\Core.h">
@@ -57,6 +60,9 @@
       <Filter>GenerateSolution</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\GenerateSolution\GenerateSolutionParameters.h">
+      <Filter>GenerateSolution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\GenerateSolution\GenerateCMake.h">
       <Filter>GenerateSolution</Filter>
     </ClInclude>
   </ItemGroup>

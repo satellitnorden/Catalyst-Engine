@@ -134,6 +134,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Code\GenerateSolution\GenerateCMake.cpp" />
     <ClCompile Include="..\Code\GenerateSolution\GenerateSolution.cpp" />
     <ClCompile Include="..\Code\GenerateSolution\GenerateVisualStudioCodeWorkspace.cpp" />
     <ClCompile Include="..\Code\GenerateSolution\GenerateVisualStudioSolution.cpp" />
@@ -143,6 +144,7 @@
   <ItemGroup>
     <ClInclude Include="..\Code\Core\Core.h" />
     <ClInclude Include="..\Code\Core\MurmurHash.h" />
+    <ClInclude Include="..\Code\GenerateSolution\GenerateCMake.h" />
     <ClInclude Include="..\Code\GenerateSolution\GenerateSolution.h" />
     <ClInclude Include="..\Code\GenerateSolution\GenerateSolutionParameters.h" />
     <ClInclude Include="..\Code\GenerateSolution\GenerateVisualStudioCodeWorkspace.h" />
