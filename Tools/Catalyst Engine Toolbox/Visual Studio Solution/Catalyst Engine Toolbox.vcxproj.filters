@@ -30,6 +30,9 @@
     <ClCompile Include="..\Code\GenerateSolution\GenerateVisualStudioSolution.cpp">
       <Filter>GenerateSolution</Filter>
     </ClCompile>
+    <ClCompile Include="..\Code\GenerateSolution\GenerateVisualStudioCodeWorkspace.cpp">
+      <Filter>GenerateSolution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Core\Core.h">
@@ -49,6 +52,12 @@
     </ClInclude>
     <ClInclude Include="..\Code\Core\MurmurHash.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\GenerateSolution\GenerateVisualStudioCodeWorkspace.h">
+      <Filter>GenerateSolution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\GenerateSolution\GenerateSolutionParameters.h">
+      <Filter>GenerateSolution</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

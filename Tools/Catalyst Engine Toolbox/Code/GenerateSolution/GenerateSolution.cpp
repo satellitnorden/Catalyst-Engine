@@ -2,7 +2,8 @@
 #include <GenerateSolution/GenerateSolution.h>
 
 //Generate solution.
-#include <GenerateSolution//GenerateVisualStudioSolution.h>
+#include <GenerateSolution/GenerateVisualStudioCodeWorkspace.h>
+#include <GenerateSolution/GenerateVisualStudioSolution.h>
 
 //STD.
 #include <filesystem>
@@ -32,11 +33,19 @@ std::string AudioPluginContentDirectory(const ProjectSettings::AudioPlugin &audi
 }
 
 /*
-*	Returns the solution directory for the given audio plugin.
+*	Returns the visual studio solution directory for the given audio plugin.
 */
-std::string AudioPluginSolutionDirectory(const ProjectSettings::AudioPlugin &audio_plugin)
+std::string AudioPluginVisualStudioSolutionDirectory(const ProjectSettings::AudioPlugin &audio_plugin)
 {
 	return audio_plugin._NameNoSpaces + "\\Win64";
+}
+
+/*
+*	Returns the visual studio code workspace directory for the given audio plugin.
+*/
+std::string AudioPluginVisualStudioCodeWorkspaceDirectory(const ProjectSettings::AudioPlugin &audio_plugin)
+{
+	return audio_plugin._NameNoSpaces + "\\Visual Studio Code";
 }
 
 /*
@@ -368,12 +377,15 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 /*
 *	Scans the given directory.
 */
-void ScanDirectory(GenerateVisualStudioSolution::Parameters::Directory *directory, const char *path)
+void ScanDirectory(GenerateSolutionParameters::Directory *directory, const char *path)
 {
 	if (!std::filesystem::exists(path))
 	{
 		return;
 	}
+
+	//Set the path.
+	directory->_Path = std::string("..\\..\\") + path;
 
 	for (auto &entry : std::filesystem::directory_iterator(path))
 	{
@@ -381,7 +393,7 @@ void ScanDirectory(GenerateVisualStudioSolution::Parameters::Directory *director
 
 		if (entry.is_directory())
 		{
-			GenerateVisualStudioSolution::Parameters::Directory &new_directory{ directory->_Directories.emplace_back() };
+			GenerateSolutionParameters::Directory &new_directory{ directory->_Directories.emplace_back() };
 			new_directory._Name = entry_file_path.substr(entry_file_path.find_last_of('\\') + 1);
 			ScanDirectory(&new_directory, entry_file_path.c_str());
 		}
@@ -401,7 +413,7 @@ void ScanDirectory(GenerateVisualStudioSolution::Parameters::Directory *director
 				|| extension == ".storage_buffer_definition"
 				|| extension == ".uniform_buffer_definition")
 			{
-				GenerateVisualStudioSolution::Parameters::File &new_file{ directory->_Files.emplace_back() };
+				GenerateSolutionParameters::File &new_file{ directory->_Files.emplace_back() };
 
 				new_file._Path = std::string("..\\..\\") + entry_file_path;
 				new_file._EnableWarnings = true;
@@ -426,7 +438,7 @@ bool ShouldIncludeThirdPartyDirectory(const ProjectSettings &project_settings, c
 /*
 *	Scans the given third party directory.
 */
-void ScanThirdPartyDirectory(const ProjectSettings &project_settings, GenerateVisualStudioSolution::Parameters *parameters, GenerateVisualStudioSolution::Parameters::Directory *directory, const char *path, const bool is_top_level)
+void ScanThirdPartyDirectory(const ProjectSettings &project_settings, GenerateSolutionParameters*parameters, GenerateSolutionParameters::Directory *directory, const char *path, const bool is_top_level)
 {
 	if (!std::filesystem::exists(path))
 	{
@@ -446,7 +458,7 @@ void ScanThirdPartyDirectory(const ProjectSettings &project_settings, GenerateVi
 					parameters->_CodeIncludePaths.emplace_back(std::string("..\\..\\") + entry_file_path);
 				}
 
-				GenerateVisualStudioSolution::Parameters::Directory &new_directory{ directory->_Directories.emplace_back() };
+				GenerateSolutionParameters::Directory &new_directory{ directory->_Directories.emplace_back() };
 				new_directory._Name = entry_file_path.substr(entry_file_path.find_last_of('\\') + 1);
 				ScanThirdPartyDirectory(project_settings, parameters, &new_directory, entry_file_path.c_str(), false);
 			}
@@ -461,7 +473,7 @@ void ScanThirdPartyDirectory(const ProjectSettings &project_settings, GenerateVi
 				|| extension == ".cpp"
 				|| extension == ".c")
 			{
-				GenerateVisualStudioSolution::Parameters::File &new_file{ directory->_Files.emplace_back() };
+				GenerateSolutionParameters::File &new_file{ directory->_Files.emplace_back() };
 
 				new_file._Path = std::string("..\\..\\") + entry_file_path;
 				new_file._EnableWarnings = false;
@@ -496,7 +508,7 @@ void GenerateRunCodeGenerationBatchFile(const std::string &directory, const Proj
 /*
 *	Adds common parameters.
 */
-void AddCommonParameters(const ProjectSettings &project_settings, GenerateVisualStudioSolution::Parameters *const parameters)
+void AddCommonParameters(const ProjectSettings &project_settings, GenerateSolutionParameters *const parameters)
 {
 	//Fill in the core code include paths.
 	parameters->_CodeIncludePaths.emplace_back("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Include");
@@ -512,43 +524,43 @@ void AddCommonParameters(const ProjectSettings &project_settings, GenerateVisual
 
 	//Fill in the directories.
 	{
-		GenerateVisualStudioSolution::Parameters::Directory &directory{ parameters->_Directories.emplace_back() };
+		GenerateSolutionParameters::Directory &directory{ parameters->_Directories.emplace_back() };
 		directory._Name = "Catalyst Engine Include";
 		ScanDirectory(&directory, "..\\..\\Catalyst-Engine\\Engine\\Include");
 	}
 
 	{
-		GenerateVisualStudioSolution::Parameters::Directory &directory{ parameters->_Directories.emplace_back() };
+		GenerateSolutionParameters::Directory &directory{ parameters->_Directories.emplace_back() };
 		directory._Name = "Catalyst Engine Third Party";
 		ScanThirdPartyDirectory(project_settings, parameters, &directory, "..\\..\\Catalyst-Engine\\Engine\\Third Party", true);
 	}
 
 	{
-		GenerateVisualStudioSolution::Parameters::Directory &directory{ parameters->_Directories.emplace_back() };
+		GenerateSolutionParameters::Directory &directory{ parameters->_Directories.emplace_back() };
 		directory._Name = "Catalyst Engine Source";
 		ScanDirectory(&directory, "..\\..\\Catalyst-Engine\\Engine\\Source");
 	}
 
 	{
-		GenerateVisualStudioSolution::Parameters::Directory &directory{ parameters->_Directories.emplace_back() };
+		GenerateSolutionParameters::Directory &directory{ parameters->_Directories.emplace_back() };
 		directory._Name = "Catalyst Engine Rendering";
 		ScanDirectory(&directory, "..\\..\\Catalyst-Engine\\Engine\\Rendering");
 	}
 
 	{
-		GenerateVisualStudioSolution::Parameters::Directory &directory{ parameters->_Directories.emplace_back() };
+		GenerateSolutionParameters::Directory &directory{ parameters->_Directories.emplace_back() };
 		directory._Name = project_settings._ProjectName + std::string(" Include");
 		ScanDirectory(&directory, "..\\Code\\Include");
 	}
 
 	{
-		GenerateVisualStudioSolution::Parameters::Directory &directory{ parameters->_Directories.emplace_back() };
+		GenerateSolutionParameters::Directory &directory{ parameters->_Directories.emplace_back() };
 		directory._Name = project_settings._ProjectName + std::string(" Source");
 		ScanDirectory(&directory, "..\\Code\\Source");
 	}
 
 	{
-		GenerateVisualStudioSolution::Parameters::Directory &directory{ parameters->_Directories.emplace_back() };
+		GenerateSolutionParameters::Directory &directory{ parameters->_Directories.emplace_back() };
 		directory._Name = project_settings._ProjectName + std::string(" Rendering");
 		ScanDirectory(&directory, "..\\Rendering");
 	}
@@ -564,16 +576,16 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 	sprintf_s(project_name, "%s_Win64", project_settings._ProjectNameNoSpaces.c_str());
 
 	//Set up the parameters.
-	GenerateVisualStudioSolution::Parameters parameters;
+	GenerateSolutionParameters parameters;
 
 	parameters._DirectoryPath = DIRECTORY;
 	parameters._ProjectName = project_name;
 
 	{
-		GenerateVisualStudioSolution::Parameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "Debug";
-		configuration._Type = GenerateVisualStudioSolution::Parameters::Configuration::Type::APPLICATION;
+		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._UseDebugLibraries = true;
 		configuration._RuntimeLibrary = "MultiThreadedDebug";
@@ -584,10 +596,10 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 	}
 
 	{
-		GenerateVisualStudioSolution::Parameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "Debug Editor";
-		configuration._Type = GenerateVisualStudioSolution::Parameters::Configuration::Type::APPLICATION;
+		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._UseDebugLibraries = true;
 		configuration._RuntimeLibrary = "MultiThreadedDebug";
@@ -598,10 +610,10 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 	}
 
 	{
-		GenerateVisualStudioSolution::Parameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "Profile";
-		configuration._Type = GenerateVisualStudioSolution::Parameters::Configuration::Type::APPLICATION;
+		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._UseDebugLibraries = false;
 		configuration._RuntimeLibrary = "MultiThreaded";
@@ -612,10 +624,10 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 	}
 
 	{
-		GenerateVisualStudioSolution::Parameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "Profile Editor";
-		configuration._Type = GenerateVisualStudioSolution::Parameters::Configuration::Type::APPLICATION;
+		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._UseDebugLibraries = false;
 		configuration._RuntimeLibrary = "MultiThreaded";
@@ -626,10 +638,10 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 	}
 
 	{
-		GenerateVisualStudioSolution::Parameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "Final";
-		configuration._Type = GenerateVisualStudioSolution::Parameters::Configuration::Type::APPLICATION;
+		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._UseDebugLibraries = false;
 		configuration._RuntimeLibrary = "MultiThreaded";
@@ -642,10 +654,10 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 	if (project_settings._AddStaticBuilds)
 	{
 		{
-			GenerateVisualStudioSolution::Parameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+			GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 			configuration._Name = "Debug Static";
-			configuration._Type = GenerateVisualStudioSolution::Parameters::Configuration::Type::STATIC_LIBRARY;
+			configuration._Type = GenerateSolutionParameters::Configuration::Type::STATIC_LIBRARY;
 			configuration._TargetFileExtension = ".lib";
 			configuration._UseDebugLibraries = true;
 			configuration._RuntimeLibrary = "MultiThreadedDebug";
@@ -656,10 +668,10 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 		}
 
 		{
-			GenerateVisualStudioSolution::Parameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+			GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 			configuration._Name = "Profile Static";
-			configuration._Type = GenerateVisualStudioSolution::Parameters::Configuration::Type::STATIC_LIBRARY;
+			configuration._Type = GenerateSolutionParameters::Configuration::Type::STATIC_LIBRARY;
 			configuration._TargetFileExtension = ".lib";
 			configuration._UseDebugLibraries = false;
 			configuration._RuntimeLibrary = "MultiThreaded";
@@ -670,10 +682,10 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 		}
 
 		{
-			GenerateVisualStudioSolution::Parameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+			GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 			configuration._Name = "Final Static";
-			configuration._Type = GenerateVisualStudioSolution::Parameters::Configuration::Type::STATIC_LIBRARY;
+			configuration._Type = GenerateSolutionParameters::Configuration::Type::STATIC_LIBRARY;
 			configuration._TargetFileExtension = ".lib";
 			configuration._UseDebugLibraries = false;
 			configuration._RuntimeLibrary = "MultiThreaded";
@@ -685,7 +697,7 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 	}
 
 	{
-		GenerateVisualStudioSolution::Parameters::Platform &platform{ parameters._Platforms.emplace_back() };
+		GenerateSolutionParameters::Platform &platform{ parameters._Platforms.emplace_back() };
 
 		platform._Name = "x64";
 	}
@@ -703,7 +715,7 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 	std::error_code error_code;
 
 	//Create the directories for the different configurations.
-	for (const GenerateVisualStudioSolution::Parameters::Configuration &configuration : parameters._Configurations)
+	for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
 	{
 		std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("\\") + configuration._Name).c_str(), error_code); CHECK_ERROR_CODE();
 	}
@@ -724,7 +736,7 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 	//Copy onnxruntime.dll.
 	if (project_settings._IncludeONNXRuntimeLibrary)
 	{
-		for (const GenerateVisualStudioSolution::Parameters::Configuration &configuration : parameters._Configurations)
+		for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
 		{
 			std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", std::string(parameters._DirectoryPath + std::string("\\") + configuration._Name).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 		}
@@ -737,16 +749,15 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const ProjectSettings::AudioPlugin &audio_plugin)
 {
 	//Set up the parameters.
-	GenerateVisualStudioSolution::Parameters parameters;
+	GenerateSolutionParameters parameters;
 
-	parameters._DirectoryPath = AudioPluginSolutionDirectory(audio_plugin);
 	parameters._ProjectName = audio_plugin._Name.c_str();
 
 	{
-		GenerateVisualStudioSolution::Parameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "Standalone Debug";
-		configuration._Type = GenerateVisualStudioSolution::Parameters::Configuration::Type::APPLICATION;
+		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._UseDebugLibraries = true;
 		configuration._RuntimeLibrary = "MultiThreadedDebug";
@@ -759,10 +770,10 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 	}
 
 	{
-		GenerateVisualStudioSolution::Parameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "Standalone Profile";
-		configuration._Type = GenerateVisualStudioSolution::Parameters::Configuration::Type::APPLICATION;
+		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._UseDebugLibraries = false;
 		configuration._RuntimeLibrary = "MultiThreaded";
@@ -775,10 +786,10 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 	}
 
 	{
-		GenerateVisualStudioSolution::Parameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "Standalone Final";
-		configuration._Type = GenerateVisualStudioSolution::Parameters::Configuration::Type::APPLICATION;
+		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._UseDebugLibraries = false;
 		configuration._RuntimeLibrary = "MultiThreaded";
@@ -791,10 +802,10 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 	}
 
 	{
-		GenerateVisualStudioSolution::Parameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "CLAP Debug";
-		configuration._Type = GenerateVisualStudioSolution::Parameters::Configuration::Type::DYNAMIC_LIBRARY;
+		configuration._Type = GenerateSolutionParameters::Configuration::Type::DYNAMIC_LIBRARY;
 		configuration._TargetFileExtension = ".clap";
 		configuration._UseDebugLibraries = true;
 		configuration._RuntimeLibrary = "MultiThreadedDebug";
@@ -807,10 +818,10 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 	}
 
 	{
-		GenerateVisualStudioSolution::Parameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "CLAP Final";
-		configuration._Type = GenerateVisualStudioSolution::Parameters::Configuration::Type::DYNAMIC_LIBRARY;
+		configuration._Type = GenerateSolutionParameters::Configuration::Type::DYNAMIC_LIBRARY;
 		configuration._TargetFileExtension = ".clap";
 		configuration._UseDebugLibraries = false;
 		configuration._RuntimeLibrary = "MultiThreaded";
@@ -823,10 +834,10 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 	}
 
 	{
-		GenerateVisualStudioSolution::Parameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "VST3 Debug";
-		configuration._Type = GenerateVisualStudioSolution::Parameters::Configuration::Type::DYNAMIC_LIBRARY;
+		configuration._Type = GenerateSolutionParameters::Configuration::Type::DYNAMIC_LIBRARY;
 		configuration._TargetFileExtension = ".vst3";
 		configuration._UseDebugLibraries = true;
 		configuration._RuntimeLibrary = "MultiThreadedDebug";
@@ -839,10 +850,10 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 	}
 
 	{
-		GenerateVisualStudioSolution::Parameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "VST3 Final";
-		configuration._Type = GenerateVisualStudioSolution::Parameters::Configuration::Type::DYNAMIC_LIBRARY;
+		configuration._Type = GenerateSolutionParameters::Configuration::Type::DYNAMIC_LIBRARY;
 		configuration._TargetFileExtension = ".vst3";
 		configuration._UseDebugLibraries = false;
 		configuration._RuntimeLibrary = "MultiThreaded";
@@ -855,7 +866,7 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 	}
 
 	{
-		GenerateVisualStudioSolution::Parameters::Platform &platform{ parameters._Platforms.emplace_back() };
+		GenerateSolutionParameters::Platform &platform{ parameters._Platforms.emplace_back() };
 
 		platform._Name = "x64";
 	}
@@ -1532,7 +1543,7 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 
 	//Add the audio plugin directory.
 	{
-		GenerateVisualStudioSolution::Parameters::Directory &directory{ parameters._Directories.emplace_back() };
+		GenerateSolutionParameters::Directory &directory{ parameters._Directories.emplace_back() };
 		directory._Name = audio_plugin._NameNoSpaces;
 		ScanDirectory(&directory, AudioPluginCodeDirectory(audio_plugin).c_str());
 	}
@@ -1541,7 +1552,7 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 	AddCommonParameters(project_settings, &parameters);
 
 	//Generate the code generation file.
-	GenerateRunCodeGenerationBatchFile(AudioPluginSolutionDirectory(audio_plugin), project_settings, false);
+	GenerateRunCodeGenerationBatchFile(AudioPluginVisualStudioSolutionDirectory(audio_plugin), project_settings, false);
 
 	//Embed some resources.
 	parameters._EmbeddedResources.emplace_back("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Collections\\Base.cac");
@@ -1563,32 +1574,41 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 		}
 	}
 	//Define that we have embedded resource.
-	for (GenerateVisualStudioSolution::Parameters::Configuration &configuration : parameters._Configurations)
+	for (GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
 	{
 		configuration._PreprocessorDefinitions.emplace_back("CATALYST_HAS_EMBEDDED_RESOURCES");
 	}
 
-	//Generate!
-	GenerateVisualStudioSolution::Generate(parameters);
+	//Generate the visual studio solution.
+	{
+		parameters._DirectoryPath = AudioPluginVisualStudioSolutionDirectory(audio_plugin);
+		GenerateVisualStudioSolution::Generate(parameters);
+	}
+
+	//Generate the visual studio code workspace.
+	{
+		parameters._DirectoryPath = AudioPluginVisualStudioCodeWorkspaceDirectory(audio_plugin);
+		GenerateVisualStudioCodeWorkspace::Generate(parameters);
+	}
 
 	//Remember the error code for filesystem functions.
 	std::error_code error_code;
 
 	//Create the directories for the different configurations.
-	for (const GenerateVisualStudioSolution::Parameters::Configuration &configuration : parameters._Configurations)
+	for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
 	{
 		std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("\\") + configuration._Name).c_str(), error_code); CHECK_ERROR_CODE();
 	}
 
 	//Copy assimp-vc143-mt.dll.
-	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", std::string(AudioPluginSolutionDirectory(audio_plugin) + std::string("\\Standalone Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(AudioPluginSolutionDirectory(audio_plugin) + std::string("\\Standalone Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(AudioPluginSolutionDirectory(audio_plugin) + std::string("\\Standalone Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", std::string(AudioPluginVisualStudioSolutionDirectory(audio_plugin) + std::string("\\Standalone Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(AudioPluginVisualStudioSolutionDirectory(audio_plugin) + std::string("\\Standalone Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(AudioPluginVisualStudioSolutionDirectory(audio_plugin) + std::string("\\Standalone Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 
 	//Copy onnxruntime.dll.
 	if (project_settings._IncludeONNXRuntimeLibrary)
 	{
-		for (const GenerateVisualStudioSolution::Parameters::Configuration &configuration : parameters._Configurations)
+		for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
 		{
 			std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", std::string(parameters._DirectoryPath + std::string("\\") + configuration._Name).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 		}
@@ -1608,7 +1628,7 @@ void GenerateSolution::Run(const ProjectSettings &project_settings)
 
 	for (const ProjectSettings::AudioPlugin &audio_plugin : project_settings._AudioPlugins)
 	{
-		std::filesystem::create_directories(AudioPluginSolutionDirectory(audio_plugin));
+		std::filesystem::create_directories(AudioPluginVisualStudioSolutionDirectory(audio_plugin));
 	}
 
 	//Generate the "RunCodeGeneration.bat" file.
@@ -1647,9 +1667,14 @@ void GenerateSolution::Clean(const ProjectSettings &project_settings)
 
 	for (const ProjectSettings::AudioPlugin &audio_plugin : project_settings._AudioPlugins)
 	{
-		if (std::filesystem::exists(AudioPluginSolutionDirectory(audio_plugin)))
+		if (std::filesystem::exists(AudioPluginVisualStudioSolutionDirectory(audio_plugin)))
 		{
-			std::filesystem::remove_all(AudioPluginSolutionDirectory(audio_plugin), error_code); CHECK_ERROR_CODE()
+			std::filesystem::remove_all(AudioPluginVisualStudioSolutionDirectory(audio_plugin), error_code); CHECK_ERROR_CODE()
+		}
+
+		if (std::filesystem::exists(AudioPluginVisualStudioCodeWorkspaceDirectory(audio_plugin)))
+		{
+			std::filesystem::remove_all(AudioPluginVisualStudioCodeWorkspaceDirectory(audio_plugin), error_code); CHECK_ERROR_CODE()
 		}
 	}
 

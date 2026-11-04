@@ -51,7 +51,7 @@ std::string GetConfigurationPlatformConditionString(const std::string &configura
 /*
 *	Generates!
 */
-void GenerateVisualStudioSolution::Generate(Parameters parameters)
+void GenerateVisualStudioSolution::Generate(GenerateSolutionParameters parameters)
 {
     //Generate the GUID's.
     const std::string solution_guid{ GenerateGUID() };
@@ -66,7 +66,7 @@ void GenerateVisualStudioSolution::Generate(Parameters parameters)
     //If we have embedded resources, add a new directory containing the resource file.
     if (!parameters._EmbeddedResources.empty())
     {
-        Parameters::Directory &directory{ parameters._Directories.emplace_back() };
+        GenerateSolutionParameters::Directory &directory{ parameters._Directories.emplace_back() };
 
         directory._Name = "Resources";
         directory._Files.emplace_back("Resources\\resource.h");
@@ -86,7 +86,7 @@ void GenerateVisualStudioSolution::Generate(Parameters parameters)
 /*
 *	Generates the resource file.
 */
-void GenerateVisualStudioSolution::GenerateResourceFile(const Parameters &parameters)
+void GenerateVisualStudioSolution::GenerateResourceFile(const GenerateSolutionParameters &parameters)
 {
     //Figure out the directory.
     char directory_buffer[256];
@@ -251,7 +251,7 @@ void GenerateVisualStudioSolution::GenerateResourceFile(const Parameters &parame
 /*
 *	Generates the project file.
 */
-void GenerateVisualStudioSolution::GenerateProjectFile(const Parameters &parameters, const std::string &project_guid)
+void GenerateVisualStudioSolution::GenerateProjectFile(const GenerateSolutionParameters &parameters, const std::string &project_guid)
 {
     //Figure out the project file path.
     char file_path_buffer[256];
@@ -271,9 +271,9 @@ void GenerateVisualStudioSolution::GenerateProjectFile(const Parameters &paramet
         //Begin the item group.
         file << "\t<ItemGroup Label=\"ProjectConfigurations\">" << std::endl;
 
-        for (const Parameters::Configuration &configuration : parameters._Configurations)
+        for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
         {
-            for (const Parameters::Platform &platform : parameters._Platforms)
+            for (const GenerateSolutionParameters::Platform &platform : parameters._Platforms)
             {
                 file << "\t\t<ProjectConfiguration Include=\"" << configuration._Name << "|" << platform._Name << "\">" << std::endl;
                 file << "\t\t\t<Configuration>" << configuration._Name << "</Configuration>" << std::endl;
@@ -306,9 +306,9 @@ void GenerateVisualStudioSolution::GenerateProjectFile(const Parameters &paramet
     file << "\t<Import Project=\"$(VCTargetsPath)\\Microsoft.Cpp.Default.props\"/>" << std::endl;
 
     //Write the property group for all configuration/platform combinations.
-    for (const Parameters::Configuration &configuration : parameters._Configurations)
+    for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
     {
-        for (const Parameters::Platform &platform : parameters._Platforms)
+        for (const GenerateSolutionParameters::Platform &platform : parameters._Platforms)
         {
             //Begin the property group.
             file << "\t<PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='" << configuration._Name << "|" << platform._Name << "'\" Label=\"Configuration\">" << std::endl;
@@ -318,21 +318,21 @@ void GenerateVisualStudioSolution::GenerateProjectFile(const Parameters &paramet
 
             switch (configuration._Type)
             {
-                case Parameters::Configuration::Type::APPLICATION:
+                case GenerateSolutionParameters::Configuration::Type::APPLICATION:
                 {
                     file << "\t\t<ConfigurationType>Application</ConfigurationType>" << std::endl;
 
                     break;
                 }
 
-                case Parameters::Configuration::Type::STATIC_LIBRARY:
+                case GenerateSolutionParameters::Configuration::Type::STATIC_LIBRARY:
                 {
                     file << "\t\t<ConfigurationType>StaticLibrary</ConfigurationType>" << std::endl;
 
                     break;
                 }
 
-                case Parameters::Configuration::Type::DYNAMIC_LIBRARY:
+                case GenerateSolutionParameters::Configuration::Type::DYNAMIC_LIBRARY:
                 {
                     file << "\t\t<ConfigurationType>DynamicLibrary</ConfigurationType>" << std::endl;
 
@@ -370,9 +370,9 @@ void GenerateVisualStudioSolution::GenerateProjectFile(const Parameters &paramet
     file << "\t</ImportGroup>" << std::endl;
 
     //Write the property sheets import groups.
-    for (const Parameters::Configuration &configuration : parameters._Configurations)
+    for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
     {
-        for (const Parameters::Platform &platform : parameters._Platforms)
+        for (const GenerateSolutionParameters::Platform &platform : parameters._Platforms)
         {
             //Begin the import group.
             file << "\t<ImportGroup Label=\"PropertySheets\" Condition=\"'$(Configuration)|$(Platform)'=='" << configuration._Name << "|" << platform._Name << "'\">" << std::endl;
@@ -388,9 +388,9 @@ void GenerateVisualStudioSolution::GenerateProjectFile(const Parameters &paramet
     //Start the property group.
     file << "\t<PropertyGroup>" << std::endl;
 
-    for (const Parameters::Configuration &configuration : parameters._Configurations)
+    for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
     {
-        for (const Parameters::Platform &platform : parameters._Platforms)
+        for (const GenerateSolutionParameters::Platform &platform : parameters._Platforms)
         {
             //Set the outpit directory.
             file << "\t\t<OutDir Condition=" << GetConfigurationPlatformConditionString(configuration._Name, platform._Name) << ">" << configuration._Name << "\\</OutDir>" << std::endl;
@@ -413,9 +413,9 @@ void GenerateVisualStudioSolution::GenerateProjectFile(const Parameters &paramet
     file << "\t<PropertyGroup Label=\"UserMacros\"/>" << std::endl;
 
     //Write the item defition groups for all configuration/platform combinations.
-    for (const Parameters::Configuration &configuration : parameters._Configurations)
+    for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
     {
-        for (const Parameters::Platform &platform : parameters._Platforms)
+        for (const GenerateSolutionParameters::Platform &platform : parameters._Platforms)
         {
             //Begin the item definition group.
             file << "\t<ItemDefinitionGroup Condition=\"'$(Configuration)|$(Platform)'=='" << configuration._Name << "|" << platform._Name << "'\">" << std::endl;
@@ -505,7 +505,7 @@ void GenerateVisualStudioSolution::GenerateProjectFile(const Parameters &paramet
     //Add the item group for all files.
     file << "\t<ItemGroup>" << std::endl;
 
-    for (const Parameters::Directory &directory : parameters._Directories)
+    for (const GenerateSolutionParameters::Directory &directory : parameters._Directories)
     {
         AddCompileFiles(parameters, file, directory);
     }
@@ -528,7 +528,7 @@ void GenerateVisualStudioSolution::GenerateProjectFile(const Parameters &paramet
 /*
 *	Generates the filters file.
 */
-void GenerateVisualStudioSolution::GenerateFiltersFile(const Parameters &parameters)
+void GenerateVisualStudioSolution::GenerateFiltersFile(const GenerateSolutionParameters &parameters)
 {
     //Figure out the project file path.
     char file_path_buffer[256];
@@ -544,7 +544,7 @@ void GenerateVisualStudioSolution::GenerateFiltersFile(const Parameters &paramet
     file << "<Project ToolsVersion=\"17.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">" << std::endl;
 
     //Add item groups for files in each top level directory.
-    for (const Parameters::Directory &directory : parameters._Directories)
+    for (const GenerateSolutionParameters::Directory &directory : parameters._Directories)
     {
         //Start the item group.
         file << "\t<ItemGroup>" << std::endl;
@@ -560,7 +560,7 @@ void GenerateVisualStudioSolution::GenerateFiltersFile(const Parameters &paramet
     }
 
     //Add item groups for identifiers in each top level directory.
-    for (const Parameters::Directory &directory : parameters._Directories)
+    for (const GenerateSolutionParameters::Directory &directory : parameters._Directories)
     {
         //Start the item group.
         file << "\t<ItemGroup>" << std::endl;
@@ -585,7 +585,7 @@ void GenerateVisualStudioSolution::GenerateFiltersFile(const Parameters &paramet
 /*
 *	Generates the solution file.
 */
-void GenerateVisualStudioSolution::GenerateSolutionFile(const Parameters &parameters, const std::string &solution_guid, const std::string &project_guid)
+void GenerateVisualStudioSolution::GenerateSolutionFile(const GenerateSolutionParameters &parameters, const std::string &solution_guid, const std::string &project_guid)
 {
     //Define constants.
     constexpr const char *GPP_PROJECT_GUID{ "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}" };
@@ -615,9 +615,9 @@ void GenerateVisualStudioSolution::GenerateSolutionFile(const Parameters &parame
         //Add the pre solution configurations/platforms.
         file << "\tGlobalSection(SolutionConfigurationPlatforms) = preSolution" << std::endl;
 
-        for (const Parameters::Configuration &configuration : parameters._Configurations)
+        for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
         {
-            for (const Parameters::Platform &platform : parameters._Platforms)
+            for (const GenerateSolutionParameters::Platform &platform : parameters._Platforms)
             {
                 file << "\t\t" << configuration._Name << "|" << platform._Name << " = " << configuration._Name << "|" << platform._Name << std::endl;
             }
@@ -628,9 +628,9 @@ void GenerateVisualStudioSolution::GenerateSolutionFile(const Parameters &parame
         //Add the post solution configurations/platforms.
         file << "\tGlobalSection(ProjectConfigurationPlatforms) = postSolution" << std::endl;
 
-        for (const Parameters::Configuration &configuration : parameters._Configurations)
+        for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
         {
-            for (const Parameters::Platform &platform : parameters._Platforms)
+            for (const GenerateSolutionParameters::Platform &platform : parameters._Platforms)
             {
                 file << "\t\t" << project_guid.c_str() << "." << configuration._Name << "|" << platform._Name << ".ActiveCfg = " << configuration._Name << "|" << platform._Name << std::endl;
                 file << "\t\t" << project_guid.c_str() << "." << configuration._Name << "|" << platform._Name << ".Build.0 = " << configuration._Name << "|" << platform._Name << std::endl;
@@ -660,14 +660,14 @@ void GenerateVisualStudioSolution::GenerateSolutionFile(const Parameters &parame
 /*
 *   Adds compile files for the given directory.
 */
-void GenerateVisualStudioSolution::AddCompileFiles(const Parameters &parameters, std::ofstream &file, const Parameters::Directory &directory)
+void GenerateVisualStudioSolution::AddCompileFiles(const GenerateSolutionParameters &parameters, std::ofstream &file, const GenerateSolutionParameters::Directory &directory)
 {
-    for (const Parameters::Directory &_directory : directory._Directories)
+    for (const GenerateSolutionParameters::Directory &_directory : directory._Directories)
     {
         AddCompileFiles(parameters, file, _directory);
     }
 
-    for (const Parameters::File &compile_file : directory._Files)
+    for (const GenerateSolutionParameters::File &compile_file : directory._Files)
     {
         const std::string extension{ compile_file._Path.substr(compile_file._Path.find_last_of('.')) };
 
@@ -699,9 +699,9 @@ void GenerateVisualStudioSolution::AddCompileFiles(const Parameters &parameters,
             char buffer[128];
             sprintf_s(buffer, "%s_0x%llx.obj", file_name.c_str(), hash);
 
-            for (const Parameters::Configuration &configuration : parameters._Configurations)
+            for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
             {
-                for (const Parameters::Platform &platform : parameters._Platforms)
+                for (const GenerateSolutionParameters::Platform &platform : parameters._Platforms)
                 {
                     //Set the object file name.
                     file << "\t\t<ObjectFileName Condition=" << GetConfigurationPlatformConditionString(configuration._Name, platform._Name) << ">ObjectFiles\\" << configuration._Name << "\\" << buffer << "</ObjectFileName>" << std::endl;
@@ -734,15 +734,15 @@ void GenerateVisualStudioSolution::AddCompileFiles(const Parameters &parameters,
 /*
 *	Adds filter files.
 */
-void GenerateVisualStudioSolution::AddFilterFiles(std::ofstream &file, const Parameters::Directory &directory, const std::string &filter_string)
+void GenerateVisualStudioSolution::AddFilterFiles(std::ofstream &file, const GenerateSolutionParameters::Directory &directory, const std::string &filter_string)
 {
-    for (const Parameters::Directory &_directory : directory._Directories)
+    for (const GenerateSolutionParameters::Directory &_directory : directory._Directories)
     {
         const std::string _filter_string{ filter_string + "\\" + std::string(_directory._Name) };
         AddFilterFiles(file, _directory, _filter_string);
     }
 
-    for (const Parameters::File &compile_file : directory._Files)
+    for (const GenerateSolutionParameters::File &compile_file : directory._Files)
     {
         const std::string extension{ compile_file._Path.substr(compile_file._Path.find_last_of('.')) };
 
@@ -772,9 +772,9 @@ void GenerateVisualStudioSolution::AddFilterFiles(std::ofstream &file, const Par
 /*
 *	Adds filter identifiers.
 */
-void GenerateVisualStudioSolution::AddFilterIdentifiers(std::ofstream &file, const Parameters::Directory &directory, const std::string &filter_string)
+void GenerateVisualStudioSolution::AddFilterIdentifiers(std::ofstream &file, const GenerateSolutionParameters::Directory &directory, const std::string &filter_string)
 {
-    for (const Parameters::Directory &_directory : directory._Directories)
+    for (const GenerateSolutionParameters::Directory &_directory : directory._Directories)
     {
         const std::string _filter_string{ filter_string + "\\" + std::string(_directory._Name) };
         AddFilterIdentifiers(file, _directory, _filter_string);

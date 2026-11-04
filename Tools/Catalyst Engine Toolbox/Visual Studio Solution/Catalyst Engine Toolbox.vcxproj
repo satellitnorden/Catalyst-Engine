@@ -135,6 +135,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\GenerateSolution\GenerateSolution.cpp" />
+    <ClCompile Include="..\Code\GenerateSolution\GenerateVisualStudioCodeWorkspace.cpp" />
     <ClCompile Include="..\Code\GenerateSolution\GenerateVisualStudioSolution.cpp" />
     <ClCompile Include="..\Code\Main\Main.cpp" />
     <ClCompile Include="..\Code\ProjectSettings\ProjectSettings.cpp" />
@@ -143,6 +144,8 @@
     <ClInclude Include="..\Code\Core\Core.h" />
     <ClInclude Include="..\Code\Core\MurmurHash.h" />
     <ClInclude Include="..\Code\GenerateSolution\GenerateSolution.h" />
+    <ClInclude Include="..\Code\GenerateSolution\GenerateSolutionParameters.h" />
+    <ClInclude Include="..\Code\GenerateSolution\GenerateVisualStudioCodeWorkspace.h" />
     <ClInclude Include="..\Code\GenerateSolution\GenerateVisualStudioSolution.h" />
     <ClInclude Include="..\Code\ProjectSettings\ProjectSettings.h" />
     <ClInclude Include="..\Code\ThirdParty\json.hpp" />
