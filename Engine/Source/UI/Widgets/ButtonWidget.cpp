@@ -173,7 +173,7 @@ namespace UI
 			(
 				context,
 				_AxisAlignedBoundingBox,
-				_Parent->_Parent->GetFont(),
+				_Parent->_Parent->GetStyle()._Font,
 				_Text.Data(),
 				_TextScale,
 				UI::HorizontalAlignment::CENTER,

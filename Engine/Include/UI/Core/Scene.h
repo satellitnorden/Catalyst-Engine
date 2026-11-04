@@ -69,14 +69,6 @@ namespace UI
 		}
 
 		/*
-		*	Returns the font for this scene.
-		*/
-		FORCE_INLINE NO_DISCARD const AssetPointer<FontAsset> GetFont() const NOEXCEPT
-		{
-			return _Font;
-		}
-
-		/*
 		*	Prepares this scene for building.
 		*/
 		void PrepareBuild() NOEXCEPT;
@@ -114,14 +106,6 @@ namespace UI
 
 		//The system this scene is a part of.
 		UISystem *RESTRICT _System;
-
-		/*
-		*	Sets the font for this scene.
-		*/
-		FORCE_INLINE void SetFont(const AssetPointer<FontAsset> value) NOEXCEPT
-		{
-			_Font = value;
-		}
 
 		/*
 		*	Starts a container with the given identifier.
@@ -239,9 +223,6 @@ namespace UI
 
 		//The style.
 		UI::Style _Style;
-
-		//The font.
-		AssetPointer<FontAsset> _Font;
 
 	};
 

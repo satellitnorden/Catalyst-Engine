@@ -201,7 +201,7 @@ namespace UI
 				(
 					context,
 					text_bounding_box,
-					_Parent->_Parent->GetFont(),
+					_Parent->_Parent->GetStyle()._Font,
 					text,
 					_Parent->_Parent->GetStyle()._MediumTextScale
 				);
@@ -228,7 +228,7 @@ namespace UI
 				(
 					context,
 					knob_bounding_box,
-					_Parent->_Parent->GetFont(),
+					_Parent->_Parent->GetStyle()._Font,
 					text,
 					_Parent->_Parent->GetStyle()._SmallTextScale
 				);

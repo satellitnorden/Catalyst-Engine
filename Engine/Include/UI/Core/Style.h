@@ -3,6 +3,10 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Content.
+#include <Content/Core/AssetPointer.h>
+#include <Content/Assets/FontAsset.h>
+
 //Math.
 #include <Math/General/Vector.h>
 
@@ -16,6 +20,9 @@ namespace UI
 	{
 
 	public:
+
+		//The font.
+		AssetPointer<FontAsset> _Font;
 
 		//The unchecked idle color.
 		Vector4<float32> _UncheckedIdleColor;

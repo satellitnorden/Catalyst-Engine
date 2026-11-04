@@ -209,7 +209,7 @@ namespace UI
 				(
 					context,
 					indicator_axis_aligned_bounding_box,
-					_Parent->_Parent->GetFont(),
+					_Parent->_Parent->GetStyle()._Font,
 					clickable_interface_index == 0 ? "<" : ">",
 					indicator_size * (1.0f + 1.0f - 0.5f + 0.25f),
 					UI::HorizontalAlignment::LEFT,
@@ -255,7 +255,7 @@ namespace UI
 			(
 				context,
 				text_axis_aligned_bounding_box,
-				_Parent->_Parent->GetFont(),
+				_Parent->_Parent->GetStyle()._Font,
 				buffer,
 				_TextScale,
 				UI::HorizontalAlignment::CENTER,

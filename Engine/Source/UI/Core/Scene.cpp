@@ -27,9 +27,6 @@ namespace UI
 
 		//Retrieve the style from the system.
 		_Style = _System->GetStyle();
-
-		//Set the default font.
-		_Font = ContentSystem::Instance->TryGetAsset<FontAsset>(HashString("Default"));
 	}
 
 	/*

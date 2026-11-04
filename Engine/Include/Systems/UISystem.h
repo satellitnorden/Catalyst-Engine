@@ -29,13 +29,17 @@ public:
 	(
 		UISystem,
 		SYSTEM_INITIALIZE()
+		SYSTEM_POST_INITIALIZE()
 		SYSTEM_UPDATE(RANGE(USER_INTERFACE, RUN_ON_MAIN_THREAD))
 	);
 
 	/*
 	*	Default constructor.
 	*/
-	UISystem() NOEXCEPT;
+	FORCE_INLINE UISystem() NOEXCEPT
+	{
+
+	}
 
 	/*
 	*	Sets the reference resolution.

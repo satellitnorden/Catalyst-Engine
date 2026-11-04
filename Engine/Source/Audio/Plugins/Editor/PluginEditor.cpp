@@ -41,6 +41,7 @@ namespace Audio
 				static_cast<float32>(_Plugin->GetResolution()._Height)
 			)
 		);
+		_UISystem.PostInitialize();
 
 		//Initialize the plugin.
 		{
