@@ -48,4 +48,14 @@ namespace Utilities
 		}
 	}
 
+	/*
+	*	Converts the given string to upper case.
+	*/
+	static std::string ToUpperCase(const std::string &string)
+	{
+		std::string copy{ string };
+		std::transform(copy.begin(), copy.end(), copy.begin(), std::toupper);
+		return copy;
+	}
+
 }

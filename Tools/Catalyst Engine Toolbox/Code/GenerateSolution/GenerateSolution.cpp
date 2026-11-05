@@ -602,6 +602,7 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 		configuration._Name = "Debug";
 		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
+		configuration._ApplyOptimizations = false;
 		configuration._UseDebugLibraries = true;
 		configuration._RuntimeLibrary = "MultiThreadedDebug";
 		configuration._SubSystem = "Windows";
@@ -616,6 +617,7 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 		configuration._Name = "Debug Editor";
 		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
+		configuration._ApplyOptimizations = false;
 		configuration._UseDebugLibraries = true;
 		configuration._RuntimeLibrary = "MultiThreadedDebug";
 		configuration._SubSystem = "Windows";
@@ -630,6 +632,7 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 		configuration._Name = "Profile";
 		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
+		configuration._ApplyOptimizations = true;
 		configuration._UseDebugLibraries = false;
 		configuration._RuntimeLibrary = "MultiThreaded";
 		configuration._SubSystem = "Windows";
@@ -644,6 +647,7 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 		configuration._Name = "Profile Editor";
 		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
+		configuration._ApplyOptimizations = true;
 		configuration._UseDebugLibraries = false;
 		configuration._RuntimeLibrary = "MultiThreaded";
 		configuration._SubSystem = "Windows";
@@ -658,6 +662,7 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 		configuration._Name = "Final";
 		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
+		configuration._ApplyOptimizations = true;
 		configuration._UseDebugLibraries = false;
 		configuration._RuntimeLibrary = "MultiThreaded";
 		configuration._SubSystem = "Windows";
@@ -674,6 +679,7 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 			configuration._Name = "Debug Static";
 			configuration._Type = GenerateSolutionParameters::Configuration::Type::STATIC_LIBRARY;
 			configuration._TargetFileExtension = ".lib";
+			configuration._ApplyOptimizations = false;
 			configuration._UseDebugLibraries = true;
 			configuration._RuntimeLibrary = "MultiThreadedDebug";
 			configuration._SubSystem = "Windows";
@@ -688,6 +694,7 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 			configuration._Name = "Profile Static";
 			configuration._Type = GenerateSolutionParameters::Configuration::Type::STATIC_LIBRARY;
 			configuration._TargetFileExtension = ".lib";
+			configuration._ApplyOptimizations = true;
 			configuration._UseDebugLibraries = false;
 			configuration._RuntimeLibrary = "MultiThreaded";
 			configuration._SubSystem = "Windows";
@@ -702,6 +709,7 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 			configuration._Name = "Final Static";
 			configuration._Type = GenerateSolutionParameters::Configuration::Type::STATIC_LIBRARY;
 			configuration._TargetFileExtension = ".lib";
+			configuration._ApplyOptimizations = true;
 			configuration._UseDebugLibraries = false;
 			configuration._RuntimeLibrary = "MultiThreaded";
 			configuration._SubSystem = "Windows";
@@ -774,6 +782,7 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 		configuration._Name = "Standalone Debug";
 		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
+		configuration._ApplyOptimizations = false;
 		configuration._UseDebugLibraries = true;
 		configuration._RuntimeLibrary = "MultiThreadedDebug";
 		configuration._SubSystem = "Windows";
@@ -790,6 +799,7 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 		configuration._Name = "Standalone Profile";
 		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
+		configuration._ApplyOptimizations = true;
 		configuration._UseDebugLibraries = false;
 		configuration._RuntimeLibrary = "MultiThreaded";
 		configuration._SubSystem = "Windows";
@@ -806,6 +816,7 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 		configuration._Name = "Standalone Final";
 		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
+		configuration._ApplyOptimizations = true;
 		configuration._UseDebugLibraries = false;
 		configuration._RuntimeLibrary = "MultiThreaded";
 		configuration._SubSystem = "Windows";
@@ -822,6 +833,7 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 		configuration._Name = "CLAP Debug";
 		configuration._Type = GenerateSolutionParameters::Configuration::Type::DYNAMIC_LIBRARY;
 		configuration._TargetFileExtension = ".clap";
+		configuration._ApplyOptimizations = false;
 		configuration._UseDebugLibraries = true;
 		configuration._RuntimeLibrary = "MultiThreadedDebug";
 		configuration._SubSystem = "Windows";
@@ -838,6 +850,7 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 		configuration._Name = "CLAP Final";
 		configuration._Type = GenerateSolutionParameters::Configuration::Type::DYNAMIC_LIBRARY;
 		configuration._TargetFileExtension = ".clap";
+		configuration._ApplyOptimizations = true;
 		configuration._UseDebugLibraries = false;
 		configuration._RuntimeLibrary = "MultiThreaded";
 		configuration._SubSystem = "Windows";
@@ -854,6 +867,7 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 		configuration._Name = "VST3 Debug";
 		configuration._Type = GenerateSolutionParameters::Configuration::Type::DYNAMIC_LIBRARY;
 		configuration._TargetFileExtension = ".vst3";
+		configuration._ApplyOptimizations = false;
 		configuration._UseDebugLibraries = true;
 		configuration._RuntimeLibrary = "MultiThreadedDebug";
 		configuration._SubSystem = "Windows";
@@ -870,6 +884,7 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 		configuration._Name = "VST3 Final";
 		configuration._Type = GenerateSolutionParameters::Configuration::Type::DYNAMIC_LIBRARY;
 		configuration._TargetFileExtension = ".vst3";
+		configuration._ApplyOptimizations = true;
 		configuration._UseDebugLibraries = false;
 		configuration._RuntimeLibrary = "MultiThreaded";
 		configuration._SubSystem = "Windows";
@@ -1594,13 +1609,25 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 		configuration._PreprocessorDefinitions.emplace_back("CATALYST_HAS_EMBEDDED_RESOURCES");
 	}
 
-#if 0
 	//Generate the CMake file.
 	{
 		parameters._DirectoryPath = AudioPluginCMakeDirectory(audio_plugin);
 		GenerateCMake::Generate(parameters);
+
+		//Remember the error code for filesystem functions.
+		std::error_code error_code;
+
+		//Create the directories for the different configurations.
+		for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
+		{
+			std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("\\") + Utilities::RemoveSpaces(configuration._Name)).c_str(), error_code); CHECK_ERROR_CODE();
+		}
+
+		//Copy assimp-vc143-mt.dll.
+		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", std::string(parameters._DirectoryPath + std::string("\\StandaloneDebug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("\\StandaloneProfile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("\\StandaloneFinal")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 	}
-#endif
 
 #if VISUAL_STUDIO_CODE_WORKSPACE_SUPPORTED
 	//Generate the visual studio code workspace.
@@ -1706,6 +1733,11 @@ void GenerateSolution::Clean(const ProjectSettings &project_settings)
 
 	for (const ProjectSettings::AudioPlugin &audio_plugin : project_settings._AudioPlugins)
 	{
+		if (std::filesystem::exists(AudioPluginCMakeDirectory(audio_plugin)))
+		{
+			std::filesystem::remove_all(AudioPluginCMakeDirectory(audio_plugin), error_code); CHECK_ERROR_CODE()
+		}
+
 		if (std::filesystem::exists(AudioPluginVisualStudioSolutionDirectory(audio_plugin)))
 		{
 			std::filesystem::remove_all(AudioPluginVisualStudioSolutionDirectory(audio_plugin), error_code); CHECK_ERROR_CODE()

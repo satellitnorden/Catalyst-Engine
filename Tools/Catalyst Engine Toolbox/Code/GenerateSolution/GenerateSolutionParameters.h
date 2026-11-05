@@ -42,6 +42,9 @@ public:
 		//The target file extension.
 		const char *_TargetFileExtension;
 
+		//Denotes whether or not to apply optimizations.
+		bool _ApplyOptimizations;
+
 		//Denotes whether or not to use debug libraries.
 		bool _UseDebugLibraries;
 

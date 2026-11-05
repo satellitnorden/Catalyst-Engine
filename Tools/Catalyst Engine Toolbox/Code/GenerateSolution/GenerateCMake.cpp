@@ -11,7 +11,7 @@
 /*
 *   Adds the given directory.
 */
-void AddDirectory(const const GenerateSolutionParameters::Directory &directory, std::ofstream &file)
+void AddDirectory(const GenerateSolutionParameters::Directory &directory, std::ofstream &file)
 {
     for (const GenerateSolutionParameters::Directory &sub_directory : directory._Directories)
     {
@@ -178,7 +178,6 @@ void GenerateCMake::Generate(const GenerateSolutionParameters &parameters)
     file << "set_property(TARGET " << Utilities::RemoveSpaces(parameters._ProjectName).c_str() << " PROPERTY WIN32_EXECUTABLE TRUE)" << std::endl;
     file << std::endl;
 
-#if 0
     //Set up the Visual Studio filters.
     file << "# Set up the Visual Studio filters." << std::endl;
 
@@ -201,10 +200,44 @@ void GenerateCMake::Generate(const GenerateSolutionParameters &parameters)
         file << "\t\"${CMAKE_CURRENT_SOURCE_DIR}/" << Utilities::BackwardToForwardSlashes(directory._Path).c_str() << "/*.storage_buffer_definition\"" << std::endl;
         file << "\t\"${CMAKE_CURRENT_SOURCE_DIR}/" << Utilities::BackwardToForwardSlashes(directory._Path).c_str() << "/*.uniform_buffer_definition\"" << std::endl;
         file << ")" << std::endl;
-        file << "source_group(TREE \"${CMAKE_CURRENT_SOURCE_DIR}/" << Utilities::BackwardToForwardSlashes(directory._Path).c_str() << "\" FILES ${" << Utilities::RemoveSpaces(directory._Name).c_str() << "_FILES})" << std::endl;
+        file << "source_group(TREE \"${CMAKE_CURRENT_SOURCE_DIR}/" << Utilities::BackwardToForwardSlashes(directory._Path).c_str() << "\" PREFIX \"" << directory._Name.c_str() << "\" FILES ${" << Utilities::RemoveSpaces(directory._Name).c_str() << "_FILES})" << std::endl;
         file << std::endl;
     }
-#endif
+
+    //Set MSVC-specific flags.
+    file << "# Set MSVC-specific flags." << std::endl;
+    file << "if (MSVC)" << std::endl;
+
+    for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
+    {
+        //Figure out the names.
+        const std::string compiler_flags_name{ std::string("CMAKE_CXX_FLAGS_") + Utilities::ToUpperCase(Utilities::RemoveSpaces(configuration._Name)) };
+        const std::string linker_flags_name{ std::string("CMAKE_EXE_LINKER_FLAGS_") + Utilities::ToUpperCase(Utilities::RemoveSpaces(configuration._Name)) };
+
+        //Add the compiler flags.
+        file << "\tset(" << compiler_flags_name << " \"";
+
+        //Always generate debug information.
+        file << "/Zi";
+
+        //Set optimizations.
+        if (configuration._ApplyOptimizations)
+        {
+            file << " /Ox";
+        }
+
+        else
+        {
+            file << " /Od";
+        }
+
+        file << "\")" << std::endl;
+
+        //Add the linker flags.
+        file << "\tset(" << linker_flags_name << " /DEBUG)" << std::endl;
+    }
+
+    file << "endif()" << std::endl;
 
     //Close the file.
     file.close();
