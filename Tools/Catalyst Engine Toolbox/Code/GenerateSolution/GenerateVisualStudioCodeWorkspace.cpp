@@ -1,6 +1,13 @@
 //Header file.
 #include <GenerateSolution/GenerateVisualStudioCodeWorkspace.h>
 
+//Core.
+#include <Core/Utilities.h>
+
+#if VISUAL_STUDIO_CODE_WORKSPACE_SUPPORTED
+//Generate solution.
+#include <GenerateSolution/GenerateCMake.h>
+
 //Third party.
 #include <ThirdParty/json.hpp>
 
@@ -14,17 +21,30 @@
 */
 void GenerateVisualStudioCodeWorkspace::Generate(const GenerateSolutionParameters &parameters)
 {
-    //Ensure the directory exists.
+    //Ensure the directories exists.
     std::filesystem::create_directories(parameters._DirectoryPath);
+    std::filesystem::create_directories(parameters._DirectoryPath + std::string("\\.vscode"));
 
-    //Also ensure the '.vscode' directory exists.
-    //std::filesystem::create_directories(parameters._DirectoryPath + std::string("\\.vscode"));
+    //Generate CMake first, as Visual Studio Code will use that.
+    GenerateCMake::Generate(parameters);
 
     //Generate the '.code-workspace' file.
     GenerateCodeWorkspaceFile(parameters);
 
-    //Generate the '.vscode\c_cpp_properties.json' file.
-    //GenerateCCPPPropertiesFile(parameters);
+    //Generate the 'CMakePresets.json' file.
+    GenerateCMakePresetsFile(parameters);
+
+    //Generate the 'settings.json' file.
+    GenerateSettingsFile(parameters);
+
+    //Generate the 'extensions.json' file.
+    GenerateExtensionsFile(parameters);
+
+    //Generate the 'tasks.json' file.
+    GenerateTasksFile(parameters);
+
+    //Generate the 'launch.json' file.
+    GenerateLaunchFile(parameters);
 }
 
 /*
@@ -87,57 +107,55 @@ void GenerateVisualStudioCodeWorkspace::GenerateCodeWorkspaceFile(const Generate
 }
 
 /*
-*	Generates the '.vscode\c_cpp_properties.json' file.
+*	Generates the 'CMakePresets.json' file.
 */
-void GenerateVisualStudioCodeWorkspace::GenerateCCPPPropertiesFile(const GenerateSolutionParameters &parameters)
+void GenerateVisualStudioCodeWorkspace::GenerateCMakePresetsFile(const GenerateSolutionParameters &parameters)
 {
     //Set up the JSON.
     nlohmann::ordered_json JSON;
 
-    //Add the 'configurations' entry.
+    //Add the version.
+    JSON["version"] = 8;
+
+    //Add the configure presets.
     {
-        nlohmann::ordered_json &configurations_entry{ JSON["configurations"] };
+        nlohmann::ordered_json &configure_presets_entry{ JSON["configurePresets"] };
 
-        //Add each configuration.
-        for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
+        //Add the first (and only) entry.
         {
-            //Add the configuration entry.
-            nlohmann::ordered_json &configuration_entry{ configurations_entry.emplace_back() };
+            nlohmann::ordered_json &configure_preset_entry{ configure_presets_entry.emplace_back() };
 
-            //Set the name.
-            configuration_entry["name"] = configuration._Name;
+            configure_preset_entry["name"] = "Win64";
+            configure_preset_entry["displayName"] = "Win64";
+            configure_preset_entry["generator"] = "Visual Studio 17 2022";
+            configure_preset_entry["architecture"] = "x64";
+            configure_preset_entry["binaryDir"] = "${sourceDir}/Build";
 
-            //Add the include paths.
             {
-                nlohmann::ordered_json &include_path_entry{ configuration_entry["includePath"] };
+                nlohmann::ordered_json &cache_variables_entry{ configure_preset_entry["cacheVariables"] };
 
-                for (const std::string &code_include_path : parameters._CodeIncludePaths)
-                {
-                    include_path_entry.emplace_back(code_include_path);
-                }
+                cache_variables_entry["CMAKE_INSTALL_PREFIX"] = "${sourceDir}/Install";
             }
-
-            //Add the defines.
-            {
-                nlohmann::ordered_json &defines_entry{ configuration_entry["defines"] };
-
-                for (const std::string &preprocessor_definition : configuration._PreprocessorDefinitions)
-                {
-                    defines_entry.emplace_back(preprocessor_definition);
-                }
-            }
-
-            //Set the C++ standard.
-            configuration_entry["cppStandard"] = "c++20";
         }
     }
 
-    //Set the 'enableConfigurationSquiggles' entry.
-    JSON["enableConfigurationSquiggles"] = true;
+    //Add the build presets.
+    {
+        nlohmann::ordered_json &build_presets_entry{ JSON["buildPresets"] };
+
+        for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
+        {
+            nlohmann::ordered_json &build_preset_entry{ build_presets_entry.emplace_back() };
+
+            build_preset_entry["name"] = Utilities::RemoveSpaces(configuration._Name).c_str();
+            build_preset_entry["configurePreset"] = "Win64";
+            build_preset_entry["configuration"] = Utilities::RemoveSpaces(configuration._Name).c_str();
+        }
+    }
 
     //Figure out the file path.
     char file_path[256];
-    sprintf_s(file_path, "%s\\.vscode\\c_cpp_properties.json", parameters._DirectoryPath.c_str());
+    sprintf_s(file_path, "%s\\CMakePresets.json", parameters._DirectoryPath.c_str());
 
     //Open the file.
     std::ofstream file{ file_path };
@@ -148,3 +166,155 @@ void GenerateVisualStudioCodeWorkspace::GenerateCCPPPropertiesFile(const Generat
     //Close the file.
     file.close();
 }
+
+/*
+*	Generates the 'settings.json' file.
+*/
+void GenerateVisualStudioCodeWorkspace::GenerateSettingsFile(const GenerateSolutionParameters &parameters)
+{
+    //Set up the JSON.
+    nlohmann::ordered_json JSON;
+
+    //Add the stuff.
+    JSON["cmake.configureOnOpen"] = true;
+    JSON["cmake.defaultConfigurePreset"] = "Win64";
+    JSON["cmake.defaultBuildPreset"] = Utilities::RemoveSpaces(parameters._Configurations[0]._Name).c_str();
+
+    //Figure out the file path.
+    char file_path[256];
+    sprintf_s(file_path, "%s\\.vscode\\settings.json", parameters._DirectoryPath.c_str());
+
+    //Open the file.
+    std::ofstream file{ file_path };
+
+    //Write the JSON.
+    file << std::setw(4) << JSON;
+
+    //Close the file.
+    file.close();
+}
+
+/*
+*	Generates the 'extensions.json' file.
+*/
+void GenerateVisualStudioCodeWorkspace::GenerateExtensionsFile(const GenerateSolutionParameters &parameters)
+{
+    //Set up the JSON.
+    nlohmann::ordered_json JSON;
+
+    //Add the recommendations entry.
+    {
+        nlohmann::ordered_json &recommendations_entry{ JSON["recommendations"] };
+
+        recommendations_entry.emplace_back("ms-vscode.cmake-tools");
+        recommendations_entry.emplace_back("ms-vscode.cpptools");
+    }
+    
+    //Figure out the file path.
+    char file_path[256];
+    sprintf_s(file_path, "%s\\.vscode\\extensions.json", parameters._DirectoryPath.c_str());
+
+    //Open the file.
+    std::ofstream file{ file_path };
+
+    //Write the JSON.
+    file << std::setw(4) << JSON;
+
+    //Close the file.
+    file.close();
+}
+
+/*
+*	Generates the 'tasks.json' file.
+*/
+void GenerateVisualStudioCodeWorkspace::GenerateTasksFile(const GenerateSolutionParameters &parameters)
+{
+    //Set up the JSON.
+    nlohmann::ordered_json JSON;
+
+    //Add the version.
+    JSON["version"] = "2.0.0";
+
+    //Add the tasks.
+    {
+        nlohmann::ordered_json &tasks_entry{ JSON["tasks"] };
+
+        //Add the build task.
+        {
+            nlohmann::ordered_json &build_task{ tasks_entry.emplace_back() };
+
+            build_task["type"] = "cmake";
+            build_task["label"] = "CMake: build";
+            build_task["command"] = "build";
+            build_task["targets"].emplace_back(Utilities::RemoveSpaces(parameters._ProjectName).c_str());
+            build_task["preset"] = Utilities::RemoveSpaces(parameters._Configurations[0]._Name).c_str();
+
+            {
+                nlohmann::ordered_json &group_entry{ build_task["group"] };
+
+                group_entry["kind"] = "build";
+                group_entry["isDefault"] = true;
+            }
+
+            build_task["detail"] = "CMake template build task";
+        }
+    }
+
+    //Figure out the file path.
+    char file_path[256];
+    sprintf_s(file_path, "%s\\.vscode\\tasks.json", parameters._DirectoryPath.c_str());
+
+    //Open the file.
+    std::ofstream file{ file_path };
+
+    //Write the JSON.
+    file << std::setw(4) << JSON;
+
+    //Close the file.
+    file.close();
+}
+
+/*
+*	Generates the 'launch.json' file.
+*/
+void GenerateVisualStudioCodeWorkspace::GenerateLaunchFile(const GenerateSolutionParameters &parameters)
+{
+    //Set up the JSON.
+    nlohmann::ordered_json JSON;
+
+    //Add the version.
+    JSON["version"] = "2.0.0";
+
+    //Add the configurations.
+    {
+        nlohmann::ordered_json &configurations_entry{ JSON["configurations"] };
+
+        //Add the launch configuration.
+        {
+            nlohmann::ordered_json &launch_configuration{ configurations_entry.emplace_back() };
+
+            launch_configuration["name"] = parameters._ProjectName;
+            launch_configuration["type"] = "cppvsdbg";
+            launch_configuration["request"] = "launch";
+            launch_configuration["program"] = "${command:cmake.launchTargetPath}";
+            launch_configuration["stopAtEntry"] = false;
+            launch_configuration["cwd"] = "${workspaceFolder}";
+            launch_configuration["console"] = "internalConsole";
+            launch_configuration["preLaunchTask"] = "CMake: build";
+        }
+    }
+
+    //Figure out the file path.
+    char file_path[256];
+    sprintf_s(file_path, "%s\\.vscode\\launch.json", parameters._DirectoryPath.c_str());
+
+    //Open the file.
+    std::ofstream file{ file_path };
+
+    //Write the JSON.
+    file << std::setw(4) << JSON;
+
+    //Close the file.
+    file.close();
+}
+#endif

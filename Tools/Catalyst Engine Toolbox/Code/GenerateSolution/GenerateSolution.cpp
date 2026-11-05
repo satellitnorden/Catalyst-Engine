@@ -1,6 +1,9 @@
 //Header file.
 #include <GenerateSolution/GenerateSolution.h>
 
+//Core.
+#include <Core/Utilities.h>
+
 //Generate solution.
 #include <GenerateSolution/GenerateCMake.h>
 #include <GenerateSolution/GenerateVisualStudioCodeWorkspace.h>
@@ -447,12 +450,15 @@ bool ShouldIncludeThirdPartyDirectory(const ProjectSettings &project_settings, c
 /*
 *	Scans the given third party directory.
 */
-void ScanThirdPartyDirectory(const ProjectSettings &project_settings, GenerateSolutionParameters*parameters, GenerateSolutionParameters::Directory *directory, const char *path, const bool is_top_level)
+void ScanThirdPartyDirectory(const ProjectSettings &project_settings, GenerateSolutionParameters *parameters, GenerateSolutionParameters::Directory *directory, const char *path, const bool is_top_level)
 {
 	if (!std::filesystem::exists(path))
 	{
 		return;
 	}
+
+	//Set the path.
+	directory->_Path = std::string("..\\..\\") + path;
 
 	for (auto &entry : std::filesystem::directory_iterator(path))
 	{
@@ -1588,44 +1594,62 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 		configuration._PreprocessorDefinitions.emplace_back("CATALYST_HAS_EMBEDDED_RESOURCES");
 	}
 
+#if 0
 	//Generate the CMake file.
 	{
 		parameters._DirectoryPath = AudioPluginCMakeDirectory(audio_plugin);
 		GenerateCMake::Generate(parameters);
 	}
+#endif
 
+#if VISUAL_STUDIO_CODE_WORKSPACE_SUPPORTED
 	//Generate the visual studio code workspace.
 	{
 		parameters._DirectoryPath = AudioPluginVisualStudioCodeWorkspaceDirectory(audio_plugin);
 		GenerateVisualStudioCodeWorkspace::Generate(parameters);
+
+		//Remember the error code for filesystem functions.
+		std::error_code error_code;
+
+		//Create the directories for the different configurations.
+		for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
+		{
+			std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("\\Build\\") + Utilities::RemoveSpaces(configuration._Name)).c_str(), error_code); CHECK_ERROR_CODE();
+		}
+
+		//Copy assimp-vc143-mt.dll.
+		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", std::string(parameters._DirectoryPath + std::string("\\Build\\StandaloneDebug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("\\Build\\StandaloneProfile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("\\Build\\StandaloneFinal")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 	}
+#endif
 
 	//Generate the visual studio solution.
 	{
 		parameters._DirectoryPath = AudioPluginVisualStudioSolutionDirectory(audio_plugin);
 		GenerateVisualStudioSolution::Generate(parameters);
-	}
 
-	//Remember the error code for filesystem functions.
-	std::error_code error_code;
+		//Remember the error code for filesystem functions.
+		std::error_code error_code;
 
-	//Create the directories for the different configurations.
-	for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
-	{
-		std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("\\") + configuration._Name).c_str(), error_code); CHECK_ERROR_CODE();
-	}
-
-	//Copy assimp-vc143-mt.dll.
-	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", std::string(AudioPluginVisualStudioSolutionDirectory(audio_plugin) + std::string("\\Standalone Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(AudioPluginVisualStudioSolutionDirectory(audio_plugin) + std::string("\\Standalone Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(AudioPluginVisualStudioSolutionDirectory(audio_plugin) + std::string("\\Standalone Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-
-	//Copy onnxruntime.dll.
-	if (project_settings._IncludeONNXRuntimeLibrary)
-	{
+		//Create the directories for the different configurations.
 		for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
 		{
-			std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", std::string(parameters._DirectoryPath + std::string("\\") + configuration._Name).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("\\") + configuration._Name).c_str(), error_code); CHECK_ERROR_CODE();
+		}
+
+		//Copy assimp-vc143-mt.dll.
+		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", std::string(AudioPluginVisualStudioSolutionDirectory(audio_plugin) + std::string("\\Standalone Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(AudioPluginVisualStudioSolutionDirectory(audio_plugin) + std::string("\\Standalone Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(AudioPluginVisualStudioSolutionDirectory(audio_plugin) + std::string("\\Standalone Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+
+		//Copy onnxruntime.dll.
+		if (project_settings._IncludeONNXRuntimeLibrary)
+		{
+			for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
+			{
+				std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", std::string(parameters._DirectoryPath + std::string("\\") + configuration._Name).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			}
 		}
 	}
 }

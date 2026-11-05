@@ -144,6 +144,7 @@
   <ItemGroup>
     <ClInclude Include="..\Code\Core\Core.h" />
     <ClInclude Include="..\Code\Core\MurmurHash.h" />
+    <ClInclude Include="..\Code\Core\Utilities.h" />
     <ClInclude Include="..\Code\GenerateSolution\GenerateCMake.h" />
     <ClInclude Include="..\Code\GenerateSolution\GenerateSolution.h" />
     <ClInclude Include="..\Code\GenerateSolution\GenerateSolutionParameters.h" />

@@ -1,3 +1,6 @@
+#define VISUAL_STUDIO_CODE_WORKSPACE_SUPPORTED (1)
+
+#if VISUAL_STUDIO_CODE_WORKSPACE_SUPPORTED
 #pragma once
 
 //Core.
@@ -24,8 +27,29 @@ private:
 	static void GenerateCodeWorkspaceFile(const GenerateSolutionParameters &parameters);
 
 	/*
-	*	Generates the '.vscode\c_cpp_properties.json' file.
+	*	Generates the 'CMakePresets.json' file.
 	*/
-	static void GenerateCCPPPropertiesFile(const GenerateSolutionParameters &parameters);
+	static void GenerateCMakePresetsFile(const GenerateSolutionParameters &parameters);
+
+	/*
+	*	Generates the 'settings.json' file.
+	*/
+	static void GenerateSettingsFile(const GenerateSolutionParameters &parameters);
+
+	/*
+	*	Generates the 'extensions.json' file.
+	*/
+	static void GenerateExtensionsFile(const GenerateSolutionParameters &parameters);
+
+	/*
+	*	Generates the 'tasks.json' file.
+	*/
+	static void GenerateTasksFile(const GenerateSolutionParameters &parameters);
+
+	/*
+	*	Generates the 'launch.json' file.
+	*/
+	static void GenerateLaunchFile(const GenerateSolutionParameters &parameters);
 
 };
+#endif

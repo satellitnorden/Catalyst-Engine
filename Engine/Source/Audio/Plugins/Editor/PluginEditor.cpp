@@ -27,7 +27,7 @@ namespace Audio
 		ContentSystem::Instance->Initialize();
 
 		//Load the engine base assets.
-		ContentSystem::Instance->LoadAssetCollection("Base.cac");
+		ContentSystem::Instance->LoadAssetCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Collections\\Base.cac");
 
 		//Set the plugin.
 		_Plugin = plugin;
