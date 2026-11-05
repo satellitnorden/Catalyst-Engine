@@ -293,8 +293,8 @@ void GenerateVisualStudioCodeWorkspace::GenerateLaunchFile(const GenerateSolutio
         {
             nlohmann::ordered_json &launch_configuration{ configurations_entry.emplace_back() };
 
-            launch_configuration["name"] = parameters._ProjectName;
             launch_configuration["type"] = "cppvsdbg";
+            launch_configuration["name"] = parameters._ProjectName;
             launch_configuration["request"] = "launch";
             launch_configuration["program"] = "${command:cmake.launchTargetPath}";
             launch_configuration["stopAtEntry"] = false;
