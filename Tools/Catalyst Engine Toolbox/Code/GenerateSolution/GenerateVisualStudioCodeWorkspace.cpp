@@ -81,17 +81,10 @@ void GenerateVisualStudioCodeWorkspace::GenerateCodeWorkspaceFile(const Generate
     {
         nlohmann::ordered_json &settings_entry{ JSON["settings"] };
 
-        //Add the include paths.
-        {
-            nlohmann::ordered_json &include_paths_entry{ settings_entry["C_Cpp.default.includePath"] };
+        //Add the configuration provider.
+        settings_entry["C_Cpp.default.configurationProvider"] = "ms-vscode.cmake-tools";
 
-            for (const std::string &code_include_path : parameters._CodeIncludePaths)
-            {
-                include_paths_entry.emplace_back(code_include_path);
-            }
-        }
-
-        //Always show the CMake status bar.
+        //Set CMake options.
         settings_entry["cmake.options.statusBarVisibility"] = "visible";
         settings_entry["cmake.sourceDirectory"] = "${workspaceFolder}";
         settings_entry["cmake.autoSelectActiveFolder"] = false;
