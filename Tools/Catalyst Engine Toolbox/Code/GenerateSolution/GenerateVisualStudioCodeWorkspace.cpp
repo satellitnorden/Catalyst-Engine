@@ -90,6 +90,11 @@ void GenerateVisualStudioCodeWorkspace::GenerateCodeWorkspaceFile(const Generate
                 include_paths_entry.emplace_back(code_include_path);
             }
         }
+
+        //Always show the CMake status bar.
+        settings_entry["cmake.options.statusBarVisibility"] = "visible";
+        settings_entry["cmake.sourceDirectory"] = "${workspaceFolder}";
+        settings_entry["cmake.autoSelectActiveFolder"] = false;
     }
 
     //Figure out the file path.
@@ -177,8 +182,6 @@ void GenerateVisualStudioCodeWorkspace::GenerateSettingsFile(const GenerateSolut
 
     //Add the stuff.
     JSON["cmake.configureOnOpen"] = true;
-    JSON["cmake.defaultConfigurePreset"] = "Win64";
-    JSON["cmake.defaultBuildPreset"] = Utilities::RemoveSpaces(parameters._Configurations[0]._Name).c_str();
 
     //Figure out the file path.
     char file_path[256];
@@ -247,7 +250,6 @@ void GenerateVisualStudioCodeWorkspace::GenerateTasksFile(const GenerateSolution
             build_task["label"] = "CMake: build";
             build_task["command"] = "build";
             build_task["targets"].emplace_back(Utilities::RemoveSpaces(parameters._ProjectName).c_str());
-            build_task["preset"] = Utilities::RemoveSpaces(parameters._Configurations[0]._Name).c_str();
 
             {
                 nlohmann::ordered_json &group_entry{ build_task["group"] };

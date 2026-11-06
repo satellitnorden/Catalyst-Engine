@@ -208,13 +208,17 @@ void GenerateCMake::Generate(const GenerateSolutionParameters &parameters)
     file << "# Set MSVC-specific flags." << std::endl;
     file << "if (MSVC)" << std::endl;
 
-    for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
+    for (size_t configuration_index{ 0 }; configuration_index < parameters._Configurations.size(); ++configuration_index)
     {
+        //Cache the configuration.
+        const GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations[configuration_index] };
+
         //Figure out the names.
         const std::string compiler_flags_name{ std::string("CMAKE_CXX_FLAGS_") + Utilities::ToUpperCase(Utilities::RemoveSpaces(configuration._Name)) };
         const std::string linker_flags_name{ std::string("CMAKE_EXE_LINKER_FLAGS_") + Utilities::ToUpperCase(Utilities::RemoveSpaces(configuration._Name)) };
 
         //Add the compiler flags.
+        file << "\t# Set compiler flags." << std::endl;
         file << "\tset(" << compiler_flags_name << " \"";
 
         //Always generate debug information.
@@ -223,7 +227,8 @@ void GenerateCMake::Generate(const GenerateSolutionParameters &parameters)
         //Set optimizations.
         if (configuration._ApplyOptimizations)
         {
-            file << " /Ox";
+            file << " /O2";
+            file << " /GL";
         }
 
         else
@@ -234,7 +239,26 @@ void GenerateCMake::Generate(const GenerateSolutionParameters &parameters)
         file << "\")" << std::endl;
 
         //Add the linker flags.
-        file << "\tset(" << linker_flags_name << " /DEBUG)" << std::endl;
+        file << "\t# Set linker flags." << std::endl;
+        file << "\tset(" << linker_flags_name << " \"/DEBUG";
+
+        if (configuration._ApplyOptimizations)
+        {
+            file << " /LTCG:incremental";
+            file << " /INCREMENTAL:NO";
+        }
+
+        else
+        {
+            file << " /INCREMENTAL";
+        }
+
+        file << "\")" << std::endl;
+
+        if (configuration_index < (parameters._Configurations.size() - 1))
+        {
+            file << std::endl;
+        }
     }
 
     file << "endif()" << std::endl;
