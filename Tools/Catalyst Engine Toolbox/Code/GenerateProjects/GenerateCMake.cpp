@@ -1,5 +1,5 @@
 //Header file.
-#include <GenerateSolution/GenerateCMake.h>
+#include <GenerateProjects/GenerateCMake.h>
 
 //Core.
 #include <Core/Utilities.h>
@@ -11,14 +11,14 @@
 /*
 *   Adds the given directory.
 */
-void AddDirectory(const GenerateSolutionParameters::Directory &directory, std::ofstream &file)
+void AddDirectory(const GenerateProjectParameters::Directory &directory, std::ofstream &file)
 {
-    for (const GenerateSolutionParameters::Directory &sub_directory : directory._Directories)
+    for (const GenerateProjectParameters::Directory &sub_directory : directory._Directories)
     {
         AddDirectory(sub_directory, file);
     }
 
-    for (const GenerateSolutionParameters::File &_file : directory._Files)
+    for (const GenerateProjectParameters::File &_file : directory._Files)
     {
         file << "\t\"" << Utilities::BackwardToForwardSlashes(_file._Path).c_str() << "\"" << std::endl;
     }
@@ -27,7 +27,7 @@ void AddDirectory(const GenerateSolutionParameters::Directory &directory, std::o
 /*
 *	Generates!
 */
-void GenerateCMake::Generate(const GenerateSolutionParameters &parameters)
+void GenerateCMake::Generate(const GenerateProjectParameters &parameters)
 {
     //Ensure the directory exists.
     std::filesystem::create_directories(parameters._DirectoryPath);
@@ -71,7 +71,7 @@ void GenerateCMake::Generate(const GenerateSolutionParameters &parameters)
     file << "# Collect the source files" << std::endl;
     file << "set(SOURCE_FILES" << std::endl;
 
-    for (const GenerateSolutionParameters::Directory &directory : parameters._Directories)
+    for (const GenerateProjectParameters::Directory &directory : parameters._Directories)
     {
         AddDirectory(directory, file);
     }
@@ -103,7 +103,7 @@ void GenerateCMake::Generate(const GenerateSolutionParameters &parameters)
     file << "# Add the compile definitions." << std::endl;
     file << "target_compile_definitions(" << Utilities::RemoveSpaces(parameters._ProjectName).c_str() << " PRIVATE" << std::endl;
 
-    for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
+    for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
     {
         file << "\t$<$<CONFIG:" << Utilities::RemoveSpaces(configuration._Name).c_str() << ">:";
 
@@ -139,7 +139,7 @@ void GenerateCMake::Generate(const GenerateSolutionParameters &parameters)
     file << "# Add the library includes." << std::endl;
     file << "target_link_libraries(" << Utilities::RemoveSpaces(parameters._ProjectName).c_str() << " PRIVATE" << std::endl;
 
-    for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
+    for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
     {
         file << "\t$<$<CONFIG:" << Utilities::RemoveSpaces(configuration._Name).c_str() << ">:";
 
@@ -164,7 +164,7 @@ void GenerateCMake::Generate(const GenerateSolutionParameters &parameters)
     file << "set_property(TARGET " << Utilities::RemoveSpaces(parameters._ProjectName).c_str() << " PROPERTY MSVC_RUNTIME_LIBRARY" << std::endl;
     file << "\t";
 
-    for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
+    for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
     {
         file << "$<$<CONFIG:" << Utilities::RemoveSpaces(configuration._Name).c_str() << ">:" << configuration._RuntimeLibrary << ">";
     }
@@ -181,7 +181,7 @@ void GenerateCMake::Generate(const GenerateSolutionParameters &parameters)
     //Set up the Visual Studio filters.
     file << "# Set up the Visual Studio filters." << std::endl;
 
-    for (const GenerateSolutionParameters::Directory &directory : parameters._Directories)
+    for (const GenerateProjectParameters::Directory &directory : parameters._Directories)
     {
         if (directory._Path.empty())
         {
@@ -211,7 +211,7 @@ void GenerateCMake::Generate(const GenerateSolutionParameters &parameters)
     for (size_t configuration_index{ 0 }; configuration_index < parameters._Configurations.size(); ++configuration_index)
     {
         //Cache the configuration.
-        const GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations[configuration_index] };
+        const GenerateProjectParameters::Configuration &configuration{ parameters._Configurations[configuration_index] };
 
         //Figure out the names.
         const std::string compiler_flags_name{ std::string("CMAKE_CXX_FLAGS_") + Utilities::ToUpperCase(Utilities::RemoveSpaces(configuration._Name)) };

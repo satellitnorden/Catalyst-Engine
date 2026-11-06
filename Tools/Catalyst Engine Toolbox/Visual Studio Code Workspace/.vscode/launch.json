@@ -1,0 +1,17 @@
+{
+    "version": "2.0.0",
+    "configurations": [
+        {
+            "type": "cppvsdbg",
+            "name": "Catalyst Engine Toolbox",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetPath}",
+            "stopAtEntry": false,
+            "console": "externalTerminal",
+            "preLaunchTask": "CMake: build",
+
+            "cwd": "C:/Github/Audio-Plugins/Projects",
+            "args": ["generate_projects"]
+        }
+    ]
+}

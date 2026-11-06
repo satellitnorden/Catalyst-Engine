@@ -13,8 +13,8 @@
     <Filter Include="ThirdParty">
       <UniqueIdentifier>{1bacefd5-17a5-4073-849e-52ecb29e8e25}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GenerateSolution">
-      <UniqueIdentifier>{c1d7d831-92be-4986-8cb8-2a249f5be8b4}</UniqueIdentifier>
+    <Filter Include="GenerateProjects">
+      <UniqueIdentifier>{d36689d0-ddb2-4ea4-a090-eb61d3c7cd00}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -24,17 +24,17 @@
     <ClCompile Include="..\Code\ProjectSettings\ProjectSettings.cpp">
       <Filter>ProjectSettings</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\GenerateSolution\GenerateSolution.cpp">
-      <Filter>GenerateSolution</Filter>
+    <ClCompile Include="..\Code\GenerateProjects\GenerateCMake.cpp">
+      <Filter>GenerateProjects</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\GenerateSolution\GenerateVisualStudioSolution.cpp">
-      <Filter>GenerateSolution</Filter>
+    <ClCompile Include="..\Code\GenerateProjects\GenerateProjects.cpp">
+      <Filter>GenerateProjects</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\GenerateSolution\GenerateVisualStudioCodeWorkspace.cpp">
-      <Filter>GenerateSolution</Filter>
+    <ClCompile Include="..\Code\GenerateProjects\GenerateVisualStudioCodeWorkspace.cpp">
+      <Filter>GenerateProjects</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\GenerateSolution\GenerateCMake.cpp">
-      <Filter>GenerateSolution</Filter>
+    <ClCompile Include="..\Code\GenerateProjects\GenerateVisualStudioSolution.cpp">
+      <Filter>GenerateProjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -47,26 +47,26 @@
     <ClInclude Include="..\Code\ThirdParty\json.hpp">
       <Filter>ThirdParty</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\GenerateSolution\GenerateSolution.h">
-      <Filter>GenerateSolution</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\GenerateSolution\GenerateVisualStudioSolution.h">
-      <Filter>GenerateSolution</Filter>
-    </ClInclude>
     <ClInclude Include="..\Code\Core\MurmurHash.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\GenerateSolution\GenerateVisualStudioCodeWorkspace.h">
-      <Filter>GenerateSolution</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\GenerateSolution\GenerateSolutionParameters.h">
-      <Filter>GenerateSolution</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\GenerateSolution\GenerateCMake.h">
-      <Filter>GenerateSolution</Filter>
-    </ClInclude>
     <ClInclude Include="..\Code\Core\Utilities.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\GenerateProjects\GenerateCMake.h">
+      <Filter>GenerateProjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\GenerateProjects\GenerateProjects.h">
+      <Filter>GenerateProjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\GenerateProjects\GenerateProjectParameters.h">
+      <Filter>GenerateProjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\GenerateProjects\GenerateVisualStudioCodeWorkspace.h">
+      <Filter>GenerateProjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\GenerateProjects\GenerateVisualStudioSolution.h">
+      <Filter>GenerateProjects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

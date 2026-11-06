@@ -1,12 +1,12 @@
 //Header file.
-#include <GenerateSolution/GenerateVisualStudioCodeWorkspace.h>
+#include <GenerateProjects/GenerateVisualStudioCodeWorkspace.h>
 
 //Core.
 #include <Core/Utilities.h>
 
 #if VISUAL_STUDIO_CODE_WORKSPACE_SUPPORTED
-//Generate solution.
-#include <GenerateSolution/GenerateCMake.h>
+//Generate projects.
+#include <GenerateProjects/GenerateCMake.h>
 
 //Third party.
 #include <ThirdParty/json.hpp>
@@ -19,7 +19,7 @@
 /*
 *	Generates!
 */
-void GenerateVisualStudioCodeWorkspace::Generate(const GenerateSolutionParameters &parameters)
+void GenerateVisualStudioCodeWorkspace::Generate(const GenerateProjectParameters &parameters)
 {
     //Ensure the directories exists.
     std::filesystem::create_directories(parameters._DirectoryPath);
@@ -50,7 +50,7 @@ void GenerateVisualStudioCodeWorkspace::Generate(const GenerateSolutionParameter
 /*
 *	Generates the '.code-workspace' file.
 */
-void GenerateVisualStudioCodeWorkspace::GenerateCodeWorkspaceFile(const GenerateSolutionParameters &parameters)
+void GenerateVisualStudioCodeWorkspace::GenerateCodeWorkspaceFile(const GenerateProjectParameters &parameters)
 {
     //Set up the JSON.
     nlohmann::ordered_json JSON;
@@ -68,7 +68,7 @@ void GenerateVisualStudioCodeWorkspace::GenerateCodeWorkspaceFile(const Generate
         }
 
         //Add the directories.
-        for (const GenerateSolutionParameters::Directory &directory : parameters._Directories)
+        for (const GenerateProjectParameters::Directory &directory : parameters._Directories)
         {
             nlohmann::ordered_json &folder_entry{ folders_entry.emplace_back() };
 
@@ -107,7 +107,7 @@ void GenerateVisualStudioCodeWorkspace::GenerateCodeWorkspaceFile(const Generate
 /*
 *	Generates the 'CMakePresets.json' file.
 */
-void GenerateVisualStudioCodeWorkspace::GenerateCMakePresetsFile(const GenerateSolutionParameters &parameters)
+void GenerateVisualStudioCodeWorkspace::GenerateCMakePresetsFile(const GenerateProjectParameters &parameters)
 {
     //Set up the JSON.
     nlohmann::ordered_json JSON;
@@ -141,7 +141,7 @@ void GenerateVisualStudioCodeWorkspace::GenerateCMakePresetsFile(const GenerateS
     {
         nlohmann::ordered_json &build_presets_entry{ JSON["buildPresets"] };
 
-        for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
+        for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
         {
             nlohmann::ordered_json &build_preset_entry{ build_presets_entry.emplace_back() };
 
@@ -168,7 +168,7 @@ void GenerateVisualStudioCodeWorkspace::GenerateCMakePresetsFile(const GenerateS
 /*
 *	Generates the 'settings.json' file.
 */
-void GenerateVisualStudioCodeWorkspace::GenerateSettingsFile(const GenerateSolutionParameters &parameters)
+void GenerateVisualStudioCodeWorkspace::GenerateSettingsFile(const GenerateProjectParameters &parameters)
 {
     //Set up the JSON.
     nlohmann::ordered_json JSON;
@@ -193,7 +193,7 @@ void GenerateVisualStudioCodeWorkspace::GenerateSettingsFile(const GenerateSolut
 /*
 *	Generates the 'extensions.json' file.
 */
-void GenerateVisualStudioCodeWorkspace::GenerateExtensionsFile(const GenerateSolutionParameters &parameters)
+void GenerateVisualStudioCodeWorkspace::GenerateExtensionsFile(const GenerateProjectParameters &parameters)
 {
     //Set up the JSON.
     nlohmann::ordered_json JSON;
@@ -223,7 +223,7 @@ void GenerateVisualStudioCodeWorkspace::GenerateExtensionsFile(const GenerateSol
 /*
 *	Generates the 'tasks.json' file.
 */
-void GenerateVisualStudioCodeWorkspace::GenerateTasksFile(const GenerateSolutionParameters &parameters)
+void GenerateVisualStudioCodeWorkspace::GenerateTasksFile(const GenerateProjectParameters &parameters)
 {
     //Set up the JSON.
     nlohmann::ordered_json JSON;
@@ -272,7 +272,7 @@ void GenerateVisualStudioCodeWorkspace::GenerateTasksFile(const GenerateSolution
 /*
 *	Generates the 'launch.json' file.
 */
-void GenerateVisualStudioCodeWorkspace::GenerateLaunchFile(const GenerateSolutionParameters &parameters)
+void GenerateVisualStudioCodeWorkspace::GenerateLaunchFile(const GenerateProjectParameters &parameters)
 {
     //Set up the JSON.
     nlohmann::ordered_json JSON;

@@ -1,8 +1,8 @@
 //Core.
 #include <Core/Core.h>
 
-//Generate solution.
-#include <GenerateSolution/GenerateSolution.h>
+//Generate projects.
+#include <GenerateProjects/GenerateProjects.h>
 
 //Project settings.
 #include <ProjectSettings/ProjectSettings.h>
@@ -14,9 +14,9 @@ int32 main(int32 argument_count, char *arguments[])
 	project_settings.Read("..\\Project.json");
 
 	//Decide what to do.
-	if (argument_count > 1 && strcmp(arguments[1], "generate_solution") == 0)
+	if (argument_count > 1 && strcmp(arguments[1], "generate_projects") == 0)
 	{
-		GenerateSolution::Run(project_settings);
+		GenerateProjects::Run(project_settings);
 	}
 
 	return 0;

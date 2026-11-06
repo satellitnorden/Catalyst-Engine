@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"name" : "Workspace",
+			"path" : "."
+		},
+		{
+            "name": "Code",
+            "path": "..\\Code"
+        }
+	],
+    "settings": {
+        "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+        "cmake.options.statusBarVisibility": "visible",
+        "cmake.sourceDirectory": "${workspaceFolder}",
+        "cmake.autoSelectActiveFolder": false
+    }
+}

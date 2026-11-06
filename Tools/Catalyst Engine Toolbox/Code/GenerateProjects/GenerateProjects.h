@@ -6,13 +6,13 @@
 //Project settings.
 #include <ProjectSettings/ProjectSettings.h>
 
-class GenerateSolution
+class GenerateProjects
 {
 
 public:
 
 	/*
-	*	Generates a solution with the given project settings.
+	*	Generates the projects with the given project settings.
 	*/
 	static void Run(const ProjectSettings &project_settings);
 

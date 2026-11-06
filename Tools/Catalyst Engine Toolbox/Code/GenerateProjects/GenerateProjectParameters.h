@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-class GenerateSolutionParameters final
+class GenerateProjectParameters final
 {
 
 public:

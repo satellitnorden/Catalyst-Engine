@@ -114,5 +114,4 @@ void ProjectSettings::Read(const char *file_path)
 	//Calculate the project name with no spaces.
 	_ProjectNameNoSpaces = _ProjectName;
 	_ProjectNameNoSpaces.erase(std::remove_if(_ProjectNameNoSpaces.begin(), _ProjectNameNoSpaces.end(), [](unsigned char x) { return std::isspace(x); }), _ProjectNameNoSpaces.end());
-
 }

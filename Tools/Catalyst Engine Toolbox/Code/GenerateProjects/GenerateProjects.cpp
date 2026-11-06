@@ -1,13 +1,13 @@
 //Header file.
-#include <GenerateSolution/GenerateSolution.h>
+#include <GenerateProjects/GenerateProjects.h>
 
 //Core.
 #include <Core/Utilities.h>
 
-//Generate solution.
-#include <GenerateSolution/GenerateCMake.h>
-#include <GenerateSolution/GenerateVisualStudioCodeWorkspace.h>
-#include <GenerateSolution/GenerateVisualStudioSolution.h>
+//Generate projects.
+#include <GenerateProjects/GenerateCMake.h>
+#include <GenerateProjects/GenerateVisualStudioCodeWorkspace.h>
+#include <GenerateProjects/GenerateVisualStudioSolution.h>
 
 //STD.
 #include <filesystem>
@@ -389,7 +389,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 /*
 *	Scans the given directory.
 */
-void ScanDirectory(GenerateSolutionParameters::Directory *directory, const char *path)
+void ScanDirectory(GenerateProjectParameters::Directory *directory, const char *path)
 {
 	if (!std::filesystem::exists(path))
 	{
@@ -405,7 +405,7 @@ void ScanDirectory(GenerateSolutionParameters::Directory *directory, const char 
 
 		if (entry.is_directory())
 		{
-			GenerateSolutionParameters::Directory &new_directory{ directory->_Directories.emplace_back() };
+			GenerateProjectParameters::Directory &new_directory{ directory->_Directories.emplace_back() };
 			new_directory._Name = entry_file_path.substr(entry_file_path.find_last_of('\\') + 1);
 			ScanDirectory(&new_directory, entry_file_path.c_str());
 		}
@@ -425,7 +425,7 @@ void ScanDirectory(GenerateSolutionParameters::Directory *directory, const char 
 				|| extension == ".storage_buffer_definition"
 				|| extension == ".uniform_buffer_definition")
 			{
-				GenerateSolutionParameters::File &new_file{ directory->_Files.emplace_back() };
+				GenerateProjectParameters::File &new_file{ directory->_Files.emplace_back() };
 
 				new_file._Path = std::string("..\\..\\") + entry_file_path;
 				new_file._EnableWarnings = true;
@@ -450,7 +450,7 @@ bool ShouldIncludeThirdPartyDirectory(const ProjectSettings &project_settings, c
 /*
 *	Scans the given third party directory.
 */
-void ScanThirdPartyDirectory(const ProjectSettings &project_settings, GenerateSolutionParameters *parameters, GenerateSolutionParameters::Directory *directory, const char *path, const bool is_top_level)
+void ScanThirdPartyDirectory(const ProjectSettings &project_settings, GenerateProjectParameters *parameters, GenerateProjectParameters::Directory *directory, const char *path, const bool is_top_level)
 {
 	if (!std::filesystem::exists(path))
 	{
@@ -473,7 +473,7 @@ void ScanThirdPartyDirectory(const ProjectSettings &project_settings, GenerateSo
 					parameters->_CodeIncludePaths.emplace_back(std::string("..\\..\\") + entry_file_path);
 				}
 
-				GenerateSolutionParameters::Directory &new_directory{ directory->_Directories.emplace_back() };
+				GenerateProjectParameters::Directory &new_directory{ directory->_Directories.emplace_back() };
 				new_directory._Name = entry_file_path.substr(entry_file_path.find_last_of('\\') + 1);
 				ScanThirdPartyDirectory(project_settings, parameters, &new_directory, entry_file_path.c_str(), false);
 			}
@@ -488,7 +488,7 @@ void ScanThirdPartyDirectory(const ProjectSettings &project_settings, GenerateSo
 				|| extension == ".cpp"
 				|| extension == ".c")
 			{
-				GenerateSolutionParameters::File &new_file{ directory->_Files.emplace_back() };
+				GenerateProjectParameters::File &new_file{ directory->_Files.emplace_back() };
 
 				new_file._Path = std::string("..\\..\\") + entry_file_path;
 				new_file._EnableWarnings = false;
@@ -523,7 +523,7 @@ void GenerateRunCodeGenerationBatchFile(const std::string &directory, const Proj
 /*
 *	Adds common parameters.
 */
-void AddCommonParameters(const ProjectSettings &project_settings, GenerateSolutionParameters *const parameters)
+void AddCommonParameters(const ProjectSettings &project_settings, GenerateProjectParameters *const parameters)
 {
 	//Fill in the core code include paths.
 	parameters->_CodeIncludePaths.emplace_back("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Include");
@@ -539,68 +539,68 @@ void AddCommonParameters(const ProjectSettings &project_settings, GenerateSoluti
 
 	//Fill in the directories.
 	{
-		GenerateSolutionParameters::Directory &directory{ parameters->_Directories.emplace_back() };
+		GenerateProjectParameters::Directory &directory{ parameters->_Directories.emplace_back() };
 		directory._Name = "Catalyst Engine Include";
 		ScanDirectory(&directory, "..\\..\\Catalyst-Engine\\Engine\\Include");
 	}
 
 	{
-		GenerateSolutionParameters::Directory &directory{ parameters->_Directories.emplace_back() };
+		GenerateProjectParameters::Directory &directory{ parameters->_Directories.emplace_back() };
 		directory._Name = "Catalyst Engine Third Party";
 		ScanThirdPartyDirectory(project_settings, parameters, &directory, "..\\..\\Catalyst-Engine\\Engine\\Third Party", true);
 	}
 
 	{
-		GenerateSolutionParameters::Directory &directory{ parameters->_Directories.emplace_back() };
+		GenerateProjectParameters::Directory &directory{ parameters->_Directories.emplace_back() };
 		directory._Name = "Catalyst Engine Source";
 		ScanDirectory(&directory, "..\\..\\Catalyst-Engine\\Engine\\Source");
 	}
 
 	{
-		GenerateSolutionParameters::Directory &directory{ parameters->_Directories.emplace_back() };
+		GenerateProjectParameters::Directory &directory{ parameters->_Directories.emplace_back() };
 		directory._Name = "Catalyst Engine Rendering";
 		ScanDirectory(&directory, "..\\..\\Catalyst-Engine\\Engine\\Rendering");
 	}
 
 	{
-		GenerateSolutionParameters::Directory &directory{ parameters->_Directories.emplace_back() };
+		GenerateProjectParameters::Directory &directory{ parameters->_Directories.emplace_back() };
 		directory._Name = project_settings._ProjectName + std::string(" Include");
 		ScanDirectory(&directory, "..\\Code\\Include");
 	}
 
 	{
-		GenerateSolutionParameters::Directory &directory{ parameters->_Directories.emplace_back() };
+		GenerateProjectParameters::Directory &directory{ parameters->_Directories.emplace_back() };
 		directory._Name = project_settings._ProjectName + std::string(" Source");
 		ScanDirectory(&directory, "..\\Code\\Source");
 	}
 
 	{
-		GenerateSolutionParameters::Directory &directory{ parameters->_Directories.emplace_back() };
+		GenerateProjectParameters::Directory &directory{ parameters->_Directories.emplace_back() };
 		directory._Name = project_settings._ProjectName + std::string(" Rendering");
 		ScanDirectory(&directory, "..\\Rendering");
 	}
 }
 
 /*
-*	Generates the default solution with the given parameters.
+*	Generates the default projects with the given parameters.
 */
-void GenerateDefaultSolution(const ProjectSettings &project_settings)
+void GenerateDefaultProjects(const ProjectSettings &project_settings)
 {
 	//Figure out the project name.
 	char project_name[256];
 	sprintf_s(project_name, "%s_Win64", project_settings._ProjectNameNoSpaces.c_str());
 
 	//Set up the parameters.
-	GenerateSolutionParameters parameters;
+	GenerateProjectParameters parameters;
 
 	parameters._DirectoryPath = DIRECTORY;
 	parameters._ProjectName = project_name;
 
 	{
-		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateProjectParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "Debug";
-		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
+		configuration._Type = GenerateProjectParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._ApplyOptimizations = false;
 		configuration._UseDebugLibraries = true;
@@ -612,10 +612,10 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 	}
 
 	{
-		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateProjectParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "Debug Editor";
-		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
+		configuration._Type = GenerateProjectParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._ApplyOptimizations = false;
 		configuration._UseDebugLibraries = true;
@@ -627,10 +627,10 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 	}
 
 	{
-		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateProjectParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "Profile";
-		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
+		configuration._Type = GenerateProjectParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._ApplyOptimizations = true;
 		configuration._UseDebugLibraries = false;
@@ -642,10 +642,10 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 	}
 
 	{
-		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateProjectParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "Profile Editor";
-		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
+		configuration._Type = GenerateProjectParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._ApplyOptimizations = true;
 		configuration._UseDebugLibraries = false;
@@ -657,10 +657,10 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 	}
 
 	{
-		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateProjectParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "Final";
-		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
+		configuration._Type = GenerateProjectParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._ApplyOptimizations = true;
 		configuration._UseDebugLibraries = false;
@@ -674,10 +674,10 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 	if (project_settings._AddStaticBuilds)
 	{
 		{
-			GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+			GenerateProjectParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 			configuration._Name = "Debug Static";
-			configuration._Type = GenerateSolutionParameters::Configuration::Type::STATIC_LIBRARY;
+			configuration._Type = GenerateProjectParameters::Configuration::Type::STATIC_LIBRARY;
 			configuration._TargetFileExtension = ".lib";
 			configuration._ApplyOptimizations = false;
 			configuration._UseDebugLibraries = true;
@@ -689,10 +689,10 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 		}
 
 		{
-			GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+			GenerateProjectParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 			configuration._Name = "Profile Static";
-			configuration._Type = GenerateSolutionParameters::Configuration::Type::STATIC_LIBRARY;
+			configuration._Type = GenerateProjectParameters::Configuration::Type::STATIC_LIBRARY;
 			configuration._TargetFileExtension = ".lib";
 			configuration._ApplyOptimizations = true;
 			configuration._UseDebugLibraries = false;
@@ -704,10 +704,10 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 		}
 
 		{
-			GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+			GenerateProjectParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 			configuration._Name = "Final Static";
-			configuration._Type = GenerateSolutionParameters::Configuration::Type::STATIC_LIBRARY;
+			configuration._Type = GenerateProjectParameters::Configuration::Type::STATIC_LIBRARY;
 			configuration._TargetFileExtension = ".lib";
 			configuration._ApplyOptimizations = true;
 			configuration._UseDebugLibraries = false;
@@ -720,7 +720,7 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 	}
 
 	{
-		GenerateSolutionParameters::Platform &platform{ parameters._Platforms.emplace_back() };
+		GenerateProjectParameters::Platform &platform{ parameters._Platforms.emplace_back() };
 
 		platform._Name = "x64";
 	}
@@ -738,7 +738,7 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 	std::error_code error_code;
 
 	//Create the directories for the different configurations.
-	for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
+	for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
 	{
 		std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("\\") + configuration._Name).c_str(), error_code); CHECK_ERROR_CODE();
 	}
@@ -759,7 +759,7 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 	//Copy onnxruntime.dll.
 	if (project_settings._IncludeONNXRuntimeLibrary)
 	{
-		for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
+		for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
 		{
 			std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", std::string(parameters._DirectoryPath + std::string("\\") + configuration._Name).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 		}
@@ -767,20 +767,20 @@ void GenerateDefaultSolution(const ProjectSettings &project_settings)
 }
 
 /*
-*	Generates an audio plugin solution with the given parameters.
+*	Generates an audio plugin projects with the given parameters.
 */
-void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const ProjectSettings::AudioPlugin &audio_plugin)
+void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const ProjectSettings::AudioPlugin &audio_plugin)
 {
 	//Set up the parameters.
-	GenerateSolutionParameters parameters;
+	GenerateProjectParameters parameters;
 
 	parameters._ProjectName = audio_plugin._Name.c_str();
 
 	{
-		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateProjectParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "Standalone Debug";
-		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
+		configuration._Type = GenerateProjectParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._ApplyOptimizations = false;
 		configuration._UseDebugLibraries = true;
@@ -794,10 +794,10 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 	}
 
 	{
-		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateProjectParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "Standalone Profile";
-		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
+		configuration._Type = GenerateProjectParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._ApplyOptimizations = true;
 		configuration._UseDebugLibraries = false;
@@ -811,10 +811,10 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 	}
 
 	{
-		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateProjectParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "Standalone Final";
-		configuration._Type = GenerateSolutionParameters::Configuration::Type::APPLICATION;
+		configuration._Type = GenerateProjectParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._ApplyOptimizations = true;
 		configuration._UseDebugLibraries = false;
@@ -828,10 +828,10 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 	}
 
 	{
-		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateProjectParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "CLAP Debug";
-		configuration._Type = GenerateSolutionParameters::Configuration::Type::DYNAMIC_LIBRARY;
+		configuration._Type = GenerateProjectParameters::Configuration::Type::DYNAMIC_LIBRARY;
 		configuration._TargetFileExtension = ".clap";
 		configuration._ApplyOptimizations = false;
 		configuration._UseDebugLibraries = true;
@@ -845,10 +845,10 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 	}
 
 	{
-		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateProjectParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "CLAP Final";
-		configuration._Type = GenerateSolutionParameters::Configuration::Type::DYNAMIC_LIBRARY;
+		configuration._Type = GenerateProjectParameters::Configuration::Type::DYNAMIC_LIBRARY;
 		configuration._TargetFileExtension = ".clap";
 		configuration._ApplyOptimizations = true;
 		configuration._UseDebugLibraries = false;
@@ -862,10 +862,10 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 	}
 
 	{
-		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateProjectParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "VST3 Debug";
-		configuration._Type = GenerateSolutionParameters::Configuration::Type::DYNAMIC_LIBRARY;
+		configuration._Type = GenerateProjectParameters::Configuration::Type::DYNAMIC_LIBRARY;
 		configuration._TargetFileExtension = ".vst3";
 		configuration._ApplyOptimizations = false;
 		configuration._UseDebugLibraries = true;
@@ -879,10 +879,10 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 	}
 
 	{
-		GenerateSolutionParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
+		GenerateProjectParameters::Configuration &configuration{ parameters._Configurations.emplace_back() };
 
 		configuration._Name = "VST3 Final";
-		configuration._Type = GenerateSolutionParameters::Configuration::Type::DYNAMIC_LIBRARY;
+		configuration._Type = GenerateProjectParameters::Configuration::Type::DYNAMIC_LIBRARY;
 		configuration._TargetFileExtension = ".vst3";
 		configuration._ApplyOptimizations = true;
 		configuration._UseDebugLibraries = false;
@@ -896,7 +896,7 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 	}
 
 	{
-		GenerateSolutionParameters::Platform &platform{ parameters._Platforms.emplace_back() };
+		GenerateProjectParameters::Platform &platform{ parameters._Platforms.emplace_back() };
 
 		platform._Name = "x64";
 	}
@@ -1573,7 +1573,7 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 
 	//Add the audio plugin directory.
 	{
-		GenerateSolutionParameters::Directory &directory{ parameters._Directories.emplace_back() };
+		GenerateProjectParameters::Directory &directory{ parameters._Directories.emplace_back() };
 		directory._Name = audio_plugin._NameNoSpaces;
 		ScanDirectory(&directory, AudioPluginCodeDirectory(audio_plugin).c_str());
 	}
@@ -1603,8 +1603,9 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 			}
 		}
 	}
+
 	//Define that we have embedded resource.
-	for (GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
+	for (GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
 	{
 		configuration._PreprocessorDefinitions.emplace_back("CATALYST_HAS_EMBEDDED_RESOURCES");
 	}
@@ -1618,7 +1619,7 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 		std::error_code error_code;
 
 		//Create the directories for the different configurations.
-		for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
+		for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
 		{
 			std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("\\") + Utilities::RemoveSpaces(configuration._Name)).c_str(), error_code); CHECK_ERROR_CODE();
 		}
@@ -1639,7 +1640,7 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 		std::error_code error_code;
 
 		//Create the directories for the different configurations.
-		for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
+		for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
 		{
 			std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("\\Build\\") + Utilities::RemoveSpaces(configuration._Name)).c_str(), error_code); CHECK_ERROR_CODE();
 		}
@@ -1660,7 +1661,7 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 		std::error_code error_code;
 
 		//Create the directories for the different configurations.
-		for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
+		for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
 		{
 			std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("\\") + configuration._Name).c_str(), error_code); CHECK_ERROR_CODE();
 		}
@@ -1673,7 +1674,7 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 		//Copy onnxruntime.dll.
 		if (project_settings._IncludeONNXRuntimeLibrary)
 		{
-			for (const GenerateSolutionParameters::Configuration &configuration : parameters._Configurations)
+			for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
 			{
 				std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", std::string(parameters._DirectoryPath + std::string("\\") + configuration._Name).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 			}
@@ -1682,9 +1683,9 @@ void GenerateAudioPluginSolution(const ProjectSettings &project_settings, const 
 }
 
 /*
-*	Generates a solution with the given project settings.
+*	Generates the projects with the given project settings.
 */
-void GenerateSolution::Run(const ProjectSettings &project_settings)
+void GenerateProjects::Run(const ProjectSettings &project_settings)
 {
 	//Clean, first of all. (:
 	Clean(project_settings);
@@ -1703,21 +1704,21 @@ void GenerateSolution::Run(const ProjectSettings &project_settings)
 	//Run the code generation, to make sure that generated files gets picked up.
 	system(DIRECTORY "\\RunCodeGeneration.bat");
 
-	//Generate the default solution.
-	GenerateDefaultSolution(project_settings);
+	//Generate the default projects.
+	GenerateDefaultProjects(project_settings);
 
-	//Generate solutions for each audio plugin.
+	//Generate projects for each audio plugin.
 	for (const ProjectSettings::AudioPlugin &audio_plugin : project_settings._AudioPlugins)
 	{
-		//Generate the solution!
-		GenerateAudioPluginSolution(project_settings, audio_plugin);
+		//Generate the projects!
+		GenerateAudioPluginProjects(project_settings, audio_plugin);
 	}
 }
 
 /*
 *	Cleans.
 */
-void GenerateSolution::Clean(const ProjectSettings &project_settings)
+void GenerateProjects::Clean(const ProjectSettings &project_settings)
 {
 	//Define constants.
 	constexpr const char *CODE_GENERATION_DIRECTORY_PATH{ "..\\Code\\CodeGeneration" };
