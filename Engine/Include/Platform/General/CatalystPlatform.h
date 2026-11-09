@@ -13,12 +13,57 @@ class CatalystPlatform final
 
 public:
 
-	//Enumeration covering all window types.
-	enum class WindowType : uint8
+	/*
+	*	Window description class definition.
+	*/
+	class WindowDescription final
 	{
-		DEFAULT,
-		FULLSCREEN,
-		POPUP
+
+	public:
+
+		/*
+		*	Enumeration covering all flags.
+		*/
+		enum class Flag : uint8
+		{
+			/*
+			*	No flags. (:
+			*/
+			NONE = 0,
+
+			/*
+			*	Denotes that this is a fullscreen window.
+			*/
+			FULLSCREEN = BIT(0),
+
+			/*
+			*	Denotes that this is a windowed window.
+			*/
+			WINDOWED = BIT(1),
+
+			/*
+			*	Denotes that this is a popup window.
+			*/
+			POPUP = BIT(2),
+
+			/*
+			*	Denotes that this is a child window.
+			*/
+			CHILD = BIT(3)
+		};
+
+		//The title.
+		char _Title[64];
+
+		//The width.
+		uint32 _Width;
+
+		//The height.
+		uint32 _Height;
+
+		//The flags.
+		Flag _Flags;
+
 	};
 
 	/*
@@ -52,14 +97,9 @@ public:
 	static NO_DISCARD bool IsPlatformWindowAlive(void *const RESTRICT window) NOEXCEPT;
 
 	/*
-	*	Creates a platform window with the given parameters.
+	*	Creates a platform window with the given description.
 	*/
-	static void *const RESTRICT CreatePlatformWindow(const char *const RESTRICT name, const uint32 width, const uint32 height, const WindowType window_type) NOEXCEPT;
-
-	/*
-	*	Creates a child platform window with the given parameters.
-	*/
-	static void *const RESTRICT CreateChildPlatformWindow(void *const RESTRICT parent, const uint32 width, const uint32 height) NOEXCEPT;
+	static void *const RESTRICT CreatePlatformWindow(const WindowDescription &description) NOEXCEPT;
 
 	/*
 	*	Sets the size of a platform window.
@@ -155,3 +195,5 @@ public:
 #endif
 
 };
+
+ENUMERATION_BIT_OPERATIONS(CatalystPlatform::WindowDescription::Flag);

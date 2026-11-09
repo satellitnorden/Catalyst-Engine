@@ -10,6 +10,9 @@
 //Third party.
 #include <VST3/pluginterfaces/gui/iplugview.h>
 
+//STD.
+#include <cstdio>
+
 namespace VST3
 {
 
@@ -97,7 +100,14 @@ namespace VST3
 		FORCE_INLINE void CreateFrameWindow(const char *const RESTRICT name, const Steinberg::ViewRect &view_rect) NOEXCEPT
 		{
 			//Create the frame window.
-			_FrameWindow = CatalystPlatform::CreatePlatformWindow(name, view_rect.getWidth(), view_rect.getHeight(), CatalystPlatform::WindowType::POPUP);
+			CatalystPlatform::WindowDescription description;
+
+			sprintf_s(description._Title, "%s", name);
+			description._Width = view_rect.getWidth();
+			description._Height = view_rect.getHeight();
+			description._Flags = CatalystPlatform::WindowDescription::Flag::POPUP;
+
+			_FrameWindow = CatalystPlatform::CreatePlatformWindow(description);
 		}
 
 		/*

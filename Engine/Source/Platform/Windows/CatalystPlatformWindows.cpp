@@ -242,28 +242,16 @@ FORCE_INLINE void SetCursorVisibility(const bool visibility) NOEXCEPT
 */
 void CatalystPlatform::Initialize() NOEXCEPT
 {
-	//Register the window info.
-	RegisterWindowInfo();
-
 	//Create the window.
 	{
-		const bool fullscreen{ CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._InitialFullScreen };
-
+		//Gather data.
 		char window_name_buffer[256];
 
-		if (fullscreen)
-		{
-			sprintf_s(window_name_buffer, "%s", CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data());
-		}
-
-		else
-		{
 #if defined(CATALYST_EDITOR)
-			sprintf_s(window_name_buffer, "Catalyst Editor - %s", CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data());
+		sprintf_s(window_name_buffer, "Catalyst Editor - %s", CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data());
 #else
-			sprintf_s(window_name_buffer, "%s", CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data());
+		sprintf_s(window_name_buffer, "%s", CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data());
 #endif
-		}
 
 		Resolution resolution;
 
@@ -277,7 +265,18 @@ void CatalystPlatform::Initialize() NOEXCEPT
 			CatalystPlatform::GetDefaultResolution(&resolution._Width, &resolution._Height);
 		}
 
-		CatalystPlatformWindows::_MainWindow = static_cast<HWND>(CreatePlatformWindow(window_name_buffer, resolution._Width, resolution._Height, fullscreen ? WindowType::FULLSCREEN : WindowType::DEFAULT));
+		const bool fullscreen{ CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._InitialFullScreen };
+
+		//Fill out the description.
+		WindowDescription description;
+
+		sprintf_s(description._Title, "%s", window_name_buffer);
+		description._Width = resolution._Width;
+		description._Height = resolution._Height;
+		description._Flags = fullscreen ? WindowDescription::Flag::FULLSCREEN : WindowDescription::Flag::WINDOWED;
+
+		//Create the window!
+		CatalystPlatformWindows::_MainWindow = static_cast<HWND>(CreatePlatformWindow(description));
 	}
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
@@ -355,106 +354,64 @@ NO_DISCARD bool CatalystPlatform::IsPlatformWindowAlive(void* const RESTRICT win
 }
 
 /*
-*	Creates a platform window with the given parameters.
+*	Creates a platform window with the given description.
 */
-void *const RESTRICT CatalystPlatform::CreatePlatformWindow(const char *const RESTRICT name, const uint32 width, const uint32 height, const WindowType window_type) NOEXCEPT
+void *const RESTRICT CatalystPlatform::CreatePlatformWindow(const WindowDescription &description) NOEXCEPT
 {
+	//Register the window info.
 	RegisterWindowInfo();
 
-	HWND window{ nullptr };
+	//Set up the style.
+	DWORD style{ 0 };
 
-	switch (window_type)
+	if (TEST_BIT(description._Flags, WindowDescription::Flag::FULLSCREEN))
 	{
-		case WindowType::DEFAULT:
-		{
-			//Define constants.
-			constexpr DWORD STYLE{ WS_CAPTION | WS_SYSMENU };
-
-			//Set up the rectangle for the window.
-			RECT rectangle;
-
-			rectangle.left = 0;
-			rectangle.top = 0;
-			rectangle.right = width;
-			rectangle.bottom = height;
-
-			//Adjust the rectangle.
-			AdjustWindowRect(&rectangle, STYLE, FALSE);
-
-			window = CreateWindow
-			(
-				CatalystPlatformWindows::_WindowInfo.lpszClassName,
-				_T(name),
-				STYLE,
-				CW_USEDEFAULT,
-				CW_USEDEFAULT,
-				rectangle.right - rectangle.left,
-				rectangle.bottom - rectangle.top,
-				nullptr,
-				nullptr,
-				CatalystPlatformWindows::_Instance,
-				nullptr
-			);
-
-			break;
-		}
-
-		case WindowType::FULLSCREEN:
-		{
-			window = CreateWindow
-			(
-				CatalystPlatformWindows::_WindowInfo.lpszClassName,
-				_T(name),
-				WS_POPUP | WS_VISIBLE,
-				CW_USEDEFAULT,
-				CW_USEDEFAULT,
-				width,
-				height,
-				nullptr,
-				nullptr,
-				CatalystPlatformWindows::_Instance,
-				nullptr
-			);
-
-			break;
-		}
-
-		case WindowType::POPUP:
-		{
-			//Define constants.
-			constexpr DWORD STYLE{ WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU };
-
-			//Set up the rect.
-			RECT rect
-			{
-				0,
-				0,
-				static_cast<LONG>(width),
-				static_cast<LONG>(height)
-			};
-
-			//Adjust the rect.
-			AdjustWindowRect(&rect, STYLE, FALSE);
-
-			//Create the window.
-			window = CreateWindow
-			(
-				CatalystPlatformWindows::_WindowInfo.lpszClassName,
-				_T(name),
-				WS_POPUPWINDOW | WS_VISIBLE | WS_CAPTION,
-				CW_USEDEFAULT,
-				CW_USEDEFAULT,
-				rect.right - rect.left,
-				rect.bottom - rect.top,
-				nullptr,
-				nullptr,
-				CatalystPlatformWindows::_Instance,
-				nullptr
-			);
-
-			break;
-		}
+		style = WS_POPUP | WS_VISIBLE;
 	}
+
+	else if (TEST_BIT(description._Flags, WindowDescription::Flag::WINDOWED))
+	{
+		style = WS_CAPTION | WS_SYSMENU;
+	}
+
+	else if (TEST_BIT(description._Flags, WindowDescription::Flag::POPUP))
+	{
+		style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU;
+	}
+
+	else if (TEST_BIT(description._Flags, WindowDescription::Flag::CHILD))
+	{
+		style = WS_CHILD;
+	}
+
+	//Set up the rectangle for the window.
+	RECT rectangle;
+
+	rectangle.left = 0;
+	rectangle.top = 0;
+	rectangle.right = description._Width;
+	rectangle.bottom = description._Height;
+
+	AdjustWindowRect(&rectangle, style, FALSE);
+
+	//Create the window!
+	const HWND window
+	{
+		CreateWindow
+		(
+			CatalystPlatformWindows::_WindowInfo.lpszClassName,
+			_T(description._Title),
+			style,
+			CW_USEDEFAULT,
+			CW_USEDEFAULT,
+			rectangle.right - rectangle.left,
+			rectangle.bottom - rectangle.top,
+			nullptr,
+			nullptr,
+			CatalystPlatformWindows::_Instance,
+			nullptr
+		)
+	};
 
 	if (window)
 	{
@@ -465,31 +422,8 @@ void *const RESTRICT CatalystPlatform::CreatePlatformWindow(const char *const RE
 		UpdateWindow(window);
 	}
 
+	//Return the window.
 	return window;
-}
-
-/*
-*	Creates a child platform window with the given parameters.
-*/
-void *const RESTRICT CatalystPlatform::CreateChildPlatformWindow(void *const RESTRICT parent, const uint32 width, const uint32 height) NOEXCEPT
-{
-	RegisterWindowInfo();
-
-	return CreateWindowEx
-	(
-		0,
-		CatalystPlatformWindows::_WindowInfo.lpszClassName,
-		nullptr,
-		WS_CHILD,
-		0,
-		0,
-		width,
-		height,
-		static_cast<HWND>(parent),
-		nullptr,
-		CatalystPlatformWindows::_Instance,
-		nullptr
-	);
 }
 
 /*

@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Essential/CatalystPreDefines.h>
 
+//STD.
+#include <type_traits>
+
 /*
 *	Aligns the preceeding object to N bytes.
 */
