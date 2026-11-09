@@ -5,6 +5,7 @@
 #include <Core/Utilities.h>
 
 //STD.
+#include <cstdio>
 #include <filesystem>
 #include <fstream>
 

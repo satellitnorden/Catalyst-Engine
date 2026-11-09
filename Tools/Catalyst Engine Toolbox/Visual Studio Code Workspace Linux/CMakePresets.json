@@ -1,0 +1,22 @@
+{
+    "version": 8,
+    "configurePresets": [
+        {
+            "name": "Linux",
+            "displayName": "Linux",
+            "binaryDir": "${sourceDir}/Build"
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "Debug",
+            "configurePreset": "Linux",
+            "configuration": "Debug"
+        },
+        {
+            "name": "Release",
+            "configurePreset": "Linux",
+            "configuration": "Release"
+        }
+    ]
+}
