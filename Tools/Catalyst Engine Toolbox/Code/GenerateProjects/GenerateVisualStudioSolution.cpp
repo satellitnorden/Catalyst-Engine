@@ -6,41 +6,13 @@
 #include <Core/MurmurHash.h>
 #include <Core/Utilities.h>
 
-//Windows.
-#include <objbase.h>
+//Platform.
+#include <Platform/PlatformWin64.h>
 
 //STD.
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-
-/*
-*	Generates a GUID.
-*/
-std::string GenerateGUID()
-{
-    GUID guid;
-    CoCreateGuid(&guid);
-
-    char buffer[64];
-    snprintf(
-        buffer,
-        sizeof(buffer),
-        "{%08lX-%04hX-%04hX-%04hX-%012llX}",
-        guid.Data1,
-        guid.Data2,
-        guid.Data3,
-        (guid.Data4[0] << 8) | guid.Data4[1],
-        ((unsigned long long)guid.Data4[2] << 40) |
-        ((unsigned long long)guid.Data4[3] << 32) |
-        ((unsigned long long)guid.Data4[4] << 24) |
-        ((unsigned long long)guid.Data4[5] << 16) |
-        ((unsigned long long)guid.Data4[6] << 8) |
-        ((unsigned long long)guid.Data4[7])
-    );
-
-    return buffer;
-}
 
 /*
 *   Returns a configuration/platform combination condition string.
@@ -56,8 +28,8 @@ std::string GetConfigurationPlatformConditionString(const std::string &configura
 void GenerateVisualStudioSolution::Generate(GenerateProjectParameters parameters)
 {
     //Generate the GUID's.
-    const std::string solution_guid{ GenerateGUID() };
-    const std::string project_guid{ GenerateGUID() };
+    const std::string solution_guid{ PlatformWin64::GenerateGUID() };
+    const std::string project_guid{ PlatformWin64::GenerateGUID() };
 
     //Generate the resources file.
     if (!parameters._EmbeddedResources.empty())
@@ -783,7 +755,7 @@ void GenerateVisualStudioSolution::AddFilterIdentifiers(std::ofstream &file, con
     }
 
     file << "\t\t<Filter Include=\"" << filter_string.c_str() << "\">" << std::endl;
-    file << "\t\t\t<UniqueIdentifier>" << GenerateGUID().c_str() << "</UniqueIdentifier>" << std::endl;
+    file << "\t\t\t<UniqueIdentifier>" << PlatformWin64::GenerateGUID().c_str() << "</UniqueIdentifier>" << std::endl;
     file << "\t\t</Filter>" << std::endl;
 }
 #endif

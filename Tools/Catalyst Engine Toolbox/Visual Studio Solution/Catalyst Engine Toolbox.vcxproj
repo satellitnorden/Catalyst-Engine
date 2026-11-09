@@ -150,6 +150,7 @@
     <ClInclude Include="..\Code\GenerateProjects\GenerateProjects.h" />
     <ClInclude Include="..\Code\GenerateProjects\GenerateVisualStudioCodeWorkspace.h" />
     <ClInclude Include="..\Code\GenerateProjects\GenerateVisualStudioSolution.h" />
+    <ClInclude Include="..\Code\Platform\PlatformWin64.h" />
     <ClInclude Include="..\Code\ProjectSettings\ProjectSettings.h" />
     <ClInclude Include="..\Code\ThirdParty\json.hpp" />
   </ItemGroup>

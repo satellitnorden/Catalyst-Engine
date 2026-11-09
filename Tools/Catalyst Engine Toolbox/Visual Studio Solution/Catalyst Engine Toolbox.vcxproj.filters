@@ -16,6 +16,9 @@
     <Filter Include="GenerateProjects">
       <UniqueIdentifier>{d36689d0-ddb2-4ea4-a090-eb61d3c7cd00}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Platform">
+      <UniqueIdentifier>{fa2cfa3a-1525-43bd-a9db-99b62bdc5703}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\Main\Main.cpp">
@@ -67,6 +70,9 @@
     </ClInclude>
     <ClInclude Include="..\Code\GenerateProjects\GenerateVisualStudioSolution.h">
       <Filter>GenerateProjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Platform\PlatformWin64.h">
+      <Filter>Platform</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

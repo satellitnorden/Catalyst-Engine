@@ -3,7 +3,7 @@
 //Core.
 #include <Core/Core.h>
 
-#if defined(CATALYST_WIN64)
+#if defined(PLATFORM_WIN64)
 	#define VISUAL_STUDIO_SOLUTION_SUPPORTED
 #endif
 
