@@ -21,6 +21,10 @@
 	#define FORCE_INLINE __forceinline
 #elif defined(CATALYST_CLANG)
 	#define FORCE_INLINE __attribute__((always_inline))
+#elif defined(CATALYST_GCC)
+	#define FORCE_INLINE inline
+#else
+	#error "Unknown compiler!"
 #endif
 
 /*
@@ -28,8 +32,12 @@
 */
 #if defined(CATALYST_MSVC)
 	#define NOALIAS __declspec(noalias)
-#elif defined(__clang__)
-	#define NOALIAS 
+#elif defined(CATALYST_CLANG)
+	#define NOALIAS
+#elif defined(CATALYST_GCC)
+	#define NOALIAS
+#else
+	#error "Unknown compiler!"
 #endif
 
 /*
@@ -79,6 +87,10 @@
 	#define RESTRICT __restrict
 #elif defined(CATALYST_CLANG)
 	#define RESTRICT
+#elif defined(CATALYST_GCC)
+	#define RESTRICT
+#else
+	#error "Unknown compiler!"
 #endif
 
 /*
@@ -88,7 +100,11 @@
 	#define RESTRICTED __declspec(restrict)
 #elif defined(CATALYST_CLANG)
 	#define RESTRICTED
-#endif 
+#elif defined(CATALYST_GCC)
+	#define RESTRICTED
+#else
+	#error "Unknown compiler!"
+#endif
 
 /*
 *	Defines a variable or a function to be constexpr, but only in final configurattion.

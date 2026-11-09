@@ -23,7 +23,7 @@ void GenerateVisualStudioCodeWorkspace::Generate(const GenerateProjectParameters
 {
     //Ensure the directories exists.
     std::filesystem::create_directories(parameters._DirectoryPath);
-    std::filesystem::create_directories(parameters._DirectoryPath + std::string("\\.vscode"));
+    std::filesystem::create_directories(parameters._DirectoryPath + std::string("/.vscode"));
 
     //Generate CMake first, as Visual Studio Code will use that.
     GenerateCMake::Generate(parameters);
@@ -92,7 +92,7 @@ void GenerateVisualStudioCodeWorkspace::GenerateCodeWorkspaceFile(const Generate
 
     //Figure out the file path.
     char file_path[256];
-    PRINT_BUFFER(file_path, "%s\\%s.code-workspace", parameters._DirectoryPath.c_str(), parameters._ProjectName);
+    PRINT_BUFFER(file_path, "%s/%s.code-workspace", parameters._DirectoryPath.c_str(), parameters._ProjectName);
 
     //Open the file.
     std::ofstream file{ file_path };
@@ -153,7 +153,7 @@ void GenerateVisualStudioCodeWorkspace::GenerateCMakePresetsFile(const GenerateP
 
     //Figure out the file path.
     char file_path[256];
-    PRINT_BUFFER(file_path, "%s\\CMakePresets.json", parameters._DirectoryPath.c_str());
+    PRINT_BUFFER(file_path, "%s/CMakePresets.json", parameters._DirectoryPath.c_str());
 
     //Open the file.
     std::ofstream file{ file_path };
@@ -178,7 +178,7 @@ void GenerateVisualStudioCodeWorkspace::GenerateSettingsFile(const GenerateProje
 
     //Figure out the file path.
     char file_path[256];
-    PRINT_BUFFER(file_path, "%s\\.vscode\\settings.json", parameters._DirectoryPath.c_str());
+    PRINT_BUFFER(file_path, "%s/.vscode/settings.json", parameters._DirectoryPath.c_str());
 
     //Open the file.
     std::ofstream file{ file_path };
@@ -208,7 +208,7 @@ void GenerateVisualStudioCodeWorkspace::GenerateExtensionsFile(const GeneratePro
     
     //Figure out the file path.
     char file_path[256];
-    PRINT_BUFFER(file_path, "%s\\.vscode\\extensions.json", parameters._DirectoryPath.c_str());
+    PRINT_BUFFER(file_path, "%s/.vscode/extensions.json", parameters._DirectoryPath.c_str());
 
     //Open the file.
     std::ofstream file{ file_path };
@@ -257,7 +257,7 @@ void GenerateVisualStudioCodeWorkspace::GenerateTasksFile(const GenerateProjectP
 
     //Figure out the file path.
     char file_path[256];
-    PRINT_BUFFER(file_path, "%s\\.vscode\\tasks.json", parameters._DirectoryPath.c_str());
+    PRINT_BUFFER(file_path, "%s/.vscode/tasks.json", parameters._DirectoryPath.c_str());
 
     //Open the file.
     std::ofstream file{ file_path };
@@ -301,7 +301,7 @@ void GenerateVisualStudioCodeWorkspace::GenerateLaunchFile(const GenerateProject
 
     //Figure out the file path.
     char file_path[256];
-    PRINT_BUFFER(file_path, "%s\\.vscode\\launch.json", parameters._DirectoryPath.c_str());
+    PRINT_BUFFER(file_path, "%s/.vscode/launch.json", parameters._DirectoryPath.c_str());
 
     //Open the file.
     std::ofstream file{ file_path };

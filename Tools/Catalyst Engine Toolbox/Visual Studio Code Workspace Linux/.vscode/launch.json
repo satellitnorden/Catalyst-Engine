@@ -9,7 +9,7 @@
             "stopAtEntry": false,
             "preLaunchTask": "CMake: build",
 
-            "cwd": "C:/Github/Audio-Plugins/Projects",
+            "cwd": "${userHome}/Documents/GitHub/Audio-Plugins/Projects",
             "args": ["generate_projects"]
         }
     ]

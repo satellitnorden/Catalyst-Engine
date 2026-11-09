@@ -35,14 +35,14 @@ void GenerateCMake::Generate(const GenerateProjectParameters &parameters)
 
     //Figure out the file path.
     char file_path[256];
-    PRINT_BUFFER(file_path, "%s\\CMakeLists.txt", parameters._DirectoryPath.c_str());
+    PRINT_BUFFER(file_path, "%s/CMakeLists.txt", parameters._DirectoryPath.c_str());
 
     //Open file.
     std::ofstream file{ file_path };
 
     //Add the minimum required version.
     file << "# Set the minimum required version." << std::endl;
-    file << "cmake_minimum_required(VERSION 4.4.5)" << std::endl;
+    file << "cmake_minimum_required(VERSION 4.4.4)" << std::endl;
     file << std::endl;
 
     //Add the the project.

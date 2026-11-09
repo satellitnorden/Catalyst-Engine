@@ -16,7 +16,7 @@
 #include <iostream>
 
 //Preprocessor defines.
-#define DIRECTORY "Win64\\Win64"
+#define DIRECTORY "Win64/Win64"
 
 //Macros.
 #define CHECK_ERROR_CODE() if (error_code) { std::cerr << "Error at " << __LINE__ << ": " << error_code.message() << std::endl; }
@@ -26,7 +26,7 @@
 */
 std::string AudioPluginCodeDirectory(const ProjectSettings::AudioPlugin &audio_plugin)
 {
-	return "..\\AudioPlugins\\" + audio_plugin._NameNoSpaces + "\\Code";
+	return "../AudioPlugins/" + audio_plugin._NameNoSpaces + "/Code";
 }
 
 /*
@@ -34,7 +34,7 @@ std::string AudioPluginCodeDirectory(const ProjectSettings::AudioPlugin &audio_p
 */
 std::string AudioPluginContentDirectory(const ProjectSettings::AudioPlugin &audio_plugin)
 {
-	return "..\\AudioPlugins\\" + audio_plugin._NameNoSpaces + "\\Content";
+	return "../AudioPlugins/" + audio_plugin._NameNoSpaces + "/Content";
 }
 
 /*
@@ -42,7 +42,7 @@ std::string AudioPluginContentDirectory(const ProjectSettings::AudioPlugin &audi
 */
 std::string AudioPluginCMakeDirectory(const ProjectSettings::AudioPlugin &audio_plugin)
 {
-	return audio_plugin._NameNoSpaces + "\\CMake";
+	return audio_plugin._NameNoSpaces + "/CMake";
 }
 
 /*
@@ -50,7 +50,7 @@ std::string AudioPluginCMakeDirectory(const ProjectSettings::AudioPlugin &audio_
 */
 std::string AudioPluginVisualStudioSolutionDirectory(const ProjectSettings::AudioPlugin &audio_plugin)
 {
-	return audio_plugin._NameNoSpaces + "\\Win64";
+	return audio_plugin._NameNoSpaces + "/Win64";
 }
 
 /*
@@ -58,7 +58,7 @@ std::string AudioPluginVisualStudioSolutionDirectory(const ProjectSettings::Audi
 */
 std::string AudioPluginVisualStudioCodeWorkspaceDirectory(const ProjectSettings::AudioPlugin &audio_plugin)
 {
-	return audio_plugin._NameNoSpaces + "\\Visual Studio Code";
+	return audio_plugin._NameNoSpaces + "/Visual Studio Code";
 }
 
 /*
@@ -263,112 +263,112 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 	if (strcmp(configuration_name, "Debug") == 0)
 	{
 		library_includes->emplace_back("vulkan-1.lib");
-		library_includes->emplace_back("Debug\\shaderc_shared.lib");
-		library_includes->emplace_back("Debug\\libsoundwave.lib");
-		library_includes->emplace_back("Debug\\assimp-vc143-mtd.lib");
+		library_includes->emplace_back("Debug/shaderc_shared.lib");
+		library_includes->emplace_back("Debug/libsoundwave.lib");
+		library_includes->emplace_back("Debug/assimp-vc143-mtd.lib");
 	}
 
 	else if (strcmp(configuration_name, "Debug Editor") == 0)
 	{
 		library_includes->emplace_back("vulkan-1.lib");
-		library_includes->emplace_back("Debug\\shaderc_shared.lib");
-		library_includes->emplace_back("Debug\\libsoundwave.lib");
-		library_includes->emplace_back("Debug\\assimp-vc143-mtd.lib");
+		library_includes->emplace_back("Debug/shaderc_shared.lib");
+		library_includes->emplace_back("Debug/libsoundwave.lib");
+		library_includes->emplace_back("Debug/assimp-vc143-mtd.lib");
 	}
 
 	else if (strcmp(configuration_name, "Profile") == 0)
 	{
 		library_includes->emplace_back("vulkan-1.lib");
-		library_includes->emplace_back("Profile\\shaderc_shared.lib");
-		library_includes->emplace_back("Profile\\libsoundwave.lib");
-		library_includes->emplace_back("Profile\\assimp-vc143-mt.lib");
+		library_includes->emplace_back("Profile/shaderc_shared.lib");
+		library_includes->emplace_back("Profile/libsoundwave.lib");
+		library_includes->emplace_back("Profile/assimp-vc143-mt.lib");
 	}
 
 	else if (strcmp(configuration_name, "Profile Editor") == 0)
 	{
 		library_includes->emplace_back("vulkan-1.lib");
-		library_includes->emplace_back("Profile\\shaderc_shared.lib");
-		library_includes->emplace_back("Profile\\libsoundwave.lib");
-		library_includes->emplace_back("Profile\\assimp-vc143-mt.lib");
+		library_includes->emplace_back("Profile/shaderc_shared.lib");
+		library_includes->emplace_back("Profile/libsoundwave.lib");
+		library_includes->emplace_back("Profile/assimp-vc143-mt.lib");
 	}
 
 	else if (strcmp(configuration_name, "Final") == 0)
 	{
 		library_includes->emplace_back("vulkan-1.lib");
-		library_includes->emplace_back("Final\\libsoundwave.lib");
+		library_includes->emplace_back("Final/libsoundwave.lib");
 	}
 
 	else if (strcmp(configuration_name, "Debug Static") == 0)
 	{
 		library_includes->emplace_back("vulkan-1.lib");
-		library_includes->emplace_back("Debug\\shaderc_shared.lib");
-		library_includes->emplace_back("Debug\\libsoundwave.lib");
-		library_includes->emplace_back("Debug\\assimp-vc143-mtd.lib");
+		library_includes->emplace_back("Debug/shaderc_shared.lib");
+		library_includes->emplace_back("Debug/libsoundwave.lib");
+		library_includes->emplace_back("Debug/assimp-vc143-mtd.lib");
 	}
 
 	else if (strcmp(configuration_name, "Profile Static") == 0)
 	{
 		library_includes->emplace_back("vulkan-1.lib");
-		library_includes->emplace_back("Profile\\shaderc_shared.lib");
-		library_includes->emplace_back("Profile\\libsoundwave.lib");
-		library_includes->emplace_back("Profile\\assimp-vc143-mt.lib");
+		library_includes->emplace_back("Profile/shaderc_shared.lib");
+		library_includes->emplace_back("Profile/libsoundwave.lib");
+		library_includes->emplace_back("Profile/assimp-vc143-mt.lib");
 	}
 
 	else if (strcmp(configuration_name, "Final Static") == 0)
 	{
 		library_includes->emplace_back("vulkan-1.lib");
-		library_includes->emplace_back("Final\\libsoundwave.lib");
+		library_includes->emplace_back("Final/libsoundwave.lib");
 	}
 
 	else if (strcmp(configuration_name, "Standalone Debug") == 0)
 	{
 		library_includes->emplace_back("vulkan-1.lib");
 		library_includes->emplace_back("opengl32.lib");
-		library_includes->emplace_back("Debug\\shaderc_shared.lib");
-		library_includes->emplace_back("Debug\\libsoundwave.lib");
-		library_includes->emplace_back("Debug\\assimp-vc143-mtd.lib");
+		library_includes->emplace_back("Debug/shaderc_shared.lib");
+		library_includes->emplace_back("Debug/libsoundwave.lib");
+		library_includes->emplace_back("Debug/assimp-vc143-mtd.lib");
 	}
 
 	else if (strcmp(configuration_name, "Standalone Profile") == 0)
 	{
 		library_includes->emplace_back("vulkan-1.lib");
 		library_includes->emplace_back("opengl32.lib");
-		library_includes->emplace_back("Profile\\shaderc_shared.lib");
-		library_includes->emplace_back("Profile\\libsoundwave.lib");
-		library_includes->emplace_back("Profile\\assimp-vc143-mt.lib");
+		library_includes->emplace_back("Profile/shaderc_shared.lib");
+		library_includes->emplace_back("Profile/libsoundwave.lib");
+		library_includes->emplace_back("Profile/assimp-vc143-mt.lib");
 	}
 
 	else if (strcmp(configuration_name, "Standalone Final") == 0)
 	{
 		library_includes->emplace_back("vulkan-1.lib");
 		library_includes->emplace_back("opengl32.lib");
-		library_includes->emplace_back("Final\\libsoundwave.lib");
+		library_includes->emplace_back("Final/libsoundwave.lib");
 	}
 
 	else if (strcmp(configuration_name, "CLAP Debug") == 0)
 	{
 		library_includes->emplace_back("opengl32.lib");
-		library_includes->emplace_back("Debug\\shaderc_shared.lib");
-		library_includes->emplace_back("Debug\\libsoundwave.lib");
+		library_includes->emplace_back("Debug/shaderc_shared.lib");
+		library_includes->emplace_back("Debug/libsoundwave.lib");
 	}
 
 	else if (strcmp(configuration_name, "CLAP Final") == 0)
 	{
 		library_includes->emplace_back("opengl32.lib");
-		library_includes->emplace_back("Final\\libsoundwave.lib");
+		library_includes->emplace_back("Final/libsoundwave.lib");
 	}
 
 	else if (strcmp(configuration_name, "VST3 Debug") == 0)
 	{
 		library_includes->emplace_back("opengl32.lib");
-		library_includes->emplace_back("Debug\\shaderc_shared.lib");
-		library_includes->emplace_back("Debug\\libsoundwave.lib");
+		library_includes->emplace_back("Debug/shaderc_shared.lib");
+		library_includes->emplace_back("Debug/libsoundwave.lib");
 	}
 
 	else if (strcmp(configuration_name, "VST3 Final") == 0)
 	{
 		library_includes->emplace_back("opengl32.lib");
-		library_includes->emplace_back("Final\\libsoundwave.lib");
+		library_includes->emplace_back("Final/libsoundwave.lib");
 	}
 
 	else
@@ -398,7 +398,7 @@ void ScanDirectory(GenerateProjectParameters::Directory *directory, const char *
 	}
 
 	//Set the path.
-	directory->_Path = std::string("..\\..\\") + path;
+	directory->_Path = std::string("../../") + path;
 
 	for (auto &entry : std::filesystem::directory_iterator(path))
 	{
@@ -407,7 +407,7 @@ void ScanDirectory(GenerateProjectParameters::Directory *directory, const char *
 		if (entry.is_directory())
 		{
 			GenerateProjectParameters::Directory &new_directory{ directory->_Directories.emplace_back() };
-			new_directory._Name = entry_file_path.substr(entry_file_path.find_last_of('\\') + 1);
+			new_directory._Name = entry_file_path.substr(entry_file_path.find_last_of('/') + 1);
 			ScanDirectory(&new_directory, entry_file_path.c_str());
 		}
 
@@ -428,7 +428,7 @@ void ScanDirectory(GenerateProjectParameters::Directory *directory, const char *
 			{
 				GenerateProjectParameters::File &new_file{ directory->_Files.emplace_back() };
 
-				new_file._Path = std::string("..\\..\\") + entry_file_path;
+				new_file._Path = std::string("../../") + entry_file_path;
 				new_file._EnableWarnings = true;
 			}
 		}
@@ -440,7 +440,7 @@ void ScanDirectory(GenerateProjectParameters::Directory *directory, const char *
 */
 bool ShouldIncludeThirdPartyDirectory(const ProjectSettings &project_settings, const std::string &path)
 {
-	if (path == "..\\..\\Catalyst-Engine\\Engine\\Third Party\\Jolt")
+	if (path == "../../Catalyst-Engine/Engine/Third Party/Jolt")
 	{
 		return project_settings._Physics == ProjectSettings::Physics::JOLT;
 	}
@@ -459,7 +459,7 @@ void ScanThirdPartyDirectory(const ProjectSettings &project_settings, GeneratePr
 	}
 
 	//Set the path.
-	directory->_Path = std::string("..\\..\\") + path;
+	directory->_Path = std::string("../../") + path;
 
 	for (auto &entry : std::filesystem::directory_iterator(path))
 	{
@@ -471,11 +471,11 @@ void ScanThirdPartyDirectory(const ProjectSettings &project_settings, GeneratePr
 			{
 				if (is_top_level)
 				{
-					parameters->_CodeIncludePaths.emplace_back(std::string("..\\..\\") + entry_file_path);
+					parameters->_CodeIncludePaths.emplace_back(std::string("../../") + entry_file_path);
 				}
 
 				GenerateProjectParameters::Directory &new_directory{ directory->_Directories.emplace_back() };
-				new_directory._Name = entry_file_path.substr(entry_file_path.find_last_of('\\') + 1);
+				new_directory._Name = entry_file_path.substr(entry_file_path.find_last_of('/') + 1);
 				ScanThirdPartyDirectory(project_settings, parameters, &new_directory, entry_file_path.c_str(), false);
 			}
 		}
@@ -491,7 +491,7 @@ void ScanThirdPartyDirectory(const ProjectSettings &project_settings, GeneratePr
 			{
 				GenerateProjectParameters::File &new_file{ directory->_Files.emplace_back() };
 
-				new_file._Path = std::string("..\\..\\") + entry_file_path;
+				new_file._Path = std::string("../../") + entry_file_path;
 				new_file._EnableWarnings = false;
 			}
 		}
@@ -504,11 +504,11 @@ void ScanThirdPartyDirectory(const ProjectSettings &project_settings, GeneratePr
 void GenerateRunCodeGenerationBatchFile(const std::string &directory, const ProjectSettings &project_settings, const bool for_pre_generation)
 {
 	//Add the "RunCodeGeneration.bat" file.
-	std::ofstream run_code_generation_file{ directory + "\\RunCodeGeneration.bat" };
+	std::ofstream run_code_generation_file{ directory + "/RunCodeGeneration.bat" };
 
 	if (for_pre_generation)
 	{
-		run_code_generation_file << "cd " << directory.c_str() << "\\" << std::endl;
+		run_code_generation_file << "cd " << directory.c_str() << "/" << std::endl;
 	}
 
 	run_code_generation_file << "\"../../../../Catalyst-Engine/Tools/Binaries/CatalystEngineCodeGenerator.exe\"";
@@ -527,58 +527,58 @@ void GenerateRunCodeGenerationBatchFile(const std::string &directory, const Proj
 void AddCommonParameters(const ProjectSettings &project_settings, GenerateProjectParameters *const parameters)
 {
 	//Fill in the core code include paths.
-	parameters->_CodeIncludePaths.emplace_back("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Include");
-	parameters->_CodeIncludePaths.emplace_back("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Third Party");
-	parameters->_CodeIncludePaths.emplace_back("..\\..\\..\\Code\\Include");
+	parameters->_CodeIncludePaths.emplace_back("../../../../Catalyst-Engine/Engine/Include");
+	parameters->_CodeIncludePaths.emplace_back("../../../../Catalyst-Engine/Engine/Third Party");
+	parameters->_CodeIncludePaths.emplace_back("../../../Code/Include");
 
 	//Fill in the third party code include paths.
-	parameters->_CodeIncludePaths.emplace_back("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Include\\ThirdParty\\assimp");
-	parameters->_CodeIncludePaths.emplace_back("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Include\\ThirdParty\\imguinodeeditor");
+	parameters->_CodeIncludePaths.emplace_back("../../../../Catalyst-Engine/Engine/Include/ThirdParty/assimp");
+	parameters->_CodeIncludePaths.emplace_back("../../../../Catalyst-Engine/Engine/Include/ThirdParty/imguinodeeditor");
 
 	//Fill in the library include paths.
-	parameters->_LibraryIncludePaths.emplace_back("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Libraries\\Static");
+	parameters->_LibraryIncludePaths.emplace_back("../../../../Catalyst-Engine/Engine/Libraries/Static");
 
 	//Fill in the directories.
 	{
 		GenerateProjectParameters::Directory &directory{ parameters->_Directories.emplace_back() };
 		directory._Name = "Catalyst Engine Include";
-		ScanDirectory(&directory, "..\\..\\Catalyst-Engine\\Engine\\Include");
+		ScanDirectory(&directory, "../../Catalyst-Engine/Engine/Include");
 	}
 
 	{
 		GenerateProjectParameters::Directory &directory{ parameters->_Directories.emplace_back() };
 		directory._Name = "Catalyst Engine Third Party";
-		ScanThirdPartyDirectory(project_settings, parameters, &directory, "..\\..\\Catalyst-Engine\\Engine\\Third Party", true);
+		ScanThirdPartyDirectory(project_settings, parameters, &directory, "../../Catalyst-Engine/Engine/Third Party", true);
 	}
 
 	{
 		GenerateProjectParameters::Directory &directory{ parameters->_Directories.emplace_back() };
 		directory._Name = "Catalyst Engine Source";
-		ScanDirectory(&directory, "..\\..\\Catalyst-Engine\\Engine\\Source");
+		ScanDirectory(&directory, "../../Catalyst-Engine/Engine/Source");
 	}
 
 	{
 		GenerateProjectParameters::Directory &directory{ parameters->_Directories.emplace_back() };
 		directory._Name = "Catalyst Engine Rendering";
-		ScanDirectory(&directory, "..\\..\\Catalyst-Engine\\Engine\\Rendering");
+		ScanDirectory(&directory, "../../Catalyst-Engine/Engine/Rendering");
 	}
 
 	{
 		GenerateProjectParameters::Directory &directory{ parameters->_Directories.emplace_back() };
 		directory._Name = project_settings._ProjectName + std::string(" Include");
-		ScanDirectory(&directory, "..\\Code\\Include");
+		ScanDirectory(&directory, "../Code/Include");
 	}
 
 	{
 		GenerateProjectParameters::Directory &directory{ parameters->_Directories.emplace_back() };
 		directory._Name = project_settings._ProjectName + std::string(" Source");
-		ScanDirectory(&directory, "..\\Code\\Source");
+		ScanDirectory(&directory, "../Code/Source");
 	}
 
 	{
 		GenerateProjectParameters::Directory &directory{ parameters->_Directories.emplace_back() };
 		directory._Name = project_settings._ProjectName + std::string(" Rendering");
-		ScanDirectory(&directory, "..\\Rendering");
+		ScanDirectory(&directory, "../Rendering");
 	}
 }
 
@@ -743,20 +743,20 @@ void GenerateDefaultProjects(const ProjectSettings &project_settings)
 	//Create the directories for the different configurations.
 	for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
 	{
-		std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("\\") + configuration._Name).c_str(), error_code); CHECK_ERROR_CODE();
+		std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("/") + configuration._Name).c_str(), error_code); CHECK_ERROR_CODE();
 	}
 
 	//Copy assimp-vc143-mt.dll.
-	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", std::string(DIRECTORY + std::string("\\Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", std::string(DIRECTORY + std::string("\\Debug Editor")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(DIRECTORY + std::string("\\Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(DIRECTORY + std::string("\\Profile Editor")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-	std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(DIRECTORY + std::string("\\Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+	std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(DIRECTORY + std::string("/Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+	std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(DIRECTORY + std::string("/Debug Editor")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+	std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(DIRECTORY + std::string("/Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+	std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(DIRECTORY + std::string("/Profile Editor")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+	std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(DIRECTORY + std::string("/Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 
 	if (project_settings._AddStaticBuilds)
 	{
-		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", std::string(DIRECTORY + std::string("\\Debug Static")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(DIRECTORY + std::string("\\Profile Static")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(DIRECTORY + std::string("/Debug Static")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(DIRECTORY + std::string("/Profile Static")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 	}
 
 	//Copy onnxruntime.dll.
@@ -764,7 +764,7 @@ void GenerateDefaultProjects(const ProjectSettings &project_settings)
 	{
 		for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
 		{
-			std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", std::string(parameters._DirectoryPath + std::string("\\") + configuration._Name).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/onnxruntime.dll", std::string(parameters._DirectoryPath + std::string("/") + configuration._Name).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 		}
 	}
 }
@@ -912,7 +912,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		//Generate the "AudioPluginGlue.Generated.h" file.
 		{
 			char buffer[256];
-			PRINT_BUFFER(buffer, "%s\\AudioPluginGlue.Generated.h", AudioPluginCodeDirectory(audio_plugin).c_str());
+			PRINT_BUFFER(buffer, "%s/AudioPluginGlue.Generated.h", AudioPluginCodeDirectory(audio_plugin).c_str());
 
 			std::ofstream file{ buffer };
 
@@ -1024,7 +1024,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		//Generate the "StandaloneMain.Generated.cpp" file.
 		{
 			char buffer[256];
-			PRINT_BUFFER(buffer, "%s\\StandaloneMain.Generated.cpp", AudioPluginCodeDirectory(audio_plugin).c_str());
+			PRINT_BUFFER(buffer, "%s/StandaloneMain.Generated.cpp", AudioPluginCodeDirectory(audio_plugin).c_str());
 
 			std::ofstream file{ buffer };
 
@@ -1142,7 +1142,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		//Generate the audio plugin header file.
 		{
 			char buffer[256];
-			PRINT_BUFFER(buffer, "%s\\%s.h", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._ClassName.c_str());
+			PRINT_BUFFER(buffer, "%s/%s.h", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._ClassName.c_str());
 
 			if (!audio_plugin._Locked)
 			{
@@ -1253,7 +1253,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		//Generate the audio plugin CPP file.
 		{
 			char buffer[256];
-			PRINT_BUFFER(buffer, "%s\\%s.cpp", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._ClassName.c_str());
+			PRINT_BUFFER(buffer, "%s/%s.cpp", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._ClassName.c_str());
 
 			if (!audio_plugin._Locked)
 			{
@@ -1334,7 +1334,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		//Generate the audio plugin standalone main header file.
 		{
 			char buffer[256];
-			PRINT_BUFFER(buffer, "%s\\%sStandaloneMain.h", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
+			PRINT_BUFFER(buffer, "%s/%sStandaloneMain.h", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
 
 			if (!audio_plugin._Locked)
 			{
@@ -1371,7 +1371,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		//Generate the audio plugin standalone main source file.
 		{
 			char buffer[256];
-			PRINT_BUFFER(buffer, "%s\\%sStandaloneMain.cpp", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
+			PRINT_BUFFER(buffer, "%s/%sStandaloneMain.cpp", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
 
 			if (!audio_plugin._Locked)
 			{
@@ -1412,7 +1412,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 				file << "{" << std::endl;
 				file << "#if !defined(CATALYST_CONFIGURATION_FINAL)" << std::endl;
 				file << "\t//Compile content." << std::endl;
-				file << "\tContentSystem::Instance->Compile(\"..\\\\..\\\\..\\\\AudioPlugins\\\\" << audio_plugin._NameNoSpaces.c_str() << "\\\\Content\");" << std::endl;
+				file << "\tContentSystem::Instance->Compile(\"..//..//..//AudioPlugins//" << audio_plugin._NameNoSpaces.c_str() << "//Content\");" << std::endl;
 				file << "#endif" << std::endl;
 				file << "}";
 
@@ -1423,7 +1423,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		//Generate the audio plugin UI scene header file.
 		{
 			char buffer[256];
-			PRINT_BUFFER(buffer, "%s\\%sUIScene.h", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
+			PRINT_BUFFER(buffer, "%s/%sUIScene.h", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
 
 			if (!audio_plugin._Locked)
 			{
@@ -1479,7 +1479,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		//Generate the audio plugin UI scene source file.
 		{
 			char buffer[256];
-			PRINT_BUFFER(buffer, "%s\\%sUIScene.cpp", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
+			PRINT_BUFFER(buffer, "%s/%sUIScene.cpp", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
 
 			if (!audio_plugin._Locked)
 			{
@@ -1572,7 +1572,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 	}
 
 	//Add the code include path.
-	parameters._CodeIncludePaths.emplace_back(std::string("..\\..\\") + AudioPluginCodeDirectory(audio_plugin));
+	parameters._CodeIncludePaths.emplace_back(std::string("../../") + AudioPluginCodeDirectory(audio_plugin));
 
 	//Add the audio plugin directory.
 	{
@@ -1588,10 +1588,10 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 	GenerateRunCodeGenerationBatchFile(AudioPluginVisualStudioSolutionDirectory(audio_plugin), project_settings, false);
 
 	//Embed some resources.
-	parameters._EmbeddedResources.emplace_back("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Collections\\Base.cac");
+	parameters._EmbeddedResources.emplace_back("../../../../Catalyst-Engine/Engine/Content/Collections/Base.cac");
 
 	{
-		const std::string collections_directory{ AudioPluginContentDirectory(audio_plugin) + "\\Collections" };
+		const std::string collections_directory{ AudioPluginContentDirectory(audio_plugin) + "/Collections" };
 
 		if (std::filesystem::exists(collections_directory))
 		{
@@ -1601,7 +1601,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 
 				if (file_path.ends_with(".cac"))
 				{
-					parameters._EmbeddedResources.emplace_back("..\\..\\" + file_path);
+					parameters._EmbeddedResources.emplace_back("../../" + file_path);
 				}
 			}
 		}
@@ -1624,13 +1624,13 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		//Create the directories for the different configurations.
 		for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
 		{
-			std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("\\") + Utilities::RemoveSpaces(configuration._Name)).c_str(), error_code); CHECK_ERROR_CODE();
+			std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("/") + Utilities::RemoveSpaces(configuration._Name)).c_str(), error_code); CHECK_ERROR_CODE();
 		}
 
 		//Copy assimp-vc143-mt.dll.
-		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", std::string(parameters._DirectoryPath + std::string("\\StandaloneDebug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("\\StandaloneProfile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("\\StandaloneFinal")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(parameters._DirectoryPath + std::string("/StandaloneDebug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/StandaloneProfile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/StandaloneFinal")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 	}
 
 #if VISUAL_STUDIO_CODE_WORKSPACE_SUPPORTED
@@ -1645,13 +1645,13 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		//Create the directories for the different configurations.
 		for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
 		{
-			std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("\\Build\\") + Utilities::RemoveSpaces(configuration._Name)).c_str(), error_code); CHECK_ERROR_CODE();
+			std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("/Build/") + Utilities::RemoveSpaces(configuration._Name)).c_str(), error_code); CHECK_ERROR_CODE();
 		}
 
 		//Copy assimp-vc143-mt.dll.
-		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", std::string(parameters._DirectoryPath + std::string("\\Build\\StandaloneDebug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("\\Build\\StandaloneProfile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("\\Build\\StandaloneFinal")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(parameters._DirectoryPath + std::string("/Build/StandaloneDebug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/Build/StandaloneProfile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/Build/StandaloneFinal")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 	}
 #endif
 
@@ -1667,20 +1667,20 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		//Create the directories for the different configurations.
 		for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
 		{
-			std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("\\") + configuration._Name).c_str(), error_code); CHECK_ERROR_CODE();
+			std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("/") + configuration._Name).c_str(), error_code); CHECK_ERROR_CODE();
 		}
 
 		//Copy assimp-vc143-mt.dll.
-		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Debug\\assimp-vc143-mtd.dll", std::string(AudioPluginVisualStudioSolutionDirectory(audio_plugin) + std::string("\\Standalone Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(AudioPluginVisualStudioSolutionDirectory(audio_plugin) + std::string("\\Standalone Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\Profile\\assimp-vc143-mt.dll", std::string(AudioPluginVisualStudioSolutionDirectory(audio_plugin) + std::string("\\Standalone Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(AudioPluginVisualStudioSolutionDirectory(audio_plugin) + std::string("/Standalone Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(AudioPluginVisualStudioSolutionDirectory(audio_plugin) + std::string("/Standalone Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(AudioPluginVisualStudioSolutionDirectory(audio_plugin) + std::string("/Standalone Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 
 		//Copy onnxruntime.dll.
 		if (project_settings._IncludeONNXRuntimeLibrary)
 		{
 			for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
 			{
-				std::filesystem::copy("..\\..\\Catalyst-Engine\\Engine\\Libraries\\Dynamic\\onnxruntime.dll", std::string(parameters._DirectoryPath + std::string("\\") + configuration._Name).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+				std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/onnxruntime.dll", std::string(parameters._DirectoryPath + std::string("/") + configuration._Name).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 			}
 		}
 	}
@@ -1707,7 +1707,7 @@ void GenerateProjects::Run(const ProjectSettings &project_settings)
 	GenerateRunCodeGenerationBatchFile(DIRECTORY, project_settings, true);
 
 	//Run the code generation, to make sure that generated files gets picked up.
-	system(DIRECTORY "\\RunCodeGeneration.bat");
+	system(DIRECTORY "/RunCodeGeneration.bat");
 
 	//Generate the default projects.
 	GenerateDefaultProjects(project_settings);
@@ -1726,7 +1726,7 @@ void GenerateProjects::Run(const ProjectSettings &project_settings)
 void GenerateProjects::Clean(const ProjectSettings &project_settings)
 {
 	//Define constants.
-	constexpr const char *CODE_GENERATION_DIRECTORY_PATH{ "..\\Code\\CodeGeneration" };
+	constexpr const char *CODE_GENERATION_DIRECTORY_PATH{ "../Code/CodeGeneration" };
 
 	//Remember the error code for filesystem functions.
 	std::error_code error_code;
@@ -1762,7 +1762,7 @@ void GenerateProjects::Clean(const ProjectSettings &project_settings)
 		{
 			const std::string file_path{ entry.path().string() };
 
-			if (file_path != std::string(CODE_GENERATION_DIRECTORY_PATH) + std::string("\\.gitignore"))
+			if (file_path != std::string(CODE_GENERATION_DIRECTORY_PATH) + std::string("/.gitignore"))
 			{
 				std::filesystem::remove(file_path, error_code); CHECK_ERROR_CODE()
 			}

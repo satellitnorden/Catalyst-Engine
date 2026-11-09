@@ -7,6 +7,10 @@
 	#define CATALYST_MSVC
 #elif defined(__clang__)
 	#define CATALYST_CLANG
+#elif defined(__GNUC__)
+	#define CATALYST_GCC
+#else
+	#error "Unknown compiler!"
 #endif
 
 /*
