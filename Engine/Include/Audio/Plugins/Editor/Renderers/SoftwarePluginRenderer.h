@@ -10,6 +10,7 @@
 
 //Content.
 #include <Content/Assets/FontAsset.h>
+#include <Content/Assets/Texture2DAsset.h>
 
 namespace Audio
 {
@@ -48,6 +49,9 @@ namespace Audio
 		//The window.
 		Audio::PluginWindow *RESTRICT _Window;
 
+		//The texture index to texture 2D asset lookup.
+		HashTable<uint32, const Texture2DAsset *RESTRICT> _TextureIndexToTexture2DAssetLookup;
+
 		//The texture index to font asset lookup.
 		HashTable<uint32, const FontAsset *RESTRICT> _TextureIndexToFontAssetLookup;
 
@@ -56,6 +60,11 @@ namespace Audio
 
 		//The last rendered command buffer..
 		Texture2D<uint32> _LastRenderedCommandBuffer;
+
+		/*
+		*	Builds the texture index to texture 2D asset lookup.
+		*/
+		void BuildTextureIndexToTexture2DAssetLookup() NOEXCEPT;
 
 		/*
 		*	Builds the texture index to font asset lookup.

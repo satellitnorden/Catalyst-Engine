@@ -31,6 +31,9 @@ namespace Audio
 		//Initialize the last rendered command buffer.
 		_LastRenderedCommandBuffer.Initialize(resolution._Width, resolution._Height);
 
+		//Build the texture index to texture 2D asset lookup.
+		BuildTextureIndexToTexture2DAssetLookup();
+
 		//Build the texture index to font asset lookup.
 		BuildTextureIndexToFontAssetLookup();
 	}
@@ -66,8 +69,24 @@ namespace Audio
 	}
 
 	/*
-*	Builds the texture index to font asset lookup.
-*/
+	*	Builds the texture index to texture 2D asset lookup.
+	*/
+	void SoftwarePluginRenderer::BuildTextureIndexToTexture2DAssetLookup() NOEXCEPT
+	{
+		//Retrieve all font assets.
+		const HashTable<HashString, Asset *RESTRICT> &assets{ ContentSystem::Instance->GetAllAssetsOfType(Texture2DAsset::TYPE_IDENTIFIER) };
+
+		for (const Asset *const RESTRICT asset : assets.ValueIterator())
+		{
+			const Texture2DAsset *const RESTRICT texture_2D_asset{ static_cast<const Texture2DAsset *const RESTRICT>(asset) };
+
+			_TextureIndexToTexture2DAssetLookup.Add(texture_2D_asset->_Index, texture_2D_asset);
+		}
+	}
+
+	/*
+	*	Builds the texture index to font asset lookup.
+	*/
 	void SoftwarePluginRenderer::BuildTextureIndexToFontAssetLookup() NOEXCEPT
 	{
 		//Retrieve all font assets.
@@ -201,6 +220,9 @@ namespace Audio
 				maximum._Y = BaseMath::Maximum<uint32>(maximum._Y, BaseMath::Ceiling<uint32>(vertex._Y));
 			}
 
+			maximum._X = BaseMath::Minimum<uint32>(maximum._X, _Buffer.GetWidth() - 1);
+			maximum._Y = BaseMath::Minimum<uint32>(maximum._Y, _Buffer.GetHeight() - 1);
+
 			//Iterate over the pixels.
 			for (uint32 Y{ minimum._Y }; Y <= maximum._Y; ++Y)
 			{
@@ -292,8 +314,11 @@ namespace Audio
 
 			case UI::RenderCommand::Mode::TEXTURE:
 			{
-				//TODO!
-				color = Vector4<float32>(1.0f, 0.0f, 0.0f, 1.0f);
+				//Retrieve the texture 2D asset.
+				const Texture2DAsset *const RESTRICT texture_2D_asset{ _TextureIndexToTexture2DAssetLookup[render_command._ColorOrTexture] };
+
+				//Sample the color.
+				color = SampleConvert(texture_2D_asset->_Texture2D, texture_coordinate);
 
 				break;
 			}
