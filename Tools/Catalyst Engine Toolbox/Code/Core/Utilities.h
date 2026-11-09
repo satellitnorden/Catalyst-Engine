@@ -5,7 +5,18 @@
 
 //STD.
 #include <algorithm>
+#include <cctype>
+#include <cstdio>
 #include <string>
+
+//Prints a buffer. (:
+#define PRINT_BUFFER(BUFFER, FORMAT, ...)													\
+do																							\
+{																							\
+	const int32 characters_written{snprintf(BUFFER, sizeof(BUFFER), FORMAT, __VA_ARGS__) };	\
+	(void)characters_written;																\
+} while (false)
+
 
 namespace Utilities
 {
@@ -54,7 +65,12 @@ namespace Utilities
 	static std::string ToUpperCase(const std::string &string)
 	{
 		std::string copy{ string };
-		std::transform(copy.begin(), copy.end(), copy.begin(), std::toupper);
+
+		for (char &character : copy)
+		{
+			character = std::toupper(character);
+		}
+
 		return copy;
 	}
 

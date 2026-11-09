@@ -10,6 +10,7 @@
 #include <GenerateProjects/GenerateVisualStudioSolution.h>
 
 //STD.
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -588,7 +589,7 @@ void GenerateDefaultProjects(const ProjectSettings &project_settings)
 {
 	//Figure out the project name.
 	char project_name[256];
-	sprintf_s(project_name, "%s_Win64", project_settings._ProjectNameNoSpaces.c_str());
+	PRINT_BUFFER(project_name, "%s_Win64", project_settings._ProjectNameNoSpaces.c_str());
 
 	//Set up the parameters.
 	GenerateProjectParameters parameters;
@@ -732,7 +733,9 @@ void GenerateDefaultProjects(const ProjectSettings &project_settings)
 	GenerateRunCodeGenerationBatchFile(DIRECTORY, project_settings, false);
 
 	//Generate!
+#if defined(VISUAL_STUDIO_SOLUTION_SUPPORTED)
 	GenerateVisualStudioSolution::Generate(parameters);
+#endif
 
 	//Remember the error code for filesystem functions.
 	std::error_code error_code;
@@ -909,7 +912,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		//Generate the "AudioPluginGlue.Generated.h" file.
 		{
 			char buffer[256];
-			sprintf_s(buffer, "%s\\AudioPluginGlue.Generated.h", AudioPluginCodeDirectory(audio_plugin).c_str());
+			PRINT_BUFFER(buffer, "%s\\AudioPluginGlue.Generated.h", AudioPluginCodeDirectory(audio_plugin).c_str());
 
 			std::ofstream file{ buffer };
 
@@ -1021,7 +1024,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		//Generate the "StandaloneMain.Generated.cpp" file.
 		{
 			char buffer[256];
-			sprintf_s(buffer, "%s\\StandaloneMain.Generated.cpp", AudioPluginCodeDirectory(audio_plugin).c_str());
+			PRINT_BUFFER(buffer, "%s\\StandaloneMain.Generated.cpp", AudioPluginCodeDirectory(audio_plugin).c_str());
 
 			std::ofstream file{ buffer };
 
@@ -1139,7 +1142,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		//Generate the audio plugin header file.
 		{
 			char buffer[256];
-			sprintf_s(buffer, "%s\\%s.h", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._ClassName.c_str());
+			PRINT_BUFFER(buffer, "%s\\%s.h", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._ClassName.c_str());
 
 			if (!audio_plugin._Locked)
 			{
@@ -1250,7 +1253,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		//Generate the audio plugin CPP file.
 		{
 			char buffer[256];
-			sprintf_s(buffer, "%s\\%s.cpp", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._ClassName.c_str());
+			PRINT_BUFFER(buffer, "%s\\%s.cpp", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._ClassName.c_str());
 
 			if (!audio_plugin._Locked)
 			{
@@ -1331,7 +1334,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		//Generate the audio plugin standalone main header file.
 		{
 			char buffer[256];
-			sprintf_s(buffer, "%s\\%sStandaloneMain.h", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
+			PRINT_BUFFER(buffer, "%s\\%sStandaloneMain.h", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
 
 			if (!audio_plugin._Locked)
 			{
@@ -1368,7 +1371,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		//Generate the audio plugin standalone main source file.
 		{
 			char buffer[256];
-			sprintf_s(buffer, "%s\\%sStandaloneMain.cpp", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
+			PRINT_BUFFER(buffer, "%s\\%sStandaloneMain.cpp", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
 
 			if (!audio_plugin._Locked)
 			{
@@ -1420,7 +1423,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		//Generate the audio plugin UI scene header file.
 		{
 			char buffer[256];
-			sprintf_s(buffer, "%s\\%sUIScene.h", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
+			PRINT_BUFFER(buffer, "%s\\%sUIScene.h", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
 
 			if (!audio_plugin._Locked)
 			{
@@ -1476,7 +1479,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		//Generate the audio plugin UI scene source file.
 		{
 			char buffer[256];
-			sprintf_s(buffer, "%s\\%sUIScene.cpp", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
+			PRINT_BUFFER(buffer, "%s\\%sUIScene.cpp", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
 
 			if (!audio_plugin._Locked)
 			{
@@ -1653,6 +1656,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 #endif
 
 	//Generate the visual studio solution.
+#if defined(VISUAL_STUDIO_SOLUTION_SUPPORTED)
 	{
 		parameters._DirectoryPath = AudioPluginVisualStudioSolutionDirectory(audio_plugin);
 		GenerateVisualStudioSolution::Generate(parameters);
@@ -1680,6 +1684,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 			}
 		}
 	}
+#endif
 }
 
 /*

@@ -35,7 +35,7 @@ void GenerateCMake::Generate(const GenerateProjectParameters &parameters)
 
     //Figure out the file path.
     char file_path[256];
-    sprintf_s(file_path, "%s\\CMakeLists.txt", parameters._DirectoryPath.c_str());
+    PRINT_BUFFER(file_path, "%s\\CMakeLists.txt", parameters._DirectoryPath.c_str());
 
     //Open file.
     std::ofstream file{ file_path };

@@ -1,8 +1,10 @@
 //Header file.
 #include <GenerateProjects/GenerateVisualStudioSolution.h>
 
+#if defined(VISUAL_STUDIO_SOLUTION_SUPPORTED)
 //Core.
 #include <Core/MurmurHash.h>
+#include <Core/Utilities.h>
 
 //Windows.
 #include <objbase.h>
@@ -90,7 +92,7 @@ void GenerateVisualStudioSolution::GenerateResourceFile(const GenerateProjectPar
 {
     //Figure out the directory.
     char directory_buffer[256];
-    sprintf_s(directory_buffer, "%s\\Resources", parameters._DirectoryPath.c_str());
+    PRINT_BUFFER(directory_buffer, "%s\\Resources", parameters._DirectoryPath.c_str());
 
     //Create the directory.
     std::filesystem::create_directories(std::string(directory_buffer));
@@ -99,7 +101,7 @@ void GenerateVisualStudioSolution::GenerateResourceFile(const GenerateProjectPar
     {
         //Figure out the project file path.
         char file_path_buffer[256];
-        sprintf_s(file_path_buffer, "%s\\resource.h", directory_buffer);
+        PRINT_BUFFER(file_path_buffer, "%s\\resource.h", directory_buffer);
 
         //Open the file.
         std::ofstream file{ file_path_buffer };
@@ -129,7 +131,7 @@ void GenerateVisualStudioSolution::GenerateResourceFile(const GenerateProjectPar
     {
         //Figure out the project file path.
         char file_path_buffer[256];
-        sprintf_s(file_path_buffer, "%s\\Resources.rc", directory_buffer);
+        PRINT_BUFFER(file_path_buffer, "%s\\Resources.rc", directory_buffer);
 
         //Open the file.
         std::ofstream file{ file_path_buffer };
@@ -255,7 +257,7 @@ void GenerateVisualStudioSolution::GenerateProjectFile(const GenerateProjectPara
 {
     //Figure out the project file path.
     char file_path_buffer[256];
-    sprintf_s(file_path_buffer, "%s\\%s.vcxproj", parameters._DirectoryPath.c_str(), parameters._ProjectName);
+    PRINT_BUFFER(file_path_buffer, "%s\\%s.vcxproj", parameters._DirectoryPath.c_str(), parameters._ProjectName);
 
     //Open the file.
     std::ofstream file{ file_path_buffer };
@@ -532,7 +534,7 @@ void GenerateVisualStudioSolution::GenerateFiltersFile(const GenerateProjectPara
 {
     //Figure out the project file path.
     char file_path_buffer[256];
-    sprintf_s(file_path_buffer, "%s\\%s.vcxproj.filters", parameters._DirectoryPath.c_str(), parameters._ProjectName);
+    PRINT_BUFFER(file_path_buffer, "%s\\%s.vcxproj.filters", parameters._DirectoryPath.c_str(), parameters._ProjectName);
 
     //Open the file.
     std::ofstream file{ file_path_buffer };
@@ -592,7 +594,7 @@ void GenerateVisualStudioSolution::GenerateSolutionFile(const GenerateProjectPar
 
     //Figure out the project file path.
     char file_path_buffer[256];
-    sprintf_s(file_path_buffer, "%s\\%s.sln", parameters._DirectoryPath.c_str(), parameters._ProjectName);
+    PRINT_BUFFER(file_path_buffer, "%s\\%s.sln", parameters._DirectoryPath.c_str(), parameters._ProjectName);
 
     //Open the file.
     std::ofstream file{ file_path_buffer };
@@ -697,7 +699,7 @@ void GenerateVisualStudioSolution::AddCompileFiles(const GenerateProjectParamete
             file_name = file_name.substr(0, file_name.find_last_of('.'));
 
             char buffer[128];
-            sprintf_s(buffer, "%s_0x%llx.obj", file_name.c_str(), hash);
+            PRINT_BUFFER(buffer, "%s_0x%llx.obj", file_name.c_str(), hash);
 
             for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
             {
@@ -784,3 +786,4 @@ void GenerateVisualStudioSolution::AddFilterIdentifiers(std::ofstream &file, con
     file << "\t\t\t<UniqueIdentifier>" << GenerateGUID().c_str() << "</UniqueIdentifier>" << std::endl;
     file << "\t\t</Filter>" << std::endl;
 }
+#endif

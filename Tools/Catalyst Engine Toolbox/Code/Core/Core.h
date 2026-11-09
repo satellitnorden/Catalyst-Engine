@@ -1,5 +1,14 @@
 #pragma once
 
+//Determine the platform.
+#if defined(_WIN32)
+    #define PLATFORM_WIN64
+#endif
+
+#if defined(__linux__)
+    #define PLATFORM_LINUX
+#endif
+
 /*
 *	Builtin types.
 */

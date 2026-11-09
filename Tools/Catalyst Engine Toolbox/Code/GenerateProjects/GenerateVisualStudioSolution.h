@@ -3,6 +3,11 @@
 //Core.
 #include <Core/Core.h>
 
+#if defined(CATALYST_WIN64)
+	#define VISUAL_STUDIO_SOLUTION_SUPPORTED
+#endif
+
+#if defined(VISUAL_STUDIO_SOLUTION_SUPPORTED)
 //Generate projects.
 #include <GenerateProjects/GenerateProjectParameters.h>
 
@@ -54,3 +59,4 @@ private:
 	static void AddFilterIdentifiers(std::ofstream &file, const GenerateProjectParameters::Directory &directory, const std::string &filter_string);
 
 };
+#endif

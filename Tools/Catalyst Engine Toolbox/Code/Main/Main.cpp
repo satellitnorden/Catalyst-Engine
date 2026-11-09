@@ -7,6 +7,9 @@
 //Project settings.
 #include <ProjectSettings/ProjectSettings.h>
 
+//STD.
+#include <cstring>
+
 int32 main(int32 argument_count, char *arguments[])
 {
 	//Read the project settings.
