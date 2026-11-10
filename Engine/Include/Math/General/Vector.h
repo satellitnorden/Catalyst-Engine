@@ -1529,22 +1529,22 @@ template<>
 FORCE_INLINE constexpr static NO_DISCARD Vector3<float32> BaseMath::Minimum<Vector3<float32>>(const Vector3<float32> first, const Vector3<float32> second) NOEXCEPT
 {
 	return Vector3<float32>
-		(
-			BaseMath::Minimum<float32>(first._X, second._X),
-			BaseMath::Minimum<float32>(first._Y, second._Y),
-			BaseMath::Minimum<float32>(first._Z, second._Z)
-		);
+	(
+		BaseMath::Minimum<float32>(first._X, second._X),
+		BaseMath::Minimum<float32>(first._Y, second._Y),
+		BaseMath::Minimum<float32>(first._Z, second._Z)
+	);
 }
 
 template<>
 FORCE_INLINE constexpr static NO_DISCARD Vector3<float32> BaseMath::Maximum<Vector3<float32>>(const Vector3<float32> first, const Vector3<float32> second) NOEXCEPT
 {
 	return Vector3<float32>
-		(
-			BaseMath::Maximum<float32>(first._X, second._X),
-			BaseMath::Maximum<float32>(first._Y, second._Y),
-			BaseMath::Maximum<float32>(first._Z, second._Z)
-		);
+	(
+		BaseMath::Maximum<float32>(first._X, second._X),
+		BaseMath::Maximum<float32>(first._Y, second._Y),
+		BaseMath::Maximum<float32>(first._Z, second._Z)
+	);
 }
 
 template<>

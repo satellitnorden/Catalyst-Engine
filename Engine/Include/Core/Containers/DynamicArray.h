@@ -571,16 +571,6 @@ public:
 	template <bool DESTRUCT_CONSTRUCT>
 	FORCE_INLINE void Resize(const uint64 new_size) NOEXCEPT
 	{
-		ASSERT(false, "Intentionally unimplemented!");
-	}
-
-	/*
-	*	Resizes this dynamic array.
-	*	Takes as a template argument whether or not to destruct/construct old/new objects after the resize.
-	*/
-	template<>
-	FORCE_INLINE void Resize<false>(const uint64 new_size) NOEXCEPT
-	{
 		//Do we need to allocate more capacity?
 		if (new_size > _Capacity)
 		{
@@ -601,47 +591,19 @@ public:
 			_Capacity = new_size;
 		}
 
-		//Set the size.
-		_Size = new_size;
-	}
-
-	/*
-	*	Resizes this dynamic array.
-	*	Takes as a template argument whether or not to destruct/construct old/new objects after the resize.
-	*/
-	template<>
-	FORCE_INLINE void Resize<true>(const uint64 new_size) NOEXCEPT
-	{
-		//Do we need to allocate more capacity?
-		if (new_size > _Capacity)
+		if constexpr (DESTRUCT_CONSTRUCT)
 		{
-			//Allocate the new array.
-			TYPE *const RESTRICT new_array{ static_cast<TYPE *const RESTRICT>(Memory::Allocate(sizeof(TYPE) * new_size)) };
-
-			if (_Array)
+			//Default destruct the old objects.
+			for (uint64 i{ new_size }; i < _Size; ++i)
 			{
-				//Move over all objects from the old array to the new array.
-				Memory::Copy(new_array, _Array, sizeof(TYPE) * _Size);
-
-				//Free the old array.
-				Memory::Free(_Array);
+				_Array[i].~TYPE();
 			}
 
-			//Update the array and the capacity.
-			_Array = new_array;
-			_Capacity = new_size;
-		}
-
-		//Default destruct the old objects.
-		for (uint64 i{ new_size }; i < _Size; ++i)
-		{
-			_Array[i].~TYPE();
-		}
-
-		//Default construct the new objects.
-		for (uint64 i{ _Size }; i < new_size; ++i)
-		{
-			new (&_Array[i]) TYPE();
+			//Default construct the new objects.
+			for (uint64 i{ _Size }; i < new_size; ++i)
+			{
+				new (&_Array[i]) TYPE();
+			}
 		}
 
 		//Set the size.
@@ -654,53 +616,29 @@ public:
 	template <bool CONSTRUCT>
 	FORCE_INLINE void Upsize(const uint64 new_capacity) NOEXCEPT
 	{
-		ASSERT(false, "Intentionally unimplemented!");
-	}
-
-	/*
-	*	Upsizes this dynamic array.
-	*/
-	template<>
-	FORCE_INLINE void Upsize<false>(const uint64 new_capacity) NOEXCEPT
-	{
 		//Allocate the new array.
 		TYPE *const RESTRICT new_array{ static_cast<TYPE *const RESTRICT>(Memory::Allocate(sizeof(TYPE) * new_capacity)) };
 
-		if (_Size > 0)
+		if (_Array)
 		{
 			//Move over all objects from the old array to the new array.
-			Memory::Copy(new_array, _Array, sizeof(TYPE) * (_Size > new_capacity ? new_capacity : _Size));
+			if (_Size > 0)
+			{
+				Memory::Copy(new_array, _Array, sizeof(TYPE) * (_Size > new_capacity ? new_capacity : _Size));
+			}
 
 			//Free the old array.
 			Memory::Free(_Array);
 		}
 
-		//Update the array and the capacity.
-		_Array = new_array;
-		_Capacity = new_capacity;
-		_Size = new_capacity;
-	}
-
-	/*
-	*	Upsizes this dynamic array.
-	*/
-	template<>
-	FORCE_INLINE void Upsize<true>(const uint64 new_capacity) NOEXCEPT
-	{
-		//Allocate the new array.
-		TYPE *const RESTRICT new_array{ static_cast<TYPE *const RESTRICT>(Memory::Allocate(sizeof(TYPE) * new_capacity)) };
-
-		//Move over all objects from the old array to the new array.
-		Memory::Copy(new_array, _Array, sizeof(TYPE) * _Size);
-
 		//Default construct the remaining objects.
-		for (uint64 i{ _Size }; i < new_capacity; ++i)
+		if constexpr (CONSTRUCT)
 		{
-			new (&new_array[i]) TYPE;
+			for (uint64 i{ _Size }; i < new_capacity; ++i)
+			{
+				new (&new_array[i]) TYPE;
+			}
 		}
-
-		//Free the old array.
-		Memory::Free(_Array);
 
 		//Update the array and the capacity.
 		_Array = new_array;

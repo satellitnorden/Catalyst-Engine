@@ -76,7 +76,7 @@ void TaskSystem::Initialize() NOEXCEPT
 		uint32 task_executor_number{ 1 };
 #endif
 
-		for (Thread& task_executor_thread : _TaskExecutorThreads)
+		for (Thread &task_executor_thread : _TaskExecutorThreads)
 		{
 			//Set the function.
 			task_executor_thread.SetFunction([]()
