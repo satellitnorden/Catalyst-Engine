@@ -43,8 +43,8 @@ void GenerateVisualStudioSolution::Generate(GenerateProjectParameters parameters
         GenerateProjectParameters::Directory &directory{ parameters._Directories.emplace_back() };
 
         directory._Name = "Resources";
-        directory._Files.emplace_back("Resources/resource.h");
-        directory._Files.emplace_back("Resources/Resources.rc");
+        directory._Files.emplace_back("Resources\\resource.h");
+        directory._Files.emplace_back("Resources\\Resources.rc");
     }
 
     //Generate the project file.
@@ -64,7 +64,7 @@ void GenerateVisualStudioSolution::GenerateResourceFile(const GenerateProjectPar
 {
     //Figure out the directory.
     char directory_buffer[256];
-    PRINT_BUFFER(directory_buffer, "%s/Resources", parameters._DirectoryPath.c_str());
+    PRINT_BUFFER(directory_buffer, "%s\\Resources", parameters._DirectoryPath.c_str());
 
     //Create the directory.
     std::filesystem::create_directories(std::string(directory_buffer));
@@ -73,7 +73,7 @@ void GenerateVisualStudioSolution::GenerateResourceFile(const GenerateProjectPar
     {
         //Figure out the project file path.
         char file_path_buffer[256];
-        PRINT_BUFFER(file_path_buffer, "%s/resource.h", directory_buffer);
+        PRINT_BUFFER(file_path_buffer, "%s\\resource.h", directory_buffer);
 
         //Open the file.
         std::ofstream file{ file_path_buffer };
@@ -103,7 +103,7 @@ void GenerateVisualStudioSolution::GenerateResourceFile(const GenerateProjectPar
     {
         //Figure out the project file path.
         char file_path_buffer[256];
-        PRINT_BUFFER(file_path_buffer, "%s/Resources.rc", directory_buffer);
+        PRINT_BUFFER(file_path_buffer, "%s\\Resources.rc", directory_buffer);
 
         //Open the file.
         std::ofstream file{ file_path_buffer };
@@ -143,21 +143,21 @@ void GenerateVisualStudioSolution::GenerateResourceFile(const GenerateProjectPar
 
         file << "1 TEXTINCLUDE " << std::endl;
         file << "BEGIN" << std::endl;
-        file << "    \"resource.h/0\"" << std::endl;
+        file << "    \"resource.h\\0\"" << std::endl;
         file << "END" << std::endl;
         file << std::endl;
 
         file << "2 TEXTINCLUDE " << std::endl;
         file << "BEGIN" << std::endl;
-        file << "    \"#include \"\"winres.h\"\"/r/n\"" << std::endl;
-        file << "    \"/0\"" << std::endl;
+        file << "    \"#include \"\"winres.h\"\"\\r\\n\"" << std::endl;
+        file << "    \"\\0\"" << std::endl;
         file << "END" << std::endl;
         file << std::endl;
 
         file << "3 TEXTINCLUDE " << std::endl;
         file << "BEGIN" << std::endl;
-        file << "    \"/r/n\"" << std::endl;
-        file << "    \"/0\"" << std::endl;
+        file << "    \"\\r\\n\"" << std::endl;
+        file << "    \"\\0\"" << std::endl;
         file << "END" << std::endl;
         file << std::endl;
 
@@ -188,7 +188,7 @@ void GenerateVisualStudioSolution::GenerateResourceFile(const GenerateProjectPar
 
             const char *identifier{ &embedded_resource[embedded_resource.length() - 1] };
 
-            while ((*identifier) != '/' && (*identifier) != '/')
+            while ((*identifier) != '\\' && (*identifier) != '/')
             {
                 --identifier;
             }
@@ -199,10 +199,10 @@ void GenerateVisualStudioSolution::GenerateResourceFile(const GenerateProjectPar
 
             for (const char character : embedded_resource)
             {
-                if (character == '/')
+                if (character == '\\')
                 {
-                    file_path += '/';
-                    file_path += '/';
+                    file_path += '\\';
+                    file_path += '\\';
                 }
 
                 else
@@ -229,7 +229,7 @@ void GenerateVisualStudioSolution::GenerateProjectFile(const GenerateProjectPara
 {
     //Figure out the project file path.
     char file_path_buffer[256];
-    PRINT_BUFFER(file_path_buffer, "%s/%s.vcxproj", parameters._DirectoryPath.c_str(), parameters._ProjectName);
+    PRINT_BUFFER(file_path_buffer, "%s\\%s.vcxproj", parameters._DirectoryPath.c_str(), parameters._ProjectName);
 
     //Open the file.
     std::ofstream file{ file_path_buffer };
@@ -277,7 +277,7 @@ void GenerateVisualStudioSolution::GenerateProjectFile(const GenerateProjectPara
     }
 
     //Write the import for "Microsoft.Cpp.Default.props".
-    file << "\t<Import Project=\"$(VCTargetsPath)/Microsoft.Cpp.Default.props\"/>" << std::endl;
+    file << "\t<Import Project=\"$(VCTargetsPath)\\Microsoft.Cpp.Default.props\"/>" << std::endl;
 
     //Write the property group for all configuration/platform combinations.
     for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
@@ -333,7 +333,7 @@ void GenerateVisualStudioSolution::GenerateProjectFile(const GenerateProjectPara
     }
 
     //Write the import for "Microsoft.Cpp.props".
-    file << "\t<Import Project=\"$(VCTargetsPath)/Microsoft.Cpp.props\"/>" << std::endl;
+    file << "\t<Import Project=\"$(VCTargetsPath)\\Microsoft.Cpp.props\"/>" << std::endl;
 
     //Write the empty extension settings import group.
     file << "\t<ImportGroup Label=\"ExtensionSettings\">" << std::endl;
@@ -352,7 +352,7 @@ void GenerateVisualStudioSolution::GenerateProjectFile(const GenerateProjectPara
             file << "\t<ImportGroup Label=\"PropertySheets\" Condition=\"'$(Configuration)|$(Platform)'=='" << configuration._Name << "|" << platform._Name << "'\">" << std::endl;
 
             //Add the properties.
-            file << "\t\t<Import Project=\"$(UserRootDir)/Microsoft.Cpp.$(Platform).user.props\" Condition=\"exists('$(UserRootDir)/Microsoft.Cpp.$(Platform).user.props')\" Label=\"LocalAppDataPlatform\"/>" << std::endl;
+            file << "\t\t<Import Project=\"$(UserRootDir)\\Microsoft.Cpp.$(Platform).user.props\" Condition=\"exists('$(UserRootDir)\\Microsoft.Cpp.$(Platform).user.props')\" Label=\"LocalAppDataPlatform\"/>" << std::endl;
 
             //End the import group.
             file << "\t</ImportGroup>" << std::endl;
@@ -367,10 +367,10 @@ void GenerateVisualStudioSolution::GenerateProjectFile(const GenerateProjectPara
         for (const GenerateProjectParameters::Platform &platform : parameters._Platforms)
         {
             //Set the outpit directory.
-            file << "\t\t<OutDir Condition=" << GetConfigurationPlatformConditionString(configuration._Name, platform._Name) << ">" << configuration._Name << "/</OutDir>" << std::endl;
+            file << "\t\t<OutDir Condition=" << GetConfigurationPlatformConditionString(configuration._Name, platform._Name) << ">" << configuration._Name << "\\</OutDir>" << std::endl;
 
             //Set the intermediate directory.
-            file << "\t\t<IntDir Condition=" << GetConfigurationPlatformConditionString(configuration._Name, platform._Name) << ">" << parameters._ProjectName << ".dir/" << configuration._Name << "/</IntDir>" << std::endl;
+            file << "\t\t<IntDir Condition=" << GetConfigurationPlatformConditionString(configuration._Name, platform._Name) << ">" << parameters._ProjectName << ".dir\\" << configuration._Name << "\\</IntDir>" << std::endl;
 
             //Set the target name.
             file << "\t\t<TargetName Condition=" << GetConfigurationPlatformConditionString(configuration._Name, platform._Name) << ">" << parameters._ProjectName << "</TargetName>" << std::endl;
@@ -487,7 +487,7 @@ void GenerateVisualStudioSolution::GenerateProjectFile(const GenerateProjectPara
     file << "\t</ItemGroup>" << std::endl;
 
     //Add the project import.
-    file << "\t<Import Project=\"$(VCTargetsPath)/Microsoft.Cpp.targets\"/>" << std::endl;
+    file << "\t<Import Project=\"$(VCTargetsPath)\\Microsoft.Cpp.targets\"/>" << std::endl;
 
     //Add the extension targets import group.
     file << "\t<ImportGroup Label=\"ExtensionTargets\"></ImportGroup>" << std::endl;
@@ -506,7 +506,7 @@ void GenerateVisualStudioSolution::GenerateFiltersFile(const GenerateProjectPara
 {
     //Figure out the project file path.
     char file_path_buffer[256];
-    PRINT_BUFFER(file_path_buffer, "%s/%s.vcxproj.filters", parameters._DirectoryPath.c_str(), parameters._ProjectName);
+    PRINT_BUFFER(file_path_buffer, "%s\\%s.vcxproj.filters", parameters._DirectoryPath.c_str(), parameters._ProjectName);
 
     //Open the file.
     std::ofstream file{ file_path_buffer };
@@ -566,7 +566,7 @@ void GenerateVisualStudioSolution::GenerateSolutionFile(const GenerateProjectPar
 
     //Figure out the project file path.
     char file_path_buffer[256];
-    PRINT_BUFFER(file_path_buffer, "%s/%s.sln", parameters._DirectoryPath.c_str(), parameters._ProjectName);
+    PRINT_BUFFER(file_path_buffer, "%s\\%s.sln", parameters._DirectoryPath.c_str(), parameters._ProjectName);
 
     //Open the file.
     std::ofstream file{ file_path_buffer };
@@ -667,7 +667,7 @@ void GenerateVisualStudioSolution::AddCompileFiles(const GenerateProjectParamete
         {
             const uint64 hash{ MurmurHash64(compile_file._Path.c_str(), compile_file._Path.length()) };
 
-            std::string file_name{ compile_file._Path.substr(compile_file._Path.find_last_of('/') + 1) };
+            std::string file_name{ compile_file._Path.substr(compile_file._Path.find_last_of('\\') + 1) };
             file_name = file_name.substr(0, file_name.find_last_of('.'));
 
             char buffer[128];
@@ -678,7 +678,7 @@ void GenerateVisualStudioSolution::AddCompileFiles(const GenerateProjectParamete
                 for (const GenerateProjectParameters::Platform &platform : parameters._Platforms)
                 {
                     //Set the object file name.
-                    file << "\t\t<ObjectFileName Condition=" << GetConfigurationPlatformConditionString(configuration._Name, platform._Name) << ">ObjectFiles/" << configuration._Name << "/" << buffer << "</ObjectFileName>" << std::endl;
+                    file << "\t\t<ObjectFileName Condition=" << GetConfigurationPlatformConditionString(configuration._Name, platform._Name) << ">ObjectFiles\\" << configuration._Name << "\\" << buffer << "</ObjectFileName>" << std::endl;
                 }
             }
         }
@@ -712,7 +712,7 @@ void GenerateVisualStudioSolution::AddFilterFiles(std::ofstream &file, const Gen
 {
     for (const GenerateProjectParameters::Directory &_directory : directory._Directories)
     {
-        const std::string _filter_string{ filter_string + "/" + std::string(_directory._Name) };
+        const std::string _filter_string{ filter_string + "\\" + std::string(_directory._Name) };
         AddFilterFiles(file, _directory, _filter_string);
     }
 
@@ -750,7 +750,7 @@ void GenerateVisualStudioSolution::AddFilterIdentifiers(std::ofstream &file, con
 {
     for (const GenerateProjectParameters::Directory &_directory : directory._Directories)
     {
-        const std::string _filter_string{ filter_string + "/" + std::string(_directory._Name) };
+        const std::string _filter_string{ filter_string + "\\" + std::string(_directory._Name) };
         AddFilterIdentifiers(file, _directory, _filter_string);
     }
 
