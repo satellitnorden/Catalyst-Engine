@@ -441,7 +441,7 @@ void ScanDirectory(GenerateProjectParameters::Directory *directory, const char *
 /*
 *	Returns whether or not the given third party directory should be included.
 */
-bool ShouldIncludeThirdPartyDirectory(const ProjectSettings &project_settings, const std::string &path)
+bool ShouldIncludeThirdPartyDirectory(const ProjectSettings &project_settings, const std::filesystem::path &path)
 {
 	if (path == "../../Catalyst-Engine/Engine/Third Party/Jolt")
 	{
@@ -1763,9 +1763,9 @@ void GenerateProjects::Clean(const ProjectSettings &project_settings)
 	{
 		for (const auto &entry : std::filesystem::directory_iterator(std::string(CODE_GENERATION_DIRECTORY_PATH)))
 		{
-			const std::string file_path{ entry.path().string() };
+			const std::filesystem::path file_path{ entry.path() };
 
-			if (file_path != std::string(CODE_GENERATION_DIRECTORY_PATH) + std::string("/.gitignore"))
+			if (file_path != std::filesystem::path(CODE_GENERATION_DIRECTORY_PATH).concat("/.gitignore"))
 			{
 				std::filesystem::remove(file_path, error_code); CHECK_ERROR_CODE()
 			}
