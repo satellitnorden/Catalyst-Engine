@@ -4,7 +4,7 @@
 //STL.
 #include <chrono>
 
-#define IMPLEMENTATION() (*_Implementation.Get<std::chrono::time_point<std::chrono::steady_clock>>())
+#define IMPLEMENTATION() (*_Implementation.Get<std::chrono::time_point<std::chrono::high_resolution_clock>>())
 
 /*
 *	Default constructor.
@@ -21,7 +21,7 @@ TimePoint::TimePoint() NOEXCEPT
 void TimePoint::Reset() NOEXCEPT
 {
 	//Set the time point.
-	IMPLEMENTATION() = std::chrono::steady_clock::now();
+	IMPLEMENTATION() = std::chrono::high_resolution_clock::now();
 }
 
 /*

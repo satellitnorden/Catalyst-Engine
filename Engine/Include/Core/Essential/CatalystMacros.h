@@ -80,6 +80,10 @@ FORCE_INLINE constexpr static void operator&=(ENUMERATION &first, const ENUMERAT
 	#define LIKELY(expression) expression
 #elif defined(CATALYST_CLANG)
 	#define LIKELY(expression) __builtin_expect(expression, 1)
+#elif defined(CATALYST_GCC)
+	#define LIKELY(expression) expression
+#else
+	#error "Unknown compiler!"
 #endif
 
 /*
@@ -113,4 +117,8 @@ FORCE_INLINE constexpr static void operator&=(ENUMERATION &first, const ENUMERAT
 	#define UNLIKELY(expression) expression
 #elif defined(CATALYST_CLANG)
 	#define UNLIKELY(expression) expression
+#elif defined(CATALYST_GCC)
+	#define UNLIKELY(expression) expression
+#else
+	#error "Unknown compiler!"
 #endif

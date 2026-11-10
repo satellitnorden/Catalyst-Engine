@@ -3,7 +3,7 @@
 /*
 *	Defines that a function's return value cannot be discarded by the caller.
 */
-#if defined(CATALYST_CXX17) && !defined(CATALYST_CLANG)
+#if defined(CATALYST_CXX17) && !defined(CATALYST_CLANG) && !defined(CATALYST_GCC)
 	#define NO_DISCARD [[nodiscard]]
 #else
 	#define NO_DISCARD

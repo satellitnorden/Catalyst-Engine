@@ -1,5 +1,8 @@
 #pragma once
 
+//STD.
+#include <new>
+
 class Memory
 {
 
