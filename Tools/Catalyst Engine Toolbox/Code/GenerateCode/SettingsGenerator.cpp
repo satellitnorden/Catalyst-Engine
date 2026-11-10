@@ -3,8 +3,10 @@
 
 //Core.
 #include <Core/MurmurHash.h>
+#include <Core/Utilities.h>
 
 //STD.
+#include <chrono>
 #include <fstream>
 
 //Constants.
@@ -438,18 +440,18 @@ void SettingsGenerator::GatherSettingsDefinitions(const char *const directory_pa
 	}
 
 	//Iterate over all type libraries.
-	for (const auto &entry : std::filesystem::directory_iterator(std::string(directory_path)))
+	for (const auto &file_entry : std::filesystem::directory_iterator(std::string(directory_path)))
 	{
 		//Gather recursively if this is a directory.
-		if (entry.is_directory())
+		if (file_entry.is_directory())
 		{
-			GatherSettingsDefinitions(entry.path().generic_string().c_str(), cache);
+			GatherSettingsDefinitions(file_entry.path().generic_string().c_str(), cache);
 
 			continue;
 		}
 
 		//Cache the file path string.
-		const std::string file_path{ entry.path().generic_string() };
+		const std::string file_path{ file_entry.path().generic_string() };
 
 		//Figure out the extension.
 		std::string extension;
@@ -476,7 +478,7 @@ void SettingsGenerator::GatherSettingsDefinitions(const char *const directory_pa
 
 		{
 			const std::filesystem::file_time_type _last_write_time{ std::filesystem::last_write_time(file_path) };
-			const std::chrono::time_point<std::chrono::system_clock> time_point{ std::chrono::utc_clock::to_sys(std::chrono::file_clock::to_utc(_last_write_time)) };
+			const std::chrono::time_point<std::chrono::system_clock> time_point{ std::chrono::clock_cast<std::chrono::system_clock>(_last_write_time) };
 			last_write_time = std::chrono::system_clock::to_time_t(time_point);
 		}
 
@@ -625,7 +627,7 @@ void SettingsGenerator::GenerateCode()
 							if (new_variable._Type == "bool")
 							{
 								char buffer[16];
-								sprintf_s(buffer, "%s", variable_entry["Default"].get<bool>() ? "true" : "false");
+								PRINT_BUFFER(buffer, "%s", variable_entry["Default"].get<bool>() ? "true" : "false");
 
 								new_variable._Default = buffer;
 
@@ -635,7 +637,7 @@ void SettingsGenerator::GenerateCode()
 							else if (new_variable._Type == "float32")
 							{
 								char buffer[16];
-								sprintf_s(buffer, "%f", variable_entry["Default"].get<float32>());
+								PRINT_BUFFER(buffer, "%f", variable_entry["Default"].get<float32>());
 
 								new_variable._Default = buffer;
 
@@ -657,7 +659,7 @@ void SettingsGenerator::GenerateCode()
 							else if (new_variable._Type == "uint8")
 							{
 								char buffer[16];
-								sprintf_s(buffer, "%u", variable_entry["Default"].get<uint32>());
+								PRINT_BUFFER(buffer, "%u", variable_entry["Default"].get<uint32>());
 
 								new_variable._Default = buffer;
 
@@ -697,7 +699,7 @@ void SettingsGenerator::GenerateCode()
 	{
 		//Figure out the header directory path.
 		char header_directory_path[MAXIMUM_FILE_PATH_LENGTH];
-		sprintf_s(header_directory_path, "../../../Code/Include/Generated/Settings");
+		PRINT_BUFFER(header_directory_path, "../../../Code/Include/Generated/Settings");
 
 		//Create the directory, if it doesn't exist.
 		std::filesystem::create_directory(header_directory_path);
@@ -707,7 +709,7 @@ void SettingsGenerator::GenerateCode()
 		{
 			//Figure out the file path.
 			char file_path[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(file_path, "%s/%s.Generated.h", header_directory_path, enumeration._Name.c_str());
+			PRINT_BUFFER(file_path, "%s/%s.Generated.h", header_directory_path, enumeration._Name.c_str());
 
 			//Open the file.
 			std::ofstream file{ file_path };
@@ -749,7 +751,7 @@ void SettingsGenerator::GenerateCode()
 	{
 		//Figure out the header directory path.
 		char header_directory_path[MAXIMUM_FILE_PATH_LENGTH];
-		sprintf_s(header_directory_path, "../../../Code/Include/Generated/Settings");
+		PRINT_BUFFER(header_directory_path, "../../../Code/Include/Generated/Settings");
 
 		//Create the directory, if it doesn't exist.
 		std::filesystem::create_directory(header_directory_path);
@@ -759,7 +761,7 @@ void SettingsGenerator::GenerateCode()
 		{
 			//Figure out the file path.
 			char file_path[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(file_path, "%s/%s.Generated.h", header_directory_path, _class._Name.c_str());
+			PRINT_BUFFER(file_path, "%s/%s.Generated.h", header_directory_path, _class._Name.c_str());
 
 			//Open the file.
 			std::ofstream file{ file_path };
@@ -992,14 +994,14 @@ void SettingsGenerator::GenerateCode()
 
 	//Figure out the directory path.
 	char directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(directory_path, "../../../Code/Source/Generated");
+	PRINT_BUFFER(directory_path, "../../../Code/Source/Generated");
 
 	//Create the directory, if it doesn't exist.
 	std::filesystem::create_directory(directory_path);
 
 	//Figure out the file path.
 	char file_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(file_path, "%s/Settings.Generated.cpp", directory_path);
+	PRINT_BUFFER(file_path, "%s/Settings.Generated.cpp", directory_path);
 
 	//Open the file.
 	std::ofstream file{ file_path };

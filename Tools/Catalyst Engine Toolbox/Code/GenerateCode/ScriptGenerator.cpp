@@ -4,8 +4,10 @@
 //Core.
 #include <Core/CatalystHash.h>
 #include <Core/TextParsing.h>
+#include <Core/Utilities.h>
 
 //STD.
+#include <chrono>
 #include <fstream>
 
 //Constants.
@@ -148,7 +150,7 @@ void ScriptGenerator::GatherScripts(const char *const directory_path, nlohmann::
 
 		{
 			const std::filesystem::file_time_type _last_write_time{ std::filesystem::last_write_time(file_path) };
-			const std::chrono::time_point<std::chrono::system_clock> time_point{ std::chrono::utc_clock::to_sys(std::chrono::file_clock::to_utc(_last_write_time)) };
+			const std::chrono::time_point<std::chrono::system_clock> time_point{ std::chrono::clock_cast<std::chrono::system_clock>(_last_write_time) };
 			last_write_time = std::chrono::system_clock::to_time_t(time_point);
 		}
 
@@ -235,14 +237,14 @@ void ScriptGenerator::GenerateSourceFile(const ProjectSettings &project_settings
 
 	//Figure out the directory path.
 	char directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(directory_path, "../../../Code/Source/Generated");
+	PRINT_BUFFER(directory_path, "../../../Code/Source/Generated");
 
 	//Create the directory, if it doesn't exist.
 	std::filesystem::create_directory(directory_path);
 
 	//Figure out the file path.
 	char file_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(file_path, "%s/Script.Generated.cpp", directory_path);
+	PRINT_BUFFER(file_path, "%s/Script.Generated.cpp", directory_path);
 
 	//Open the file!
 	std::ofstream file{ file_path };
@@ -676,7 +678,7 @@ void ScriptGenerator::GenerateSourceFile(const ProjectSettings &project_settings
 
 								bool already_added_script_context{ true };
 
-								for (uint64 i{ 0 }; i < std::min(current_line.length() - next_character_position, compare_string.length()) && already_added_script_context; ++i)
+								for (uint64 i{ 0 }; i < std::min(static_cast<size_t>(current_line.length() - next_character_position), compare_string.length()) && already_added_script_context; ++i)
 								{
 									already_added_script_context = current_line[next_character_position + i] == compare_string[i];
 								}
@@ -864,14 +866,14 @@ void ScriptGenerator::GenerateHeaderFile()
 {
 	//Figure out the directory path.
 	char directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(directory_path, "../../../Code/Include/Generated");
+	PRINT_BUFFER(directory_path, "../../../Code/Include/Generated");
 
 	//Create the directory, if it doesn't exist.
 	std::filesystem::create_directory(directory_path);
 
 	//Figure out the file path.
 	char file_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(file_path, "%s/Script.Generated.h", directory_path);
+	PRINT_BUFFER(file_path, "%s/Script.Generated.h", directory_path);
 
 	//Open the file.
 	std::ofstream file{ file_path };

@@ -3,8 +3,10 @@
 
 //Core.
 #include <Core/TextParsing.h>
+#include <Core/Utilities.h>
 
 //STD.
+#include <chrono>
 #include <fstream>
 
 //Constants.
@@ -65,18 +67,18 @@ bool EventGenerator::GatherEvents(const char *const directory_path, nlohmann::js
 	bool new_files_parsed{ false };
 
 	//Iterate over all files.
-	for (const auto &entry : std::filesystem::directory_iterator(std::string(directory_path)))
+	for (const auto &file_entry : std::filesystem::directory_iterator(std::string(directory_path)))
 	{
 		//Gather recursively if this is a directory.
-		if (entry.is_directory())
+		if (file_entry.is_directory())
 		{
-			new_files_parsed |= GatherEvents(entry.path().generic_string().c_str(), JSON);
+			new_files_parsed |= GatherEvents(file_entry.path().generic_string().c_str(), JSON);
 
 			continue;
 		}
 
 		//Cache the file path string.
-		const std::string file_path{ entry.path().generic_string() };
+		const std::string file_path{ file_entry.path().generic_string() };
 
 		//Figure out the extension.
 		std::string extension;
@@ -100,7 +102,7 @@ bool EventGenerator::GatherEvents(const char *const directory_path, nlohmann::js
 
 		{
 			const std::filesystem::file_time_type _last_write_time{ std::filesystem::last_write_time(file_path) };
-			const std::chrono::time_point<std::chrono::system_clock> time_point{ std::chrono::utc_clock::to_sys(std::chrono::file_clock::to_utc(_last_write_time)) };
+			const std::chrono::time_point<std::chrono::system_clock> time_point{ std::chrono::clock_cast<std::chrono::system_clock>(_last_write_time) };
 			last_write_time = std::chrono::system_clock::to_time_t(time_point);
 		}
 
@@ -340,14 +342,14 @@ void EventGenerator::GenerateHeaderFile(const nlohmann::json &JSON)
 
 	//Figure out the directory path.
 	char directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(directory_path, "../../../Code/Include/Generated");
+	PRINT_BUFFER(directory_path, "../../../Code/Include/Generated");
 
 	//Create the directory, if it doesn't exist.
 	std::filesystem::create_directory(directory_path);
 
 	//Figure out the file path.
 	char file_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(file_path, "%s/Event.Generated.h", directory_path);
+	PRINT_BUFFER(file_path, "%s/Event.Generated.h", directory_path);
 
 	//Open the file.
 	std::ofstream file{ file_path };
@@ -406,14 +408,14 @@ void EventGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 	//Figure out the directory path.
 	char directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(directory_path, "../../../Code/Source/Generated");
+	PRINT_BUFFER(directory_path, "../../../Code/Source/Generated");
 
 	//Create the directory, if it doesn't exist.
 	std::filesystem::create_directory(directory_path);
 
 	//Figure out the file path.
 	char file_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(file_path, "%s/Event.Generated.cpp", directory_path);
+	PRINT_BUFFER(file_path, "%s/Event.Generated.cpp", directory_path);
 
 	//Open the file.
 	std::ofstream file{ file_path };

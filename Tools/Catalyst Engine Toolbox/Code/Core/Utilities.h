@@ -10,11 +10,11 @@
 #include <string>
 
 //Prints a buffer. (:
-#define PRINT_BUFFER(BUFFER, FORMAT, ...)													\
-do																							\
-{																							\
-	const int32 characters_written{snprintf(BUFFER, sizeof(BUFFER), FORMAT, __VA_ARGS__) };	\
-	(void)characters_written;																\
+#define PRINT_BUFFER(BUFFER, FORMAT, ...)														\
+do																								\
+{																								\
+	const int32 characters_written{snprintf(BUFFER, sizeof(BUFFER), FORMAT, ## __VA_ARGS__) };	\
+	(void)characters_written;																	\
 } while (false)
 
 

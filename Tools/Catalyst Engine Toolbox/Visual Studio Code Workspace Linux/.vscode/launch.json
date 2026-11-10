@@ -9,7 +9,7 @@
             "stopAtEntry": false,
             "preLaunchTask": "CMake: build",
 
-            "cwd": "${userHome}/Documents/GitHub/Audio-Plugins/Projects",
+            "cwd": "${userHome}/Documents/GitHub/DrumAttack/Projects",
             "args": ["generate_projects"]
         }
     ]

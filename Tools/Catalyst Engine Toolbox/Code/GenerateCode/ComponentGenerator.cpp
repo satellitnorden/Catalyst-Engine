@@ -4,8 +4,10 @@
 //Core.
 #include <Core/CatalystHash.h>
 #include <Core/TextParsing.h>
+#include <Core/Utilities.h>
 
 //STD.
+#include <chrono>
 #include <fstream>
 
 //Constants.
@@ -138,18 +140,18 @@ bool ComponentGenerator::GatherComponents(const char *const directory_path, nloh
 	bool new_files_parsed{ false };
 
 	//Iterate over all files.
-	for (const auto &entry : std::filesystem::directory_iterator(std::string(directory_path)))
+	for (const auto &file_entry : std::filesystem::directory_iterator(std::string(directory_path)))
 	{
 		//Gather recursively if this is a directory.
-		if (entry.is_directory())
+		if (file_entry.is_directory())
 		{
-			new_files_parsed |= GatherComponents(entry.path().generic_string().c_str(), JSON);
+			new_files_parsed |= GatherComponents(file_entry.path().generic_string().c_str(), JSON);
 
 			continue;
 		}
 
 		//Cache the file path string.
-		const std::string file_path{ entry.path().generic_string() };
+		const std::string file_path{ file_entry.path().generic_string() };
 
 		//Figure out the extension.
 		std::string extension;
@@ -173,7 +175,7 @@ bool ComponentGenerator::GatherComponents(const char *const directory_path, nloh
 
 		{
 			const std::filesystem::file_time_type _last_write_time{ std::filesystem::last_write_time(file_path) };
-			const std::chrono::time_point<std::chrono::system_clock> time_point{ std::chrono::utc_clock::to_sys(std::chrono::file_clock::to_utc(_last_write_time)) };
+			const std::chrono::time_point<std::chrono::system_clock> time_point{ std::chrono::clock_cast<std::chrono::system_clock>(_last_write_time) };
 			last_write_time = std::chrono::system_clock::to_time_t(time_point);
 		}
 
@@ -251,7 +253,7 @@ void ComponentGenerator::ParseComponent(std::ifstream &file, std::string &curren
 		std::getline(file, current_line);
 
 		char character;
-		size_t position{ 0 };
+		uint64 position{ 0 };
 		TextParsing::GetNextNonWhitespaceCharacter(current_line.c_str(), 0, &character, &position);
 
 		const std::string _current_line{ &current_line[position] };
@@ -754,14 +756,14 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 {
 	//Figure out the directory path.
 	char directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(directory_path, "../../../Code/Source/Generated");
+	PRINT_BUFFER(directory_path, "../../../Code/Source/Generated");
 
 	//Create the directory, if it doesn't exist.
 	std::filesystem::create_directory(directory_path);
 
 	//Figure out the file path.
 	char file_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(file_path, "%s/Component.Generated.cpp", directory_path);
+	PRINT_BUFFER(file_path, "%s/Component.Generated.cpp", directory_path);
 
 	//Open the file.
 	std::ofstream file{ file_path };
