@@ -1,14 +1,17 @@
 //Header file.
-#include "SystemGenerator.h"
+#include <GenerateCode/SystemGenerator.h>
 
-//Catalyst code generator.
-#include "TextParsing.h"
+//Core.
+#include <Core/TextParsing.h>
+
+//STD.
+#include <fstream>
 
 //Constants.
-#define ENGINE_CODE_INCLUDE_DIRECTORY "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Include"
-#define ENGINE_CODE_SOURCE_DIRECTORY "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Source"
-#define GAME_CODE_INCLUDE_DIRECTORY "..\\..\\..\\Code\\Include"
-#define GAME_CODE_SOURCE_DIRECTORY "..\\..\\..\\Code\\Source"
+#define ENGINE_CODE_INCLUDE_DIRECTORY "../../../../Catalyst-Engine/Engine/Include"
+#define ENGINE_CODE_SOURCE_DIRECTORY "../../../../Catalyst-Engine/Engine/Source"
+#define GAME_CODE_INCLUDE_DIRECTORY "../../../Code/Include"
+#define GAME_CODE_SOURCE_DIRECTORY "../../../Code/Source"
 
 /*
 *	System data class definition.
@@ -117,16 +120,16 @@ std::string GetUpdateTaskName(const SystemData &system_data, const SystemData::U
 void SystemGenerator::Run()
 {
 	//Create the "CodeGeneration" directory, if it doesn't exist.
-	std::filesystem::create_directory("..\\..\\..\\Code\\CodeGeneration");
+	std::filesystem::create_directory("../../../Code/CodeGeneration");
 
 	//Set up the JSON object.
 	nlohmann::json JSON;
 
 	//Read the cache, if it exists.
 #if defined(NDEBUG)
-	if (std::filesystem::exists("..\\..\\..\\Code\\CodeGeneration\\SystemCache.json"))
+	if (std::filesystem::exists("../../../Code/CodeGeneration/SystemCache.json"))
 	{
-		std::ifstream input_file{ "..\\..\\..\\Code\\CodeGeneration\\SystemCache.json" };
+		std::ifstream input_file{ "../../../Code/CodeGeneration/SystemCache.json" };
 		input_file >> JSON;
 		input_file.close();
 	}
@@ -147,7 +150,7 @@ void SystemGenerator::Run()
 	}
 
 	//Write the JSON to file.
-	std::ofstream file{ "..\\..\\..\\Code\\CodeGeneration\\SystemCache.json" };
+	std::ofstream file{ "../../../Code/CodeGeneration/SystemCache.json" };
 	file << std::setw(4) << JSON;
 	file.close();
 }
@@ -166,13 +169,13 @@ bool SystemGenerator::GatherSystems(const char *const directory_path, nlohmann::
 		//Gather recursively if this is a directory.
 		if (entry.is_directory())
 		{
-			new_files_parsed |= GatherSystems(entry.path().string().c_str(), JSON);
+			new_files_parsed |= GatherSystems(entry.path().generic_string().c_str(), JSON);
 
 			continue;
 		}
 
 		//Cache the file path string.
-		const std::string file_path{ entry.path().string() };
+		const std::string file_path{ entry.path().generic_string() };
 
 		//Figure out the extension.
 		std::string extension;
@@ -520,14 +523,14 @@ void SystemGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 {
 	//Figure out the directory path.
 	char directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(directory_path, "..\\..\\..\\Code\\Source\\Generated");
+	sprintf_s(directory_path, "../../../Code/Source/Generated");
 
 	//Create the directory, if it doesn't exist.
 	std::filesystem::create_directory(directory_path);
 
 	//Figure out the file path.
 	char file_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(file_path, "%s\\System.Generated.cpp", directory_path);
+	sprintf_s(file_path, "%s/System.Generated.cpp", directory_path);
 
 	//Open the file.
 	std::ofstream file{ file_path };

@@ -19,6 +19,9 @@
     <Filter Include="Platform">
       <UniqueIdentifier>{fa2cfa3a-1525-43bd-a9db-99b62bdc5703}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GenerateCode">
+      <UniqueIdentifier>{0b4d8488-c418-482a-a9f1-405213eb21de}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\Main\Main.cpp">
@@ -37,6 +40,30 @@
       <Filter>GenerateProjects</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\GenerateProjects\GenerateVisualStudioSolution.cpp">
+      <Filter>GenerateProjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\GenerateCode\GenerateCode.cpp">
+      <Filter>GenerateCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\GenerateCode\ScriptGenerator.cpp">
+      <Filter>GenerateCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\GenerateCode\SettingsGenerator.cpp">
+      <Filter>GenerateCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\GenerateCode\ComponentGenerator.cpp">
+      <Filter>GenerateCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\GenerateCode\EnumerationGenerator.cpp">
+      <Filter>GenerateCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\GenerateCode\EventGenerator.cpp">
+      <Filter>GenerateCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\GenerateCode\SystemGenerator.cpp">
+      <Filter>GenerateCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\GenerateProjects\GenerateAudioPlugin.cpp">
       <Filter>GenerateProjects</Filter>
     </ClCompile>
   </ItemGroup>
@@ -79,6 +106,36 @@
     </ClInclude>
     <ClInclude Include="..\Code\Platform\PlatformLinux.h">
       <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\GenerateCode\GenerateCode.h">
+      <Filter>GenerateCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\GenerateCode\ScriptGenerator.h">
+      <Filter>GenerateCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Core\TextParsing.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Core\CatalystHash.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\GenerateCode\SettingsGenerator.h">
+      <Filter>GenerateCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\GenerateCode\ComponentGenerator.h">
+      <Filter>GenerateCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\GenerateCode\EnumerationGenerator.h">
+      <Filter>GenerateCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\GenerateCode\EventGenerator.h">
+      <Filter>GenerateCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\GenerateCode\SystemGenerator.h">
+      <Filter>GenerateCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\GenerateProjects\GenerateAudioPlugin.h">
+      <Filter>GenerateProjects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

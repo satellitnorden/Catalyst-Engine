@@ -14,7 +14,6 @@
 //STD.
 #include <filesystem>
 #include <fstream>
-#include <iostream>
 
 /*
 *	Generates!
@@ -123,10 +122,8 @@ void GenerateVisualStudioCodeWorkspace::GenerateCMakePresetsFile(const GenerateP
         {
             nlohmann::ordered_json &configure_preset_entry{ configure_presets_entry.emplace_back() };
 
-            configure_preset_entry["name"] = "Win64";
-            configure_preset_entry["displayName"] = "Win64";
-            configure_preset_entry["generator"] = "Visual Studio 17 2022";
-            configure_preset_entry["architecture"] = "x64";
+            configure_preset_entry["name"] = "Default";
+            configure_preset_entry["displayName"] = "Default";
             configure_preset_entry["binaryDir"] = "${sourceDir}/Build";
 
             {
@@ -146,7 +143,7 @@ void GenerateVisualStudioCodeWorkspace::GenerateCMakePresetsFile(const GenerateP
             nlohmann::ordered_json &build_preset_entry{ build_presets_entry.emplace_back() };
 
             build_preset_entry["name"] = Utilities::RemoveSpaces(configuration._Name).c_str();
-            build_preset_entry["configurePreset"] = "Win64";
+            build_preset_entry["configurePreset"] = "Default";
             build_preset_entry["configuration"] = Utilities::RemoveSpaces(configuration._Name).c_str();
         }
     }
@@ -294,7 +291,6 @@ void GenerateVisualStudioCodeWorkspace::GenerateLaunchFile(const GenerateProject
             launch_configuration["program"] = "${command:cmake.launchTargetPath}";
             launch_configuration["stopAtEntry"] = false;
             launch_configuration["cwd"] = "${workspaceFolder}";
-            launch_configuration["console"] = "internalConsole";
             launch_configuration["preLaunchTask"] = "CMake: build";
         }
     }

@@ -1,7 +1,7 @@
 #pragma once
 
-//Catalyst code generator.
-#include "CatalystCodeGeneratorCore.h"
+//Core.
+#include <Core/Core.h>
 
 /*
 *	Returns if the given character is whitespace.

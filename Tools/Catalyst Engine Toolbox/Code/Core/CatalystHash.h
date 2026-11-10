@@ -1,117 +1,7 @@
 #pragma once
 
-//STL includes.
-#include <fstream>
-#include <iostream>
-#include <map>
-#include <sstream>
-#include <string>
-#include <vector>
-
-//Windows.
-#include <Windows.h>
-
-//Undefine annoying Windows defines. Fuck Windows. I hate everything.
-#undef CreateDirectory
-#undef max
-#undef min
-
-//Include the intrinsics header.
-#include <intrin.h>
-
-/*
-*	Builtin types.
-*/
-using uint8 = unsigned char;
-using uint16 = unsigned short int;
-using uint32 = unsigned int;
-using uint64 = unsigned long long int;
-
-using int8 = char;
-using int16 = short int;
-using int32 = int;
-using int64 = long long int;
-
-using byte = uint8;
-
-using float32 = float;
-using float64 = double;
-
-/*
-*	Ensure that all builtin types are indeed of the correct size.
-*/
-static_assert(sizeof(uint8) == 1, "Size of uint8 is not 1 bytes, how could this be?");
-static_assert(sizeof(uint16) == 2, "Size of uint16 is not 2 bytes, how could this be?");
-static_assert(sizeof(uint32) == 4, "Size of uint32 is not 4 bytes, how could this be?");
-static_assert(sizeof(uint64) == 8, "Size of uint64 is not 8 bytes, how could this be?");
-
-static_assert(sizeof(int8) == 1, "Size of int8 is not 1 bytes, how could this be?");
-static_assert(sizeof(int16) == 2, "Size of int16 is not 2 bytes, how could this be?");
-static_assert(sizeof(int32) == 4, "Size of int32 is not 4 bytes, how could this be?");
-static_assert(sizeof(int64) == 8, "Size of int64 is not 8 bytes, how could this be?");
-
-static_assert(sizeof(byte) == 1, "Size of byte is not 1 bytes, how could this be?");
-
-static_assert(sizeof(float32) == 4, "Size of float32 is not 4 bytes, how could this be?");
-static_assert(sizeof(float64) == 8, "Size of float64 is not 8 bytes, how could this be?");
-
-/*
-*	Type maximums/minimums.
-*/
-#define FLOAT_MAXIMUM (std::numeric_limits<float>::max())
-#define FLOAT_MINIMUM (std::numeric_limits<float>::min())
-
-#define DOUBLE_MAXIMUM (std::numeric_limits<double>::max())
-#define DOUBLE_MINIMUM (std::numeric_limits<double>::min())
-
-#define FLOAT32_MAXIMUM (FLOAT_MAXIMUM)
-#define FLOAT32_MINIMUM (FLOAT_MINIMUM)
-
-#define FLOAT64_MAXIMUM (DOUBLE_MAXIMUM)
-#define FLOAT64_MINIMUM (DOUBLE_MINIMUM)
-
-#define INT8_MAXIMUM (std::numeric_limits<int8>::max())
-#define INT16_MAXIMUM (std::numeric_limits<int16>::max())
-#define INT24_MAXIMUM (8'388'607)
-#define INT32_MAXIMUM (std::numeric_limits<int32>::max())
-#define INT64_MAXIMUM (std::numeric_limits<int64>::max())
-
-#define INT8_MINIMUM (std::numeric_limits<int8>::min())
-#define INT16_MINIMUM (std::numeric_limits<int16>::min())
-#define INT24_MINIMUM (-8'388'608)
-#define INT32_MINIMUM (std::numeric_limits<int32>::min())
-#define INT64_MINIMUM (std::numeric_limits<int64>::min())
-
-#define UINT8_MAXIMUM (std::numeric_limits<uint8>::max())
-#define UINT16_MAXIMUM (std::numeric_limits<uint16>::max())
-#define UINT24_MAXIMUM (16'777'215)
-#define UINT32_MAXIMUM (std::numeric_limits<uint32>::max())
-#define UINT64_MAXIMUM (std::numeric_limits<uint64>::max())
-
-#define UINT8_MINIMUM (std::numeric_limits<uint8>::min())
-#define UINT16_MINIMUM (std::numeric_limits<uint16>::min())
-#define UINT24_MINIMUM (0)
-#define UINT32_MINIMUM (std::numeric_limits<uint32>::min())
-#define UINT64_MINIMUM (std::numeric_limits<uint64>::min())
-
-#define BYTE_MAXIMUM (UINT8_MAXIMUM)
-
-#define FLOAT32_EPSILON (std::numeric_limits<float32>::epsilon())
-#define FLOAT64_EPSILON (std::numeric_limits<float64>::epsilon())
-
-/*
-*	Defines the maximum file path length. Matches Window's MAX_PATH currently.
-*/
-#define MAXIMUM_FILE_PATH_LENGTH (260)
-
-/*
-*	Macros!
-*/
-#define PRINT_TO_OUTPUT(MESSAGE) { std::ostringstream output; output << MESSAGE << std::endl; OutputDebugStringA(output.str().c_str()); }
-#define BREAKPOINT() { __nop(); __debugbreak(); }
-#define BIT(INDEX) (static_cast<uint64>(1) << static_cast<uint64>(INDEX))
-#define TEST_BIT(BIT_FIELD, BIT) ((BIT_FIELD & BIT) == BIT)
-#define ASSERT(CONDITION, MESSAGE) { if (!(CONDITION)) { PRINT_TO_OUTPUT(MESSAGE); std::cout << MESSAGE << std::endl; BREAKPOINT(); std::exit(1); } }
+//Core.
+#include <Core/Core.h>
 
 /*
 *	Returns the modulo of two integers.
@@ -126,7 +16,7 @@ inline FIRST Modulo(const FIRST input, const SECOND ceiling)
 *	Given arbitrary data and a length of the data, specified in bytes, returns a 64-bit hashed value.
 *	Uses the Catalyst Engine's own hashing algorithm.
 */
-inline uint64 CatalystHash(const char *const data, const uint64 length)
+static constexpr uint64 CatalystHash64(const char *const data, const uint64 length)
 {
 	//Defines the table of randomly pregenerated 64-bit values that is used in the mixing step.
 	constexpr uint64 randomTable[UINT8_MAXIMUM]
@@ -421,53 +311,6 @@ inline uint64 CatalystHash(const char *const data, const uint64 length)
 		hash ^= randomTable[input ^ UINT8_MAXIMUM];
 		hash ^= randomTable[Modulo(hash, UINT8_MAXIMUM)];
 	}
-
-	return hash;
-}
-
-/*
-*	Given arbitrary data and a length of the data, specified in bytes, returns a 64-bit hashed value.
-*	Uses the Jenkins hashing algorithm.
-*/
-inline uint64 MurmurHash64(const void *const input, const uint64 length, const uint64 seed = 0)
-{
-	constexpr uint64 M{ 0xc6a4a7935bd1e995 };
-	constexpr int32 R{ 47 };
-
-	uint64_t hash{ seed ^ (length * M) };
-
-	const uint64_t* data{ (const uint64_t*)input };
-	const uint64_t* end{ data + (length / 8) };
-
-	while (data != end)
-	{
-		uint64_t k{ *(data++) };
-
-		k *= M;
-		k ^= k >> R;
-		k *= M;
-
-		hash ^= k;
-		hash *= M;
-	}
-
-	const unsigned char* data_2{ (const unsigned char*)data };
-
-	switch (length & 7)
-	{
-	case 7: hash ^= uint64_t(data_2[6]) << 48;
-	case 6: hash ^= uint64_t(data_2[5]) << 40;
-	case 5: hash ^= uint64_t(data_2[4]) << 32;
-	case 4: hash ^= uint64_t(data_2[3]) << 24;
-	case 3: hash ^= uint64_t(data_2[2]) << 16;
-	case 2: hash ^= uint64_t(data_2[1]) << 8;
-	case 1: hash ^= uint64_t(data_2[0]);
-		hash *= M;
-	};
-
-	hash ^= hash >> R;
-	hash *= M;
-	hash ^= hash >> R;
 
 	return hash;
 }

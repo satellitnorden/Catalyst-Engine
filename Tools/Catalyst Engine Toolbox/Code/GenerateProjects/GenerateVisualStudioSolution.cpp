@@ -12,7 +12,6 @@
 //STD.
 #include <filesystem>
 #include <fstream>
-#include <iostream>
 
 /*
 *   Returns a configuration/platform combination condition string.
@@ -667,7 +666,7 @@ void GenerateVisualStudioSolution::AddCompileFiles(const GenerateProjectParamete
         {
             const uint64 hash{ MurmurHash64(compile_file._Path.c_str(), compile_file._Path.length()) };
 
-            std::string file_name{ compile_file._Path.substr(compile_file._Path.find_last_of('\\') + 1) };
+            std::string file_name{ compile_file._Path.substr(compile_file._Path.find_last_of('/') + 1) };
             file_name = file_name.substr(0, file_name.find_last_of('.'));
 
             char buffer[128];
@@ -678,7 +677,7 @@ void GenerateVisualStudioSolution::AddCompileFiles(const GenerateProjectParamete
                 for (const GenerateProjectParameters::Platform &platform : parameters._Platforms)
                 {
                     //Set the object file name.
-                    file << "\t\t<ObjectFileName Condition=" << GetConfigurationPlatformConditionString(configuration._Name, platform._Name) << ">ObjectFiles\\" << configuration._Name << "\\" << buffer << "</ObjectFileName>" << std::endl;
+                    file << "\t\t<ObjectFileName Condition=" << GetConfigurationPlatformConditionString(configuration._Name, platform._Name) << ">ObjectFiles\\" << configuration._Name << "\\" << Utilities::ForwardToBackwardSlashes(buffer).c_str() << "</ObjectFileName>" << std::endl;
                 }
             }
         }

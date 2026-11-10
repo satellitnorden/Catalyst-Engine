@@ -1,17 +1,20 @@
 //Header file.
-#include "EventGenerator.h"
+#include <GenerateCode/EventGenerator.h>
 
-//Catalyst code generator.
-#include "TextParsing.h"
+//Core.
+#include <Core/TextParsing.h>
+
+//STD.
+#include <fstream>
 
 //Constants.
-#define ENGINE_CODE_INCLUDE_DIRECTORY "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Include"
-#define ENGINE_CODE_SOURCE_DIRECTORY "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Source"
-#define GAME_CODE_INCLUDE_DIRECTORY "..\\..\\..\\Code\\Include"
-#define GAME_CODE_SOURCE_DIRECTORY "..\\..\\..\\Code\\Source"
+#define ENGINE_CODE_INCLUDE_DIRECTORY "../../../../Catalyst-Engine/Engine/Include"
+#define ENGINE_CODE_SOURCE_DIRECTORY "../../../../Catalyst-Engine/Engine/Source"
+#define GAME_CODE_INCLUDE_DIRECTORY "../../../Code/Include"
+#define GAME_CODE_SOURCE_DIRECTORY "../../../Code/Source"
 
-#define HEADER_FILE_PATH "..\\..\\..\\Code\\Include\\Generated\\Event.Generated.h"
-#define SOURCE_FILE_PATH "..\\..\\..\\Code\\Source\\Generated\\Event.Generated.cpp"
+#define HEADER_FILE_PATH "../../../Code/Include/Generated/Event.Generated.h"
+#define SOURCE_FILE_PATH "../../../Code/Source/Generated/Event.Generated.cpp"
 
 /*
 *	Runs this event generator.
@@ -19,16 +22,16 @@
 void EventGenerator::Run()
 {
 	//Create the "CodeGeneration" directory, if it doesn't exist.
-	std::filesystem::create_directory("..\\..\\..\\Code\\CodeGeneration");
+	std::filesystem::create_directory("../../../Code/CodeGeneration");
 
 	//Set up the JSON object.
 	nlohmann::json JSON;
 
 	//Read the cache, if it exists.
 //#if defined(NDEBUG)
-	if (std::filesystem::exists("..\\..\\..\\Code\\CodeGeneration\\EventCache.json"))
+	if (std::filesystem::exists("../../../Code/CodeGeneration/EventCache.json"))
 	{
-		std::ifstream input_file{ "..\\..\\..\\Code\\CodeGeneration\\EventCache.json" };
+		std::ifstream input_file{ "../../../Code/CodeGeneration/EventCache.json" };
 		input_file >> JSON;
 		input_file.close();
 	}
@@ -48,7 +51,7 @@ void EventGenerator::Run()
 	}
 
 	//Write the JSON to file.
-	std::ofstream file{ "..\\..\\..\\Code\\CodeGeneration\\EventCache.json" };
+	std::ofstream file{ "../../../Code/CodeGeneration/EventCache.json" };
 	file << std::setw(4) << JSON;
 	file.close();
 }
@@ -67,13 +70,13 @@ bool EventGenerator::GatherEvents(const char *const directory_path, nlohmann::js
 		//Gather recursively if this is a directory.
 		if (entry.is_directory())
 		{
-			new_files_parsed |= GatherEvents(entry.path().string().c_str(), JSON);
+			new_files_parsed |= GatherEvents(entry.path().generic_string().c_str(), JSON);
 
 			continue;
 		}
 
 		//Cache the file path string.
-		const std::string file_path{ entry.path().string() };
+		const std::string file_path{ entry.path().generic_string() };
 
 		//Figure out the extension.
 		std::string extension;
@@ -337,14 +340,14 @@ void EventGenerator::GenerateHeaderFile(const nlohmann::json &JSON)
 
 	//Figure out the directory path.
 	char directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(directory_path, "..\\..\\..\\Code\\Include\\Generated");
+	sprintf_s(directory_path, "../../../Code/Include/Generated");
 
 	//Create the directory, if it doesn't exist.
 	std::filesystem::create_directory(directory_path);
 
 	//Figure out the file path.
 	char file_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(file_path, "%s\\Event.Generated.h", directory_path);
+	sprintf_s(file_path, "%s/Event.Generated.h", directory_path);
 
 	//Open the file.
 	std::ofstream file{ file_path };
@@ -403,14 +406,14 @@ void EventGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 	//Figure out the directory path.
 	char directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(directory_path, "..\\..\\..\\Code\\Source\\Generated");
+	sprintf_s(directory_path, "../../../Code/Source/Generated");
 
 	//Create the directory, if it doesn't exist.
 	std::filesystem::create_directory(directory_path);
 
 	//Figure out the file path.
 	char file_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(file_path, "%s\\Event.Generated.cpp", directory_path);
+	sprintf_s(file_path, "%s/Event.Generated.cpp", directory_path);
 
 	//Open the file.
 	std::ofstream file{ file_path };

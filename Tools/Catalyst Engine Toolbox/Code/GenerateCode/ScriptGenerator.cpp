@@ -1,14 +1,18 @@
 //Header file.
-#include "ScriptGenerator.h"
+#include <GenerateCode/ScriptGenerator.h>
 
-//Catalyst code generator.
-#include "TextParsing.h"
+//Core.
+#include <Core/CatalystHash.h>
+#include <Core/TextParsing.h>
+
+//STD.
+#include <fstream>
 
 //Constants.
-#define ASSETS_DIRECTORY "..\\..\\..\\Content\\Assets"
+#define ASSETS_DIRECTORY "../../../Content/Assets"
 
-#define HEADER_FILE_PATH "..\\..\\..\\Code\\Include\\Generated\\Script.Generated.h"
-#define SOURCE_FILE_PATH "..\\..\\..\\Code\\Source\\Generated\\Script.Generated.cpp"
+#define HEADER_FILE_PATH "../../../Code/Include/Generated/Script.Generated.h"
+#define SOURCE_FILE_PATH "../../../Code/Source/Generated/Script.Generated.cpp"
 
 #define SCRIPT_DATA_FLAG_NONE (0)
 #define SCRIPT_DATA_FLAG_HAS_INITIALIZE (BIT(0))
@@ -59,21 +63,21 @@ uint64 SizeOfType(const char *const type)
 /*
 *	Runs this script generator.
 */
-void ScriptGenerator::Run(int32 command_line_argument_count, char *command_line_arguments[])
+void ScriptGenerator::Run(const ProjectSettings &project_settings)
 {
 	//Cache the error code.
 	std::error_code error_code;
 
 	//Create the "CodeGeneration" directory, if it doesn't exist.
-	std::filesystem::create_directory("..\\..\\..\\Code\\CodeGeneration", error_code); CHECK_ERROR_CODE();
+	std::filesystem::create_directory("../../../Code/CodeGeneration", error_code); CHECK_ERROR_CODE();
 
 	//Set up the script cache.
 	nlohmann::json script_cache;
 
 //#if defined(NDEBUG)
-	if (std::filesystem::exists("..\\..\\..\\Code\\CodeGeneration\\ScriptCache.json"))
+	if (std::filesystem::exists("../../../Code/CodeGeneration/ScriptCache.json"))
 	{
-		std::ifstream input_file{ "..\\..\\..\\Code\\CodeGeneration\\ScriptCache.json" };
+		std::ifstream input_file{ "../../../Code/CodeGeneration/ScriptCache.json" };
 		input_file >> script_cache;
 		input_file.close();
 	}
@@ -85,13 +89,13 @@ void ScriptGenerator::Run(int32 command_line_argument_count, char *command_line_
 	//Compile scripts, if needed.
 	if (_CompileScripts || !std::filesystem::exists(HEADER_FILE_PATH) || !std::filesystem::exists(SOURCE_FILE_PATH))
 	{
-		GenerateSourceFile(command_line_argument_count, command_line_arguments);
+		GenerateSourceFile(project_settings);
 		GenerateHeaderFile();
 	}
 
 	//Write the content cache.
 	{
-		std::ofstream file{ "..\\..\\..\\Code\\CodeGeneration\\ScriptCache.json" };
+		std::ofstream file{ "../../../Code/CodeGeneration/ScriptCache.json" };
 		file << std::setw(4) << script_cache;
 		file.close();
 	}
@@ -114,13 +118,13 @@ void ScriptGenerator::GatherScripts(const char *const directory_path, nlohmann::
 		//Scan recursively if this is a directory.
 		if (entry.is_directory())
 		{
-			GatherScripts(entry.path().string().c_str(), script_cache);
+			GatherScripts(entry.path().generic_string().c_str(), script_cache);
 
 			continue;
 		}
 
 		//Cache the file path string.
-		const std::string file_path{ entry.path().string() };
+		const std::string file_path{ entry.path().generic_string() };
 
 		//Figure out the extension.
 		std::string extension;
@@ -152,7 +156,7 @@ void ScriptGenerator::GatherScripts(const char *const directory_path, nlohmann::
 		std::string name;
 
 		{
-			const size_t last_slash_position{ file_path.find_last_of("\\") };
+			const size_t last_slash_position{ file_path.find_last_of('/') };
 			name = file_path.substr(last_slash_position + 1, file_path.length() - last_slash_position - strlen(extension.c_str()) - 2);
 		}
 
@@ -196,7 +200,7 @@ void ScriptGenerator::GatherScripts(const char *const directory_path, nlohmann::
 /*
 *	Generates the source file.
 */
-void ScriptGenerator::GenerateSourceFile(int32 command_line_argument_count, char *command_line_arguments[])
+void ScriptGenerator::GenerateSourceFile(const ProjectSettings &project_settings)
 {
 	/*
 	*	Script intermediate data
@@ -231,14 +235,14 @@ void ScriptGenerator::GenerateSourceFile(int32 command_line_argument_count, char
 
 	//Figure out the directory path.
 	char directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(directory_path, "..\\..\\..\\Code\\Source\\Generated");
+	sprintf_s(directory_path, "../../../Code/Source/Generated");
 
 	//Create the directory, if it doesn't exist.
 	std::filesystem::create_directory(directory_path);
 
 	//Figure out the file path.
 	char file_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(file_path, "%s\\Script.Generated.cpp", directory_path);
+	sprintf_s(file_path, "%s/Script.Generated.cpp", directory_path);
 
 	//Open the file!
 	std::ofstream file{ file_path };
@@ -259,14 +263,9 @@ void ScriptGenerator::GenerateSourceFile(int32 command_line_argument_count, char
 	file << "//Systems." << std::endl;
 	file << "#include <Systems/CatalystEngineSystem.h>" << std::endl;
 	
+	if (!project_settings._ScriptGameInclude.empty())
 	{
-		for (int32 i{ 0 }; i < command_line_argument_count; ++i)
-		{
-			if (strcmp(command_line_arguments[i], "-script_generator_game_include") == 0)
-			{
-				file << "#include <" << command_line_arguments[i + 1] << ">" << std::endl;
-			}
-		}
+		file << "#include <" << project_settings._ScriptGameInclude.c_str() << ">" << std::endl;
 	}
 
 	//Disable some warnings.
@@ -833,7 +832,7 @@ void ScriptGenerator::GenerateSourceFile(int32 command_line_argument_count, char
 
 		for (const std::string &event : script_data._Events)
 		{
-			const uint64 event_hash{ CatalystHash(event.data(), event.length()) };
+			const uint64 event_hash{ CatalystHash64(event.data(), event.length()) };
 
 			file << "\t\t\t\t\tcase " << event_hash << ": /*" << event.c_str() << "*/" << std::endl;
 			file << "\t\t\t\t\t{" << std::endl;
@@ -865,14 +864,14 @@ void ScriptGenerator::GenerateHeaderFile()
 {
 	//Figure out the directory path.
 	char directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(directory_path, "..\\..\\..\\Code\\Include\\Generated");
+	sprintf_s(directory_path, "../../../Code/Include/Generated");
 
 	//Create the directory, if it doesn't exist.
 	std::filesystem::create_directory(directory_path);
 
 	//Figure out the file path.
 	char file_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(file_path, "%s\\Script.Generated.h", directory_path);
+	sprintf_s(file_path, "%s/Script.Generated.h", directory_path);
 
 	//Open the file.
 	std::ofstream file{ file_path };

@@ -4,72 +4,63 @@
 //Core.
 #include <Core/Utilities.h>
 
+//Generate code.
+#include <GenerateCode/GenerateCode.h>
+
 //Generate projects.
+#include <GenerateProjects/GenerateAudioPlugin.h>
 #include <GenerateProjects/GenerateCMake.h>
 #include <GenerateProjects/GenerateVisualStudioCodeWorkspace.h>
 #include <GenerateProjects/GenerateVisualStudioSolution.h>
-
-//Platform.
-#include <Platform/Platform.h>
 
 //STD.
 #include <cstring>
 #include <filesystem>
 #include <fstream>
-#include <iostream>
-
-//Preprocessor defines.
-#define DIRECTORY "Win64/Win64"
 
 //Macros.
 #define CHECK_ERROR_CODE() if (error_code) { std::cerr << "Error at " << __LINE__ << ": " << error_code.message() << std::endl; }
 
 /*
-*	Returns the code directory for the given audio plugin.
+*	Returns the CMake directory.
 */
-std::string AudioPluginCodeDirectory(const ProjectSettings::AudioPlugin &audio_plugin)
+std::string CMakeDirectory()
 {
-	return "../AudioPlugins/" + audio_plugin._NameNoSpaces + "/Code";
+#if defined(PLATFORM_WIN64)
+	return "Win64/CMake";
+#elif defined(PLATFORM_LINUX)
+	return "Linux/CMake";
+#else
+	#error "Unknown platform!"
+#endif
 }
 
 /*
-*	Returns the content directory for the given audio plugin.
+*	Returns the visual studio solution directory.
 */
-std::string AudioPluginContentDirectory(const ProjectSettings::AudioPlugin &audio_plugin)
+std::string VisualStudioSolutionDirectory()
 {
-	return "../AudioPlugins/" + audio_plugin._NameNoSpaces + "/Content";
+#if defined(PLATFORM_WIN64)
+	return "Win64/Visual Studio";
+#elif defined(PLATFORM_LINUX)
+	return "Linux/Visual Studio";
+#else
+	#error "Unknown platform!"
+#endif
 }
 
 /*
-*	Returns the CMake directory for the given audio plugin.
+*	Returns the visual studio code workspace directory.
 */
-std::string AudioPluginCMakeDirectory(const ProjectSettings::AudioPlugin &audio_plugin)
+std::string VisualStudioCodeWorkspaceDirectory()
 {
-	return audio_plugin._NameNoSpaces + "/CMake";
-}
-
-/*
-*	Returns the visual studio solution directory for the given audio plugin.
-*/
-std::string AudioPluginVisualStudioSolutionDirectory(const ProjectSettings::AudioPlugin &audio_plugin)
-{
-	return audio_plugin._NameNoSpaces + "/Win64";
-}
-
-/*
-*	Returns the visual studio code workspace directory for the given audio plugin.
-*/
-std::string AudioPluginVisualStudioCodeWorkspaceDirectory(const ProjectSettings::AudioPlugin &audio_plugin)
-{
-	return audio_plugin._NameNoSpaces + "/Visual Studio Code";
-}
-
-/*
-*	Returns if the given audio plugin does MIDI in.
-*/
-bool AudioPluginDoesMIDIIn(const ProjectSettings::AudioPlugin &audio_plugin)
-{
-	return audio_plugin._MainCategory == "INSTRUMENT";
+#if defined(PLATFORM_WIN64)
+	return "Win64/Visual Studio Code";
+#elif defined(PLATFORM_LINUX)
+	return "Linux/Visual Studio Code";
+#else
+	#error "Unknown platform!"
+#endif
 }
 
 /*
@@ -217,13 +208,21 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 		std::cerr << "Unknown configuration type " << configuration_name << "!" << std::endl;
 	}
 
-	//Add global preprocessor definitions.
+	//Add platform-specific preprocessor definitions.
+#if defined(PLATFORM_WIN64)
 	preprocessor_definitions->emplace_back("__WINDOWS_WASAPI__");
 	preprocessor_definitions->emplace_back("__WINDOWS_ASIO__");
 	preprocessor_definitions->emplace_back("__WINDOWS_ASIO__");
 	preprocessor_definitions->emplace_back("__WINDOWS_MM__");
-	preprocessor_definitions->emplace_back("CATALYST_DISTRIBUTION_NULL");
 	preprocessor_definitions->emplace_back("CATALYST_PLATFORM_WINDOWS");
+#endif
+
+#if defined(PLATFORM_LINUX)
+	preprocessor_definitions->emplace_back("CATALYST_PLATFORM_LINUX");
+#endif
+
+	//Add global preprocessor definitions.
+	preprocessor_definitions->emplace_back("CATALYST_DISTRIBUTION_NULL");
 	preprocessor_definitions->emplace_back("NAM_ENABLE_A2_FAST");
 
 	switch (project_settings._Physics)
@@ -405,12 +404,12 @@ void ScanDirectory(GenerateProjectParameters::Directory *directory, const char *
 
 	for (auto &entry : std::filesystem::directory_iterator(path))
 	{
-		const std::string entry_file_path{ entry.path().string() };
+		const std::string entry_file_path{ entry.path().generic_string() };
 
 		if (entry.is_directory())
 		{
 			GenerateProjectParameters::Directory &new_directory{ directory->_Directories.emplace_back() };
-			new_directory._Name = entry_file_path.substr(entry_file_path.find_last_of(PLATFORM_DIRECTORY_SEPARATOR) + 1);
+			new_directory._Name = entry_file_path.substr(entry_file_path.find_last_of('/') + 1);
 			ScanDirectory(&new_directory, entry_file_path.c_str());
 		}
 
@@ -441,7 +440,7 @@ void ScanDirectory(GenerateProjectParameters::Directory *directory, const char *
 /*
 *	Returns whether or not the given third party directory should be included.
 */
-bool ShouldIncludeThirdPartyDirectory(const ProjectSettings &project_settings, const std::filesystem::path &path)
+bool ShouldIncludeThirdPartyDirectory(const ProjectSettings& project_settings, const std::string &path)
 {
 	if (path == "../../Catalyst-Engine/Engine/Third Party/Jolt")
 	{
@@ -466,7 +465,7 @@ void ScanThirdPartyDirectory(const ProjectSettings &project_settings, GeneratePr
 
 	for (auto &entry : std::filesystem::directory_iterator(path))
 	{
-		const std::string entry_file_path{ entry.path().string() };
+		const std::string entry_file_path{ entry.path().generic_string() };
 
 		if (entry.is_directory())
 		{
@@ -478,7 +477,7 @@ void ScanThirdPartyDirectory(const ProjectSettings &project_settings, GeneratePr
 				}
 
 				GenerateProjectParameters::Directory &new_directory{ directory->_Directories.emplace_back() };
-				new_directory._Name = entry_file_path.substr(entry_file_path.find_last_of(PLATFORM_DIRECTORY_SEPARATOR) + 1);
+				new_directory._Name = entry_file_path.substr(entry_file_path.find_last_of('/') + 1);
 				ScanThirdPartyDirectory(project_settings, parameters, &new_directory, entry_file_path.c_str(), false);
 			}
 		}
@@ -504,22 +503,12 @@ void ScanThirdPartyDirectory(const ProjectSettings &project_settings, GeneratePr
 /*
 *	Generates the "RunCodeGeneration.bat" file.
 */
-void GenerateRunCodeGenerationBatchFile(const std::string &directory, const ProjectSettings &project_settings, const bool for_pre_generation)
+void GenerateRunCodeGenerationBatchFile(const std::string &directory, const ProjectSettings &project_settings)
 {
 	//Add the "RunCodeGeneration.bat" file.
-	std::ofstream run_code_generation_file{ directory + "/RunCodeGeneration.bat" };
+	std::ofstream run_code_generation_file{ directory + "\\RunCodeGeneration.bat" };
 
-	if (for_pre_generation)
-	{
-		run_code_generation_file << "cd " << directory.c_str() << "/" << std::endl;
-	}
-
-	run_code_generation_file << "\"../../../../Catalyst-Engine/Tools/Binaries/CatalystEngineCodeGenerator.exe\"";
-
-	if (!project_settings._ScriptGameInclude.empty())
-	{
-		run_code_generation_file << " -script_generator_game_include " << project_settings._ScriptGameInclude.c_str();
-	}
+	run_code_generation_file << "\"..\\..\\..\\..\\Catalyst-Engine\\Tools\\Binaries\\Catalyst Engine Toolbox.exe\" generate_code";
 
 	run_code_generation_file.close();
 }
@@ -597,7 +586,7 @@ void GenerateDefaultProjects(const ProjectSettings &project_settings)
 	//Set up the parameters.
 	GenerateProjectParameters parameters;
 
-	parameters._DirectoryPath = DIRECTORY;
+	parameters._DirectoryPath = VisualStudioSolutionDirectory();
 	parameters._ProjectName = project_name;
 
 	{
@@ -733,43 +722,89 @@ void GenerateDefaultProjects(const ProjectSettings &project_settings)
 	AddCommonParameters(project_settings, &parameters);
 
 	//Generate the code generation file.
-	GenerateRunCodeGenerationBatchFile(DIRECTORY, project_settings, false);
+	GenerateRunCodeGenerationBatchFile(VisualStudioSolutionDirectory(), project_settings);
 
-	//Generate!
-#if defined(VISUAL_STUDIO_SOLUTION_SUPPORTED)
-	GenerateVisualStudioSolution::Generate(parameters);
-#endif
-
-	//Remember the error code for filesystem functions.
-	std::error_code error_code;
-
-	//Create the directories for the different configurations.
-	for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
+	//Generate the CMake file.
 	{
-		std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("/") + configuration._Name).c_str(), error_code); CHECK_ERROR_CODE();
+		parameters._DirectoryPath = CMakeDirectory();
+		GenerateCMake::Generate(parameters);
 	}
 
-	//Copy assimp-vc143-mt.dll.
-	std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(DIRECTORY + std::string("/Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-	std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(DIRECTORY + std::string("/Debug Editor")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-	std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(DIRECTORY + std::string("/Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-	std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(DIRECTORY + std::string("/Profile Editor")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-	std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(DIRECTORY + std::string("/Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-
-	if (project_settings._AddStaticBuilds)
+	//Generate the visual studio code workspace.
 	{
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(DIRECTORY + std::string("/Debug Static")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(DIRECTORY + std::string("/Profile Static")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-	}
+		parameters._DirectoryPath = VisualStudioCodeWorkspaceDirectory();
+		GenerateVisualStudioCodeWorkspace::Generate(parameters);
 
-	//Copy onnxruntime.dll.
-	if (project_settings._IncludeONNXRuntimeLibrary)
-	{
+		//Remember the error code for filesystem functions.
+		std::error_code error_code;
+
+		//Create the directories for the different configurations.
 		for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
 		{
-			std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/onnxruntime.dll", std::string(parameters._DirectoryPath + std::string("/") + configuration._Name).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("/Build/") + Utilities::RemoveSpaces(configuration._Name)).c_str(), error_code); CHECK_ERROR_CODE();
+		}
+
+		//Copy assimp-vc143-mt.dll.
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(parameters._DirectoryPath + std::string("/Build/Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(parameters._DirectoryPath + std::string("/Build/DebugEditor")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/Build/Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/Build/ProfileEditor")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/Build/Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+
+		if (project_settings._AddStaticBuilds)
+		{
+			std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(parameters._DirectoryPath + std::string("/Build/DebugStatic")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/Build/ProfileStatic")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		}
+
+		//Copy onnxruntime.dll.
+		if (project_settings._IncludeONNXRuntimeLibrary)
+		{
+			for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
+			{
+				std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/onnxruntime.dll", std::string(parameters._DirectoryPath + std::string("/Build/") + Utilities::RemoveSpaces(configuration._Name)).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			}
 		}
 	}
+
+	//Generate the visual studio solution.
+#if defined(VISUAL_STUDIO_SOLUTION_SUPPORTED)
+	{
+		parameters._DirectoryPath = VisualStudioSolutionDirectory();
+		GenerateVisualStudioSolution::Generate(parameters);
+
+		//Remember the error code for filesystem functions.
+		std::error_code error_code;
+
+		//Create the directories for the different configurations.
+		for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
+		{
+			std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("/") + configuration._Name).c_str(), error_code); CHECK_ERROR_CODE();
+		}
+
+		//Copy assimp-vc143-mt.dll.
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(parameters._DirectoryPath + std::string("/Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(parameters._DirectoryPath + std::string("/Debug Editor")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/Profile Editor")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+
+		if (project_settings._AddStaticBuilds)
+		{
+			std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(parameters._DirectoryPath + std::string("/Debug Static")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/Profile Static")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		}
+
+		//Copy onnxruntime.dll.
+		if (project_settings._IncludeONNXRuntimeLibrary)
+		{
+			for (const GenerateProjectParameters::Configuration& configuration : parameters._Configurations)
+			{
+				std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/onnxruntime.dll", std::string(parameters._DirectoryPath + std::string("/") + configuration._Name).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			}
+		}
+	}
+#endif
 }
 
 /*
@@ -908,699 +943,35 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 	}
 
 	//Generate the audio plugin files.
-	{
-		//Ensure the directories exist.
-		std::filesystem::create_directories(AudioPluginCodeDirectory(audio_plugin));
-
-		//Generate the "AudioPluginGlue.Generated.h" file.
-		{
-			char buffer[256];
-			PRINT_BUFFER(buffer, "%s/AudioPluginGlue.Generated.h", AudioPluginCodeDirectory(audio_plugin).c_str());
-
-			std::ofstream file{ buffer };
-
-			file << "#pragma once" << std::endl;
-			file << std::endl;
-
-			file << "//Core." << std::endl;
-			file << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
-			file << std::endl;
-
-			file << "//Rendering." << std::endl;
-			file << "#include <Rendering/Native/Resolution.h>" << std::endl;
-			file << std::endl;
-
-			file << "//Audio plugin." << std::endl;
-			file << "#include <" << audio_plugin._ClassName.c_str() << ".h>" << std::endl;
-			file << std::endl;
-
-			file << "namespace AudioPluginGlue" << std::endl;
-			file << "{" << std::endl;
-			file << std::endl;
-
-			file << "\t/*" << std::endl;
-			file << "\t*\tReturns the default directory of the plugin." << std::endl;
-			file << "\t*/" << std::endl;
-			file << "\tFORCE_INLINE constexpr const char *const RESTRICT GetDefaultDirectory() NOEXCEPT" << std::endl;
-			file << "\t{" << std::endl;
-			file << "\t\treturn \"" << audio_plugin._DefaultDirectory.c_str() << "\";" << std::endl;
-			file << "\t}" << std::endl;
-			file << std::endl;
-
-			file << "\t/*" << std::endl;
-			file << "\t*\tReturns the identifier of the plugin." << std::endl;
-			file << "\t*/" << std::endl;
-			file << "\tFORCE_INLINE constexpr const char *const RESTRICT GetIdentifier() NOEXCEPT" << std::endl;
-			file << "\t{" << std::endl;
-			file << "\t\treturn \"com." << project_settings._DeveloperNameNoSpaces.c_str() << "." << audio_plugin._NameNoSpaces.c_str() << "\";" << std::endl;
-			file << "\t}" << std::endl;
-			file << std::endl;
-
-			file << "\t/*" << std::endl;
-			file << "\t*\tReturns the name of the plugin." << std::endl;
-			file << "\t*/" << std::endl;
-			file << "\tFORCE_INLINE constexpr const char *const RESTRICT GetName() NOEXCEPT" << std::endl;
-			file << "\t{" << std::endl;
-			file << "\t\treturn \"" << audio_plugin._Name.c_str() << "\";" << std::endl;
-			file << "\t}" << std::endl;
-			file << std::endl;
-
-			file << "\t/*" << std::endl;
-			file << "\t*\tReturns the vendor of the plugin." << std::endl;
-			file << "\t*/" << std::endl;
-			file << "\tFORCE_INLINE constexpr const char *const RESTRICT GetVendor() NOEXCEPT" << std::endl;
-			file << "\t{" << std::endl;
-			file << "\t\treturn \"" << project_settings._DeveloperNameNoSpaces.c_str() << "\";" << std::endl;
-			file << "\t}" << std::endl;
-			file << std::endl;
-
-			file << "\t/*" << std::endl;
-			file << "\t*\tReturns the main category of the plugin." << std::endl;
-			file << "\t*/" << std::endl;
-			file << "\tFORCE_INLINE constexpr Audio::Plugin::MainCategory GetMainCategory() NOEXCEPT" << std::endl;
-			file << "\t{" << std::endl;
-			file << "\t\treturn Audio::Plugin::MainCategory::" << audio_plugin._MainCategory.c_str() << ";" << std::endl;
-			file << "\t}" << std::endl;
-			file << std::endl;
-
-			file << "\t/*" << std::endl;
-			file << "\t*\tReturns the sub category of the plugin." << std::endl;
-			file << "\t*/" << std::endl;
-			file << "\tFORCE_INLINE constexpr Audio::Plugin::SubCategory GetSubCategory() NOEXCEPT" << std::endl;
-			file << "\t{" << std::endl;
-			file << "\t\treturn Audio::Plugin::SubCategory::" << audio_plugin._SubCategory.c_str() << ";" << std::endl;
-			file << "\t}" << std::endl;
-			file << std::endl;
-
-			file << "\t/*" << std::endl;
-			file << "\t*\tReturns the resolution of the plugin." << std::endl;
-			file << "\t*/" << std::endl;
-			file << "\tFORCE_INLINE constexpr Resolution GetResolution() NOEXCEPT" << std::endl;
-			file << "\t{" << std::endl;
-			file << "\t\treturn Resolution(" << audio_plugin._Resolution._Width << ", " << audio_plugin._Resolution._Height << ");" << std::endl;
-			file << "\t}" << std::endl;
-			file << std::endl;
-
-			file << "\t/*" << std::endl;
-			file << "\t*\tCreates an instance of the plugin." << std::endl;
-			file << "\t*/" << std::endl;
-			file << "\tFORCE_INLINE Audio::Plugin *const RESTRICT Create() NOEXCEPT" << std::endl;
-			file << "\t{" << std::endl;
-			file << "\t\treturn new " << audio_plugin._ClassName.c_str() << "();" << std::endl;
-			file << "\t}" << std::endl;
-			file << std::endl;
-
-			file << "\t/*" << std::endl;
-			file << "\t*\tDestroys an instance of the plugin." << std::endl;
-			file << "\t*/" << std::endl;
-			file << "\tFORCE_INLINE void Destroy(Audio::Plugin *const RESTRICT plugin) NOEXCEPT" << std::endl;
-			file << "\t{" << std::endl;
-			file << "\t\tdelete plugin;" << std::endl;
-			file << "\t}" << std::endl;
-			file << std::endl;
-
-			file << "}";
-
-			file.close();
-		}
-
-		//Generate the "StandaloneMain.Generated.cpp" file.
-		{
-			char buffer[256];
-			PRINT_BUFFER(buffer, "%s/StandaloneMain.Generated.cpp", AudioPluginCodeDirectory(audio_plugin).c_str());
-
-			std::ofstream file{ buffer };
-
-			file << "#if defined(AUDIO_PLUGIN_STANDALONE)" << std::endl;
-
-			file << "//Core." << std::endl;
-			file << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
-			file << std::endl;
-
-			file << "//Audio." << std::endl;
-			file << "#include <Audio/Effects/Utilities/PluginHandler.h>" << std::endl;
-			file << "#include <Audio/Plugins/Editor/PluginEditor.h>" << std::endl;
-			file << std::endl;
-
-			file << "//Platform." << std::endl;
-			file << "#include <Platform/Windows/CatalystPlatformWindows.h>" << std::endl;
-			file << std::endl;
-
-			file << "//Systems." << std::endl;
-			file << "#include <Systems/CatalystEngineSystem.h>" << std::endl;
-			file << "#include <Systems/AudioSystem.h>" << std::endl;
-			file << std::endl;
-
-			file << "//" << audio_plugin._Name.c_str() << "." << std::endl;
-			file << "#include <AudioPluginGlue.Generated.h>" << std::endl;
-			file << "#include <" << audio_plugin._NameNoSpaces.c_str() << "StandaloneMain.h>" << std::endl;
-			file << "#include <" << audio_plugin._NameNoSpaces.c_str() << "Plugin.h>" << std::endl;
-			file << std::endl;
-
-			file << "//The plugin." << std::endl;
-			file << audio_plugin._NameNoSpaces.c_str() << "Plugin PLUGIN;" << std::endl;
-			file << std::endl;
-
-			file << "//The plugin editor." << std::endl;
-			file << "Audio::PluginEditor PLUGIN_EDITOR;" << std::endl;
-			file << std::endl;
-
-			file << "/*" << std::endl;
-			file << "*\tCreates the Catalyst project configuration." << std::endl;
-			file << "*/" << std::endl;
-			file << "void CreateCatalystProjectConfiguration(CatalystProjectConfiguration *const RESTRICT configuration) NOEXCEPT" << std::endl;
-			file << "{" << std::endl;
-
-			file << "\tconfiguration->_GeneralConfiguration._ProjectName = \"" << audio_plugin._Name.c_str() << "\";" << std::endl;
-			file << std::endl;
-
-			file << "\tconfiguration->_ConcurrencyConfiguration._NumberOfTaskExecutors = " << audio_plugin._NameNoSpaces.c_str() << "NumberOfThreads();" << std::endl;
-			file << std::endl;
-
-			file << "\tif (Audio::PluginEditor::USE_INTERNAL_RENDERING)" << std::endl;
-			file << "\t{" << std::endl;
-			file << "\t\tconfiguration->_RenderingConfiguration._InitialRenderingPath = RenderingPath::NONE;" << std::endl;
-			file << "\t}" << std::endl;
-			file << std::endl;
-
-			file << "\telse" << std::endl;
-			file << "\t{" << std::endl;
-			file << "\t\tconfiguration->_RenderingConfiguration._InitialRenderingPath = RenderingPath::DEFAULT;" << std::endl;
-			file << "\t}" << std::endl;
-			file << std::endl;
-			file << "\tconfiguration->_RenderingConfiguration._InitialFullScreen = false;" << std::endl;
-			file << "\tconfiguration->_RenderingConfiguration._Resolution = AudioPluginGlue::GetResolution();" << std::endl;
-
-			file << "}" << std::endl;
-			file << std::endl;
-
-			file << "MAIN_FUNCTION" << std::endl;
-			file << "(" << std::endl;
-
-			file << "\t//Call the pre-initialize standalone function." << std::endl;
-			file << "\t" << audio_plugin._NameNoSpaces.c_str() << "PreInitialize();" << std::endl;
-			file << std::endl;
-
-			file << "\t//Create the Catalyst project configuration." << std::endl;
-			file << "\tCatalystProjectConfiguration configuration;" << std::endl;
-			file << "\tCreateCatalystProjectConfiguration(&configuration);" << std::endl;
-			file << std::endl;
-
-			file << "\t//Initialize the engine system." << std::endl;
-			file << "\tCatalystEngineSystem::Instance->Initialize(configuration);" << std::endl;
-			file << std::endl;
-
-			file << "\t//Call the post-initialize standalone function." << std::endl;
-			file << "\t" << audio_plugin._NameNoSpaces.c_str() << "PostInitialize();" << std::endl;
-			file << std::endl;
-
-			file << "\t//Initialize the plugin editor." << std::endl;
-			file << "\tPLUGIN_EDITOR.Initialize(&PLUGIN);" << std::endl;
-			file << "\tPLUGIN_EDITOR.CreateEditor(CatalystPlatformWindows::_MainWindow);" << std::endl;
-			file << std::endl;
-
-			file << "\t//Add the plugin handler." << std::endl;
-			file << "\tPluginHandler *const RESTRICT plugin_handler{ AudioSystem::Instance->CreateAudioEffect<PluginHandler>(&PLUGIN) };" << std::endl;
-			file << "\tAudioSystem::Instance->AddMasterAudioEffect(plugin_handler);" << std::endl;
-			file << std::endl;
-
-			file << "\t//Main game loop." << std::endl;
-			file << "\twhile (CatalystEngineSystem::Instance->Update());" << std::endl;
-			file << std::endl;
-
-			file << "\t//Terminate the plugin editor." << std::endl;
-			file << "\tPLUGIN_EDITOR.DestroyEditor();" << std::endl;
-			file << std::endl;
-
-			file << "\t//Terminate the engine system." << std::endl;
-			file << "\tCatalystEngineSystem::Instance->Terminate();" << std::endl;
-
-			file << ")" << std::endl;
-
-			file << "#endif";
-
-			file.close();
-		}
-
-		//Generate the audio plugin header file.
-		{
-			char buffer[256];
-			PRINT_BUFFER(buffer, "%s/%s.h", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._ClassName.c_str());
-
-			if (!audio_plugin._Locked)
-			{
-				std::ofstream file{ buffer };
-
-				file << "#pragma once" << std::endl;
-				file << std::endl;
-
-				file << "//Core." << std::endl;
-				file << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
-				file << std::endl;
-
-				file << "//Audio." << std::endl;
-				file << "#include <Audio/Plugins/Core/Plugin.h>" << std::endl;
-				file << std::endl;
-
-				file << "//Forward declarations." << std::endl;
-				file << "class " << audio_plugin._NameNoSpaces.c_str() << "UIScene;" << std::endl;
-				file << std::endl;
-
-				file << "class " << audio_plugin._ClassName.c_str() << " final : public Audio::Plugin" << std::endl;
-				file << "{" << std::endl;
-
-				file << std::endl;
-				file << "public:" << std::endl;
-				file << std::endl;
-
-				file << "\t/*" << std::endl;
-				file << "\t*\tDefault constructor." << std::endl;
-				file << "\t*/" << std::endl;
-				file << "\t" << audio_plugin._NameNoSpaces.c_str() << "Plugin() NOEXCEPT;" << std::endl;
-				file << std::endl;
-
-				file << "\t/*" << std::endl;
-				file << "\t*\tReturns the main category." << std::endl;
-				file << "\t*/" << std::endl;
-				file << "\tFORCE_INLINE NO_DISCARD Audio::Plugin::MainCategory GetMainCategory() const NOEXCEPT override" << std::endl;
-				file << "\t{" << std::endl;
-				file << "\t\treturn Audio::Plugin::MainCategory::" << audio_plugin._MainCategory.c_str() << ";" << std::endl;
-				file << "\t}" << std::endl;
-				file << std::endl;
-
-				file << "\t/*" << std::endl;
-				file << "\t*\tReturns the sub category." << std::endl;
-				file << "\t*/" << std::endl;
-				file << "\tFORCE_INLINE NO_DISCARD Audio::Plugin::SubCategory GetSubCategory() const NOEXCEPT override" << std::endl;
-				file << "\t{" << std::endl;
-				file << "\t\treturn Audio::Plugin::SubCategory::" << audio_plugin._SubCategory.c_str() << ";" << std::endl;
-				file << "\t}" << std::endl;
-				file << std::endl;
-
-				file << "\t/*" << std::endl;
-				file << "\t*\tReturns the resolution." << std::endl;
-				file << "\t*/" << std::endl;
-				file << "\tFORCE_INLINE NO_DISCARD Resolution GetResolution() const NOEXCEPT override" << std::endl;
-				file << "\t{" << std::endl;
-				file << "\t\treturn Resolution(" << audio_plugin._Resolution._Width << ", " << audio_plugin._Resolution._Height << ");" << std::endl;
-				file << "\t}" << std::endl;
-				file << std::endl;
-
-				file << "\t/*" << std::endl;
-				file << "\t*\tInitializes this plugin." << std::endl;
-				file << "\t*/" << std::endl;
-				file << "\tvoid Initialize(const InitializeContext &context) NOEXCEPT override;" << std::endl;
-				file << std::endl;
-
-				file << "\t/*" << std::endl;
-				file << "\t*\tPost-initializes this plugin." << std::endl;
-				file << "\t*/" << std::endl;
-				file << "\tvoid PostInitialize(const InitializeContext &context) NOEXCEPT override;" << std::endl;
-				file << std::endl;
-
-				file << "\t/*" << std::endl;
-				file << "\t*\tCallback for this plugin to process the given buffer." << std::endl;
-				file << "\t*/" << std::endl;
-				file << "\tvoid Process" << std::endl;
-				file << "\t(" << std::endl;
-				file << "\t\tconst AudioProcessContext &context," << std::endl;
-				file << "\t\tconst DynamicArray<DynamicArray<float32>> &inputs," << std::endl;
-				file << "\t\tDynamicArray<DynamicArray<float32>> *const RESTRICT outputs," << std::endl;
-				file << "\t\tconst uint8 number_of_channels," << std::endl;
-				file << "\t\tconst uint32 number_of_samples" << std::endl;
-				file << "\t) NOEXCEPT override;" << std::endl;
-				file << std::endl;
-
-				if (AudioPluginDoesMIDIIn(audio_plugin))
-				{
-					file << "\t/*" << std::endl;
-					file << "\t*\tCallback for this plugin when it receives MIDI messages." << std::endl;
-					file << "\t*/" << std::endl;
-					file << "\tvoid OnMIDIMessages(const MIDIMessage *const RESTRICT messages, const uint64 number_of_messages) NOEXCEPT override;" << std::endl;
-					file << std::endl;
-				}
-
-				file << "private:" << std::endl;
-				file << std::endl;
-
-				file << "\t//The UI scene." << std::endl;
-				file << "\t" << audio_plugin._NameNoSpaces.c_str() << "UIScene *RESTRICT _UIScene;" << std::endl;
-				file << std::endl;
-
-				file << "};";
-
-				file.close();
-			}
-		}
-
-		//Generate the audio plugin CPP file.
-		{
-			char buffer[256];
-			PRINT_BUFFER(buffer, "%s/%s.cpp", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._ClassName.c_str());
-
-			if (!audio_plugin._Locked)
-			{
-				std::ofstream file{ buffer };
-
-				file << "//Header file." << std::endl;
-				file << "#include <" << audio_plugin._ClassName.c_str() <<".h>" << std::endl;
-				file << std::endl;
-
-				file << "//Systems." << std::endl;
-				file << "#include <Systems/UISystem.h>" << std::endl;
-				file << std::endl;
-
-				file << "//" << audio_plugin._Name.c_str() << "." << std::endl;
-				file << "#include <" << audio_plugin._NameNoSpaces.c_str() << "UIScene.h>" << std::endl;
-				file << std::endl;
-
-				file << "/*" << std::endl;
-				file << "*\tDefault constructor." << std::endl;
-				file << "*/" << std::endl;
-				file << "" << audio_plugin._NameNoSpaces.c_str() << "Plugin::" << audio_plugin._NameNoSpaces.c_str() << "Plugin() NOEXCEPT" << std::endl;
-				file << "{" << std::endl;
-				file << std::endl;
-				file << "}" << std::endl;
-				file << std::endl;
-
-				file << "/*" << std::endl;
-				file << "*\tInitializes this plugin." << std::endl;
-				file << "*/" << std::endl;
-				file << "void " << audio_plugin._ClassName.c_str() << "::Initialize(const InitializeContext &context) NOEXCEPT" << std::endl;
-				file << "{" << std::endl;
-				file << std::endl;
-				file << "}" << std::endl;
-				file << std::endl;
-
-				file << "/*" << std::endl;
-				file << "*\tPost-initializes this plugin." << std::endl;
-				file << "*/" << std::endl;
-				file << "void " << audio_plugin._ClassName.c_str() << "::PostInitialize(const InitializeContext &context) NOEXCEPT" << std::endl;
-				file << "{" << std::endl;
-				file << "\t//Add the UI scene." << std::endl;
-				file << "\t_UIScene = context._UISystem->AddScene<" << audio_plugin._NameNoSpaces.c_str() << "UIScene>();" << std::endl;
-				file << "\t_UIScene->SetPlugin(this);" << std::endl;
-				file << "}" << std::endl;
-				file << std::endl;
-
-				file << "/*" << std::endl;
-				file << "*\tCallback for this plugin to process the given buffer." << std::endl;
-				file << "*/" << std::endl;
-				file << "void " << audio_plugin._ClassName.c_str() << "::Process" << std::endl;
-				file << "(" << std::endl;
-				file << "\tconst AudioProcessContext &context," << std::endl;
-				file << "\tconst DynamicArray<DynamicArray<float32>> &inputs," << std::endl;
-				file << "\tDynamicArray<DynamicArray<float32>> *const RESTRICT outputs," << std::endl;
-				file << "\tconst uint8 number_of_channels," << std::endl;
-				file << "\tconst uint32 number_of_samples" << std::endl;
-				file << ") NOEXCEPT" << std::endl;
-				file << "{" << std::endl;
-				file << std::endl;
-				file << "}" << std::endl;
-				file << std::endl;
-
-				if (AudioPluginDoesMIDIIn(audio_plugin))
-				{
-					file << "/*" << std::endl;
-					file << "*\tCallback for this plugin when it receives MIDI messages." << std::endl;
-					file << "*/" << std::endl;
-					file << "void " << audio_plugin._ClassName.c_str() << "::OnMIDIMessages(const MIDIMessage *const RESTRICT messages, const uint64 number_of_messages) NOEXCEPT" << std::endl;
-					file << "{" << std::endl;
-					file << std::endl;
-					file << "}";
-				}
-
-				file.close();
-			}
-		}
-
-		//Generate the audio plugin standalone main header file.
-		{
-			char buffer[256];
-			PRINT_BUFFER(buffer, "%s/%sStandaloneMain.h", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
-
-			if (!audio_plugin._Locked)
-			{
-				std::ofstream file{ buffer };
-
-				file << "#pragma once" << std::endl;
-				file << std::endl;
-
-				file << "//Core." << std::endl;
-				file << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
-				file << std::endl;
-
-				file << "/*" << std::endl;
-				file << "*\tReturns the number of threads for the standalone application." << std::endl;
-				file << "*/" << std::endl;
-				file << "NO_DISCARD uint32 " << audio_plugin._NameNoSpaces.c_str() << "NumberOfThreads() NOEXCEPT;" << std::endl;
-				file << std::endl;
-
-				file << "/*" << std::endl;
-				file << "*\tPre-initializes the " << audio_plugin._Name.c_str() << " plugin." << std::endl;
-				file << "*/" << std::endl;
-				file << "void " << audio_plugin._NameNoSpaces.c_str() << "PreInitialize() NOEXCEPT;" << std::endl;
-				file << std::endl;
-
-				file << "/*" << std::endl;
-				file << "*\tPost-initializes the " << audio_plugin._Name.c_str() << " plugin." << std::endl;
-				file << "*/" << std::endl;
-				file << "void " << audio_plugin._NameNoSpaces.c_str() << "PostInitialize() NOEXCEPT;";
-
-				file.close();
-			}
-		}
-
-		//Generate the audio plugin standalone main source file.
-		{
-			char buffer[256];
-			PRINT_BUFFER(buffer, "%s/%sStandaloneMain.cpp", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
-
-			if (!audio_plugin._Locked)
-			{
-				std::ofstream file{ buffer };
-
-				file << "//Header file." << std::endl;
-				file << "#include <" << audio_plugin._NameNoSpaces << "StandaloneMain.h>" << std::endl;
-				file << std::endl;
-
-				file << "#if !defined(CATALYST_CONFIGURATION_FINAL)" << std::endl;
-				file << "//Systems." << std::endl;
-				file << "#include <Systems/ContentSystem.h>" << std::endl;
-				file << "#endif" << std::endl;
-				file << std::endl;
-
-				file << "/*" << std::endl;
-				file << "*\tReturns the number of threads for the standalone application." << std::endl;
-				file << "*/" << std::endl;
-				file << "NO_DISCARD uint32 " << audio_plugin._NameNoSpaces.c_str() << "NumberOfThreads() NOEXCEPT" << std::endl;
-				file << "{" << std::endl;
-				file << "\t return 0;" << std::endl;
-				file << "}" << std::endl;
-				file << std::endl;
-
-				file << "/*" << std::endl;
-				file << "*\tPre-initializes the " << audio_plugin._Name.c_str() << " plugin." << std::endl;
-				file << "*/" << std::endl;
-				file << "void " << audio_plugin._NameNoSpaces.c_str() << "PreInitialize() NOEXCEPT" << std::endl;
-				file << "{" << std::endl;
-				file << std::endl;
-				file << "}" << std::endl;
-				file << std::endl;
-
-				file << "/*" << std::endl;
-				file << "*\tPost-initializes the " << audio_plugin._Name.c_str() << " plugin." << std::endl;
-				file << "*/" << std::endl;
-				file << "void " << audio_plugin._NameNoSpaces.c_str() << "PostInitialize() NOEXCEPT" << std::endl;
-				file << "{" << std::endl;
-				file << "#if !defined(CATALYST_CONFIGURATION_FINAL)" << std::endl;
-				file << "\t//Compile content." << std::endl;
-				file << "\tContentSystem::Instance->Compile(\"..//..//..//AudioPlugins//" << audio_plugin._NameNoSpaces.c_str() << "//Content\");" << std::endl;
-				file << "#endif" << std::endl;
-				file << "}";
-
-				file.close();
-			}
-		}
-
-		//Generate the audio plugin UI scene header file.
-		{
-			char buffer[256];
-			PRINT_BUFFER(buffer, "%s/%sUIScene.h", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
-
-			if (!audio_plugin._Locked)
-			{
-				std::ofstream file{ buffer };
-
-				file << "#pragma once" << std::endl;
-				file << std::endl;
-
-				file << "//Core." << std::endl;
-				file << "#include <Core/Essential/CatalystEssential.h>" << std::endl;
-				file << std::endl;
-
-				file << "//UI." << std::endl;
-				file << "#include <UI/Core/Scene.h>" << std::endl;
-				file << std::endl;
-
-				file << "//Forward declarations." << std::endl;
-				file << "class " << audio_plugin._ClassName.c_str() << ";" << std::endl;
-				file << std::endl;
-
-				file << "class " << audio_plugin._NameNoSpaces.c_str() << "UIScene final : public UI::Scene" << std::endl;
-				file << "{" << std::endl;
-
-				file << std::endl;
-				file << "public:" << std::endl;
-				file << std::endl;
-
-				file << "\t/*" << std::endl;
-				file << "\t*\tSets the plugin." << std::endl;
-				file << "\t*/" << std::endl;
-				file << "\tvoid SetPlugin(" << audio_plugin._ClassName.c_str() << " *const RESTRICT value) NOEXCEPT;" << std::endl;
-				file << std::endl;
-
-				file << "\t/*" << std::endl;
-				file << "\t*\tBuilds this scene." << std::endl;
-				file << "\t*/" << std::endl;
-				file << "\tvoid Build(const UI::BuildContext &context) NOEXCEPT override;" << std::endl;
-				file << std::endl;
-
-				file << "private:" << std::endl;
-				file << std::endl;
-
-				file << "\t//The plugin." << std::endl;
-				file << "\t" << audio_plugin._ClassName.c_str() << " *RESTRICT _Plugin;" << std::endl;
-				file << std::endl;
-
-				file << "};";
-
-				file.close();
-			}
-		}
-
-		//Generate the audio plugin UI scene source file.
-		{
-			char buffer[256];
-			PRINT_BUFFER(buffer, "%s/%sUIScene.cpp", AudioPluginCodeDirectory(audio_plugin).c_str(), audio_plugin._NameNoSpaces.c_str());
-
-			if (!audio_plugin._Locked)
-			{
-				std::ofstream file{ buffer };
-
-				file << "//Header file." << std::endl;
-				file << "#include <" << audio_plugin._NameNoSpaces << "UIScene.h>" << std::endl;
-				file << std::endl;
-
-				if (AudioPluginDoesMIDIIn(audio_plugin))
-				{
-					file << "//UI." << std::endl;
-					file << "#include <UI/Widgets/PianoRollWidget.h>" << std::endl;
-					file << std::endl;
-				}
-
-				file << "//" << audio_plugin._Name.c_str() << "." << std::endl;
-				file << "#include <" << audio_plugin._ClassName.c_str() << ".h>" << std::endl;
-				file << std::endl;
-
-				file << "/*" << std::endl;
-				file << "*\tSets the plugin." << std::endl;
-				file << "*/" << std::endl;
-				file << "void " << audio_plugin._NameNoSpaces.c_str() << "UIScene::SetPlugin(" << audio_plugin._ClassName.c_str() << " *const RESTRICT value) NOEXCEPT" << std::endl;
-				file << "{" << std::endl;
-				file << "\t//Set the plugin." << std::endl;
-				file << "\t_Plugin = value;" << std::endl;
-				file << "}" << std::endl;
-				file << std::endl;
-
-				file << "/*" << std::endl;
-				file << "*\tBuilds this scene.." << std::endl;
-				file << "*/" << std::endl;
-				file << "void " << audio_plugin._NameNoSpaces.c_str() << "UIScene::Build(const UI::BuildContext &context) NOEXCEPT" << std::endl;
-				file << "{" << std::endl;
-				file << "\t//Start the container." << std::endl;
-				file << "\t{" << std::endl;
-				file << "\t\tconstexpr UI::Identifier IDENTIFIER{ \"Container\" };" << std::endl;
-				file << "\t\tconstexpr UI::Anchor ANCHOR{ UI::Anchor::CENTER };" << std::endl;
-				file << "\t\tconstexpr UI::Container::Layout LAYOUT{ UI::Container::Layout::TOP_TO_BOTTOM };" << std::endl;
-				file << "\t\tconst AxisAlignedBoundingBox2D AXIS_ALIGNED_BOUNDING_BOX" << std::endl;
-				file << "\t\t{" << std::endl;
-				file << "\t\t\tVector2<float32>(0.0f, 0.0f)," << std::endl;
-				file << "\t\t\tVector2<float32>(GetReferenceResolution()._X, GetReferenceResolution()._Y)" << std::endl;
-				file << "\t\t};" << std::endl;
-				file << std::endl;
-				file << "\t\tStartContainer(context, UI::Identifier(IDENTIFIER), ANCHOR, LAYOUT, AXIS_ALIGNED_BOUNDING_BOX);" << std::endl;
-				file << "\t}" << std::endl;
-				file << std::endl;
-
-				file << "\t//Set up the bounding box." << std::endl;
-				file << "\tAxisAlignedBoundingBox2D bounding_box" << std::endl;
-				file << "\t{" << std::endl;
-				file << "\t\tVector2<float32>(0.0f, 0.0f)," << std::endl;
-				file << "\t\tVector2<float32>(GetReferenceResolution()._X, GetReferenceResolution()._Y)" << std::endl;
-				file << "\t};" << std::endl;
-				file << std::endl;
-
-				if (AudioPluginDoesMIDIIn(audio_plugin))
-				{
-					file << "\t//Add the piano roll." << std::endl;
-					file << "\t{" << std::endl;
-					file << "\t\t//Set the bounding box." << std::endl;
-					file << "\t\tconst AxisAlignedBoundingBox2D piano_roll_bounding_box" << std::endl;
-					file << "\t\t{" << std::endl;
-					file << "\t\t\tVector2<float32>(0.0f, 0.0f)," << std::endl;
-					file << "\t\t\tVector2<float32>(bounding_box.Dimensions()._X, BaseMath::Round<float32>(bounding_box.Dimensions()._Y * 0.1f))" << std::endl;
-					file << "\t\t};" << std::endl;
-					file << std::endl;
-					file << "\t\tSetContainerNextWidgetBoundingBox(piano_roll_bounding_box);" << std::endl;
-					file << std::endl;
-					file << "\t\t//Add the widget." << std::endl;
-					file << "\t\tAddWidget<UI::PianoRollWidget>(context, UI::Identifier(\"Piano Roll\"))" << std::endl;
-					file << "\t\t->SetAudioPlugin(_Plugin);" << std::endl;
-					file << std::endl;
-					file << "\t\t//Shrink the bounding box to account for the piano roll." << std::endl;
-					file << "\t\tbounding_box._Minimum._Y += piano_roll_bounding_box.Dimensions()._Y;" << std::endl;
-					file << "\t}" << std::endl;
-					file << std::endl;
-				}
-
-				file << "\t//End the container." << std::endl;
-				file << "\tEndContainer(context);" << std::endl;
-				file << "}" << std::endl;
-				file << std::endl;
-
-				file.close();
-			}
-		}
-	}
+	GenerateAudioPlugin::GenerateFiles(project_settings, audio_plugin);
 
 	//Add the code include path.
-	parameters._CodeIncludePaths.emplace_back(std::string("../../") + AudioPluginCodeDirectory(audio_plugin));
+	parameters._CodeIncludePaths.emplace_back(std::string("../../") + GenerateAudioPlugin::CodeDirectory(audio_plugin));
 
 	//Add the audio plugin directory.
 	{
 		GenerateProjectParameters::Directory &directory{ parameters._Directories.emplace_back() };
 		directory._Name = audio_plugin._NameNoSpaces;
-		ScanDirectory(&directory, AudioPluginCodeDirectory(audio_plugin).c_str());
+		ScanDirectory(&directory, GenerateAudioPlugin::CodeDirectory(audio_plugin).c_str());
 	}
 
 	//Add common paramaters.
 	AddCommonParameters(project_settings, &parameters);
 
 	//Generate the code generation file.
-	GenerateRunCodeGenerationBatchFile(AudioPluginVisualStudioSolutionDirectory(audio_plugin), project_settings, false);
+	GenerateRunCodeGenerationBatchFile(GenerateAudioPlugin::VisualStudioSolutionDirectory(audio_plugin), project_settings);
 
 	//Embed some resources.
 	parameters._EmbeddedResources.emplace_back("../../../../Catalyst-Engine/Engine/Content/Collections/Base.cac");
 
 	{
-		const std::string collections_directory{ AudioPluginContentDirectory(audio_plugin) + "/Collections" };
+		const std::string collections_directory{ GenerateAudioPlugin::ContentDirectory(audio_plugin) + "/Collections" };
 
 		if (std::filesystem::exists(collections_directory))
 		{
 			for (const auto &entry : std::filesystem::directory_iterator(collections_directory))
 			{
-				const std::string file_path{ entry.path().string() };
+				const std::string file_path{ entry.path().generic_string() };
 
 				if (file_path.ends_with(".cac"))
 				{
@@ -1618,7 +989,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 
 	//Generate the CMake file.
 	{
-		parameters._DirectoryPath = AudioPluginCMakeDirectory(audio_plugin);
+		parameters._DirectoryPath = GenerateAudioPlugin::CMakeDirectory(audio_plugin);
 		GenerateCMake::Generate(parameters);
 
 		//Remember the error code for filesystem functions.
@@ -1639,7 +1010,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 #if VISUAL_STUDIO_CODE_WORKSPACE_SUPPORTED
 	//Generate the visual studio code workspace.
 	{
-		parameters._DirectoryPath = AudioPluginVisualStudioCodeWorkspaceDirectory(audio_plugin);
+		parameters._DirectoryPath = GenerateAudioPlugin::VisualStudioCodeWorkspaceDirectory(audio_plugin);
 		GenerateVisualStudioCodeWorkspace::Generate(parameters);
 
 		//Remember the error code for filesystem functions.
@@ -1661,7 +1032,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 	//Generate the visual studio solution.
 #if defined(VISUAL_STUDIO_SOLUTION_SUPPORTED)
 	{
-		parameters._DirectoryPath = AudioPluginVisualStudioSolutionDirectory(audio_plugin);
+		parameters._DirectoryPath = GenerateAudioPlugin::VisualStudioSolutionDirectory(audio_plugin);
 		GenerateVisualStudioSolution::Generate(parameters);
 
 		//Remember the error code for filesystem functions.
@@ -1674,9 +1045,9 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		}
 
 		//Copy assimp-vc143-mt.dll.
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(AudioPluginVisualStudioSolutionDirectory(audio_plugin) + std::string("/Standalone Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(AudioPluginVisualStudioSolutionDirectory(audio_plugin) + std::string("/Standalone Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(AudioPluginVisualStudioSolutionDirectory(audio_plugin) + std::string("/Standalone Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(GenerateAudioPlugin::VisualStudioSolutionDirectory(audio_plugin) + std::string("/Standalone Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(GenerateAudioPlugin::VisualStudioSolutionDirectory(audio_plugin) + std::string("/Standalone Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(GenerateAudioPlugin::VisualStudioSolutionDirectory(audio_plugin) + std::string("/Standalone Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 
 		//Copy onnxruntime.dll.
 		if (project_settings._IncludeONNXRuntimeLibrary)
@@ -1699,18 +1070,27 @@ void GenerateProjects::Run(const ProjectSettings &project_settings)
 	Clean(project_settings);
 
 	//Ensure the directories exists.
-	std::filesystem::create_directories(DIRECTORY);
+	std::filesystem::create_directories(VisualStudioSolutionDirectory());
 
 	for (const ProjectSettings::AudioPlugin &audio_plugin : project_settings._AudioPlugins)
 	{
-		std::filesystem::create_directories(AudioPluginVisualStudioSolutionDirectory(audio_plugin));
+		std::filesystem::create_directories(GenerateAudioPlugin::VisualStudioSolutionDirectory(audio_plugin));
 	}
 
-	//Generate the "RunCodeGeneration.bat" file.
-	GenerateRunCodeGenerationBatchFile(DIRECTORY, project_settings, true);
+	//Run code generation once.
+	{
+		//Remember the current working directory.
+		const std::filesystem::path current_working_directory{ std::filesystem::current_path() };
 
-	//Run the code generation, to make sure that generated files gets picked up.
-	system(DIRECTORY "/RunCodeGeneration.bat");
+		//Set the temporary working directory.
+		std::filesystem::current_path(VisualStudioSolutionDirectory());
+		
+		//Run code generation!
+		GenerateCode::Run(project_settings);
+
+		//Restore the current working directory.
+		std::filesystem::current_path(current_working_directory);
+	}
 
 	//Generate the default projects.
 	GenerateDefaultProjects(project_settings);
@@ -1742,19 +1122,19 @@ void GenerateProjects::Clean(const ProjectSettings &project_settings)
 
 	for (const ProjectSettings::AudioPlugin &audio_plugin : project_settings._AudioPlugins)
 	{
-		if (std::filesystem::exists(AudioPluginCMakeDirectory(audio_plugin)))
+		if (std::filesystem::exists(GenerateAudioPlugin::CMakeDirectory(audio_plugin)))
 		{
-			std::filesystem::remove_all(AudioPluginCMakeDirectory(audio_plugin), error_code); CHECK_ERROR_CODE()
+			std::filesystem::remove_all(GenerateAudioPlugin::CMakeDirectory(audio_plugin), error_code); CHECK_ERROR_CODE()
 		}
 
-		if (std::filesystem::exists(AudioPluginVisualStudioSolutionDirectory(audio_plugin)))
+		if (std::filesystem::exists(GenerateAudioPlugin::VisualStudioSolutionDirectory(audio_plugin)))
 		{
-			std::filesystem::remove_all(AudioPluginVisualStudioSolutionDirectory(audio_plugin), error_code); CHECK_ERROR_CODE()
+			std::filesystem::remove_all(GenerateAudioPlugin::VisualStudioSolutionDirectory(audio_plugin), error_code); CHECK_ERROR_CODE()
 		}
 
-		if (std::filesystem::exists(AudioPluginVisualStudioCodeWorkspaceDirectory(audio_plugin)))
+		if (std::filesystem::exists(GenerateAudioPlugin::VisualStudioCodeWorkspaceDirectory(audio_plugin)))
 		{
-			std::filesystem::remove_all(AudioPluginVisualStudioCodeWorkspaceDirectory(audio_plugin), error_code); CHECK_ERROR_CODE()
+			std::filesystem::remove_all(GenerateAudioPlugin::VisualStudioCodeWorkspaceDirectory(audio_plugin), error_code); CHECK_ERROR_CODE()
 		}
 	}
 
@@ -1763,9 +1143,9 @@ void GenerateProjects::Clean(const ProjectSettings &project_settings)
 	{
 		for (const auto &entry : std::filesystem::directory_iterator(std::string(CODE_GENERATION_DIRECTORY_PATH)))
 		{
-			const std::filesystem::path file_path{ entry.path() };
+			const std::string file_path{ entry.path().generic_string() };
 
-			if (file_path != std::filesystem::path(CODE_GENERATION_DIRECTORY_PATH).concat("/.gitignore"))
+			if (file_path != (CODE_GENERATION_DIRECTORY_PATH + std::string("/.gitignore")))
 			{
 				std::filesystem::remove(file_path, error_code); CHECK_ERROR_CODE()
 			}

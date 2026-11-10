@@ -6,7 +6,6 @@
 
 //STD.
 #include <fstream>
-#include <iostream>
 
 /*
 *	Utility function for reading a value from a JSON file with a default value.

@@ -3,7 +3,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LocalDebuggerCommandArguments>generate_projects</LocalDebuggerCommandArguments>
     <RemoteDebuggerCommandArguments>generate_projects</RemoteDebuggerCommandArguments>
-    <LocalDebuggerWorkingDirectory>C:\Github\Audio-Plugins\Projects</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>C:\Github\DrumAttack\Projects</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

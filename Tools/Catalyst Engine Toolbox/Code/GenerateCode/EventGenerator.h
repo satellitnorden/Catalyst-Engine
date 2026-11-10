@@ -1,8 +1,10 @@
 #pragma once
 
-//Catalyst code generator.
-#include "CatalystCodeGeneratorCore.h"
-#include "json.hpp"
+//Core.
+#include <Core/Core.h>
+
+//Third party.
+#include <ThirdParty/json.hpp>
 
 class EventGenerator final
 {

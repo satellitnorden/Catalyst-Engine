@@ -27,7 +27,17 @@ namespace Utilities
 	static std::string BackwardToForwardSlashes(const std::string &string)
 	{
 		std::string copy{ string };
-		std::replace_if(copy.begin(), copy.end(), [](char character) { return character == '/'; }, '/');
+		std::replace_if(copy.begin(), copy.end(), [](char character) { return character == '\\'; }, '/');
+		return copy;
+	}
+
+	/*
+	*	Changes forward slashes to backward slashes.
+	*/
+	static std::string ForwardToBackwardSlashes(const std::string& string)
+	{
+		std::string copy{ string };
+		std::replace_if(copy.begin(), copy.end(), [](char character) { return character == '/'; }, '\\');
 		return copy;
 	}
 

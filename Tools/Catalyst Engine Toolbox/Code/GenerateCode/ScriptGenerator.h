@@ -1,8 +1,13 @@
 #pragma once
 
-//Catalyst code generator.
-#include "CatalystCodeGeneratorCore.h"
-#include "json.hpp"
+//Core.
+#include <Core/Core.h>
+
+//Project settings.
+#include <ProjectSettings/ProjectSettings.h>
+
+//Third party.
+#include <ThirdParty/json.hpp>
 
 class ScriptGenerator final
 {
@@ -12,7 +17,7 @@ public:
 	/*
 	*	Runs this script generator.
 	*/
-	void Run(int32 command_line_argument_count, char *command_line_arguments[]);
+	void Run(const ProjectSettings &project_settings);
 
 private:
 
@@ -55,7 +60,7 @@ private:
 	/*
 	*	Generates the source file.
 	*/
-	void GenerateSourceFile(int32 command_line_argument_count, char *command_line_arguments[]);
+	void GenerateSourceFile(const ProjectSettings &project_settings);
 
 	/*
 	*	Generates the header file.

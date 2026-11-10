@@ -1,11 +1,17 @@
 //Header file.
-#include "SettingsGenerator.h"
+#include <GenerateCode/SettingsGenerator.h>
+
+//Core.
+#include <Core/MurmurHash.h>
+
+//STD.
+#include <fstream>
 
 //Constants.
-#define CONTENT_DIRECTORY "..\\..\\..\\Content\\"
-#define ASSETS_DIRECTORY CONTENT_DIRECTORY "\\Assets"
+#define CONTENT_DIRECTORY "../../../Content/"
+#define ASSETS_DIRECTORY CONTENT_DIRECTORY "/Assets"
 
-#define SOURCE_FILE_PATH "..\\..\\..\\Code\\Source\\Generated\\Settings.Generated.cpp"
+#define SOURCE_FILE_PATH "../../../Code/Source/Generated/Settings.Generated.cpp"
 
 /*
 *	Enumeration class definition.
@@ -389,15 +395,15 @@ void SettingsGenerator::Run()
 	std::error_code error_code;
 
 	//Create the "CodeGeneration" directory, if it doesn't exist.
-	std::filesystem::create_directory("..\\..\\..\\Code\\CodeGeneration", error_code);
+	std::filesystem::create_directory("../../../Code/CodeGeneration", error_code);
 
 	//Set up the cache.
 	nlohmann::ordered_json cache;
 
 //#if defined(NDEBUG)
-	if (std::filesystem::exists("..\\..\\..\\Code\\CodeGeneration\\SettingsCache.json"))
+	if (std::filesystem::exists("../../../Code/CodeGeneration/SettingsCache.json"))
 	{
-		std::ifstream input_file{ "..\\..\\..\\Code\\CodeGeneration\\SettingsCache.json" };
+		std::ifstream input_file{ "../../../Code/CodeGeneration/SettingsCache.json" };
 		input_file >> cache;
 		input_file.close();
 	}
@@ -414,7 +420,7 @@ void SettingsGenerator::Run()
 
 	//Write the cache.
 	{
-		std::ofstream file{ "..\\..\\..\\Code\\CodeGeneration\\SettingsCache.json" };
+		std::ofstream file{ "../../../Code/CodeGeneration/SettingsCache.json" };
 		file << std::setw(4) << cache;
 		file.close();
 	}
@@ -437,13 +443,13 @@ void SettingsGenerator::GatherSettingsDefinitions(const char *const directory_pa
 		//Gather recursively if this is a directory.
 		if (entry.is_directory())
 		{
-			GatherSettingsDefinitions(entry.path().string().c_str(), cache);
+			GatherSettingsDefinitions(entry.path().generic_string().c_str(), cache);
 
 			continue;
 		}
 
 		//Cache the file path string.
-		const std::string file_path{ entry.path().string() };
+		const std::string file_path{ entry.path().generic_string() };
 
 		//Figure out the extension.
 		std::string extension;
@@ -691,7 +697,7 @@ void SettingsGenerator::GenerateCode()
 	{
 		//Figure out the header directory path.
 		char header_directory_path[MAXIMUM_FILE_PATH_LENGTH];
-		sprintf_s(header_directory_path, "..\\..\\..\\Code\\Include\\Generated\\Settings");
+		sprintf_s(header_directory_path, "../../../Code/Include/Generated/Settings");
 
 		//Create the directory, if it doesn't exist.
 		std::filesystem::create_directory(header_directory_path);
@@ -701,7 +707,7 @@ void SettingsGenerator::GenerateCode()
 		{
 			//Figure out the file path.
 			char file_path[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(file_path, "%s\\%s.Generated.h", header_directory_path, enumeration._Name.c_str());
+			sprintf_s(file_path, "%s/%s.Generated.h", header_directory_path, enumeration._Name.c_str());
 
 			//Open the file.
 			std::ofstream file{ file_path };
@@ -743,7 +749,7 @@ void SettingsGenerator::GenerateCode()
 	{
 		//Figure out the header directory path.
 		char header_directory_path[MAXIMUM_FILE_PATH_LENGTH];
-		sprintf_s(header_directory_path, "..\\..\\..\\Code\\Include\\Generated\\Settings");
+		sprintf_s(header_directory_path, "../../../Code/Include/Generated/Settings");
 
 		//Create the directory, if it doesn't exist.
 		std::filesystem::create_directory(header_directory_path);
@@ -753,7 +759,7 @@ void SettingsGenerator::GenerateCode()
 		{
 			//Figure out the file path.
 			char file_path[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(file_path, "%s\\%s.Generated.h", header_directory_path, _class._Name.c_str());
+			sprintf_s(file_path, "%s/%s.Generated.h", header_directory_path, _class._Name.c_str());
 
 			//Open the file.
 			std::ofstream file{ file_path };
@@ -986,14 +992,14 @@ void SettingsGenerator::GenerateCode()
 
 	//Figure out the directory path.
 	char directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(directory_path, "..\\..\\..\\Code\\Source\\Generated");
+	sprintf_s(directory_path, "../../../Code/Source/Generated");
 
 	//Create the directory, if it doesn't exist.
 	std::filesystem::create_directory(directory_path);
 
 	//Figure out the file path.
 	char file_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(file_path, "%s\\Settings.Generated.cpp", directory_path);
+	sprintf_s(file_path, "%s/Settings.Generated.cpp", directory_path);
 
 	//Open the file.
 	std::ofstream file{ file_path };

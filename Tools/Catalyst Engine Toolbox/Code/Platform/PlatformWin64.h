@@ -4,11 +4,11 @@
 #include <Core/Core.h>
 
 #if defined(PLATFORM_WIN64)
-//Constants.
-#define PLATFORM_DIRECTORY_SEPARATOR '\\'
-
 //Windows.
 #include <objbase.h>
+
+//Undefine stuff from the Windows headers, as is tradition.
+#undef min
 
 //STD.
 #include <string>

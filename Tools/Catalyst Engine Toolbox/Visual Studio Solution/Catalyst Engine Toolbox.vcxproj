@@ -134,6 +134,14 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Code\GenerateCode\ComponentGenerator.cpp" />
+    <ClCompile Include="..\Code\GenerateCode\EnumerationGenerator.cpp" />
+    <ClCompile Include="..\Code\GenerateCode\EventGenerator.cpp" />
+    <ClCompile Include="..\Code\GenerateCode\GenerateCode.cpp" />
+    <ClCompile Include="..\Code\GenerateCode\ScriptGenerator.cpp" />
+    <ClCompile Include="..\Code\GenerateCode\SettingsGenerator.cpp" />
+    <ClCompile Include="..\Code\GenerateCode\SystemGenerator.cpp" />
+    <ClCompile Include="..\Code\GenerateProjects\GenerateAudioPlugin.cpp" />
     <ClCompile Include="..\Code\GenerateProjects\GenerateCMake.cpp" />
     <ClCompile Include="..\Code\GenerateProjects\GenerateProjects.cpp" />
     <ClCompile Include="..\Code\GenerateProjects\GenerateVisualStudioCodeWorkspace.cpp" />
@@ -142,9 +150,19 @@
     <ClCompile Include="..\Code\ProjectSettings\ProjectSettings.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Code\Core\CatalystHash.h" />
     <ClInclude Include="..\Code\Core\Core.h" />
     <ClInclude Include="..\Code\Core\MurmurHash.h" />
+    <ClInclude Include="..\Code\Core\TextParsing.h" />
     <ClInclude Include="..\Code\Core\Utilities.h" />
+    <ClInclude Include="..\Code\GenerateCode\ComponentGenerator.h" />
+    <ClInclude Include="..\Code\GenerateCode\EnumerationGenerator.h" />
+    <ClInclude Include="..\Code\GenerateCode\EventGenerator.h" />
+    <ClInclude Include="..\Code\GenerateCode\GenerateCode.h" />
+    <ClInclude Include="..\Code\GenerateCode\ScriptGenerator.h" />
+    <ClInclude Include="..\Code\GenerateCode\SettingsGenerator.h" />
+    <ClInclude Include="..\Code\GenerateCode\SystemGenerator.h" />
+    <ClInclude Include="..\Code\GenerateProjects\GenerateAudioPlugin.h" />
     <ClInclude Include="..\Code\GenerateProjects\GenerateCMake.h" />
     <ClInclude Include="..\Code\GenerateProjects\GenerateProjectParameters.h" />
     <ClInclude Include="..\Code\GenerateProjects\GenerateProjects.h" />
