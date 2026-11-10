@@ -4,6 +4,9 @@
 #include <Core/Core.h>
 
 #if defined(PLATFORM_WIN64)
+//Constants.
+#define PLATFORM_DIRECTORY_SEPARATOR '\\'
+
 //Windows.
 #include <objbase.h>
 
@@ -16,7 +19,7 @@ namespace PlatformWin64
     /*
     *	Generates a GUID.
     */
-    std::string GenerateGUID()
+    static std::string GenerateGUID()
     {
         GUID guid;
         CoCreateGuid(&guid);

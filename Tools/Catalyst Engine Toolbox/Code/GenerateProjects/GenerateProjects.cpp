@@ -9,6 +9,9 @@
 #include <GenerateProjects/GenerateVisualStudioCodeWorkspace.h>
 #include <GenerateProjects/GenerateVisualStudioSolution.h>
 
+//Platform.
+#include <Platform/Platform.h>
+
 //STD.
 #include <cstring>
 #include <filesystem>
@@ -407,7 +410,7 @@ void ScanDirectory(GenerateProjectParameters::Directory *directory, const char *
 		if (entry.is_directory())
 		{
 			GenerateProjectParameters::Directory &new_directory{ directory->_Directories.emplace_back() };
-			new_directory._Name = entry_file_path.substr(entry_file_path.find_last_of('/') + 1);
+			new_directory._Name = entry_file_path.substr(entry_file_path.find_last_of(PLATFORM_DIRECTORY_SEPARATOR) + 1);
 			ScanDirectory(&new_directory, entry_file_path.c_str());
 		}
 
@@ -475,7 +478,7 @@ void ScanThirdPartyDirectory(const ProjectSettings &project_settings, GeneratePr
 				}
 
 				GenerateProjectParameters::Directory &new_directory{ directory->_Directories.emplace_back() };
-				new_directory._Name = entry_file_path.substr(entry_file_path.find_last_of('/') + 1);
+				new_directory._Name = entry_file_path.substr(entry_file_path.find_last_of(PLATFORM_DIRECTORY_SEPARATOR) + 1);
 				ScanThirdPartyDirectory(project_settings, parameters, &new_directory, entry_file_path.c_str(), false);
 			}
 		}

@@ -7,7 +7,7 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerCommandArguments>generate_solution</LocalDebuggerCommandArguments>
-    <RemoteDebuggerCommandArguments>generate_solution</RemoteDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>generate_projects</LocalDebuggerCommandArguments>
+    <RemoteDebuggerCommandArguments>generate_projects</RemoteDebuggerCommandArguments>
   </PropertyGroup>
 </Project>

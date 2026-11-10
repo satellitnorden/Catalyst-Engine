@@ -74,5 +74,11 @@
     <ClInclude Include="..\Code\Platform\PlatformWin64.h">
       <Filter>Platform</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Platform\Platform.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Platform\PlatformLinux.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
