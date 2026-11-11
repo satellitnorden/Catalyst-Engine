@@ -1526,7 +1526,7 @@ public:
 
 //Template specializations.
 template<>
-FORCE_INLINE constexpr static NO_DISCARD Vector3<float32> BaseMath::Minimum<Vector3<float32>>(const Vector3<float32> first, const Vector3<float32> second) NOEXCEPT
+FORCE_INLINE constexpr NO_DISCARD Vector3<float32> BaseMath::Minimum<Vector3<float32>>(const Vector3<float32> first, const Vector3<float32> second) NOEXCEPT
 {
 	return Vector3<float32>
 	(
@@ -1537,7 +1537,7 @@ FORCE_INLINE constexpr static NO_DISCARD Vector3<float32> BaseMath::Minimum<Vect
 }
 
 template<>
-FORCE_INLINE constexpr static NO_DISCARD Vector3<float32> BaseMath::Maximum<Vector3<float32>>(const Vector3<float32> first, const Vector3<float32> second) NOEXCEPT
+FORCE_INLINE constexpr NO_DISCARD Vector3<float32> BaseMath::Maximum<Vector3<float32>>(const Vector3<float32> first, const Vector3<float32> second) NOEXCEPT
 {
 	return Vector3<float32>
 	(
@@ -1548,7 +1548,7 @@ FORCE_INLINE constexpr static NO_DISCARD Vector3<float32> BaseMath::Maximum<Vect
 }
 
 template<>
-FORCE_INLINE constexpr static NO_DISCARD Vector4<float32> BaseMath::Minimum<Vector4<float32>>(const Vector4<float32> first, const Vector4<float32> second) NOEXCEPT
+FORCE_INLINE constexpr NO_DISCARD Vector4<float32> BaseMath::Minimum<Vector4<float32>>(const Vector4<float32> first, const Vector4<float32> second) NOEXCEPT
 {
 	return Vector4<float32>
 	(
@@ -1560,7 +1560,7 @@ FORCE_INLINE constexpr static NO_DISCARD Vector4<float32> BaseMath::Minimum<Vect
 }
 
 template<>
-FORCE_INLINE constexpr static NO_DISCARD Vector4<float32> BaseMath::Maximum<Vector4<float32>>(const Vector4<float32> first, const Vector4<float32> second) NOEXCEPT
+FORCE_INLINE constexpr NO_DISCARD Vector4<float32> BaseMath::Maximum<Vector4<float32>>(const Vector4<float32> first, const Vector4<float32> second) NOEXCEPT
 {
 	return Vector4<float32>
 	(
