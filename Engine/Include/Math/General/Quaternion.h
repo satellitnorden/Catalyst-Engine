@@ -38,15 +38,6 @@ public:
 
 		//The data.
 		float32 _Data[4];
-
-		struct
-		{
-			//The vector.
-			Vector3<float32> _Vector;
-
-			//The scalar.
-			float32 _Scalar;
-		};
 	};
 
 	/*
@@ -119,8 +110,8 @@ public:
 	{
 		Quaternion result;
 
-		result._Vector = other._Vector * _Scalar + _Vector * other._Scalar + Vector3<float32>::CrossProduct(_Vector, other._Vector);
-		result._Scalar = _Scalar * other._Scalar - Vector3<float32>::DotProduct(_Vector, other._Vector);
+		result.SetDirection(other.GetDirection() * GetScalar() + GetDirection() * other.GetScalar() + Vector3<float32>::CrossProduct(GetDirection(), other.GetDirection()));
+		result.SetScalar(GetScalar() * other.GetScalar() - Vector3<float32>::DotProduct(GetDirection(), other.GetDirection()));
 
 		return result;
 	}
@@ -136,6 +127,40 @@ public:
 		return	2.0f * Vector3<float32>::DotProduct(U, other) * U
 				+ (S * S - Vector3<float32>::DotProduct(U, U)) * other
 				+ 2.0f * S * Vector3<float32>::CrossProduct(U, other);
+	}
+
+	/*
+	*	Returns the direction (X, Y and Z components).
+	*/
+	FORCE_INLINE NO_DISCARD Vector3<float32> GetDirection() const NOEXCEPT
+	{
+		return Vector3<float32>(_X, _Y, _Z);
+	}
+
+	/*
+	*	Returns the scalar (W component).
+	*/
+	FORCE_INLINE NO_DISCARD float32 GetScalar() const NOEXCEPT
+	{
+		return _W;
+	}
+
+	/*
+	*	Sets the direction (X, Y and Z components).
+	*/
+	FORCE_INLINE void SetDirection(const Vector3<float32> &direction) NOEXCEPT
+	{
+		_X = direction._X;
+		_Y = direction._Y;
+		_Z = direction._Z;
+	}
+
+	/*
+	*	Sets the scalar (W component).
+	*/
+	FORCE_INLINE void SetScalar(const float32 scalar) NOEXCEPT
+	{
+		_W = scalar;
 	}
 
 	/*
