@@ -339,42 +339,42 @@ namespace Audio
 
 			case Parameter::Type::BOOL:
 			{
-				sprintf_s(buffer, buffer_capacity, "%s", value >= 0.5f ? "On" : "Off");
+				SNPRINTF(buffer, buffer_capacity, "%s", value >= 0.5f ? "On" : "Off");
 
 				return true;
 			}
 
 			case Parameter::Type::INT32:
 			{
-				sprintf_s(buffer, buffer_capacity, "%i", BaseMath::Round<int32>(value));
+				SNPRINTF(buffer, buffer_capacity, "%i", BaseMath::Round<int32>(value));
 
 				return true;
 			}
 
 			case Parameter::Type::UINT32:
 			{
-				sprintf_s(buffer, buffer_capacity, "%u", BaseMath::Round<uint32>(value));
+				SNPRINTF(buffer, buffer_capacity, "%u", BaseMath::Round<uint32>(value));
 
 				return true;
 			}
 
 			case Parameter::Type::ENUMERATION:
 			{
-				sprintf_s(buffer, buffer_capacity, "%s", _Parameters[index]._EnumerationNames[BaseMath::Round<uint32>(value)].Data());
+				SNPRINTF(buffer, buffer_capacity, "%s", _Parameters[index]._EnumerationNames[BaseMath::Round<uint32>(value)].Data());
 
 				return true;
 			}
 
 			case Parameter::Type::GAIN:
 			{
-				sprintf_s(buffer, buffer_capacity, "%.1fdB", value);
+				SNPRINTF(buffer, buffer_capacity, "%.1fdB", value);
 
 				return true;
 			}
 
 			case Parameter::Type::PERCENT:
 			{
-				sprintf_s(buffer, buffer_capacity, "%.1f%%", value);
+				SNPRINTF(buffer, buffer_capacity, "%.1f%%", value);
 
 				return true;
 			}
@@ -383,12 +383,12 @@ namespace Audio
 			{
 				if (value >= 1'000.0f)
 				{
-					sprintf_s(buffer, buffer_capacity, "%.1fs", value / 1'000.0f);
+					SNPRINTF(buffer, buffer_capacity, "%.1fs", value / 1'000.0f);
 				}
 				
 				else
 				{
-					sprintf_s(buffer, buffer_capacity, "%.0fms", value);
+					SNPRINTF(buffer, buffer_capacity, "%.0fms", value);
 				}
 
 				return true;

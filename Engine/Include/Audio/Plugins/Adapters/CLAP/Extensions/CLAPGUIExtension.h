@@ -10,9 +10,6 @@
 //Third party.
 #include <ThirdParty/CLAP/clap.h>
 
-//STD.
-#include <cstdio>
-
 namespace CLAPGUIExtension
 {
 

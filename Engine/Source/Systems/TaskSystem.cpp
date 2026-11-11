@@ -1,6 +1,9 @@
 //Header file.
 #include <Systems/TaskSystem.h>
 
+//Core.
+#include <Core/General/Print.h>
+
 //Concurrency.
 #include <Concurrency/Concurrency.h>
 
@@ -9,9 +12,6 @@
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
-
-//STD.
-#include <cstdio>
 
 /*
 *	Initializes the task system.
@@ -90,7 +90,7 @@ void TaskSystem::Initialize() NOEXCEPT
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 			//Set the name.
 			char buffer[32];
-			sprintf_s(buffer, "TASK EXECUTOR %u", task_executor_number++);
+			SPRINTF(buffer, "TASK EXECUTOR %u", task_executor_number++);
 
 			task_executor_thread.SetName(buffer);
 #endif

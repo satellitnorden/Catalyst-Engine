@@ -10,13 +10,13 @@
 #define SPRINTF(BUFFER, FORMAT, ...)													    	\
 do																								\
 {																								\
-	const int32 characters_written{ snprintf(BUFFER, sizeof(BUFFER), FORMAT, __VA_ARGS__) };	\
-	(void)characters_written;																	\
+	const int32 _CHARACTERS_WRITTEN{ snprintf(BUFFER, sizeof(BUFFER), FORMAT, __VA_ARGS__) };	\
+	ASSERT(_CHARACTERS_WRITTEN < sizeof(BUFFER), "Provided too small buffer!");					\
 } while (false)
 
 #define SNPRINTF(BUFFER, SIZE, FORMAT, ...)											\
 do																					\
 {																					\
-	const int32 characters_written{ snprintf(BUFFER, SIZE, FORMAT, __VA_ARGS__) };	\
-	(void)characters_written;														\
+	const int32 _CHARACTERS_WRITTEN{ snprintf(BUFFER, SIZE, FORMAT, __VA_ARGS__) };	\
+	ASSERT(_CHARACTERS_WRITTEN < SIZE, "Provided too small buffer!");				\
 } while (false)

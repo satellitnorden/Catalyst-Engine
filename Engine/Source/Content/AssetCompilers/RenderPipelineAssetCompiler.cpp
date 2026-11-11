@@ -3,6 +3,7 @@
 
 //Core.
 #include <Core/General/Pair.h>
+#include <Core/General/Print.h>
 
 //File.
 #include <File/Core/File.h>
@@ -686,12 +687,12 @@ void RenderPipelineAssetCompiler::Compile(const CompileContext &compile_context)
 
 	if (compile_context._Collection)
 	{
-		sprintf_s(collection_directory_path, "%s\\COLLECTION %s", compile_context._CompiledDirectoryPath, compile_context._Collection.Data());
+		SPRINTF(collection_directory_path, "%s\\COLLECTION %s", compile_context._CompiledDirectoryPath, compile_context._Collection.Data());
 	}
 
 	else
 	{
-		sprintf_s(collection_directory_path, "%s\\COLLECTION Base", compile_context._CompiledDirectoryPath);
+		SPRINTF(collection_directory_path, "%s\\COLLECTION Base", compile_context._CompiledDirectoryPath);
 	}
 
 	//Create the compiled directory, if it doesn't exist.
@@ -699,14 +700,14 @@ void RenderPipelineAssetCompiler::Compile(const CompileContext &compile_context)
 
 	//Determine the directory path.
 	char directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(directory_path, "%s\\RenderPipelines", collection_directory_path);
+	SPRINTF(directory_path, "%s\\RenderPipelines", collection_directory_path);
 
 	//Create the compiled directory, if it doesn't exist.
 	File::CreateDirectory(directory_path);
 
 	//Determine the output file path.
 	char output_file_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(output_file_path, "%s\\%s.ca", directory_path, compile_context._Name.Data());
+	SPRINTF(output_file_path, "%s\\%s.ca", directory_path, compile_context._Name.Data());
 
 	//Open the output file.
 	BinaryOutputFile output_file{ output_file_path };
@@ -1155,20 +1156,20 @@ NO_DISCARD bool RenderPipelineAssetCompiler::SearchForFile
 	char buffer[MAXIMUM_FILE_PATH_LENGTH];
 
 	//Check if the file exists in the engine directory path.
-	sprintf_s(buffer, "%s\\%s", engine_directory_path, file_path);
+	SPRINTF(buffer, "%s\\%s", engine_directory_path, file_path);
 
 	if (File::Exists(buffer))
 	{
-		sprintf_s(file_path, MAXIMUM_FILE_PATH_LENGTH, "%s", buffer);
+		SNPRINTF(file_path, MAXIMUM_FILE_PATH_LENGTH, "%s", buffer);
 		return true;
 	}
 
 	//Check if the file exists in the game directory path.
-	sprintf_s(buffer, "%s\\%s", game_directory_path, file_path);
+	SPRINTF(buffer, "%s\\%s", game_directory_path, file_path);
 
 	if (File::Exists(buffer))
 	{
-		sprintf_s(file_path, MAXIMUM_FILE_PATH_LENGTH, "%s", buffer);
+		SNPRINTF(file_path, MAXIMUM_FILE_PATH_LENGTH, "%s", buffer);
 		return true;
 	}
 
@@ -1206,14 +1207,14 @@ void RenderPipelineAssetCompiler::ResolveInclude
 
 	//Retrieve the file path.
 	char file_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(file_path, "%s.%s", argument.Data(), extension);
+	SPRINTF(file_path, "%s.%s", argument.Data(), extension);
 
 	//Search for the file in both the engine and game directories.
 	char engine_directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(engine_directory_path, "%s\\%s", ENGINE_RENDERING_PATH, sub_folder);
+	SPRINTF(engine_directory_path, "%s\\%s", ENGINE_RENDERING_PATH, sub_folder);
 
 	char game_directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(game_directory_path, "%s\\%s", GAME_RENDERING_PATH, sub_folder);
+	SPRINTF(game_directory_path, "%s\\%s", GAME_RENDERING_PATH, sub_folder);
 
 	const bool found_file
 	{
@@ -2894,18 +2895,18 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 			uint32 current_binding{ 0 };
 
-			sprintf_s(buffer, "layout (set = 2, binding = %u) uniform accelerationStructureNV TOP_LEVEL_ACCELERATION_STRUCTURE;", current_binding++);
+			SPRINTF(buffer, "layout (set = 2, binding = %u) uniform accelerationStructureNV TOP_LEVEL_ACCELERATION_STRUCTURE;", current_binding++);
 			glsl_lines->Emplace(buffer);
 
 			for (const char *const RESTRICT _hit_group : HIT_GROUPS)
 			{
-				sprintf_s(buffer, "layout (set = 2, binding = %u) readonly buffer %s_VERTEX_DATA_BUFFER { vec4 %s_VERTEX_DATA[]; } %s_VERTEX_BUFFERS[];", current_binding++, _hit_group, _hit_group, _hit_group);
+				SPRINTF(buffer, "layout (set = 2, binding = %u) readonly buffer %s_VERTEX_DATA_BUFFER { vec4 %s_VERTEX_DATA[]; } %s_VERTEX_BUFFERS[];", current_binding++, _hit_group, _hit_group, _hit_group);
 				glsl_lines->Emplace(buffer);
 
-				sprintf_s(buffer, "layout (set = 2, binding = %u) readonly buffer %s_INDEX_DATA_BUFFER { uint %s_INDEX_DATA[]; } %s_INDEX_BUFFERS[];", current_binding++, _hit_group, _hit_group, _hit_group);
+				SPRINTF(buffer, "layout (set = 2, binding = %u) readonly buffer %s_INDEX_DATA_BUFFER { uint %s_INDEX_DATA[]; } %s_INDEX_BUFFERS[];", current_binding++, _hit_group, _hit_group, _hit_group);
 				glsl_lines->Emplace(buffer);
 
-				sprintf_s(buffer, "layout (set = 2, binding = %u) readonly buffer %s_MATERIAL_BUFFER { layout (offset = 0) uvec4[] %s_MATERIAL_INDICES; };", current_binding++, _hit_group, _hit_group);
+				SPRINTF(buffer, "layout (set = 2, binding = %u) readonly buffer %s_MATERIAL_BUFFER { layout (offset = 0) uvec4[] %s_MATERIAL_INDICES; };", current_binding++, _hit_group, _hit_group);
 				glsl_lines->Emplace(buffer);
 			}
 
@@ -2932,12 +2933,12 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 				for (uint32 vertex_index{ 0 }; vertex_index < 3; ++vertex_index)
 				{
-					sprintf_s(buffer, "\tuint vertex_index_%u = %s_INDEX_BUFFERS[gl_InstanceCustomIndexNV].%s_INDEX_DATA[gl_PrimitiveID * 3 + %u];", vertex_index, hit_group, hit_group, vertex_index);
+					SPRINTF(buffer, "\tuint vertex_index_%u = %s_INDEX_BUFFERS[gl_InstanceCustomIndexNV].%s_INDEX_DATA[gl_PrimitiveID * 3 + %u];", vertex_index, hit_group, hit_group, vertex_index);
 					glsl_lines->Emplace(buffer);
 
 					for (uint32 vertex_data_index{ 0 }; vertex_data_index < 3; ++vertex_data_index)
 					{
-						sprintf_s(buffer, "\tvec4 vertex_data_%u_%u = %s_VERTEX_BUFFERS[gl_InstanceCustomIndexNV].%s_VERTEX_DATA[3 * vertex_index_%u + %u];", vertex_index, vertex_data_index, hit_group, hit_group, vertex_index, vertex_data_index);
+						SPRINTF(buffer, "\tvec4 vertex_data_%u_%u = %s_VERTEX_BUFFERS[gl_InstanceCustomIndexNV].%s_VERTEX_DATA[3 * vertex_index_%u + %u];", vertex_index, vertex_data_index, hit_group, hit_group, vertex_index, vertex_data_index);
 						glsl_lines->Emplace(buffer);
 					}
 				}
@@ -2951,7 +2952,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 				for (uint32 vertex_index{ 0 }; vertex_index < 3; ++vertex_index)
 				{
-					sprintf_s(buffer, "\tvec3(vertex_data_%u_0.x, vertex_data_%u_0.y, vertex_data_%u_0.z) * barycentric_coordinates[%u]", vertex_index, vertex_index, vertex_index, vertex_index);
+					SPRINTF(buffer, "\tvec3(vertex_data_%u_0.x, vertex_data_%u_0.y, vertex_data_%u_0.z) * barycentric_coordinates[%u]", vertex_index, vertex_index, vertex_index, vertex_index);
 					glsl_lines->Emplace(buffer);
 
 					if (vertex_index < 2)
@@ -2974,7 +2975,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 				for (uint32 vertex_index{ 0 }; vertex_index < 3; ++vertex_index)
 				{
-					sprintf_s(buffer, "\tvec3(vertex_data_%u_0.w, vertex_data_%u_1.x, vertex_data_%u_1.y) * barycentric_coordinates[%u]", vertex_index, vertex_index, vertex_index, vertex_index);
+					SPRINTF(buffer, "\tvec3(vertex_data_%u_0.w, vertex_data_%u_1.x, vertex_data_%u_1.y) * barycentric_coordinates[%u]", vertex_index, vertex_index, vertex_index, vertex_index);
 					glsl_lines->Emplace(buffer);
 
 					if (vertex_index < 2)
@@ -2997,7 +2998,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 				for (uint32 vertex_index{ 0 }; vertex_index < 3; ++vertex_index)
 				{
-					sprintf_s(buffer, "\tvec3(vertex_data_%u_1.z, vertex_data_%u_1.w, vertex_data_%u_2.x) * barycentric_coordinates[%u]", vertex_index, vertex_index, vertex_index, vertex_index);
+					SPRINTF(buffer, "\tvec3(vertex_data_%u_1.z, vertex_data_%u_1.w, vertex_data_%u_2.x) * barycentric_coordinates[%u]", vertex_index, vertex_index, vertex_index, vertex_index);
 					glsl_lines->Emplace(buffer);
 
 					if (vertex_index < 2)
@@ -3020,7 +3021,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 				for (uint32 vertex_index{ 0 }; vertex_index < 3; ++vertex_index)
 				{
-					sprintf_s(buffer, "\tvec2(vertex_data_%u_2.y, vertex_data_%u_2.z) * barycentric_coordinates[%u]", vertex_index, vertex_index, vertex_index);
+					SPRINTF(buffer, "\tvec2(vertex_data_%u_2.y, vertex_data_%u_2.z) * barycentric_coordinates[%u]", vertex_index, vertex_index, vertex_index);
 					glsl_lines->Emplace(buffer);
 
 					if (vertex_index < 2)
@@ -3043,7 +3044,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 				glsl_lines->Emplace("uint GetHitMaterialIndex()");
 				glsl_lines->Emplace("{");
 
-				sprintf_s(buffer, "\treturn %s_MATERIAL_INDICES[gl_InstanceCustomIndexNV / 4][gl_InstanceCustomIndexNV & 3];", hit_group);
+				SPRINTF(buffer, "\treturn %s_MATERIAL_INDICES[gl_InstanceCustomIndexNV / 4][gl_InstanceCustomIndexNV & 3];", hit_group);
 				glsl_lines->Emplace(buffer);
 
 				glsl_lines->Emplace("}");
@@ -3117,7 +3118,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 					}
 
 					char buffer[64];
-					sprintf_s(buffer, "layout (location = %u) %s %s %s;", payload._Index, is_incoming ? "rayPayloadInNV" : "rayPayloadNV", payload._Type.Data(), payload._Name.Data());
+					SPRINTF(buffer, "layout (location = %u) %s %s %s;", payload._Index, is_incoming ? "rayPayloadInNV" : "rayPayloadNV", payload._Type.Data(), payload._Name.Data());
 
 					glsl_lines->Emplace(buffer);
 				}
@@ -3240,7 +3241,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 				//Insert the header.
 				char header[128];
-				sprintf_s(header, "layout (std430, set = 1, binding = %u) readonly buffer %s", current_binding_index++, buffer_name.Data());
+				SPRINTF(header, "layout (std430, set = 1, binding = %u) readonly buffer %s", current_binding_index++, buffer_name.Data());
 
 				glsl_lines.Emplace(header);
 
@@ -3339,7 +3340,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 						}
 
 						char glsl_line[128];
-						sprintf_s(glsl_line, "\tlayout (offset = %llu) %s %s;", current_offset, type, name);
+						SPRINTF(glsl_line, "\tlayout (offset = %llu) %s %s;", current_offset, type, name);
 
 						glsl_lines.Emplace(glsl_line);
 
@@ -3419,28 +3420,28 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 				glsl_lines.Emplace("(");
 				glsl_lines.Emplace("\tTOP_LEVEL_ACCELERATION_STRUCTURE, /*topLevel*/");
 
-				sprintf_s(buffer, "\t%s, /*rayFlags*/", arguments[0].Data());
+				SPRINTF(buffer, "\t%s, /*rayFlags*/", arguments[0].Data());
 				glsl_lines.Emplace(buffer);
 
 				glsl_lines.Emplace("\t0xff, /*cullMask*/");
 				glsl_lines.Emplace("\t0, /*sbtRecordOffset*/");
 				glsl_lines.Emplace("\t0, /*sbtRecordStride*/");
 
-				sprintf_s(buffer, "\t%s, /*missIndex*/", arguments[1].Data());
+				SPRINTF(buffer, "\t%s, /*missIndex*/", arguments[1].Data());
 				glsl_lines.Emplace(buffer);
 
-				sprintf_s(buffer, "\t%s, /*origin*/", arguments[2].Data());
+				SPRINTF(buffer, "\t%s, /*origin*/", arguments[2].Data());
 				glsl_lines.Emplace(buffer);
 
 				glsl_lines.Emplace("\tFLOAT32_EPSILON * 128.0f, /*Tmin*/");
 
-				sprintf_s(buffer, "\t%s, /*direction*/", arguments[3].Data());
+				SPRINTF(buffer, "\t%s, /*direction*/", arguments[3].Data());
 				glsl_lines.Emplace(buffer);
 
-				sprintf_s(buffer, "\t%s, /*Tmax*/", arguments[4].Data());
+				SPRINTF(buffer, "\t%s, /*Tmax*/", arguments[4].Data());
 				glsl_lines.Emplace(buffer);
 
-				sprintf_s(buffer, "\t%s /*payload*/", arguments[5].Data());
+				SPRINTF(buffer, "\t%s /*payload*/", arguments[5].Data());
 				glsl_lines.Emplace(buffer);
 
 				glsl_lines.Emplace(");");
@@ -3467,7 +3468,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 				//Insert the header.
 				char header[128];
-				sprintf_s(header, "layout (std140, set = 1, binding = %u) uniform %s", current_binding_index++, buffer_name.Data());
+				SPRINTF(header, "layout (std140, set = 1, binding = %u) uniform %s", current_binding_index++, buffer_name.Data());
 
 				glsl_lines.Emplace(header);
 
@@ -3566,7 +3567,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 						}
 
 						char glsl_line[128];
-						sprintf_s(glsl_line, "\tlayout (offset = %llu) %s %s;", current_offset, type, name);
+						SPRINTF(glsl_line, "\tlayout (offset = %llu) %s %s;", current_offset, type, name);
 
 						glsl_lines.Emplace(glsl_line);
 
@@ -3636,7 +3637,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 					for (const ExtraData::PushConstantDataValue &value : extra_data->_PushConstantDataValues)
 					{
 						char buffer[64];
-						sprintf_s(buffer, "\tlayout (offset = %llu) %s %s;", current_offset, value._Type.Data(), value._Name.Data());
+						SPRINTF(buffer, "\tlayout (offset = %llu) %s %s;", current_offset, value._Type.Data(), value._Name.Data());
 
 						glsl_lines.Emplace(buffer);
 
@@ -3655,7 +3656,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 						//Add the compute local size.
 						{
 							char buffer[128];
-							sprintf_s(buffer, "layout (local_size_x = %u, local_size_y = %u, local_size_z = %u) in;", extra_data->_ComputeLocalSize._Width, extra_data->_ComputeLocalSize._Height, extra_data->_ComputeLocalSize._Depth);
+							SPRINTF(buffer, "layout (local_size_x = %u, local_size_y = %u, local_size_z = %u) in;", extra_data->_ComputeLocalSize._Width, extra_data->_ComputeLocalSize._Height, extra_data->_ComputeLocalSize._Depth);
 						
 							glsl_lines.Emplace(buffer);
 							glsl_lines.Emplace("");
@@ -3665,16 +3666,16 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 						{
 							char buffer[128];
 
-							sprintf_s(buffer, "%s", "uvec3 ComputeWorkGroupSize()");
+							SPRINTF(buffer, "%s", "uvec3 ComputeWorkGroupSize()");
 							glsl_lines.Emplace(buffer);
 
-							sprintf_s(buffer, "%s", "{");
+							SPRINTF(buffer, "%s", "{");
 							glsl_lines.Emplace(buffer);
 
-							sprintf_s(buffer, "\treturn uvec3(%u, %u, %u);", extra_data->_ComputeLocalSize._Width, extra_data->_ComputeLocalSize._Height, extra_data->_ComputeLocalSize._Depth);
+							SPRINTF(buffer, "\treturn uvec3(%u, %u, %u);", extra_data->_ComputeLocalSize._Width, extra_data->_ComputeLocalSize._Height, extra_data->_ComputeLocalSize._Depth);
 							glsl_lines.Emplace(buffer);
 
-							sprintf_s(buffer, "%s", "}");
+							SPRINTF(buffer, "%s", "}");
 							glsl_lines.Emplace(buffer);
 
 							glsl_lines.Emplace("");
@@ -3684,16 +3685,16 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 						{
 							char buffer[128];
 
-							sprintf_s(buffer, "%s", "uvec3 ComputeDimensions()");
+							SPRINTF(buffer, "%s", "uvec3 ComputeDimensions()");
 							glsl_lines.Emplace(buffer);
 
-							sprintf_s(buffer, "%s", "{");
+							SPRINTF(buffer, "%s", "{");
 							glsl_lines.Emplace(buffer);
 
-							sprintf_s(buffer, "%s", "\treturn ComputeWorkGroupSize() * gl_NumWorkGroups;");
+							SPRINTF(buffer, "%s", "\treturn ComputeWorkGroupSize() * gl_NumWorkGroups;");
 							glsl_lines.Emplace(buffer);
 
-							sprintf_s(buffer, "%s", "}");
+							SPRINTF(buffer, "%s", "}");
 							glsl_lines.Emplace(buffer);
 
 							glsl_lines.Emplace("");
@@ -3712,7 +3713,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 							for (const ExtraData::InputParameter &parameter : extra_data->_FragmentInputParameters)
 							{
 								char buffer[64];
-								sprintf_s(buffer, "layout (location = %u) %s in %s %s;", location_index, parameter._Type == "uint" ? "flat" : "", parameter._Type.Data(), parameter._Name.Data());
+								SPRINTF(buffer, "layout (location = %u) %s in %s %s;", location_index, parameter._Type == "uint" ? "flat" : "", parameter._Type.Data(), parameter._Name.Data());
 
 								glsl_lines.Emplace(buffer);
 
@@ -3782,7 +3783,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 							for (const ExtraData::InputParameter &parameter : extra_data->_VertexInputParameters)
 							{
 								char buffer[64];
-								sprintf_s(buffer, "layout (location = %u) in %s %s;", location_index, parameter._Type.Data(), parameter._Name.Data());
+								SPRINTF(buffer, "layout (location = %u) in %s %s;", location_index, parameter._Type.Data(), parameter._Name.Data());
 
 								glsl_lines.Emplace(buffer);
 
@@ -3800,7 +3801,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 							for (const ExtraData::OutputParameter &parameter : extra_data->_VertexOutputParameters)
 							{
 								char buffer[64];
-								sprintf_s(buffer, "layout (location = %u) out %s %s;", location_index, parameter._Type.Data(), parameter._Name.Data());
+								SPRINTF(buffer, "layout (location = %u) out %s %s;", location_index, parameter._Type.Data(), parameter._Name.Data());
 
 								glsl_lines.Emplace(buffer);
 
@@ -3876,7 +3877,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 				//Construct the GLSL line and add it.
 				char glsl_line[128];
-				sprintf_s(glsl_line, "layout (set = 1, binding = %u, %s) uniform image2D %s;", current_binding_index++, format_string, arguments[0].Data());
+				SPRINTF(glsl_line, "layout (set = 1, binding = %u, %s) uniform image2D %s;", current_binding_index++, format_string, arguments[0].Data());
 
 				current_line = glsl_line;
 			}
@@ -3900,7 +3901,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 				//Construct the GLSL line and add it.
 				char glsl_line[128];
-				sprintf_s(glsl_line, "layout (set = 1, binding = %u) uniform sampler2D %s;", current_binding_index++, arguments[0].Data());
+				SPRINTF(glsl_line, "layout (set = 1, binding = %u) uniform sampler2D %s;", current_binding_index++, arguments[0].Data());
 
 				current_line = glsl_line;
 			}
@@ -4004,7 +4005,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 				//Construct the GLSL line and add it.
 				char glsl_line[128];
-				sprintf_s(glsl_line, "layout (set = 1, binding = %u) uniform sampler2D %s;", current_binding_index++, arguments[0].Data());
+				SPRINTF(glsl_line, "layout (set = 1, binding = %u) uniform sampler2D %s;", current_binding_index++, arguments[0].Data());
 
 				current_line = glsl_line;
 			}
@@ -4044,7 +4045,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 				//Construct the GLSL line and add it.
 				char glsl_line[128];
-				sprintf_s(glsl_line, "\t%s =  %s;", arguments[0].Data(), arguments[1].Data());
+				SPRINTF(glsl_line, "\t%s =  %s;", arguments[0].Data(), arguments[1].Data());
 
 				current_line = glsl_line;
 			}
@@ -4071,7 +4072,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 					//Construct the GLSL line and add it.
 					char glsl_line[128];
-					sprintf_s(glsl_line, "layout (location = %u) out vec4 %s;", output_render_target_location_index++, arguments[0].Data());
+					SPRINTF(glsl_line, "layout (location = %u) out vec4 %s;", output_render_target_location_index++, arguments[0].Data());
 
 					current_line = glsl_line;
 				}
@@ -4101,7 +4102,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 				//Construct the GLSL line and add it.
 				char glsl_line[128];
-				sprintf_s(glsl_line, "\tgl_Position =  %s;", arguments[0].Data());
+				SPRINTF(glsl_line, "\tgl_Position =  %s;", arguments[0].Data());
 
 				current_line = glsl_line;
 			}
@@ -4205,7 +4206,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 				//Construct the GLSL line and add it.
 				char glsl_line[128];
-				sprintf_s(glsl_line, "layout (set = 1, binding = %u) uniform sampler %s;", current_binding_index++, arguments[0].Data());
+				SPRINTF(glsl_line, "layout (set = 1, binding = %u) uniform sampler %s;", current_binding_index++, arguments[0].Data());
 
 				current_line = glsl_line;
 			}
@@ -4275,7 +4276,7 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 			file_name = file_name.substr(0, file_name.find_last_of('.'));
 
 			//Figure out the file path.
-			sprintf_s(file_path, "%s\\%s %s.glsl", "RenderPipelineAssetCompiler GLSL Shaders", file_name.c_str(), ShaderStageString(shader_stage._ShaderStage));
+			SPRINTF(file_path, "%s\\%s %s.glsl", "RenderPipelineAssetCompiler GLSL Shaders", file_name.c_str(), ShaderStageString(shader_stage._ShaderStage));
 
 			//Open the file.
 			std::ofstream file{ file_path };

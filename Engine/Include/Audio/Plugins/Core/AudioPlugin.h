@@ -7,6 +7,7 @@
 #include <Core/Containers/StreamArchive.h>
 #include <Core/General/DynamicString.h>
 #include <Core/General/HashString.h>
+#include <Core/General/Print.h>
 #include <Core/General/Time.h>
 
 //Audio.
@@ -754,10 +755,10 @@ protected:
 
 			char buffer[128];
 
-			sprintf_s(buffer, "Profiling pass \"%s\" concluded;\n", pass._Name);
+			SPRINTF(buffer, "Profiling pass \"%s\" concluded;\n", pass._Name);
 			PRINT_TO_OUTPUT(buffer);
 
-			sprintf_s(buffer, "\tSeconds elapsed: %f\n", seconds_elapsed);
+			SPRINTF(buffer, "\tSeconds elapsed: %f\n", seconds_elapsed);
 			PRINT_TO_OUTPUT(buffer);
 
 			if (pass._IsReference)
@@ -768,11 +769,11 @@ protected:
 			else if (reference_seconds_elapsed != FLOAT32_MAXIMUM)
 			{
 				const float32 seconds_elapsed_difference{ seconds_elapsed - reference_seconds_elapsed };
-				sprintf_s(buffer, "\t%s%f seconds compared to reference.\n", seconds_elapsed_difference > 0.0f ? "+" : "", seconds_elapsed_difference);
+				SPRINTF(buffer, "\t%s%f seconds compared to reference.\n", seconds_elapsed_difference > 0.0f ? "+" : "", seconds_elapsed_difference);
 				PRINT_TO_OUTPUT(buffer);
 			}
 
-			sprintf_s(buffer, "\tRealtime factor: %f%%\n", realtime_factor * 100.0f);
+			SPRINTF(buffer, "\tRealtime factor: %f%%\n", realtime_factor * 100.0f);
 			PRINT_TO_OUTPUT(buffer);
 
 			if (pass._IsReference)
@@ -783,7 +784,7 @@ protected:
 			else if (reference_realtime_factor != FLOAT32_MAXIMUM)
 			{
 				const float32 realtime_factor_difference{ realtime_factor - reference_realtime_factor };
-				sprintf_s(buffer, "\t%s%f%% realtime factor compared to reference.\n", realtime_factor_difference > 0.0f ? "+" : "", realtime_factor_difference * 100.0f);
+				SPRINTF(buffer, "\t%s%f%% realtime factor compared to reference.\n", realtime_factor_difference > 0.0f ? "+" : "", realtime_factor_difference * 100.0f);
 				PRINT_TO_OUTPUT(buffer);
 			}
 		}

@@ -3,12 +3,10 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/Print.h>
 
 //Third party.
 #include <ThirdParty/CLAP/clap.h>
-
-//STD.
-#include <cstdio>
 
 namespace CLAPAudioPortsExtension
 {
@@ -41,12 +39,12 @@ namespace CLAPAudioPortsExtension
 
 		if (is_input)
 		{
-			sprintf_s(info->name, "Stereo Input");
+			SPRINTF(info->name, "Stereo Input");
 		}
 
 		else
 		{
-			sprintf_s(info->name, "Stereo Output");
+			SPRINTF(info->name, "Stereo Output");
 		}
 
 		info->flags = CLAP_AUDIO_PORT_IS_MAIN;

@@ -3,6 +3,7 @@
 
 //Core.
 #include <Core/General/CatalystProjectConfiguration.h>
+#include <Core/General/Print.h>
 
 //Components.
 #include <Components/Components/LightComponent.h>
@@ -1677,7 +1678,7 @@ void RenderingSystem::PostInitializeGlobalRenderData() NOEXCEPT
 	{
 		//Create the identifier.
 		char buffer[32];
-		sprintf_s(buffer, "Blue_Noise_%u", i);
+		SPRINTF(buffer, "Blue_Noise_%u", i);
 		const HashString identifier{ buffer };
 
 		//Retrieve the texture 2D handle.

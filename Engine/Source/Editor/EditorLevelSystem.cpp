@@ -4,6 +4,7 @@
 
 //Core.
 #include <Core/General/Enumeration.h>
+#include <Core/General/Print.h>
 
 //Components.
 #include <Components/Components/StaticModelComponent.h>
@@ -16,7 +17,6 @@
 #include <Content/Assets/LevelAsset.h>
 #include <Content/Assets/MaterialAsset.h>
 #include <Content/Assets/ModelAsset.h>
-#include <Content/Assets/SoundAsset.h>
 
 //Entities.
 #include <Entities/Core/EntitySerialization.h>
@@ -36,7 +36,6 @@
 #include <Systems/InputSystem.h>
 #include <Systems/LevelSystem.h>
 #include <Systems/RenderingSystem.h>
-#include <Systems/ResourceSystem.h>
 
 //World.
 #include <World/Level/LevelStatistics.h>
@@ -267,7 +266,7 @@ FORCE_INLINE NO_DISCARD bool AnimatedModelAssetWidget
 	AssetPointer<AnimatedModelAsset> *const RESTRICT asset) NOEXCEPT
 {
 	char buffer[256];
-	sprintf_s(buffer, "%s: %s", label, (*asset) ? (*asset)->_Header._AssetName.Data() : "None");
+	SPRINTF(buffer, "%s: %s", label, (*asset) ? (*asset)->_Header._AssetName.Data() : "None");
 
 	if (ImGui::Selectable(buffer))
 	{
@@ -306,7 +305,7 @@ FORCE_INLINE NO_DISCARD bool AnimationAssetWidget
 	AssetPointer<AnimationAsset> *const RESTRICT asset) NOEXCEPT
 {
 	char buffer[256];
-	sprintf_s(buffer, "%s: %s", label, (*asset) ? (*asset)->_Header._AssetName.Data() : "None");
+	SPRINTF(buffer, "%s: %s", label, (*asset) ? (*asset)->_Header._AssetName.Data() : "None");
 
 	if (ImGui::Selectable(buffer))
 	{
@@ -345,7 +344,7 @@ FORCE_INLINE NO_DISCARD bool MaterialAssetWidget
 	AssetPointer<MaterialAsset> *const RESTRICT asset) NOEXCEPT
 {
 	char buffer[256];
-	sprintf_s(buffer, "%s: %s", label, (*asset)->_Header._AssetName.Data());
+	SPRINTF(buffer, "%s: %s", label, (*asset)->_Header._AssetName.Data());
 
 	if (ImGui::Selectable(buffer))
 	{
@@ -385,7 +384,7 @@ FORCE_INLINE NO_DISCARD bool ModelAssetWidget
 ) NOEXCEPT
 {
 	char buffer[256];
-	sprintf_s(buffer, "%s: %s", label, (*model_asset)->_Header._AssetName.Data());
+	SPRINTF(buffer, "%s: %s", label, (*model_asset)->_Header._AssetName.Data());
 
 	if (ImGui::Selectable(buffer))
 	{
@@ -403,46 +402,6 @@ FORCE_INLINE NO_DISCARD bool ModelAssetWidget
 
 				component->PreEditableFieldChange(entity, *editable_field);
 				(*model_asset) = AssetPointer<ModelAsset>((ModelAsset *const RESTRICT)asset);
-				component->PostEditableFieldChange(entity, *editable_field);
-			}
-		);
-	}
-
-	//Eh.
-	return false;
-}
-
-/*
-*	Creates a custom sound asset widget. Returns if there was a change.
-*/
-FORCE_INLINE NO_DISCARD bool SoundAssetWidget
-(
-	const char *const RESTRICT label,
-	Component *const RESTRICT component,
-	Entity *const RESTRICT entity,
-	const ComponentEditableField &editable_field,
-	AssetPointer<SoundAsset> *const RESTRICT sound_asset
-) NOEXCEPT
-{
-	char buffer[256];
-	sprintf_s(buffer, "%s: %s", label, (*sound_asset) ? (*sound_asset)->_Header._AssetName.Data() : "None");
-
-	if (ImGui::Selectable(buffer))
-	{
-		CatalystEditorSystem::Instance->GetEditorContentBrowser()->Request
-		(
-			"Select Sound",
-			SoundAsset::TYPE_IDENTIFIER,
-			component,
-			entity,
-			&editable_field,
-			sound_asset,
-			[](Component *const RESTRICT component, Entity *const RESTRICT entity, const ComponentEditableField *const RESTRICT editable_field, Asset *const RESTRICT asset, void *const RESTRICT user_data)
-			{
-				AssetPointer<SoundAsset> *const RESTRICT model_asset{ static_cast<AssetPointer<SoundAsset> *const RESTRICT>(user_data) };
-
-				component->PreEditableFieldChange(entity, *editable_field);
-				(*model_asset) = AssetPointer<SoundAsset>((SoundAsset *const RESTRICT)asset);
 				component->PostEditableFieldChange(entity, *editable_field);
 			}
 		);
@@ -1227,7 +1186,7 @@ void EditorLevelSystem::LoadLevelInternal(const nlohmann::json &JSON) NOEXCEPT
 */
 void EditorLevelSystem::GenerateEntityName(char* const RESTRICT buffer, const uint64 buffer_size) NOEXCEPT
 {
-	sprintf_s(buffer, buffer_size, "Entity_%u", _NameCounter++);
+	SNPRINTF(buffer, buffer_size, "Entity_%u", _NameCounter++);
 }
 
 /*
@@ -1480,7 +1439,7 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 
 				//Figure out the label.
 				char label_buffer[64];
-				sprintf_s(label_buffer, "##%llu", link);
+				SPRINTF(label_buffer, "##%llu", link);
 
 				if (ImGui::BeginCombo(label_buffer, preview_value))
 				{
@@ -1942,22 +1901,6 @@ NO_DISCARD bool EditorLevelSystem::BottomRightWindowUpdate(const Vector2<float32
 								break;
 							}
 
-							case ComponentEditableField::Type::SOUND_ASSET:
-							{
-								AssetPointer<SoundAsset> *const RESTRICT asset{ component->EditableFieldData<AssetPointer<SoundAsset>>(selected_entity, editable_field) };
-
-								SoundAssetWidget
-								(
-									editable_field._Name,
-									component,
-									selected_entity,
-									editable_field,
-									asset
-								);
-
-								break;
-							}
-
 							case ComponentEditableField::Type::UINT32:
 							case ComponentEditableField::Type::UINT64:
 							{
@@ -2269,7 +2212,7 @@ void EditorLevelSystem::DuplicateSelectedEntity() NOEXCEPT
 				*/
 				for (;;)
 				{
-					sprintf_s(final_buffer, "%s%llu", name_buffer, ++numbers);
+					SPRINTF(final_buffer, "%s%llu", name_buffer, ++numbers);
 
 					if (IsEntityNameAvailable(final_buffer))
 					{

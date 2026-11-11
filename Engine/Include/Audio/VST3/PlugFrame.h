@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/Print.h>
 #include <Core/Utilities/StringUtilities.h>
 
 //Audio.
@@ -9,9 +10,6 @@
 
 //Third party.
 #include <VST3/pluginterfaces/gui/iplugview.h>
-
-//STD.
-#include <cstdio>
 
 namespace VST3
 {
@@ -102,7 +100,7 @@ namespace VST3
 			//Create the frame window.
 			CatalystPlatform::WindowDescription description;
 
-			sprintf_s(description._Title, "%s", name);
+			SPRINTF(description._Title, "%s", name);
 			description._Width = view_rect.getWidth();
 			description._Height = view_rect.getHeight();
 			description._Flags = CatalystPlatform::WindowDescription::Flag::POPUP;

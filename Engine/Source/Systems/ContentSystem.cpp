@@ -4,6 +4,7 @@
 //Core.
 #include <Core/Algorithms/HashAlgorithms.h>
 #include <Core/Containers/DynamicArray.h>
+#include <Core/General/Print.h>
 #include <Core/General/Time.h>
 
 //Content.
@@ -189,19 +190,19 @@ bool ContentSystem::Compile(const char *const RESTRICT directory_path) NOEXCEPT
 
 	//Cache the directories.
 	char source_directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(source_directory_path, "%s\\Source", directory_path);
+	SPRINTF(source_directory_path, "%s\\Source", directory_path);
 
 	char assets_directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(assets_directory_path, "%s\\Assets", directory_path);
+	SPRINTF(assets_directory_path, "%s\\Assets", directory_path);
 
 	char compiled_directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(compiled_directory_path, "%s\\Compiled", directory_path);
+	SPRINTF(compiled_directory_path, "%s\\Compiled", directory_path);
 
 	char collections_directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(collections_directory_path, "%s\\Collections", directory_path);
+	SPRINTF(collections_directory_path, "%s\\Collections", directory_path);
 
 	char rendering_directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(rendering_directory_path, "%s\\..\\Rendering", directory_path);
+	SPRINTF(rendering_directory_path, "%s\\..\\Rendering", directory_path);
 
 	//Ensure all of the directories exist.
 	std::filesystem::create_directories(source_directory_path);
@@ -223,7 +224,7 @@ RECOMPILE:
 	ContentCache content_cache;
 
 	char content_cache_file_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(content_cache_file_path, "%s\\ContentCache.json", compiled_directory_path);
+	SPRINTF(content_cache_file_path, "%s\\ContentCache.json", compiled_directory_path);
 	content_cache.Read(content_cache_file_path);
 
 	//Always reset '_TriggerCompile'.
@@ -655,7 +656,7 @@ void ContentSystem::CreateAssetCollections(const char *const RESTRICT directory_
 
 				//Determine the collection path.
 				char collection_path[MAXIMUM_FILE_PATH_LENGTH];
-				sprintf_s(collection_path, "%s\\..\\Collections\\%s.cac", directory_path, collection_name.c_str());
+				SPRINTF(collection_path, "%s\\..\\Collections\\%s.cac", directory_path, collection_name.c_str());
 
 				//Set up the file.
 				BinaryOutputFile _file{ collection_path };
@@ -740,7 +741,7 @@ NO_DISCARD bool ContentSystem::WindowCallback(const Vector2<float32> minimum, co
 
 				{
 					char buffer[64];
-					sprintf_s(buffer, "Count: %llu", _Assets[asset_compiler->AssetTypeIdentifier()].Size());
+					SPRINTF(buffer, "Count: %llu", _Assets[asset_compiler->AssetTypeIdentifier()].Size());
 
 					ImGui::Text(buffer);
 				}

@@ -3,6 +3,7 @@
 
 //Core.
 #include <Core/Containers/StaticArray.h>
+#include <Core/General/Print.h>
 
 //Concurrency.
 #include <Concurrency/ScopedLock.h>
@@ -215,7 +216,7 @@ void LogSystem::Log(const LogLevel log_level,
 	vsprintf_s(LogSystemData::_TemporaryMessageBuffer, format, variadic_arguments);
 #endif
 	va_end(variadic_arguments);
-	sprintf_s(LogSystemData::_TemporaryLineBuffer, "[%s - %s - %s - Line %i] - %s", LogSystemLogic::GetLogLevelString(log_level), file, function, line, LogSystemData::_TemporaryMessageBuffer);
+	SPRINTF(LogSystemData::_TemporaryLineBuffer, "[%s - %s - %s - Line %i] - %s", LogSystemLogic::GetLogLevelString(log_level), file, function, line, LogSystemData::_TemporaryMessageBuffer);
 	
 	//Add the queued line.
 	QueuedLines &current_queued_lines{ LogSystemData::_QueuedLines[LogSystemData::_CurrentBufferIndex] };

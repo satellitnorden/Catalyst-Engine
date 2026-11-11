@@ -4,6 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Containers/DynamicArray.h>
 #include <Core/General/HashString.h>
+#include <Core/General/Print.h>
 #include <Core/General/StaticString.h>
 
 //Audio.
@@ -19,9 +20,6 @@
 
 //Rendering.
 #include <Rendering/Native/Resolution.h>
-
-//STD.
-#include <cstdio>
 
 //Forward declarations.
 class UISystem;

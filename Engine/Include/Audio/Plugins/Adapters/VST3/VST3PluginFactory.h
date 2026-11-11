@@ -4,6 +4,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/Algorithms/HashAlgorithms.h>
+#include <Core/General/Print.h>
 
 //Audio.
 #include <Audio/Plugins/Adapters/VST3/VST3Component.h>
@@ -60,7 +61,7 @@ public:
 	*/
 	FORCE_INLINE Steinberg::tresult PLUGIN_API getFactoryInfo(Steinberg::PFactoryInfo *info) override
 	{
-		sprintf_s(info->vendor, "%s", AudioPluginGlue::GetVendor());
+		SPRINTF(info->vendor, "%s", AudioPluginGlue::GetVendor());
 		info->url[0] = '\0';
 		info->email[0] = '\0';
 		info->flags = Steinberg::PFactoryInfo::FactoryFlags::kNoFlags;
@@ -90,8 +91,8 @@ public:
 
 		Steinberg::copyTUID(info->cid, _ClassID);
 		info->cardinality = Steinberg::PClassInfo::ClassCardinality::kManyInstances;
-		sprintf_s(info->category, "%s", kVstAudioEffectClass);
-		sprintf_s(info->name, "%s", AudioPluginGlue::GetName());
+		SPRINTF(info->category, "%s", kVstAudioEffectClass);
+		SPRINTF(info->name, "%s", AudioPluginGlue::GetName());
 
 		return Steinberg::kResultOk;
 	}

@@ -3,12 +3,10 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/Print.h>
 
 //Third party.
 #include <ThirdParty/CLAP/clap.h>
-
-//STD.
-#include <cstdio>
 
 namespace CLAPNotePortsExtension
 {
@@ -47,7 +45,7 @@ namespace CLAPNotePortsExtension
 		info->id = 0;
 		info->supported_dialects = CLAP_NOTE_DIALECT_CLAP;
 		info->preferred_dialect = CLAP_NOTE_DIALECT_CLAP;
-		sprintf_s(info->name, "Default MIDI Port");
+		SPRINTF(info->name, "Default MIDI Port");
 		
 		//Return success!
 		return true;

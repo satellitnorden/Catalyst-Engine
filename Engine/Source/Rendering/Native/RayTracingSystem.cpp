@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Native/RayTracingSystem.h>
 
+//Core.
+#include <Core/General/Print.h>
+
 //Components.
 #include <Components/Components/StaticModelComponent.h>
 #include <Components/Components/WorldTransformComponent.h>
@@ -11,9 +14,6 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 #include <Systems/WorldSystem.h>
-
-//STL.
-#include <stdio.h>
 
 /*
 *	Post-initializes the ray tracing system.
@@ -170,7 +170,7 @@ void RayTracingSystem::OnStaticModelInstanceCreated(Entity *const RESTRICT entit
 
 		//Calculate a unique identifier for this mesh.
 		char mesh_identifier_buffer[64];
-		sprintf_s(mesh_identifier_buffer, "%s_%llu", instance_data._Model->_Header._AssetName.Data(), mesh_index);
+		SPRINTF(mesh_identifier_buffer, "%s_%llu", instance_data._Model->_Header._AssetName.Data(), mesh_index);
 
 		const HashString mesh_identifier{ mesh_identifier_buffer };
 
@@ -295,7 +295,7 @@ void RayTracingSystem::OnStaticModelInstanceDestroyed(Entity *const RESTRICT ent
 
 		//Calculate a unique identifier for this mesh.
 		char mesh_identifier_buffer[64];
-		sprintf_s(mesh_identifier_buffer, "%s_%llu", instance_data._Model->_Header._AssetName.Data(), mesh_index);
+		SPRINTF(mesh_identifier_buffer, "%s_%llu", instance_data._Model->_Header._AssetName.Data(), mesh_index);
 
 		const HashString mesh_identifier{ mesh_identifier_buffer };
 

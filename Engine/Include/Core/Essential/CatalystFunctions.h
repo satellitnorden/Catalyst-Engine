@@ -4,13 +4,6 @@
 #include <utility>
 
 /*
-*	Clang doesn't have sprintf_s, but instead snprintf, so swap those. Should be fine. (:
-*/
-#if defined(CATALYST_CLANG)
-	#define sprintf_s sprintf
-#endif
-
-/*
 *	Advances a pointer N bytes.
 */
 template <typename TYPE>

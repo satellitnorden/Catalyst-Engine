@@ -1,6 +1,9 @@
 //Header file.
 #include <Systems/PathTracingSystem.h>
 
+//Core.
+#include <Core/General/Print.h>
+
 //Components.
 #include <Components/Core/Component.h>
 #include <Components/Components/LightComponent.h>
@@ -25,9 +28,6 @@
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/TaskSystem.h>
 #include <Systems/WorldTracingSystem.h>
-
-//STL.
-#include <stdio.h>
 
 //Constants.
 #define NEW_GATHER_TRIANGLES (1)
@@ -123,7 +123,7 @@ public:
 		if (_Text)
 		{
 			char buffer[128];
-			sprintf_s(buffer, "Samples: %llu", value);
+			SPRINTF(buffer, "Samples: %llu", value);
 
 			_Text->SetText(buffer);
 		}

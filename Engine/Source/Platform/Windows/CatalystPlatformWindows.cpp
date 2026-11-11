@@ -4,6 +4,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/Print.h>
 
 //Input.
 #include <Input/GamepadState.h>
@@ -23,9 +24,6 @@
 //Windows.
 #include <Lmcons.h>
 #include <Xinput.h>
-
-//STl.
-#include <stdio.h>
 
 //Static variable definitions.
 HINSTANCE CatalystPlatformWindows::_Instance;
@@ -248,9 +246,9 @@ void CatalystPlatform::Initialize() NOEXCEPT
 		char window_name_buffer[256];
 
 #if defined(CATALYST_EDITOR)
-		sprintf_s(window_name_buffer, "Catalyst Editor - %s", CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data());
+		SPRINTF(window_name_buffer, "Catalyst Editor - %s", CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data());
 #else
-		sprintf_s(window_name_buffer, "%s", CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data());
+		SPRINTF(window_name_buffer, "%s", CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data());
 #endif
 
 		Resolution resolution;
@@ -270,7 +268,7 @@ void CatalystPlatform::Initialize() NOEXCEPT
 		//Fill out the description.
 		WindowDescription description;
 
-		sprintf_s(description._Title, "%s", window_name_buffer);
+		SPRINTF(description._Title, "%s", window_name_buffer);
 		description._Width = resolution._Width;
 		description._Height = resolution._Height;
 		description._Flags = fullscreen ? WindowDescription::Flag::FULLSCREEN : WindowDescription::Flag::WINDOWED;

@@ -3,6 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/DynamicString.h>
+#include <Core/General/Print.h>
 
 //STL.
 #include <iomanip>
@@ -34,7 +35,7 @@ namespace TimeUtilities
 			total_minutes -= 60;
 		}
 
-		sprintf_s(buffer, "%u hours, %u minutes, %f seconds", total_hours, total_minutes, seconds);
+		SPRINTF(buffer, "%u hours, %u minutes, %f seconds", total_hours, total_minutes, seconds);
 	}
 
 	/*

@@ -71,27 +71,23 @@ public:
 	template <typename TYPE>
 	FORCE_INLINE NO_DISCARD TYPE RandomIntegerInRange(const TYPE minimum, const TYPE maximum) NOEXCEPT
 	{
-		std::uniform_int_distribution<TYPE> DISTRIBUTION{ minimum, maximum };
+		//Some special handling for types that the random number generator doesn't like to do natively.
+		if constexpr (std::is_same_v<TYPE, int8>)
+		{
+			return static_cast<int8>(RandomIntegerInRange<int32>(static_cast<int32>(minimum), static_cast<int32>(maximum)));
+		}
 
-		return DISTRIBUTION(_MersenneTwister);
-	}
+		else if constexpr (std::is_same_v<TYPE, uint8>)
+		{
+			return static_cast<uint8>(RandomIntegerInRange<uint32>(static_cast<uint32>(minimum), static_cast<uint32>(maximum)));
+		}
 
-	/*
-	*	Template specialization of the random integer in range function.
-	*/
-	template <>
-	FORCE_INLINE NO_DISCARD int8 RandomIntegerInRange<int8>(const int8 minimum, const int8 maximum) NOEXCEPT
-	{
-		return static_cast<int8>(RandomIntegerInRange<uint32>(minimum, maximum));
-	}
+		else
+		{
+			std::uniform_int_distribution<TYPE> DISTRIBUTION{ minimum, maximum };
 
-	/*
-	*	Template specialization of the random integer in range function.
-	*/
-	template <>
-	FORCE_INLINE NO_DISCARD uint8 RandomIntegerInRange<uint8>(const uint8 minimum, const uint8 maximum) NOEXCEPT
-	{
-		return static_cast<uint8>(RandomIntegerInRange<uint32>(minimum, maximum));
+			return DISTRIBUTION(_MersenneTwister);
+		}
 	}
 
 	/*

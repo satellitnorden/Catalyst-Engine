@@ -1,11 +1,11 @@
 //Header file.
 #include <UI/Widgets/SliderWidget.h>
 
+//Core.
+#include <Core/General/Print.h>
+
 //UI.
 #include <UI/Core/Scene.h>
-
-//STD.
-#include <cstdio>
 
 namespace UI
 {
@@ -172,7 +172,7 @@ namespace UI
 		//Render the text.
 		{
 			char buffer[64];
-			sprintf_s(buffer, "%s%i%s", _Prefix ? _Prefix.Data() : "", _Value, _Postfix ? _Postfix.Data() : "");
+			SPRINTF(buffer, "%s%i%s", _Prefix ? _Prefix.Data() : "", _Value, _Postfix ? _Postfix.Data() : "");
 
 			RenderText
 			(

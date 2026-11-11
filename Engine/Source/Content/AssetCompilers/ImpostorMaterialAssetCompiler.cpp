@@ -2,6 +2,7 @@
 #include <Content/AssetCompilers/ImpostorMaterialAssetCompiler.h>
 
 //Core.
+#include <Core/General/Print.h>
 #include <Core/General/StaticString.h>
 
 //File.
@@ -747,7 +748,7 @@ void ImpostorMaterialAssetCompiler::Compile(const CompileContext &compile_contex
 		//Determine the directory.
 		char directory_path[MAXIMUM_FILE_PATH_LENGTH];
 
-		sprintf_s(directory_path, "%s\\ImpostorTextures", compile_context._SourceDirectoryPath);
+		SPRINTF(directory_path, "%s\\ImpostorTextures", compile_context._SourceDirectoryPath);
 
 		//Create the directory, if it doesn't exist.
 		File::CreateDirectory(directory_path);
@@ -755,12 +756,12 @@ void ImpostorMaterialAssetCompiler::Compile(const CompileContext &compile_contex
 		//Write the albedo/thickness texture.
 		{
 			char file_buffer[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(file_buffer, "%s\\%s_Albedo.png", directory_path, compile_context._Name.Data());
+			SPRINTF(file_buffer, "%s\\%s_Albedo.png", directory_path, compile_context._Name.Data());
 
 			PNGWriter::Write(impostor_albedo_texture, file_buffer);
 
 			char asset_buffer[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(asset_buffer, "%s\\%s_AlbedoThickness.Texture2D", parameters._Output.Data(), compile_context._Name.Data());
+			SPRINTF(asset_buffer, "%s\\%s_AlbedoThickness.Texture2D", parameters._Output.Data(), compile_context._Name.Data());
 
 			std::ofstream asset_file{ asset_buffer };
 
@@ -779,12 +780,12 @@ void ImpostorMaterialAssetCompiler::Compile(const CompileContext &compile_contex
 		//Write the normal map texture.
 		{
 			char file_buffer[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(file_buffer, "%s\\%s_NormalMap.png", directory_path, compile_context._Name.Data());
+			SPRINTF(file_buffer, "%s\\%s_NormalMap.png", directory_path, compile_context._Name.Data());
 
 			PNGWriter::Write(impostor_normal_map_texture, file_buffer);
 
 			char asset_buffer[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(asset_buffer, "%s\\%s_NormalMapDisplacement.Texture2D", parameters._Output.Data(), compile_context._Name.Data());
+			SPRINTF(asset_buffer, "%s\\%s_NormalMapDisplacement.Texture2D", parameters._Output.Data(), compile_context._Name.Data());
 
 			std::ofstream asset_file{ asset_buffer };
 
@@ -802,12 +803,12 @@ void ImpostorMaterialAssetCompiler::Compile(const CompileContext &compile_contex
 		//Write the material properties texture.
 		{
 			char file_buffer[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(file_buffer, "%s\\%s_MaterialProperties.png", directory_path, compile_context._Name.Data());
+			SPRINTF(file_buffer, "%s\\%s_MaterialProperties.png", directory_path, compile_context._Name.Data());
 
 			PNGWriter::Write(impostor_material_properties_texture, file_buffer);
 
 			char asset_buffer[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(asset_buffer, "%s\\%s_MaterialProperties.Texture2D", parameters._Output.Data(), compile_context._Name.Data());
+			SPRINTF(asset_buffer, "%s\\%s_MaterialProperties.Texture2D", parameters._Output.Data(), compile_context._Name.Data());
 
 			std::ofstream asset_file{ asset_buffer };
 
@@ -825,12 +826,12 @@ void ImpostorMaterialAssetCompiler::Compile(const CompileContext &compile_contex
 		//Write the opacity texture.
 		{
 			char file_buffer[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(file_buffer, "%s\\%s_Opacity.png", directory_path, compile_context._Name.Data());
+			SPRINTF(file_buffer, "%s\\%s_Opacity.png", directory_path, compile_context._Name.Data());
 
 			PNGWriter::Write(impostor_opacity_texture, file_buffer);
 
 			char asset_buffer[MAXIMUM_FILE_PATH_LENGTH];
-			sprintf_s(asset_buffer, "%s\\%s_Opacity.Texture2D", parameters._Output.Data(), compile_context._Name.Data());
+			SPRINTF(asset_buffer, "%s\\%s_Opacity.Texture2D", parameters._Output.Data(), compile_context._Name.Data());
 
 			std::ofstream asset_file{ asset_buffer };
 
@@ -850,7 +851,7 @@ void ImpostorMaterialAssetCompiler::Compile(const CompileContext &compile_contex
 	//Write the material file.
 	{
 		char asset_buffer[MAXIMUM_FILE_PATH_LENGTH];
-		sprintf_s(asset_buffer, "%s\\%s.Material", parameters._Output.Data(), compile_context._Name.Data());
+		SPRINTF(asset_buffer, "%s\\%s.Material", parameters._Output.Data(), compile_context._Name.Data());
 
 		std::ofstream asset_file{ asset_buffer };
 
@@ -869,12 +870,12 @@ void ImpostorMaterialAssetCompiler::Compile(const CompileContext &compile_contex
 
 	if (compile_data->_Collection)
 	{
-		sprintf_s(collection_directory_path, "%s\\COLLECTION %s", GetCompiledDirectoryPath(compile_data->_CompilationDomain), compile_data->_Collection.Data());
+		SPRINTF(collection_directory_path, "%s\\COLLECTION %s", GetCompiledDirectoryPath(compile_data->_CompilationDomain), compile_data->_Collection.Data());
 	}
 
 	else
 	{
-		sprintf_s(collection_directory_path, "%s\\COLLECTION Default", GetCompiledDirectoryPath(compile_data->_CompilationDomain));
+		SPRINTF(collection_directory_path, "%s\\COLLECTION Default", GetCompiledDirectoryPath(compile_data->_CompilationDomain));
 	}
 
 	//Create the compiled directory, if it doesn't exist.
@@ -882,14 +883,14 @@ void ImpostorMaterialAssetCompiler::Compile(const CompileContext &compile_contex
 
 	//Determine the directory path.
 	char directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(directory_path, "%s\\Materials", collection_directory_path);
+	SPRINTF(directory_path, "%s\\Materials", collection_directory_path);
 
 	//Create the compiled directory, if it doesn't exist.
 	File::CreateDirectory(directory_path);
 
 	//Determine the output file path.
 	char output_file_path[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(output_file_path, "%s\\%s.ca", directory_path, compile_data->_Name.Data());
+	SPRINTF(output_file_path, "%s\\%s.ca", directory_path, compile_data->_Name.Data());
 
 	//Open the output file.
 	BinaryFile<BinaryFileMode::OUT> output_file{ output_file_path };

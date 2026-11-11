@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Native/RenderPasses/ShadowsRenderPass.h>
 
+//Core.
+#include <Core/General/Print.h>
+
 //Rendering.
 #include <Rendering/Native/NativeRenderPassManager.h>
 #include <Rendering/Native/RenderingUtilities.h>
@@ -8,9 +11,6 @@
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/RenderingSystem.h>
-
-//STL.
-#include <stdio.h>
 
 /*
 *	Default constructor.
@@ -242,7 +242,7 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 					parameters._DepthBuffer = Pair<HashString, DepthBufferHandle>(HashString("ShadowMapDepthBuffer"), shadow_map_data._DepthBuffer);
 					parameters._OutputRenderTargets.Emplace(HashString("ShadowMap"), shadow_map_data._RenderTarget);
 					char buffer[64];
-					sprintf_s(buffer, "OpaqueModelsShadowMap%u", static_cast<uint32>(i));
+					SPRINTF(buffer, "OpaqueModelsShadowMap%u", static_cast<uint32>(i));
 					parameters._InputStreamSubscriptions.Emplace(buffer);
 
 					_OpaqueModelShadowMapPipelines[i].Initialize(parameters);
@@ -254,7 +254,7 @@ void ShadowsRenderPass::Execute() NOEXCEPT
 					parameters._DepthBuffer = Pair<HashString, DepthBufferHandle>(HashString("ShadowMapDepthBuffer"), shadow_map_data._DepthBuffer);
 					parameters._OutputRenderTargets.Emplace(HashString("ShadowMap"), shadow_map_data._RenderTarget);
 					char buffer[64];
-					sprintf_s(buffer, "MaskedModelsShadowMap%u", static_cast<uint32>(i));
+					SPRINTF(buffer, "MaskedModelsShadowMap%u", static_cast<uint32>(i));
 					parameters._InputStreamSubscriptions.Emplace(buffer);
 
 					_MaskedModelShadowMapPipelines[i].Initialize(parameters);

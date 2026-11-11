@@ -207,7 +207,7 @@ void GenerateCMake::Generate(const GenerateProjectParameters &parameters)
 
     //Set MSVC-specific flags.
     file << "# Set MSVC-specific flags." << std::endl;
-    file << "if (MSVC)" << std::endl;
+    file << "if (CMAKE_CXX_COMPILER_ID STREQUAL \"MSVC\")" << std::endl;
 
     for (size_t configuration_index{ 0 }; configuration_index < parameters._Configurations.size(); ++configuration_index)
     {
@@ -253,6 +253,35 @@ void GenerateCMake::Generate(const GenerateProjectParameters &parameters)
         {
             file << " /INCREMENTAL";
         }
+
+        file << "\")" << std::endl;
+
+        if (configuration_index < (parameters._Configurations.size() - 1))
+        {
+            file << std::endl;
+        }
+    }
+
+    file << "endif()" << std::endl;
+    file << std::endl;
+
+    //Set GCC-specific flags.
+    file << "# Set GCC-specific flags." << std::endl;
+    file << "if (CMAKE_CXX_COMPILER_ID STREQUAL \"GNU\")" << std::endl;
+
+    for (size_t configuration_index{ 0 }; configuration_index < parameters._Configurations.size(); ++configuration_index)
+    {
+        //Cache the configuration.
+        const GenerateProjectParameters::Configuration &configuration{ parameters._Configurations[configuration_index] };
+
+        //Figure out the names.
+        const std::string flags_name{ std::string("CMAKE_CXX_FLAGS_") + Utilities::ToUpperCase(Utilities::RemoveSpaces(configuration._Name)) };
+        //Add the compiler flags.
+        file << "\t# Set flags." << std::endl;
+        file << "\tset(" << flags_name << " \"";
+
+        //Always generate debug information.
+        file << "-g";
 
         file << "\")" << std::endl;
 

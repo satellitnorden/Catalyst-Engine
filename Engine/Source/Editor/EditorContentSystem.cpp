@@ -2,6 +2,9 @@
 //Header file.
 #include <Editor/EditorContentSystem.h>
 
+//Core.
+#include <Core/General/Print.h>
+
 //File.
 #include <File/Core/File.h>
 
@@ -91,7 +94,7 @@ NO_DISCARD bool EditorContentSystem::WindowCallback(const Vector2<float32> minim
 
 	if (_CreateModelState._InputFolder)
 	{
-		sprintf_s(input_folder_buffer, "%s", _CreateModelState._InputFolder.Data());
+		SPRINTF(input_folder_buffer, "%s", _CreateModelState._InputFolder.Data());
 	}
 
 	else
@@ -125,13 +128,13 @@ NO_DISCARD bool EditorContentSystem::WindowCallback(const Vector2<float32> minim
 		for (uint64 i{ 0 }; i < _CreateModelState._LevelOfDetailModelFiles.Size();)
 		{
 			char text_buffer[32];
-			sprintf_s(text_buffer, "Level Of Detail %llu:", i + 1);
+			SPRINTF(text_buffer, "Level Of Detail %llu:", i + 1);
 
 			ImGui::Text(text_buffer);
 			ImGui::SameLine();
 
 			char id_buffer[32];
-			sprintf_s(id_buffer, "##LEVEL_OF_DETAIL_%llu", i + 1);
+			SPRINTF(id_buffer, "##LEVEL_OF_DETAIL_%llu", i + 1);
 
 			ImGui::PushID(id_buffer);
 
@@ -291,7 +294,7 @@ NO_DISCARD bool EditorContentSystem::WindowCallback(const Vector2<float32> minim
 
 	if (_CreateModelState._OutputFolder)
 	{
-		sprintf_s(output_folder_buffer, "%s", _CreateModelState._OutputFolder.Data());
+		SPRINTF(output_folder_buffer, "%s", _CreateModelState._OutputFolder.Data());
 	}
 
 	else
@@ -463,7 +466,7 @@ void EditorContentSystem::CreateModelCompile() NOEXCEPT
 	//Write the model asset file.
 	{
 		char buffer[MAXIMUM_FILE_PATH_LENGTH];
-		sprintf_s(buffer, "%s\\%s.Model", _CreateModelState._OutputFolder.Data(), name.c_str());
+		SPRINTF(buffer, "%s\\%s.Model", _CreateModelState._OutputFolder.Data(), name.c_str());
 
 		std::ofstream file{ buffer };
 
@@ -483,7 +486,7 @@ void EditorContentSystem::CreateModelCompile() NOEXCEPT
 	//Write the material asset file.
 	{
 		char buffer[MAXIMUM_FILE_PATH_LENGTH];
-		sprintf_s(buffer, "%s\\%s.Material", _CreateModelState._OutputFolder.Data(), name.c_str());
+		SPRINTF(buffer, "%s\\%s.Material", _CreateModelState._OutputFolder.Data(), name.c_str());
 
 		std::ofstream file{ buffer };
 
@@ -498,7 +501,7 @@ void EditorContentSystem::CreateModelCompile() NOEXCEPT
 	//Write the albedo/thickness asset file.
 	{
 		char buffer[MAXIMUM_FILE_PATH_LENGTH];
-		sprintf_s(buffer, "%s\\%s_AlbedoThickness.Texture2D", _CreateModelState._OutputFolder.Data(), name.c_str());
+		SPRINTF(buffer, "%s\\%s_AlbedoThickness.Texture2D", _CreateModelState._OutputFolder.Data(), name.c_str());
 
 		std::ofstream file{ buffer };
 
@@ -530,7 +533,7 @@ void EditorContentSystem::CreateModelCompile() NOEXCEPT
 	//Write the normal map/displacement asset file.
 	{
 		char buffer[MAXIMUM_FILE_PATH_LENGTH];
-		sprintf_s(buffer, "%s\\%s_NormalMapDisplacement.Texture2D", _CreateModelState._OutputFolder.Data(), name.c_str());
+		SPRINTF(buffer, "%s\\%s_NormalMapDisplacement.Texture2D", _CreateModelState._OutputFolder.Data(), name.c_str());
 
 		std::ofstream file{ buffer };
 
@@ -570,7 +573,7 @@ void EditorContentSystem::CreateModelCompile() NOEXCEPT
 	//Write the material properties asset file.
 	{
 		char buffer[MAXIMUM_FILE_PATH_LENGTH];
-		sprintf_s(buffer, "%s\\%s_MaterialProperties.Texture2D", _CreateModelState._OutputFolder.Data(), name.c_str());
+		SPRINTF(buffer, "%s\\%s_MaterialProperties.Texture2D", _CreateModelState._OutputFolder.Data(), name.c_str());
 
 		std::ofstream file{ buffer };
 

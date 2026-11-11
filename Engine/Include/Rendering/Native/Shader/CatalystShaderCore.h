@@ -44,16 +44,15 @@
 	template <typename TYPE>
 	FORCE_INLINE static NO_DISCARD TYPE FloorHelper(const TYPE value) NOEXCEPT
 	{
-		return TYPE::Floor(value);
-	}
-
-	/*
-	*	Floor helper function specialization for float32.
-	*/
-	template <>
-	FORCE_INLINE static NO_DISCARD float32 FloorHelper<float32>(const float32 value) NOEXCEPT
-	{
-		return BaseMath::Floor<float32>(value);
+		if constexpr (std::is_same_v<TYPE, float32>)
+		{
+			return BaseMath::Floor<float32>(value);
+		}
+		
+		else
+		{
+			return TYPE::Floor(value);
+		}
 	}
 
 	/*

@@ -3,6 +3,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/DynamicString.h>
+#include <Core/General/Print.h>
 
 //Audio.
 #include <Audio/Core/Loudness.h>
@@ -134,7 +135,7 @@ public:
 
 				//Log!
 				char buffer[256];
-				sprintf_s(buffer, "_%sOutputCurve.SetValue(%llu, %ff); //%fdB\n", _Passes[pass_index]._Name, sample_point_index, compensation_gain, compensation);
+				SPRINTF(buffer, "_%sOutputCurve.SetValue(%llu, %ff); //%fdB\n", _Passes[pass_index]._Name, sample_point_index, compensation_gain, compensation);
 
 				PRINT_TO_OUTPUT(buffer);
 			}

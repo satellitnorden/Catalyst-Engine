@@ -2,15 +2,15 @@
 //Header file.
 #include <Editor/NodeEditor.h>
 
+//Core.
+#include <Core/General/Print.h>
+
 //Systems.
 #include <Systems/InputSystem.h>
 
 //Third party.
 #include <ImGui/imgui.h>
 #include <ThirdParty/imguinodeeditor/imgui_node_editor.h>
-
-//STL.
-#include <stdio.h>
 
 //Macros.
 #define IMPLEMENTATION() (*_Implementation.Get<NodeEditorImplementation>())
@@ -42,7 +42,7 @@ void NodeEditor::Initialize(const char *const RESTRICT name) NOEXCEPT
 	ax::NodeEditor::Config config;
 
 	char settings_file_buffer[MAXIMUM_FILE_PATH_LENGTH];
-	sprintf_s(settings_file_buffer, "%s.json", name);
+	SPRINTF(settings_file_buffer, "%s.json", name);
 
 	config.SettingsFile = settings_file_buffer;
 

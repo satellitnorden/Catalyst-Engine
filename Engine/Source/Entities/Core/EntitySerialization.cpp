@@ -170,15 +170,6 @@ namespace EntitySerialization
 						break;
 					}
 
-					case ComponentEditableField::Type::SOUND_ASSET:
-					{
-						const AssetPointer<SoundAsset> *const RESTRICT data{ component->EditableFieldData<AssetPointer<SoundAsset>>(entity, editable_field) };
-
-						component_entry[editable_field._Name] = (*data)->_Header._AssetName.Data();
-
-						break;
-					}
-
 					case ComponentEditableField::Type::UINT32:
 					{
 						const uint32 *const RESTRICT data{ component->EditableFieldData<uint32>(entity, editable_field) };

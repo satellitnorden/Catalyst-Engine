@@ -3,15 +3,13 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/Print.h>
 
 //Audio.
 #include <Audio/Plugins/Adapters/CLAP/CLAPPluginData.h>
 
 //Third party.
 #include <ThirdParty/CLAP/clap.h>
-
-//STD.
-#include <cstdio>
 
 namespace CLAPParamsExtension
 {
@@ -56,8 +54,8 @@ namespace CLAPParamsExtension
 		}
 
 		param_info->cookie = nullptr; //TODO!
-		sprintf_s(param_info->name, plugin_data->_Plugin->GetParameterName(param_index));
-		sprintf_s(param_info->module, plugin_data->_Plugin->GetParameterName(param_index));
+		SPRINTF(param_info->name, "%s", plugin_data->_Plugin->GetParameterName(param_index));
+		SPRINTF(param_info->module, "%s", plugin_data->_Plugin->GetParameterName(param_index));
 		param_info->min_value = static_cast<double>(plugin_data->_Plugin->GetParameterMinimum(param_index));
 		param_info->max_value = static_cast<double>(plugin_data->_Plugin->GetParameterMaximum(param_index));
 		param_info->default_value = static_cast<double>(plugin_data->_Plugin->GetParameterDefaultPlain(param_index));

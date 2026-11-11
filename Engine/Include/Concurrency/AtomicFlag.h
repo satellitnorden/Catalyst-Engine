@@ -62,30 +62,25 @@ public:
 	template <WaitMode MODE>
 	FORCE_INLINE void Wait() const NOEXCEPT
 	{
-		ASSERT(false, "Not implemented!");
-	}
-
-	/*
-	*	Waits for this atomic flag to be set.
-	*/
-	template <>
-	FORCE_INLINE void Wait<WaitMode::PAUSE>() const NOEXCEPT
-	{
-		while (!IsSet())
+		if constexpr (MODE == WaitMode::PAUSE)
 		{
-			Concurrency::CurrentThread::Pause();
+			while (!IsSet())
+			{
+				Concurrency::CurrentThread::Pause();
+			}
 		}
-	}
 
-	/*
-	*	Waits for this atomic flag to be set.
-	*/
-	template <>
-	FORCE_INLINE void Wait<WaitMode::YIELD>() const NOEXCEPT
-	{
-		while (!IsSet())
+		else if constexpr (MODE == WaitMode::YIELD)
 		{
-			Concurrency::CurrentThread::Yield();
+			while (!IsSet())
+			{
+				Concurrency::CurrentThread::Yield();
+			}
+		}
+
+		else
+		{
+			ASSERT(false, "Invalid wait mode!");
 		}
 	}
 

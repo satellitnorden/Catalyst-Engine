@@ -385,36 +385,21 @@ public:
 	template <bool RESPECT_ORDER>
 	FORCE_INLINE void EraseAt(const uint64 index) NOEXCEPT
 	{
-		
-	}
-
-	/*
-	*	EraseAt/RESPECT_ORDER == false specialization.
-	*/
-	template <>
-	FORCE_INLINE void EraseAt<false>(const uint64 index) NOEXCEPT
-	{
-		TYPE &object{ _Array[index] };
-
-		object.~TYPE();
-		object = std::move(Back());
-
-		--_Size;
-	}
-
-	/*
-	*	EraseAt/RESPECT_ORDER == true specialization.
-	*/
-	template <>
-	FORCE_INLINE void EraseAt<true>(const uint64 index) NOEXCEPT
-	{
 		TYPE &object{ _Array[index] };
 
 		object.~TYPE();
 
-		for (uint64 i{ index }; i < _Size - 1; ++i)
+		if constexpr (RESPECT_ORDER)
 		{
-			_Array[i] = std::move(_Array[i + 1]);
+			for (uint64 i{ index }; i < _Size - 1; ++i)
+			{
+				_Array[i] = std::move(_Array[i + 1]);
+			}
+		}
+
+		else
+		{
+			object = std::move(Back());
 		}
 
 		--_Size;

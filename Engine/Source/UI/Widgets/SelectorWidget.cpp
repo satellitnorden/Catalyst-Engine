@@ -1,11 +1,11 @@
 //Header file.
 #include <UI/Widgets/SelectorWidget.h>
 
+//Core.
+#include <Core/General/Print.h>
+
 //UI.
 #include <UI/Core/Scene.h>
-
-//STD.
-#include <cstdio>
 
 namespace UI
 {
@@ -226,14 +226,14 @@ namespace UI
 			{
 				case ValuesType::VALUES_INDEX:
 				{
-					sprintf_s(buffer, "%s%s%s", _Prefix ? _Prefix.Data() : "", _ValuesIndexData._Values[_ValuesIndexData._CurrentIndex].Data(), _Postfix ? _Postfix.Data() : "");
+					SPRINTF(buffer, "%s%s%s", _Prefix ? _Prefix.Data() : "", _ValuesIndexData._Values[_ValuesIndexData._CurrentIndex].Data(), _Postfix ? _Postfix.Data() : "");
 
 					break;
 				}
 
 				case ValuesType::MINIMUM_MAXIMUM:
 				{
-					sprintf_s(buffer, "%s%i%s", _Prefix ? _Prefix.Data() : "", _MinimumMaximumData._Current, _Postfix ? _Postfix.Data() : "");
+					SPRINTF(buffer, "%s%i%s", _Prefix ? _Prefix.Data() : "", _MinimumMaximumData._Current, _Postfix ? _Postfix.Data() : "");
 
 					break;
 				}

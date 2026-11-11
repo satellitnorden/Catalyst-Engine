@@ -773,6 +773,10 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	file << "#include <Components/Core/Component.h>" << std::endl;
 	file << std::endl;
 
+	file << "//Core." << std::endl;
+	file << "#include <Core/General/Print.h>" << std::endl;
+	file << std::endl;
+
 	file << "//Profiling." << std::endl;
 	file << "#include <Profiling/Profiling.h>" << std::endl;
 	file << std::endl;
@@ -787,10 +791,6 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 
 	file << "//Third party." << std::endl;
 	file << "#include <ImGui/imgui.h>" << std::endl;
-	file << std::endl;
-
-	file << "//STD." << std::endl;
-	file << "#include <stdio.h>" << std::endl;
 	file << std::endl;
 
 	//Add includes for all components.
@@ -1106,7 +1106,7 @@ void ComponentGenerator::GenerateSourceFile(const nlohmann::json &JSON)
 	{
 		file << "\t{" << std::endl;
 		file << "\t\tImGui::Text(\"" << _component_data._Name.c_str() << "\");" << std::endl;
-		file << "\t\tsprintf_s(buffer, \"Number of instances: %llu\", " << _component_data._Name.c_str() << "::Instance->NumberOfInstances());" << std::endl;
+		file << "\t\tSPRINTF(buffer, \"Number of instances: %llu\", " << _component_data._Name.c_str() << "::Instance->NumberOfInstances());" << std::endl;
 		file << "\t\tImGui::Text(buffer);" << std::endl;
 		
 		if (_component_data._Statistics)

@@ -3,6 +3,7 @@
 
 //Core.
 #include <Core/Containers/StaticArray.h>
+#include <Core/General/Print.h>
 
 //Audio.
 #include <Audio/Core/Audio.h>
@@ -212,7 +213,7 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 		const uint64 file_path_length{ StringUtilities::StringLength(file_path) };
 
 		char buffer[MAXIMUM_FILE_PATH_LENGTH];
-		sprintf_s(buffer, file_path);
+		SPRINTF(buffer, "%s", file_path);
 
 		uint64 last_dot_position{ 0 };
 
@@ -247,7 +248,7 @@ NO_DISCARD bool GPReader::Read(const char *const RESTRICT file_path, Tablature *
 		const pugi::char_t *const RESTRICT child_value{ gpversion_node.child_value() };
 
 		char child_value_buffer[32];
-		sprintf_s(child_value_buffer, child_value);
+		SPRINTF(child_value_buffer, "%s", child_value);
 
 		char version_buffer[32];
 		uint32 current_position{ 0 };
