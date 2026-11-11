@@ -12,20 +12,11 @@ class AxisAlignedBoundingBox2D final
 
 public:
 
-	union
-	{
-		struct
-		{
-			//The minimum corner.
-			Vector2<float32> _Minimum;
+	//The minimum corner.
+	Vector2<float32> _Minimum;
 
-			//The maximum corner.
-			Vector2<float32> _Maximum;
-		};
-
-		//The corners.
-		StaticArray<Vector2<float32>, 2> _Corners;
-	};
+	//The maximum corner.
+	Vector2<float32> _Maximum;
 
 	/*
 	*	Calcules the center of an axis-aligned bounding box.
@@ -117,7 +108,7 @@ public:
 	*/
 	FORCE_INLINE constexpr NO_DISCARD const Vector2<float32> &operator[](const uint64 index) const NOEXCEPT
 	{
-		return _Corners[index];
+		return index == 0 ? _Minimum : _Maximum;
 	}
 
 	/*
@@ -125,7 +116,7 @@ public:
 	*/
 	FORCE_INLINE constexpr  Vector2<float32> &operator[](const uint64 index) NOEXCEPT
 	{
-		return _Corners[index];
+		return index == 0 ? _Minimum : _Maximum;
 	}
 
 	/*

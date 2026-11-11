@@ -63,7 +63,6 @@ public:
 			//The color.
 			Color _Color;
 
-
 			//The texture
 			AssetPointer<Texture2DAsset> _Texture;
 		};
