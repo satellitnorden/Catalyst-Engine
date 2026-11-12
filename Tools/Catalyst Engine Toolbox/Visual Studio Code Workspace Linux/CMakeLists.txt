@@ -25,15 +25,11 @@ add_executable(CatalystEngineToolbox ${SOURCE_FILES})
 # Add the include paths.
 target_include_directories(CatalystEngineToolbox PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../Code")
 
-# Set MSVC-specific flags.
-if (MSVC)
-	# Set compiler flags.
-	set(CMAKE_CXX_FLAGS_DEBUG "/Zi /Od")
-	# Set linker flags.
-	set(CMAKE_EXE_LINKER_FLAGS_DEBUG "/DEBUG /INCREMENTAL")
+# Set GCC-specific flags.
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	# Set flags.
+	set(CMAKE_CXX_FLAGS_DEBUG "-g")
 
-	# Set compiler flags.
-	set(CMAKE_CXX_FLAGS_RELEASE "/Zi /O2 /GL")
-	# Set linker flags.
-	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/DEBUG /LTCG:incremental /INCREMENTAL:NO")
+	# Set flags.
+	set(CMAKE_CXX_FLAGS_RELEASE "-g")
 endif()

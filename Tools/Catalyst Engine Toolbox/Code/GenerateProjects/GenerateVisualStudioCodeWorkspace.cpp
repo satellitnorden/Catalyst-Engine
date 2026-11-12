@@ -83,6 +83,9 @@ void GenerateVisualStudioCodeWorkspace::GenerateCodeWorkspaceFile(const Generate
         //Add the configuration provider.
         settings_entry["C_Cpp.default.configurationProvider"] = "ms-vscode.cmake-tools";
 
+        //Set debug options.
+        settings_entry["debug.allowBreakpointsEverywhere"] = true;
+
         //Set CMake options.
         settings_entry["cmake.options.statusBarVisibility"] = "visible";
         settings_entry["cmake.sourceDirectory"] = "${workspaceFolder}";
@@ -118,17 +121,18 @@ void GenerateVisualStudioCodeWorkspace::GenerateCMakePresetsFile(const GenerateP
     {
         nlohmann::ordered_json &configure_presets_entry{ JSON["configurePresets"] };
 
-        //Add the first (and only) entry.
+        for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
         {
             nlohmann::ordered_json &configure_preset_entry{ configure_presets_entry.emplace_back() };
 
-            configure_preset_entry["name"] = "Default";
-            configure_preset_entry["displayName"] = "Default";
+            configure_preset_entry["name"] = Utilities::RemoveSpaces(configuration._Name).c_str();
+            configure_preset_entry["displayName"] = Utilities::RemoveSpaces(configuration._Name).c_str();
             configure_preset_entry["binaryDir"] = "${sourceDir}/Build";
 
             {
                 nlohmann::ordered_json &cache_variables_entry{ configure_preset_entry["cacheVariables"] };
 
+                cache_variables_entry["CMAKE_BUILD_TYPE"] = Utilities::RemoveSpaces(configuration._Name).c_str();
                 cache_variables_entry["CMAKE_INSTALL_PREFIX"] = "${sourceDir}/Install";
             }
         }
@@ -143,7 +147,7 @@ void GenerateVisualStudioCodeWorkspace::GenerateCMakePresetsFile(const GenerateP
             nlohmann::ordered_json &build_preset_entry{ build_presets_entry.emplace_back() };
 
             build_preset_entry["name"] = Utilities::RemoveSpaces(configuration._Name).c_str();
-            build_preset_entry["configurePreset"] = "Default";
+            build_preset_entry["configurePreset"] = Utilities::RemoveSpaces(configuration._Name).c_str();
             build_preset_entry["configuration"] = Utilities::RemoveSpaces(configuration._Name).c_str();
         }
     }
@@ -292,6 +296,10 @@ void GenerateVisualStudioCodeWorkspace::GenerateLaunchFile(const GenerateProject
             launch_configuration["stopAtEntry"] = false;
             launch_configuration["cwd"] = "${workspaceFolder}";
             launch_configuration["preLaunchTask"] = "CMake: build";
+
+#if defined(PLATFORM_LINUX)
+            launch_configuration["MIMode"] = "gdb";
+#endif
         }
     }
 

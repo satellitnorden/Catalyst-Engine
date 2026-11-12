@@ -8,6 +8,7 @@
             "program": "${command:cmake.launchTargetPath}",
             "stopAtEntry": false,
             "preLaunchTask": "CMake: build",
+            "MIMode": "gdb",
 
             "cwd": "${userHome}/Documents/GitHub/DrumAttack/Projects",
             "args": ["generate_projects"]

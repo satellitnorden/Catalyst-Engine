@@ -2,20 +2,31 @@
     "version": 8,
     "configurePresets": [
         {
-            "name": "Linux",
-            "displayName": "Linux",
-            "binaryDir": "${sourceDir}/Build"
+            "name": "Debug",
+            "displayName": "Debug",
+            "binaryDir": "${sourceDir}/Build",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE" : "Debug"
+            }
+        },
+        {
+            "name": "Release",
+            "displayName": "Release",
+            "binaryDir": "${sourceDir}/Build",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE" : "Release"
+            }
         }
     ],
     "buildPresets": [
         {
             "name": "Debug",
-            "configurePreset": "Linux",
+            "configurePreset": "Debug",
             "configuration": "Debug"
         },
         {
             "name": "Release",
-            "configurePreset": "Linux",
+            "configurePreset": "Release",
             "configuration": "Release"
         }
     ]

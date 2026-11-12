@@ -11,6 +11,7 @@
 	],
     "settings": {
         "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+        "debug.allowBreakpointsEverywhere": true,
         "cmake.options.statusBarVisibility": "visible",
         "cmake.sourceDirectory": "${workspaceFolder}",
         "cmake.autoSelectActiveFolder": false
