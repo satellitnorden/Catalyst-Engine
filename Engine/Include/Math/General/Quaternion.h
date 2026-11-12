@@ -19,26 +19,17 @@ class Quaternion final
 
 public:
 
-	union
-	{
-		struct
-		{
-			//The X component.
-			float32 _X;
+	//The X component.
+	float32 _X;
 
-			//The Y component.
-			float32 _Y;
+	//The Y component.
+	float32 _Y;
 
-			//The Z component.
-			float32 _Z;
+	//The Z component.
+	float32 _Z;
 
-			//The W component.
-			float32 _W;
-		};
-
-		//The data.
-		float32 _Data[4];
-	};
+	//The W component.
+	float32 _W;
 
 	/*
 	*	Default constructor.
@@ -108,10 +99,16 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD Quaternion operator*(const Quaternion &other) const NOEXCEPT
 	{
+		const Vector3<float32> direction{ GetDirection() };
+		const float32 scalar{ GetScalar() };
+
+		const Vector3<float32> other_direction{ other.GetDirection() };
+		const float32 other_scalar{ other.GetScalar() };
+
 		Quaternion result;
 
-		result.SetDirection(other.GetDirection() * GetScalar() + GetDirection() * other.GetScalar() + Vector3<float32>::CrossProduct(GetDirection(), other.GetDirection()));
-		result.SetScalar(GetScalar() * other.GetScalar() - Vector3<float32>::DotProduct(GetDirection(), other.GetDirection()));
+		result.SetDirection(other_direction * scalar + direction * other_scalar + Vector3<float32>::CrossProduct(direction, other_direction));
+		result.SetScalar(scalar * other_scalar - Vector3<float32>::DotProduct(direction, other_direction));
 
 		return result;
 	}

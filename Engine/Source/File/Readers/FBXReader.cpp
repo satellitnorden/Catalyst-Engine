@@ -37,9 +37,9 @@ NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, ModelFile 
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 //Third party.
-#include <ThirdParty/assimp/assimp/Importer.hpp>
-#include <ThirdParty/assimp/assimp/postprocess.h>
-#include <ThirdParty/assimp/assimp/scene.h>
+#include <assimp/assimp/Importer.hpp>
+#include <assimp/assimp/postprocess.h>
+#include <assimp/assimp/scene.h>
 
 /*
 *	Bone information class definition.

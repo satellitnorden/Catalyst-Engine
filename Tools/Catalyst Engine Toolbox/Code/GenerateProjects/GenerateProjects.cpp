@@ -267,7 +267,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 		library_includes->emplace_back("vulkan-1.lib");
 		library_includes->emplace_back("Debug/shaderc_shared.lib");
 		library_includes->emplace_back("Debug/libsoundwave.lib");
-		library_includes->emplace_back("Debug/assimp-vc143-mtd.lib");
+		library_includes->emplace_back("Debug/assimp.lib");
 	}
 
 	else if (strcmp(configuration_name, "Debug Editor") == 0)
@@ -275,7 +275,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 		library_includes->emplace_back("vulkan-1.lib");
 		library_includes->emplace_back("Debug/shaderc_shared.lib");
 		library_includes->emplace_back("Debug/libsoundwave.lib");
-		library_includes->emplace_back("Debug/assimp-vc143-mtd.lib");
+		library_includes->emplace_back("Debug/assimp.lib");
 	}
 
 	else if (strcmp(configuration_name, "Profile") == 0)
@@ -283,7 +283,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 		library_includes->emplace_back("vulkan-1.lib");
 		library_includes->emplace_back("Profile/shaderc_shared.lib");
 		library_includes->emplace_back("Profile/libsoundwave.lib");
-		library_includes->emplace_back("Profile/assimp-vc143-mt.lib");
+		library_includes->emplace_back("Profile/assimp.lib");
 	}
 
 	else if (strcmp(configuration_name, "Profile Editor") == 0)
@@ -291,7 +291,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 		library_includes->emplace_back("vulkan-1.lib");
 		library_includes->emplace_back("Profile/shaderc_shared.lib");
 		library_includes->emplace_back("Profile/libsoundwave.lib");
-		library_includes->emplace_back("Profile/assimp-vc143-mt.lib");
+		library_includes->emplace_back("Profile/assimp.lib");
 	}
 
 	else if (strcmp(configuration_name, "Final") == 0)
@@ -305,7 +305,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 		library_includes->emplace_back("vulkan-1.lib");
 		library_includes->emplace_back("Debug/shaderc_shared.lib");
 		library_includes->emplace_back("Debug/libsoundwave.lib");
-		library_includes->emplace_back("Debug/assimp-vc143-mtd.lib");
+		library_includes->emplace_back("Debug/assimp.lib");
 	}
 
 	else if (strcmp(configuration_name, "Profile Static") == 0)
@@ -313,7 +313,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 		library_includes->emplace_back("vulkan-1.lib");
 		library_includes->emplace_back("Profile/shaderc_shared.lib");
 		library_includes->emplace_back("Profile/libsoundwave.lib");
-		library_includes->emplace_back("Profile/assimp-vc143-mt.lib");
+		library_includes->emplace_back("Profile/assimp.lib");
 	}
 
 	else if (strcmp(configuration_name, "Final Static") == 0)
@@ -328,7 +328,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 		library_includes->emplace_back("opengl32.lib");
 		library_includes->emplace_back("Debug/shaderc_shared.lib");
 		library_includes->emplace_back("Debug/libsoundwave.lib");
-		library_includes->emplace_back("Debug/assimp-vc143-mtd.lib");
+		library_includes->emplace_back("Debug/assimp.lib");
 	}
 
 	else if (strcmp(configuration_name, "Standalone Profile") == 0)
@@ -337,7 +337,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 		library_includes->emplace_back("opengl32.lib");
 		library_includes->emplace_back("Profile/shaderc_shared.lib");
 		library_includes->emplace_back("Profile/libsoundwave.lib");
-		library_includes->emplace_back("Profile/assimp-vc143-mt.lib");
+		library_includes->emplace_back("Profile/assimp.lib");
 	}
 
 	else if (strcmp(configuration_name, "Standalone Final") == 0)
@@ -451,6 +451,26 @@ bool ShouldIncludeThirdPartyDirectory(const ProjectSettings& project_settings, c
 }
 
 /*
+*	Returns whether or not the given third party file should be included.
+*/
+bool ShouldIncludeThirdPartyFile(const ProjectSettings &project_settings, const std::string &path)
+{
+#if defined(PLATFORM_LINUX)
+	if (path == "../../Catalyst-Engine/Engine/Third Party/minizip/minizip/iowin32.h")
+	{
+		return false;
+	}
+
+	if (path == "../../Catalyst-Engine/Engine/Third Party/minizip/iowin32.c")
+	{
+		return false;
+	}
+#endif
+
+	return true;
+}
+
+/*
 *	Scans the given third party directory.
 */
 void ScanThirdPartyDirectory(const ProjectSettings &project_settings, GenerateProjectParameters *parameters, GenerateProjectParameters::Directory *directory, const char *path, const bool is_top_level)
@@ -482,7 +502,7 @@ void ScanThirdPartyDirectory(const ProjectSettings &project_settings, GeneratePr
 			}
 		}
 
-		else
+		else if (ShouldIncludeThirdPartyFile(project_settings, entry_file_path))
 		{
 			const std::string extension{ entry_file_path.substr(entry_file_path.find_last_of('.')) };
 
@@ -524,11 +544,16 @@ void AddCommonParameters(const ProjectSettings &project_settings, GenerateProjec
 	parameters->_CodeIncludePaths.emplace_back("../../../Code/Include");
 
 	//Fill in the third party code include paths.
-	parameters->_CodeIncludePaths.emplace_back("../../../../Catalyst-Engine/Engine/Include/ThirdParty/assimp");
 	parameters->_CodeIncludePaths.emplace_back("../../../../Catalyst-Engine/Engine/Include/ThirdParty/imguinodeeditor");
 
 	//Fill in the library include paths.
-	parameters->_LibraryIncludePaths.emplace_back("../../../../Catalyst-Engine/Engine/Libraries/Static");
+#if defined(PLATFORM_WIN64)
+	parameters->_LibraryIncludePaths.emplace_back("../../../../Catalyst-Engine/Engine/Libraries/Win64/Static");
+#endif
+
+#if defined(PLATFORM_LINUX)
+	parameters->_LibraryIncludePaths.emplace_back("../../../../Catalyst-Engine/Engine/Libraries/Linux/Static");
+#endif
 
 	//Fill in the directories.
 	{
@@ -745,16 +770,16 @@ void GenerateDefaultProjects(const ProjectSettings &project_settings)
 		}
 
 		//Copy assimp-vc143-mt.dll.
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(parameters._DirectoryPath + std::string("/Build/Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(parameters._DirectoryPath + std::string("/Build/DebugEditor")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/Build/Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/Build/ProfileEditor")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/Build/Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Debug/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Build/Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Debug/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Build/DebugEditor")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Profile/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Build/Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Profile/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Build/ProfileEditor")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Final/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Build/Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 
 		if (project_settings._AddStaticBuilds)
 		{
-			std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(parameters._DirectoryPath + std::string("/Build/DebugStatic")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/Build/ProfileStatic")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Debug/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Build/DebugStatic")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Profile/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Build/ProfileStatic")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 		}
 
 		//Copy onnxruntime.dll.
@@ -762,7 +787,7 @@ void GenerateDefaultProjects(const ProjectSettings &project_settings)
 		{
 			for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
 			{
-				std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/onnxruntime.dll", std::string(parameters._DirectoryPath + std::string("/Build/") + Utilities::RemoveSpaces(configuration._Name)).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+				std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/onnxruntime.dll", std::string(parameters._DirectoryPath + std::string("/Build/") + Utilities::RemoveSpaces(configuration._Name)).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 			}
 		}
 	}
@@ -783,24 +808,24 @@ void GenerateDefaultProjects(const ProjectSettings &project_settings)
 		}
 
 		//Copy assimp-vc143-mt.dll.
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(parameters._DirectoryPath + std::string("/Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(parameters._DirectoryPath + std::string("/Debug Editor")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/Profile Editor")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Debug/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Debug/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Debug Editor")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Profile/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Profile/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Profile Editor")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Final/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 
 		if (project_settings._AddStaticBuilds)
 		{
-			std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(parameters._DirectoryPath + std::string("/Debug Static")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/Profile Static")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Debug/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Debug Static")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+			std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Profile/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Profile Static")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 		}
 
 		//Copy onnxruntime.dll.
 		if (project_settings._IncludeONNXRuntimeLibrary)
 		{
-			for (const GenerateProjectParameters::Configuration& configuration : parameters._Configurations)
+			for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
 			{
-				std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/onnxruntime.dll", std::string(parameters._DirectoryPath + std::string("/") + configuration._Name).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+				std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/onnxruntime.dll", std::string(parameters._DirectoryPath + std::string("/") + configuration._Name).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 			}
 		}
 	}
@@ -1002,9 +1027,9 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		}
 
 		//Copy assimp-vc143-mt.dll.
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(parameters._DirectoryPath + std::string("/StandaloneDebug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/StandaloneProfile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/StandaloneFinal")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Debug/assimp.dll", std::string(parameters._DirectoryPath + std::string("/StandaloneDebug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Profile/assimp.dll", std::string(parameters._DirectoryPath + std::string("/StandaloneProfile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Final/assimp.dll", std::string(parameters._DirectoryPath + std::string("/StandaloneFinal")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 	}
 
 #if VISUAL_STUDIO_CODE_WORKSPACE_SUPPORTED
@@ -1023,9 +1048,9 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		}
 
 		//Copy assimp-vc143-mt.dll.
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(parameters._DirectoryPath + std::string("/Build/StandaloneDebug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/Build/StandaloneProfile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(parameters._DirectoryPath + std::string("/Build/StandaloneFinal")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Debug/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Build/StandaloneDebug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Profile/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Build/StandaloneProfile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Final/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Build/StandaloneFinal")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 	}
 #endif
 
@@ -1045,9 +1070,9 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		}
 
 		//Copy assimp-vc143-mt.dll.
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Debug/assimp-vc143-mtd.dll", std::string(GenerateAudioPlugin::VisualStudioSolutionDirectory(audio_plugin) + std::string("/Standalone Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(GenerateAudioPlugin::VisualStudioSolutionDirectory(audio_plugin) + std::string("/Standalone Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/Profile/assimp-vc143-mt.dll", std::string(GenerateAudioPlugin::VisualStudioSolutionDirectory(audio_plugin) + std::string("/Standalone Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Debug/assimp.dll", std::string(GenerateAudioPlugin::VisualStudioSolutionDirectory(audio_plugin) + std::string("/Standalone Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Profile/assimp.dll", std::string(GenerateAudioPlugin::VisualStudioSolutionDirectory(audio_plugin) + std::string("/Standalone Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Final/assimp.dll", std::string(GenerateAudioPlugin::VisualStudioSolutionDirectory(audio_plugin) + std::string("/Standalone Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
 
 		//Copy onnxruntime.dll.
 		if (project_settings._IncludeONNXRuntimeLibrary)
