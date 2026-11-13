@@ -21,6 +21,9 @@
 #include <Terrain/TerrainVertex.h>
 #include <Terrain/TerrainQuadTreeUtilities.h>
 
+//STD.
+#include <cmath>
+
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 //Denotes whether or not terrain wireframe is enabled.
 bool TERRAIN_WIREFRAME_ENABLED{ false };
@@ -946,7 +949,7 @@ FORCE_INLINE void TerrainPathTracingShadingFunction(const PathTracingShadingCont
 
 		for (uint8 weight_index{ 0 }; weight_index < 4; ++weight_index)
 		{
-			weights[weight_index] = BaseMath::Maximum<float32>(powf(blend_map_sample[weight_index] * sub_material_samples[weight_index]._Displacement, DISPLACEMENT_POWER), MINIMUM_SAMPLE_WEIGHT);
+			weights[weight_index] = BaseMath::Maximum<float32>(std::pow(blend_map_sample[weight_index] * sub_material_samples[weight_index]._Displacement, DISPLACEMENT_POWER), MINIMUM_SAMPLE_WEIGHT);
 			weights_sum += weights[weight_index];
 		}
 
@@ -1008,7 +1011,7 @@ FORCE_INLINE void TerrainPathTracingShadingFunction(const PathTracingShadingCont
 
 	for (uint8 weight_index{ 0 }; weight_index < 4; ++weight_index)
 	{
-		weights[weight_index] = BaseMath::Maximum<float32>(powf(weights[weight_index] * material_samples[weight_index]._Displacement, DISPLACEMENT_POWER), MINIMUM_SAMPLE_WEIGHT);
+		weights[weight_index] = BaseMath::Maximum<float32>(std::pow(weights[weight_index] * material_samples[weight_index]._Displacement, DISPLACEMENT_POWER), MINIMUM_SAMPLE_WEIGHT);
 		weights_sum += weights[weight_index];
 	}
 

@@ -6,7 +6,7 @@
 #include <Systems/LogSystem.h>
 
 //Third party.
-#include <vulkan/shaderc/shaderc.h>
+#include <Vulkan/shaderc/shaderc.h>
 
 /*
 *	Compiles a GLSL shader of the given shader stage with the given lines.

@@ -29,14 +29,6 @@ public:
 		//The world position. Used for point lights.
 		Vector3<float32> _WorldPosition;
 
-		struct
-		{
-			//The minimum world position. Used for box lights.
-			Vector3<float32> _MinimumWorldPosition;
-
-			//The maximum world position. Used for box lights.
-			Vector3<float32> _MaximumWorldPosition;
-		};
 	};
 
 	//The color.
@@ -58,7 +50,7 @@ public:
 	float32 _Size;
 
 	//Padding.
-	Padding<8> _Padding;
+	Padding<20> _Padding;
 
 	/*
 	*	Default constructor.

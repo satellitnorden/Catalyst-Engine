@@ -1,6 +1,9 @@
 //Header file.
 #include <Components/Components/WorldTransformComponent.h>
 
+//STD.
+#include <cstddef>
+
 /*
 *	Initializes this component.
 */

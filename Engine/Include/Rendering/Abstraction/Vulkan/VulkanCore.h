@@ -9,7 +9,7 @@
 */
 #if defined(CATALYST_PLATFORM_ANDROID) || defined(CATALYST_PLATFORM_OCULUS_QUEST)
 	#define DEFINE_FUNCTION_PROTOTYPES (1)
-#elif defined(CATALYST_PLATFORM_WINDOWS)
+#elif defined(CATALYST_PLATFORM_WINDOWS) || defined(CATALYST_PLATFORM_LINUX)
 	#define DEFINE_FUNCTION_PROTOTYPES (0)
 #else
 	#error Unknown platform!
@@ -18,7 +18,7 @@
 /*
 *	Determine whether or not the swapchain is received from the platform. This is platform dependant.
 */
-#if defined(CATALYST_PLATFORM_ANDROID) || defined(CATALYST_PLATFORM_WINDOWS)
+#if defined(CATALYST_PLATFORM_ANDROID) || defined(CATALYST_PLATFORM_WINDOWS) || defined(CATALYST_PLATFORM_LINUX)
 	#define VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM (0)
 #elif defined(CATALYST_PLATFORM_OCULUS_QUEST)
 	#define VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM (1)
@@ -38,10 +38,13 @@
 #endif
 #if defined(CATALYST_PLATFORM_ANDROID) || defined(CATALYST_PLATFORM_OCULUS_QUEST)
 	#include <vulkan/vulkan.h>
-#endif
-#if defined(CATALYST_PLATFORM_WINDOWS)
+#elif defined(CATALYST_PLATFORM_WINDOWS)
 	#include <Platform/Windows/CatalystPlatformWindows.h> //Included here for the undefine stuff.
 	#include <vulkan/vulkan.h>
+#elif defined(CATALYST_PLATFORM_LINUX)
+	#include <vulkan/vulkan.h>
+#else
+	#error "Unknown platform!"
 #endif
 
 /*

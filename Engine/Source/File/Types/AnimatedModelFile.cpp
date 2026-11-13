@@ -7,6 +7,9 @@
 //File.
 #include <File/Utilities/BlenderUtilities.h>
 
+//STD.
+#include <cstring>
+
 /*
 *	Applies a transform to the given bone (and all it's children).
 */
@@ -37,7 +40,7 @@ void AnimatedModelFile::PostProcess() NOEXCEPT
 			nullptr,
 			[](const void *const RESTRICT user_data, const Mesh *const RESTRICT A, const Mesh *const RESTRICT B)
 			{
-				return strcmp(A->_Name.Data(), B->_Name.Data()) < 0;
+				return std::strcmp(A->_Name.Data(), B->_Name.Data()) < 0;
 			}
 		);
 	}

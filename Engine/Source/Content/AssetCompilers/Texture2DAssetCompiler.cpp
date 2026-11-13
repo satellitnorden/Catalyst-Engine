@@ -28,6 +28,7 @@
 #include <Systems/RenderingSystem.h>
 
 //STL.
+#include <cmath>
 #include <fstream>
 #include <string>
 
@@ -868,7 +869,7 @@ void Texture2DAssetCompiler::Compile(const CompileContext &compile_context) NOEX
 
 				for (uint8 i{ 0 }; i < 3; ++i)
 				{
-					texel[i] = powf(texel[i], 2.2f);
+					texel[i] = std::pow(texel[i], 2.2f);
 				}
 			}
 		}

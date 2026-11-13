@@ -4,6 +4,9 @@
 //Generated
 #include <Generated/Script.Generated.h>
 
+//STD.
+#include <cstddef>
+
 /*
 *	Initializes this component.
 */

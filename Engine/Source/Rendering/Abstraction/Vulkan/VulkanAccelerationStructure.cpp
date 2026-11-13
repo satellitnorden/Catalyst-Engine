@@ -222,7 +222,7 @@ void VulkanAccelerationStructure::Initialize
 		}
 
 		//Calculate the new scratch capacity.
-		const uint64 new_scratch_capacity{ BaseMath::RoundToNearestMultipleOf(scratch_memory_requirements.size, static_cast<uint64>(1024)) };
+		const uint64 new_scratch_capacity{ BaseMath::RoundToNearestMultipleOf(scratch_memory_requirements.size, static_cast<VkDeviceSize>(1024)) };
 
 		_ScratchBuffer.Initialize(new_scratch_capacity, VkBufferUsageFlagBits::VK_BUFFER_USAGE_RAY_TRACING_BIT_NV, VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 

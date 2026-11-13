@@ -34,16 +34,6 @@ ShaderLightComponent::ShaderLightComponent(Entity *const RESTRICT entity) NOEXCE
 
 			break;
 		}
-
-		/*
-		case LightType::BOX:
-		{
-			_MinimumWorldPosition = light_component._MinimumWorldPosition.GetRelativePosition(RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell());
-			_MaximumWorldPosition = light_component._MaximumWorldPosition.GetRelativePosition(RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetWorldTransform().GetCell());
-
-			break;
-		}
-		*/
 	}
 
 	_Color = light_instance_data._Color;

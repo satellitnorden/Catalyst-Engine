@@ -4,6 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/DynamicString.h>
 
+//STD.
+#include <cstring>
+
 /*
 *	File namespace, containing common code relating to files.
 */

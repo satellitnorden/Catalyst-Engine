@@ -137,11 +137,11 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 	}
 
 	//Retrieve the init module function.
-	InitModuleProc init_module_function{ static_cast<InitModuleProc>(implementation->_DynamicLibrary.GetSymbol("InitDll")) };
+	InitModuleProc init_module_function{ reinterpret_cast<InitModuleProc>(implementation->_DynamicLibrary.GetSymbol("InitDll")) };
 
 	if (!init_module_function)
 	{
-		init_module_function = static_cast<InitModuleProc>(implementation->_DynamicLibrary.GetSymbol("ModuleEntry"));
+		init_module_function = reinterpret_cast<InitModuleProc>(implementation->_DynamicLibrary.GetSymbol("ModuleEntry"));
 	}
 
 	if (init_module_function && !init_module_function())
@@ -152,7 +152,7 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 	}
 
 	//Retrieve the "GetPluginFactory()" function.
-	GetFactoryProc get_plugin_factory_function{ static_cast<GetFactoryProc>(implementation->_DynamicLibrary.GetSymbol("GetPluginFactory")) };
+	GetFactoryProc get_plugin_factory_function{ reinterpret_cast<GetFactoryProc>(implementation->_DynamicLibrary.GetSymbol("GetPluginFactory")) };
 
 	if (!get_plugin_factory_function)
 	{
@@ -811,11 +811,11 @@ void VST3PluginHost::Terminate() NOEXCEPT
 	if (implementation->_DynamicLibrary.IsLoaded())
 	{
 		//Retrieve the exit module function.
-		ExitModuleProc exit_module_function{ static_cast<ExitModuleProc>(implementation->_DynamicLibrary.GetSymbol("ExitDll")) };
+		ExitModuleProc exit_module_function{ reinterpret_cast<ExitModuleProc>(implementation->_DynamicLibrary.GetSymbol("ExitDll")) };
 
 		if (!exit_module_function)
 		{
-			exit_module_function = static_cast<ExitModuleProc>(implementation->_DynamicLibrary.GetSymbol("ModuleExit"));
+			exit_module_function = reinterpret_cast<ExitModuleProc>(implementation->_DynamicLibrary.GetSymbol("ModuleExit"));
 		}
 
 		if (exit_module_function && !exit_module_function())

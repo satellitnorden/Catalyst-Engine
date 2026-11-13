@@ -616,4 +616,4 @@ private:																																									\
 	PoolAllocator<sizeof(X##InitializationData)> POOL_ALLOCATOR;																											\
 	DynamicArray<X##InstanceData> _InstanceData;																															\
 																																											\
-	__VA_ARGS__																																								\
+	__VA_ARGS__
