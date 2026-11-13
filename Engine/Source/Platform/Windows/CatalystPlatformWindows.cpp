@@ -25,6 +25,9 @@
 #include <Lmcons.h>
 #include <Xinput.h>
 
+//Intrinsics.
+#include <intrin.h>
+
 //Static variable definitions.
 HINSTANCE CatalystPlatformWindows::_Instance;
 int32 CatalystPlatformWindows::_ShowCommand;
@@ -233,6 +236,29 @@ FORCE_INLINE void SetCursorVisibility(const bool visibility) NOEXCEPT
 {
 	//Set the requested visibility.
 	CatalystWindowsData::_CursorRequestedVisibility = visibility;
+}
+
+/*
+*	Returns the CPU information.
+*/
+NO_DISCARD CatalystPlatform::CPUInformation CatalystPlatform::GetCPUInformation() NOEXCEPT
+{
+	CPUInformation cpu_information;
+
+	//Retrieve if this CPU supports AVX2 instructions.
+	{
+		int32 cpu_info[4];
+		__cpuid(cpu_info, 0);
+
+		if (cpu_info[0] >= 7)
+		{
+			__cpuidex(cpu_info, 7, 0);
+
+			cpu_information._SupportsAVX2 = (cpu_info[1] & (1 << 5)) != 0;
+		}
+	}
+
+	return cpu_information;
 }
 
 /*

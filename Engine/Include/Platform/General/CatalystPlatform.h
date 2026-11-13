@@ -14,6 +14,19 @@ class CatalystPlatform final
 public:
 
 	/*
+	*	CPU information class declaration.
+	*/
+	class CPUInformation final
+	{
+
+	public:
+
+		//Denotes whether or not this CPU supports AVX2 instructions.
+		bool _SupportsAVX2;
+
+	};
+
+	/*
 	*	Window description class definition.
 	*/
 	class WindowDescription final
@@ -65,6 +78,11 @@ public:
 		Flag _Flags;
 
 	};
+
+	/*
+	*	Returns the CPU information.
+	*/
+	static NO_DISCARD CPUInformation GetCPUInformation() NOEXCEPT;
 
 	/*
 	*	Initializes the platform.

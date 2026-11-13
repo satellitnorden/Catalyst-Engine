@@ -297,7 +297,7 @@ void GenerateVisualStudioCodeWorkspace::GenerateLaunchFile(const GenerateProject
             launch_configuration["name"] = "Visual Studio Debugger";
             launch_configuration["type"] = "cppvsdbg";
         #elif defined(PLATFORM_LINUX)
-            launch_configuration["name"] = "Debug C/C++ (CodeLLDB)"";
+            launch_configuration["name"] = "Debug C/C++ (CodeLLDB)";
             launch_configuration["type"] = "lldb";
         #else
             #error "Unknown platform!"

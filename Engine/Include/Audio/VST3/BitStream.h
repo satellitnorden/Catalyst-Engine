@@ -71,7 +71,7 @@ namespace VST3
 		/*
 		*	Seeks.
 		*/
-		FORCE_INLINE Steinberg::tresult seek(int64 pos, int32 mode, int64 *result) override
+		FORCE_INLINE Steinberg::tresult seek(Steinberg::int64 pos, Steinberg::int32 mode, Steinberg::int64 *result) override
 		{
 			switch (mode)
 			{
@@ -99,7 +99,7 @@ namespace VST3
 		/*
 		*	Telld.
 		*/
-		FORCE_INLINE Steinberg::tresult tell(int64 *pos) override
+		FORCE_INLINE Steinberg::tresult tell(Steinberg::int64 *pos) override
 		{
 			*pos = _StreamArchiveReadPosition;
 

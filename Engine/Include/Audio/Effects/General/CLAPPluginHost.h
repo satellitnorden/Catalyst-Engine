@@ -2,7 +2,6 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/General/DynamicLibrary.h>
 #include <Core/General/DynamicString.h>
 #include <Core/General/HashString.h>
 
@@ -13,6 +12,9 @@
 #include <Concurrency/AtomicFlag.h>
 #include <Concurrency/AtomicQueue.h>
 #include <Concurrency/Task.h>
+
+//Platform.
+#include <Platform/General/DynamicLibrary.h>
 
 //Third party.
 #include <ThirdParty/CLAP/clap.h>

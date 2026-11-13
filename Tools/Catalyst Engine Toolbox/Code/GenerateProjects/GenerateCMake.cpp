@@ -283,6 +283,9 @@ void GenerateCMake::Generate(const GenerateProjectParameters &parameters)
         //Always generate debug information.
         file << "-g";
 
+        //Always support AVX2 instructions.
+        file << " -mavx2";
+
         file << "\")" << std::endl;
 
         if (configuration_index < (parameters._Configurations.size() - 1))

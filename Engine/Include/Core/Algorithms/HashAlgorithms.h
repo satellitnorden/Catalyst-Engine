@@ -407,14 +407,14 @@ namespace HashAlgorithms
 		constexpr uint64 M{ 0xc6a4a7935bd1e995 };
 		constexpr int32 R{ 47 };
 
-		uint64_t hash{ seed ^ (length * M) };
+		uint64 hash{ seed ^ (length * M) };
 
 		const char* data{ input };
 		const char* end{ data + (length & ~0b111ull) };
 
 		while (data != end)
 		{
-			uint64_t k
+			uint64 k
 			{
 				0ull
 				| static_cast<uint64>(data[0]) << 0
@@ -439,13 +439,13 @@ namespace HashAlgorithms
 
 		switch (length & 0b111ull)
 		{
-			case 7: hash ^= uint64_t(data[6]) << 48; [[fallthrough]];
-			case 6: hash ^= uint64_t(data[5]) << 40; [[fallthrough]];
-			case 5: hash ^= uint64_t(data[4]) << 32; [[fallthrough]];
-			case 4: hash ^= uint64_t(data[3]) << 24; [[fallthrough]];
-			case 3: hash ^= uint64_t(data[2]) << 16; [[fallthrough]];
-			case 2: hash ^= uint64_t(data[1]) << 8; [[fallthrough]];
-			case 1: hash ^= uint64_t(data[0]);
+			case 7: hash ^= uint64(data[6]) << 48; [[fallthrough]];
+			case 6: hash ^= uint64(data[5]) << 40; [[fallthrough]];
+			case 5: hash ^= uint64(data[4]) << 32; [[fallthrough]];
+			case 4: hash ^= uint64(data[3]) << 24; [[fallthrough]];
+			case 3: hash ^= uint64(data[2]) << 16; [[fallthrough]];
+			case 2: hash ^= uint64(data[1]) << 8; [[fallthrough]];
+			case 1: hash ^= uint64(data[0]);
 			hash *= M;
 		};
 

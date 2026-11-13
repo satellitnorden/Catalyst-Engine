@@ -5,7 +5,6 @@
 
 //Intrinsics.
 #include <immintrin.h>
-#include <intrin.h>
 
 /*
 *	This file contains SIMD operations.
@@ -29,23 +28,11 @@ namespace SIMD
 	*/
 	FORCE_INLINE NO_DISCARD Backend _GetBackend() NOEXCEPT
 	{
-		//Check check support for the AVX modes.
-		bool AVX2_supported{ false };
-
-		{
-			int32 cpu_info[4];
-			__cpuid(cpu_info, 0);
-
-			if (cpu_info[0] >= 7)
-			{
-				__cpuidex(cpu_info, 7, 0);
-
-				AVX2_supported = (cpu_info[1] & (1 << 5)) != 0;
-			}
-		}
+		//Retrieve the CPU information.
+		const CatalystPlatform::CPUInformation cpu_information{ CatalystPlatform::GetCPUInformation() };
 
 		//If AVX2 is supported, choose that, otherwise fall back to SSE2.
-		return AVX2_supported ? Backend::AVX2 : Backend::SSE2;
+		return cpu_information._SupportsAVX2 ? Backend::AVX2 : Backend::SSE2;
 	}
 
 	/*

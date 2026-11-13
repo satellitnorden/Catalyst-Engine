@@ -2,7 +2,6 @@
 #include <Audio/Effects/General/VST3PluginHost.h>
 
 //Core.
-#include <Core/General/DynamicLibrary.h>
 #include <Core/Utilities/StringUtilities.h>
 
 //Audio.
@@ -15,6 +14,9 @@
 
 //Concurrency.
 #include <Concurrency/AtomicQueue.h>
+
+//Platform.
+#include <Platform/General/DynamicLibrary.h>
 
 //Systems.
 #include <Systems/LogSystem.h>
