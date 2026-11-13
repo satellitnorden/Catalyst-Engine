@@ -16,7 +16,7 @@
 #include <Concurrency/AtomicQueue.h>
 
 //Platform.
-#include <Platform/General/DynamicLibrary.h>
+#include <Platform/Core/DynamicLibrary.h>
 
 //Systems.
 #include <Systems/LogSystem.h>

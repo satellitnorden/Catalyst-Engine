@@ -26,12 +26,12 @@
 	#error Unknown platform!
 #endif
 
-//ThirdParty
-#if defined(CATALYST_PLATFORM_ANDROID) || defined(CATALYST_PLATFORM_OCULUS_QUEST)
-	#define VK_USE_PLATFORM_ANDROID_KHR
-#endif
+//Third party.
 #if defined(CATALYST_PLATFORM_WINDOWS)
 	#define VK_USE_PLATFORM_WIN32_KHR
+#endif
+#if defined(CATALYST_PLATFORM_LINUX)
+	#define VK_USE_PLATFORM_WAYLAND_KHR
 #endif
 #if DEFINE_FUNCTION_PROTOTYPES
 	#define VK_NO_PROTOTYPES (1)

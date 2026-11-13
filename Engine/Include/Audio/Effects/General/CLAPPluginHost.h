@@ -14,7 +14,7 @@
 #include <Concurrency/Task.h>
 
 //Platform.
-#include <Platform/General/DynamicLibrary.h>
+#include <Platform/Core/DynamicLibrary.h>
 
 //Third party.
 #include <ThirdParty/CLAP/clap.h>

@@ -35,7 +35,7 @@
 #include <Core/Compiler/Compiler.h>
 
 //Platform.
-#include <Platform/General/CatalystPlatform.h>
+#include <Platform/Core/CatalystPlatform.h>
 
 //Memory.
 #include <Memory/Memory.h>
