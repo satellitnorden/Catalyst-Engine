@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Third party.
-#include <ThirdParty/Tracy/tracy/Tracy.hpp>
+#include <tracy/tracy/Tracy.hpp>
 
 /*
 *	Defines a profiling scope.

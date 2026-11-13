@@ -418,6 +418,7 @@ void ScanDirectory(GenerateProjectParameters::Directory *directory, const char *
 			const std::string extension{ entry_file_path.substr(entry_file_path.find_last_of('.')) };
 
 			if (extension == ".h"
+				|| extension == ".hpp"
 				|| extension == ".inl"
 				|| extension == ".cpp"
 				|| extension == ".c"
@@ -440,7 +441,7 @@ void ScanDirectory(GenerateProjectParameters::Directory *directory, const char *
 /*
 *	Returns whether or not the given third party directory should be included.
 */
-bool ShouldIncludeThirdPartyDirectory(const ProjectSettings& project_settings, const std::string &path)
+bool ShouldIncludeThirdPartyDirectory(const ProjectSettings &project_settings, const std::string &path)
 {
 	if (path == "../../Catalyst-Engine/Engine/Third Party/Jolt")
 	{
@@ -466,6 +467,16 @@ bool ShouldIncludeThirdPartyFile(const ProjectSettings &project_settings, const 
 		return false;
 	}
 #endif
+
+	//Only include 'tracy/Tracy.hpp' and 'TracyClient.cpp' for the Tracy library.
+	if (path.find("../../Catalyst-Engine/Engine/Third Party/Tracy") != std::string::npos)
+	{
+		if (path != "../../Catalyst-Engine/Engine/Third Party/Tracy/tracy/tracy/Tracy.hpp"
+			&& path != "../../Catalyst-Engine/Engine/Third Party/Tracy/tracy/TracyClient.cpp")
+		{
+			return false;
+		}
+	}
 
 	return true;
 }
@@ -507,6 +518,7 @@ void ScanThirdPartyDirectory(const ProjectSettings &project_settings, GeneratePr
 			const std::string extension{ entry_file_path.substr(entry_file_path.find_last_of('.')) };
 
 			if (extension == ".h"
+				|| extension == ".hpp"
 				|| extension == ".inl"
 				|| extension == ".cpp"
 				|| extension == ".c")

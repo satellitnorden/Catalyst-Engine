@@ -2,13 +2,11 @@
     "version": "2.0.0",
     "configurations": [
         {
-            "type": "cppdbg",
-            "name": "Catalyst Engine Toolbox",
+            "name": "Debug C/C++ (CodeLLDB)",
+            "type" : "lldb",
             "request": "launch",
             "program": "${command:cmake.launchTargetPath}",
-            "stopAtEntry": false,
             "preLaunchTask": "CMake: build",
-            "MIMode": "gdb",
 
             "cwd": "${userHome}/Documents/GitHub/DrumAttack/Projects",
             "args": ["generate_projects"]

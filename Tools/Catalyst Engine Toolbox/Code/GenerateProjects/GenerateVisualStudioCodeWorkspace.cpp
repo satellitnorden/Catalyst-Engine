@@ -205,6 +205,10 @@ void GenerateVisualStudioCodeWorkspace::GenerateExtensionsFile(const GeneratePro
 
         recommendations_entry.emplace_back("ms-vscode.cmake-tools");
         recommendations_entry.emplace_back("ms-vscode.cpptools");
+
+    #if defined(PLATFORM_LINUX)
+        recommendations_entry.emplace_back("vadimcn.vscode-lldb");
+    #endif
     }
     
     //Figure out the file path.
@@ -289,17 +293,19 @@ void GenerateVisualStudioCodeWorkspace::GenerateLaunchFile(const GenerateProject
         {
             nlohmann::ordered_json &launch_configuration{ configurations_entry.emplace_back() };
 
+        #if defined(PLATFORM_WIN64)
+            launch_configuration["name"] = "Visual Studio Debugger";
             launch_configuration["type"] = "cppvsdbg";
-            launch_configuration["name"] = parameters._ProjectName;
+        #elif defined(PLATFORM_LINUX)
+            launch_configuration["name"] = "Debug C/C++ (CodeLLDB)"";
+            launch_configuration["type"] = "lldb";
+        #else
+            #error "Unknown platform!"
+        #endif
             launch_configuration["request"] = "launch";
             launch_configuration["program"] = "${command:cmake.launchTargetPath}";
-            launch_configuration["stopAtEntry"] = false;
             launch_configuration["cwd"] = "${workspaceFolder}";
             launch_configuration["preLaunchTask"] = "CMake: build";
-
-#if defined(PLATFORM_LINUX)
-            launch_configuration["MIMode"] = "gdb";
-#endif
         }
     }
 
