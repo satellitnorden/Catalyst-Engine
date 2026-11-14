@@ -262,116 +262,176 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 */
 void AddLibraryIncludes(const ProjectSettings &project_settings, const char *configuration_name, std::vector<std::string> *library_includes)
 {
+#if defined(PLATFORM_WIN64)
+	#define SHADERC_DEBUG_NAME "Debug/shaderc_shared.lib"
+	#define SHADERC_PROFILE_NAME "Profile/shaderc_shared.lib"
+#elif defined(PLATFORM_LINUX)
+	#define SHADERC_DEBUG_NAME "shaderc.a"
+	#define SHADERC_PROFILE_NAME "shaderc.a"
+#endif
+
 	//Add configuration specific library includes.
 	if (strcmp(configuration_name, "Debug") == 0)
 	{
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("vulkan-1.lib");
-		library_includes->emplace_back("Debug/shaderc_shared.lib");
+	#endif
+		library_includes->emplace_back(SHADERC_DEBUG_NAME);
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Debug/libsoundwave.lib");
 		library_includes->emplace_back("Debug/assimp.lib");
+	#endif
 	}
 
 	else if (strcmp(configuration_name, "Debug Editor") == 0)
 	{
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("vulkan-1.lib");
-		library_includes->emplace_back("Debug/shaderc_shared.lib");
+	#endif
+		library_includes->emplace_back(SHADERC_DEBUG_NAME);
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Debug/libsoundwave.lib");
 		library_includes->emplace_back("Debug/assimp.lib");
+	#endif
 	}
 
 	else if (strcmp(configuration_name, "Profile") == 0)
 	{
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("vulkan-1.lib");
-		library_includes->emplace_back("Profile/shaderc_shared.lib");
+	#endif
+		library_includes->emplace_back(SHADERC_PROFILE_NAME);
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Profile/libsoundwave.lib");
 		library_includes->emplace_back("Profile/assimp.lib");
+	#endif
 	}
 
 	else if (strcmp(configuration_name, "Profile Editor") == 0)
 	{
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("vulkan-1.lib");
-		library_includes->emplace_back("Profile/shaderc_shared.lib");
+	#endif
+		library_includes->emplace_back(SHADERC_PROFILE_NAME);
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Profile/libsoundwave.lib");
 		library_includes->emplace_back("Profile/assimp.lib");
+	#endif
 	}
 
 	else if (strcmp(configuration_name, "Final") == 0)
 	{
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("vulkan-1.lib");
+	#endif
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Final/libsoundwave.lib");
+	#endif
 	}
 
 	else if (strcmp(configuration_name, "Debug Static") == 0)
 	{
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("vulkan-1.lib");
-		library_includes->emplace_back("Debug/shaderc_shared.lib");
+	#endif
+		library_includes->emplace_back(SHADERC_DEBUG_NAME);
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Debug/libsoundwave.lib");
 		library_includes->emplace_back("Debug/assimp.lib");
+	#endif
 	}
 
 	else if (strcmp(configuration_name, "Profile Static") == 0)
 	{
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("vulkan-1.lib");
-		library_includes->emplace_back("Profile/shaderc_shared.lib");
+	#endif
+		library_includes->emplace_back(SHADERC_PROFILE_NAME);
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Profile/libsoundwave.lib");
 		library_includes->emplace_back("Profile/assimp.lib");
+	#endif
 	}
 
 	else if (strcmp(configuration_name, "Final Static") == 0)
 	{
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("vulkan-1.lib");
+	#endif
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Final/libsoundwave.lib");
+	#endif
 	}
 
 	else if (strcmp(configuration_name, "Standalone Debug") == 0)
 	{
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("vulkan-1.lib");
+	#endif
 		library_includes->emplace_back("opengl32.lib");
-		library_includes->emplace_back("Debug/shaderc_shared.lib");
+		library_includes->emplace_back(SHADERC_DEBUG_NAME);
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Debug/libsoundwave.lib");
 		library_includes->emplace_back("Debug/assimp.lib");
+	#endif
 	}
 
 	else if (strcmp(configuration_name, "Standalone Profile") == 0)
 	{
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("vulkan-1.lib");
+	#endif
 		library_includes->emplace_back("opengl32.lib");
-		library_includes->emplace_back("Profile/shaderc_shared.lib");
+		library_includes->emplace_back(SHADERC_PROFILE_NAME);
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Profile/libsoundwave.lib");
 		library_includes->emplace_back("Profile/assimp.lib");
+	#endif
 	}
 
 	else if (strcmp(configuration_name, "Standalone Final") == 0)
 	{
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("vulkan-1.lib");
+	#endif
 		library_includes->emplace_back("opengl32.lib");
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Final/libsoundwave.lib");
+	#endif
 	}
 
 	else if (strcmp(configuration_name, "CLAP Debug") == 0)
 	{
 		library_includes->emplace_back("opengl32.lib");
-		library_includes->emplace_back("Debug/shaderc_shared.lib");
+		library_includes->emplace_back(SHADERC_DEBUG_NAME);
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Debug/libsoundwave.lib");
+	#endif
 	}
 
 	else if (strcmp(configuration_name, "CLAP Final") == 0)
 	{
 		library_includes->emplace_back("opengl32.lib");
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Final/libsoundwave.lib");
+	#endif
 	}
 
 	else if (strcmp(configuration_name, "VST3 Debug") == 0)
 	{
 		library_includes->emplace_back("opengl32.lib");
-		library_includes->emplace_back("Debug/shaderc_shared.lib");
+		library_includes->emplace_back(SHADERC_DEBUG_NAME);
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Debug/libsoundwave.lib");
+	#endif
 	}
 
 	else if (strcmp(configuration_name, "VST3 Final") == 0)
 	{
 		library_includes->emplace_back("opengl32.lib");
+	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Final/libsoundwave.lib");
+	#endif
 	}
 
 	else
