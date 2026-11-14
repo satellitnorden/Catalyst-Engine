@@ -62,22 +62,4 @@ public:
 private:
 
 };
-
-/*
-*	Main function.
-*/
-#define MAIN_FUNCTION(IMPLEMENTATION) int32 WINAPI WinMain(	_In_ HINSTANCE hInstance,		\
-															_In_ HINSTANCE hPrevInstance,	\
-															_In_opt_ LPSTR lpCmdLine,		\
-															_In_ int32 nCmdShow)			\
-{																							\
-	SetUnhandledExceptionFilter(CatalystPlatformWindows::CrashHandler);						\
-																							\
-	CatalystPlatformWindows::_Instance = hInstance;											\
-	CatalystPlatformWindows::_ShowCommand = nCmdShow;										\
-																							\
-	IMPLEMENTATION;																			\
-																							\
-	return 0;																				\
-}
 #endif
