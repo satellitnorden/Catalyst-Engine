@@ -9,8 +9,8 @@
 */ 
 	
 #include <string.h>
-#include <ThirdParty/RtAudio/asiosys.h>		// platform definition
-#include <ThirdParty/RtAudio/asio.h>
+#include "asiosys.h"		// platform definition
+#include "asio.h"
 
 #if MAC
 #include "asiodrvr.h"
@@ -30,8 +30,8 @@ long main()
 #elif WINDOWS
 
 #include "windows.h"
-#include <ThirdParty/RtAudio/iasiodrv.h>
-#include <ThirdParty/RtAudio/asiodrivers.h>
+#include "iasiodrv.h"
+#include "asiodrivers.h"
 
 IASIO *theAsioDriver = 0;
 extern AsioDrivers *asioDrivers;

@@ -8,7 +8,7 @@
 #include <Audio/AudioDeviceInformation.h>
 
 //Third party.
-#include <ThirdParty/RtAudio/RtAudio.h>
+#include <RtAudio/RtAudio.h>
 #include <Platform/Windows/WindowsUndefines.h>
 
 class RtAudioAudioBackend : public AudioBackend

@@ -1,5 +1,5 @@
 #include <string.h>
-#include <ThirdParty/RtAudio/asiodrivers.h>
+#include "asiodrivers.h"
 
 AsioDrivers* asioDrivers = 0;
 
@@ -83,7 +83,7 @@ void AsioDrivers::removeCurrentDriver()
 
 #elif WINDOWS
 
-#include <ThirdParty/RtAudio/iasiodrv.h>
+#include "iasiodrv.h"
 
 extern IASIO* theAsioDriver;
 

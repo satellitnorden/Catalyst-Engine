@@ -1,6 +1,6 @@
 #include <windows.h>
-#include <ThirdParty/RtAudio/iasiodrv.h>
-#include <ThirdParty/RtAudio/asiolist.h>
+#include "iasiodrv.h"
+#include "asiolist.h"
 
 #define ASIODRV_DESC		"description"
 #define INPROC_SERVER		"InprocServer32"
@@ -193,18 +193,14 @@ AsioDriverList::AsioDriverList ()
 		pdl = pdl->next;
 	}
 
-	coInitialized_ = false;
-	if (numdrv)	{
-		HRESULT hr = CoInitialize(0);	// initialize COM
-		if( !FAILED( hr ) ) coInitialized_ = true;
-	}
+	if (numdrv) CoInitialize(0);	// initialize COM
 }
 
 AsioDriverList::~AsioDriverList ()
 {
 	if (numdrv) {
 		deleteDrvStruct(lpdrvlist);
-		if( coInitialized_ ) CoUninitialize(); // balanced call.
+		CoUninitialize();
 	}
 }
 

@@ -16,7 +16,7 @@
 //Concurrency.
 #include <Concurrency/Atomic.h>
 #include <Concurrency/ScopedLock.h>
-#include <Concurrency/Spinlock.h>
+#include <Concurrency/SpinLock.h>
 
 //Rendering.
 #include <Rendering/Native/Resolution.h>
@@ -182,7 +182,7 @@ namespace Audio
 		};
 
 		//The requests lock.
-		Spinlock _RequestsLock;
+		SpinLock _RequestsLock;
 
 		//The requests.
 		DynamicArray<Request> _Requests;
