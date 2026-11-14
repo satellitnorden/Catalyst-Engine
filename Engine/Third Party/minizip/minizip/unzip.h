@@ -48,7 +48,7 @@ extern "C" {
 #endif
 
 #ifndef _ZLIB_H
-#include <ThirdParty/zlib/zlib.h> //MODIFIED TO POINT TO THE RIGHT FILE
+#include <zlib/zlib.h> //MODIFIED TO POINT TO THE RIGHT FILE
 #endif
 
 #ifndef  _ZLIBIOAPI_H

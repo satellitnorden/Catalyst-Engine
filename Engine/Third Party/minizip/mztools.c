@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ThirdParty/zlib/zlib.h> //MODIFIED TO POINT TO THE RIGHT FILE
+#include <zlib/zlib.h> //MODIFIED TO POINT TO THE RIGHT FILE
 #include "minizip/unzip.h"
 
 #define READ_8(adr)  ((unsigned char)*(adr))

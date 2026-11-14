@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <ThirdParty/zlib/zlib.h> //MODIFIED TO POINT TO THE RIGHT FILE
+#include <zlib/zlib.h> //MODIFIED TO POINT TO THE RIGHT FILE
 #include "minizip/zip.h"
 
 #ifdef STDC

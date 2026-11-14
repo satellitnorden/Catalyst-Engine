@@ -37,7 +37,7 @@
 */
 /**********************************************************************/
 
-#include <ThirdParty/RtMidi/RtMidi.h>
+#include <ThirdParty/rtmidi/RtMidi.h>
 #include <sstream>
 
 using namespace rt::midi;

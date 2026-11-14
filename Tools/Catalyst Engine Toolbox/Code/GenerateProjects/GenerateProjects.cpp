@@ -210,14 +210,16 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 
 	//Add platform-specific preprocessor definitions.
 #if defined(PLATFORM_WIN64)
+	preprocessor_definitions->emplace_back("CATALYST_PLATFORM_WINDOWS");
 	preprocessor_definitions->emplace_back("__WINDOWS_WASAPI__");
 	preprocessor_definitions->emplace_back("__WINDOWS_ASIO__");
 	preprocessor_definitions->emplace_back("__WINDOWS_MM__");
-	preprocessor_definitions->emplace_back("CATALYST_PLATFORM_WINDOWS");
 #endif
 
 #if defined(PLATFORM_LINUX)
 	preprocessor_definitions->emplace_back("CATALYST_PLATFORM_LINUX");
+	preprocessor_definitions->emplace_back("__LINUX_ALSA__");
+	preprocessor_definitions->emplace_back("__LINUX_PULSE__");
 #endif
 
 	//Add global preprocessor definitions.
@@ -456,16 +458,30 @@ bool ShouldIncludeThirdPartyDirectory(const ProjectSettings &project_settings, c
 bool ShouldIncludeThirdPartyFile(const ProjectSettings &project_settings, const std::string &path)
 {
 #if defined(PLATFORM_LINUX)
-	if (path == "../../Catalyst-Engine/Engine/Third Party/minizip/minizip/iowin32.h")
+	constexpr const char *DISCARDED_FILES[]
 	{
-		return false;
-	}
+		"../../Catalyst-Engine/Engine/Third Party/minizip/minizip/iowin32.h",
+		"../../Catalyst-Engine/Engine/Third Party/minizip/iowin32.c"
+	};
 
-	if (path == "../../Catalyst-Engine/Engine/Third Party/minizip/iowin32.c")
+	for (const char *discarded_file : DISCARDED_FILES)
 	{
-		return false;
+		if (path == discarded_file)
+		{
+			return false;
+		}
 	}
 #endif
+
+	//Only include 'RtAudio/RtAudio.h' and 'RtAudio/RtAudio.cpp' for the Tracy library.
+	if (path.find("../../Catalyst-Engine/Engine/Third Party/RtAudio") != std::string::npos)
+	{
+		if (path != "../../Catalyst-Engine/Engine/Third Party/RtAudio/RtAudio/RtAudio.h"
+			&& path != "../../Catalyst-Engine/Engine/Third Party/RtAudio/RtAudio/RtAudio.cpp")
+		{
+			return false;
+		}
+	}
 
 	//Only include 'tracy/Tracy.hpp' and 'TracyClient.cpp' for the Tracy library.
 	if (path.find("../../Catalyst-Engine/Engine/Third Party/Tracy") != std::string::npos)

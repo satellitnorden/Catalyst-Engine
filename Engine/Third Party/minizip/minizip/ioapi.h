@@ -42,7 +42,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <ThirdParty/zlib/zlib.h> //MODIFIED TO POINT TO THE RIGHT FILE
+#include <zlib/zlib.h> //MODIFIED TO POINT TO THE RIGHT FILE
 
 #if defined(USE_FILE32API)
 #define fopen64 fopen

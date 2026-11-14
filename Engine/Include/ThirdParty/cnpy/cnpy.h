@@ -13,7 +13,7 @@
 #include<typeinfo>
 #include<iostream>
 #include<cassert>
-#include <ThirdParty/zlib/zlib.h>
+#include <zlib/zlib.h>
 #include<map>
 #include<memory>
 #include<stdint.h>

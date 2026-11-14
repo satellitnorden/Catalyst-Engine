@@ -72,7 +72,7 @@
         #define NOUNCRYPT
 #endif
 
-#include <ThirdParty/zlib/zlib.h> //MODIFIED TO POINT TO THE RIGHT FILE
+#include <zlib/zlib.h> //MODIFIED TO POINT TO THE RIGHT FILE
 #include "minizip/unzip.h"
 
 #ifdef STDC
