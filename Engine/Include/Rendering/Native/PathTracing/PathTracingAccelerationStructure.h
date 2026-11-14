@@ -132,32 +132,25 @@ private:
 		//Denotes whether or not this node holdes axis aligned bounding boxes or triangles.
 		bool _HasTriangles{ true };
 
+		//The axis aligned bounding boxes.
+		StaticArray<AxisAlignedBoundingBox3D, 2> _AxisAlignedBoundingBoxes;
+
+		//The nodes.
+		Node *RESTRICT _Nodes;
+
 		union
 		{
+			//The triangles.
+			DynamicArray<PathTracingTriangle> _Triangles;
+
 			struct
 			{
-				//The axis aligned bounding boxes.
-				StaticArray<AxisAlignedBoundingBox3D, 2> _AxisAlignedBoundingBoxes;
+				//The triangles memory.
+				PathTracingTriangle *RESTRICT _TrianglesMemory;
 
-				//The nodes.
-				Node *RESTRICT _Nodes;
+				//The size of the triangles.
+				uint64 _TrianglesSize;
 			};
-
-			union
-			{
-				//The triangles.
-				DynamicArray<PathTracingTriangle> _Triangles;
-
-				struct
-				{
-					//The triangles memory.
-					PathTracingTriangle *RESTRICT _TrianglesMemory;
-
-					//The size of the triangles.
-					uint64 _TrianglesSize;
-				};
-			};
-
 		};
 
 		/*
@@ -195,7 +188,7 @@ private:
 		//The bytes needed for the vertices.
 		uint64 _NumberBytesNeededForVertices{ 0 };
 
-		//The bytes needed for the triangle´s.
+		//The bytes needed for the triangleï¿½s.
 		uint64 _NumberBytesNeededForTriangles{ 0 };
 
 		//The number of bytes needed for nodes.
@@ -425,7 +418,7 @@ private:
 	}
 
 	/*
-	*	Copies a node´s data to the acceleration structure memory.
+	*	Copies a nodeï¿½s data to the acceleration structure memory.
 	*/
 	FORCE_INLINE void CopyNodeToAccelerationStructureMemory(Node* const RESTRICT node) NOEXCEPT
 	{
@@ -459,7 +452,7 @@ private:
 	}
 
 	/*
-	*	Refit the node´s axis aligned bounding box(es).
+	*	Refit the nodeï¿½s axis aligned bounding box(es).
 	*/
 	FORCE_INLINE void Refit(Node *const RESTRICT node, AxisAlignedBoundingBox3D *const RESTRICT box) NOEXCEPT
 	{
