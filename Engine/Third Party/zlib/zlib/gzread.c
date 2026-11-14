@@ -5,9 +5,6 @@
 
 #include "gzguts.h"
 
-//ADDED: Added include to fix 'implicit declaration of function ‘X’; did you mean ‘fY’? [-Wimplicit-function-declaration]' warning.
-#include <unistd.h>
-
 /* Use read() to load a buffer -- return -1 on error, otherwise 0.  Read from
    state->fd, and update state->eof, state->err, and state->msg as appropriate.
    This function needs to loop on read(), since read() is not guaranteed to

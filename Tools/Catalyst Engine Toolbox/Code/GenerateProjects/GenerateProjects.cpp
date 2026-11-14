@@ -473,11 +473,34 @@ bool ShouldIncludeThirdPartyFile(const ProjectSettings &project_settings, const 
 	}
 #endif
 
-	//Only include 'RtAudio/RtAudio.h' and 'RtAudio/RtAudio.cpp' for the Tracy library.
+	//Only include some select files for the RtAudio library.
 	if (path.find("../../Catalyst-Engine/Engine/Third Party/RtAudio") != std::string::npos)
 	{
-		if (path != "../../Catalyst-Engine/Engine/Third Party/RtAudio/RtAudio/RtAudio.h"
-			&& path != "../../Catalyst-Engine/Engine/Third Party/RtAudio/RtAudio/RtAudio.cpp")
+		constexpr const char *ALLOWED_FILES[]
+		{
+			"../../Catalyst-Engine/Engine/Third Party/RtAudio/RtAudio/RtAudio.h",
+			"../../Catalyst-Engine/Engine/Third Party/RtAudio/RtAudio/RtAudio.cpp",
+
+		#if defined(PLATFORM_WIN64)
+			"../../Catalyst-Engine/Engine/Third Party/RtAudio/RtAudio/asio.cpp",
+			"../../Catalyst-Engine/Engine/Third Party/RtAudio/RtAudio/asiodrivers.cpp",
+			"../../Catalyst-Engine/Engine/Third Party/RtAudio/RtAudio/asiolist.cpp",
+		#endif
+		};
+		
+		bool is_file_allowed{ false };
+
+		for (const char *allowed_file : ALLOWED_FILES)
+		{
+			if (path == allowed_file)
+			{
+				is_file_allowed = true;
+
+				break;
+			}
+		}
+
+		if (!is_file_allowed)
 		{
 			return false;
 		}

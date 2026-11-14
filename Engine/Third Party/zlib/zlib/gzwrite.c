@@ -5,9 +5,6 @@
 
 #include "gzguts.h"
 
-//ADDED: Added include to fix 'implicit declaration of function ‘X’; did you mean ‘fY’? [-Wimplicit-function-declaration]' warning.
-#include <unistd.h>
-
 /* Initialize state for writing a gzip file.  Mark initialization by setting
    state->size to non-zero.  Return -1 on a memory allocation failure, or 0 on
    success. */

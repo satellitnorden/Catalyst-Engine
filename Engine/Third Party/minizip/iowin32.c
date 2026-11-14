@@ -13,7 +13,7 @@
 
 #include <stdlib.h>
 
-#include <ThirdParty/zlib/zlib.h> //MODIFIED TO POINT TO THE RIGHT FILE
+#include <zlib/zlib.h> //MODIFIED TO POINT TO THE RIGHT FILE
 #include "minizip/ioapi.h"
 #include "minizip/iowin32.h"
 
