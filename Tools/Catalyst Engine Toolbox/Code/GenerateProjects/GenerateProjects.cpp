@@ -380,14 +380,18 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 	}
 
 	//Add global library includes.
+#if defined(PLATFORM_WIN64)
 	library_includes->emplace_back("Winmm.lib");
 	library_includes->emplace_back("xinput.lib");
+#endif
 
 	//Add special library includes.
+#if defined(PLATFORM_WIN64)
 	if (project_settings._IncludeONNXRuntimeLibrary)
 	{
 		library_includes->emplace_back("onnxruntime.lib");
 	}
+#endif
 }
 
 /*

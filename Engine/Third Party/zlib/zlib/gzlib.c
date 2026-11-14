@@ -5,6 +5,11 @@
 
 #include "gzguts.h"
 
+//ADDED: Added include to fix 'implicit declaration of function ‘X’; did you mean ‘fY’? [-Wimplicit-function-declaration]' warning.
+#if defined(__GNUC__)
+    #include <unistd.h>
+#endif
+
 #if defined(__DJGPP__)
 #  define LSEEK llseek
 #elif defined(_WIN32) && !defined(__BORLANDC__) && !defined(UNDER_CE)
