@@ -212,7 +212,6 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 #if defined(PLATFORM_WIN64)
 	preprocessor_definitions->emplace_back("__WINDOWS_WASAPI__");
 	preprocessor_definitions->emplace_back("__WINDOWS_ASIO__");
-	preprocessor_definitions->emplace_back("__WINDOWS_ASIO__");
 	preprocessor_definitions->emplace_back("__WINDOWS_MM__");
 	preprocessor_definitions->emplace_back("CATALYST_PLATFORM_WINDOWS");
 #endif
