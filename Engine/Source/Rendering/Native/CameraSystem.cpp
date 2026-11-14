@@ -14,7 +14,6 @@
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/MemorySystem.h>
-#include <Systems/WorldTracingSystem.h>
 
 /*
 *	Initializes the camera system.
@@ -107,25 +106,6 @@ void CameraSystem::RenderUpdate() NOEXCEPT
 
 	_CameraUniformData._NearPlane = GetCurrentCamera()->GetNearPlane();
 	_CameraUniformData._FarPlane = GetCurrentCamera()->GetFarPlane();
-
-	//Is the current camera using automatic focal distance?
-	if (GetCurrentCamera()->GetAutomaticFocalDistance())
-	{
-		//Construct the ray.
-		Ray ray;
-
-		ray.SetOrigin(GetCurrentCamera()->GetWorldTransform().GetAbsolutePosition());
-		ray.SetDirection(RenderingUtilities::CalculateRayDirectionFromScreenCoordinate(Vector2<float32>(0.5f, 0.5f)));
-
-		//Cast the ray!
-		float32 hit_distance;
-
-		//Did it hit?
-		if (WorldTracingSystem::Instance->DistanceRay(ray, CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._ViewDistance, &hit_distance, false))
-		{
-			GetCurrentCamera()->SetFocalDistance(hit_distance);
-		}
-	}
 
 	//Check if the world grid cell changed.
 	if (_PreviousCameraWorldTransform.GetCell() != GetCurrentCamera()->GetWorldTransform().GetCell())

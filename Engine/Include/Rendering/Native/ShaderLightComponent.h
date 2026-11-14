@@ -50,7 +50,7 @@ public:
 	float32 _Size;
 
 	//Padding.
-	Padding<20> _Padding;
+	Padding<4> _Padding;
 
 	/*
 	*	Default constructor.
@@ -75,4 +75,4 @@ public:
 
 };
 
-static_assert(sizeof(ShaderLightComponent) == 64, "Light components must be exactly 64 bytes!");
+static_assert(sizeof(ShaderLightComponent) == 48, "Light components must be exactly 64 bytes!");

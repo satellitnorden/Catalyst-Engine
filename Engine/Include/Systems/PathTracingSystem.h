@@ -121,4 +121,9 @@ private:
 		float32 *const RESTRICT probability_density
 	) NOEXCEPT;
 
+	/*
+	*	Casts a ray against the sky.
+	*/
+	NO_DISCARD Vector3<float32> SkyRay(const Ray &ray) NOEXCEPT;
+
 };

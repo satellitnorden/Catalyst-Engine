@@ -21,16 +21,14 @@
 //Rendering.
 #include <Rendering/Native/PathTracing/PathTracingCore.h>
 #include <Rendering/Native/PathTracing/PathTracingAccelerationStructure.h>
+#include <Rendering/Native/Shader/CatalystAtmosphericScattering.h>
 #include <Rendering/Native/Shader/CatalystToneMapping.h>
 #include <Rendering/Native/RenderingUtilities.h>
 
 //Systems.
 #include <Systems/CatalystEngineSystem.h>
 #include <Systems/TaskSystem.h>
-#include <Systems/WorldTracingSystem.h>
-
-//Constants.
-#define NEW_GATHER_TRIANGLES (1)
+#include <Systems/WorldSystem.h>
 
 #if 0
 /*
@@ -217,7 +215,6 @@ void PathTracingSystem::Start() NOEXCEPT
 	//Pause the Catalyst engine system.
 	CatalystEngineSystem::Instance->SetUpdateSpeed(0.0f);
 
-#if NEW_GATHER_TRIANGLES
 	//Allocate the acceleration structure.
 	_AccelerationStructure = new PathTracingAccelerationStructure();
 
@@ -226,10 +223,6 @@ void PathTracingSystem::Start() NOEXCEPT
 
 	//Build!
 	_AccelerationStructure->Build(4);
-#else
-	//Tell the world tracing system to cache the world state.
-	WorldTracingSystem::Instance->CacheWorldState();
-#endif
 
 	//Reset the intermediate texture.
 	if (_IntermediateTexture.GetWidth() == 0
@@ -400,18 +393,7 @@ void PathTracingSystem::UpdateTask()
 			//Retrieve the radiance.
 			Vector3<float32> radiance;
 
-#if NEW_GATHER_TRIANGLES
 			radiance = CastRadianceRay(ray, 0);
-#else
-			{
-				//Set up the parameters.
-				WorldTracingSystem::RadianceRayParameters parameters;
-
-				parameters._ImprovedRayGeneration = X > 960;
-
-				radiance = WorldTracingSystem::Instance->RadianceRay(ray, &parameters);
-			}
-#endif
 
 			//Write to the intermediate texture.
 			Vector4<float64> &intermediate_sample{ _IntermediateTexture.At(X, queued_row.Get()) };
@@ -701,7 +683,7 @@ NO_DISCARD Vector3<float32> PathTracingSystem::CastRadianceRay(const Ray &ray, c
 
 	else
 	{
-		return WorldTracingSystem::Instance->SkyRay(ray);
+		return SkyRay(ray);
 	}
 }
 
@@ -801,4 +783,61 @@ void PathTracingSystem::GenerateIrradianceRay
 
 	*direction = directions[chosen_index];
 	*probability_density = weights[chosen_index];
+}
+
+/*
+*	Casts a ray against the sky.
+*/
+NO_DISCARD Vector3<float32> PathTracingSystem::SkyRay(const Ray &ray) NOEXCEPT
+{
+	switch (WorldSystem::Instance->GetSkySystem()->GetSkyMode())
+	{
+		case SkySystem::SkyMode::ATMOSPHERIC_SCATTERING:
+		{
+			Vector3<float32> sky_light_radiance{ 0.0f, 0.0f, 0.0f };
+			Vector3<float32> sky_light_direction{ 0.0f, -1.0f, 0.0f };
+
+			/*
+			{
+				const uint64 number_of_components{ ComponentManager::GetNumberOfLightComponents() };
+				const LightComponent* RESTRICT component{ ComponentManager::GetLightLightComponents() };
+
+				for (uint64 component_index{ 0 }; component_index < number_of_components; ++component_index, ++component)
+				{
+					if (component->_LightType == LightType::DIRECTIONAL)
+					{
+						sky_light_radiance = component->_Color * component->_Intensity;
+						sky_light_direction = CatalystCoordinateSpacesUtilities::RotatedWorldDownVector(component->_Rotation);
+
+						break;
+					}
+				}
+			}
+			*/
+
+			return CatalystAtmosphericScattering::CalculateAtmosphericScattering(ray._Origin, ray._Direction, sky_light_radiance, sky_light_direction) * WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();
+		}
+
+		case SkySystem::SkyMode::GRADIENT:
+		{
+			const SkyGradient &sky_gradient{ WorldSystem::Instance->GetSkySystem()->GetSkyGradient() };
+			const float32 up_factor{ Vector3<float32>::DotProduct(ray._Direction, Vector3<float32>(0.0f, 1.0f, 0.0f)) * 0.5f + 0.5f };
+
+			return BaseMath::LinearlyInterpolate(sky_gradient._LowerSkyColor, sky_gradient._UpperSkyColor, up_factor) * WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();
+		}
+
+		case SkySystem::SkyMode::TEXTURE:
+		{
+			const Vector4<float32> sky_color{ WorldSystem::Instance->GetSkySystem()->GetSkyTexture()->_TextureCube.Sample(ray._Direction) };
+
+			return Vector3<float32>(sky_color._R, sky_color._G, sky_color._B) * WorldSystem::Instance->GetSkySystem()->GetSkyIntensity();
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			return Vector3<float32>(0.0f, 0.0f, 0.0f);
+		}
+	}
 }

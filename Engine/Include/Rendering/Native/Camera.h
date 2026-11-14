@@ -277,22 +277,6 @@ public:
 		_FocalDistance = value;
 	}
 
-	/*
-	*	Returns whether or not to this camera should use automatic focal distance.
-	*/
-	FORCE_INLINE NO_DISCARD bool GetAutomaticFocalDistance() const NOEXCEPT
-	{
-		return _AutomaticFocalDistance;
-	}
-
-	/*
-	*	Sets whether or not to this camera should use automatic focal distance.
-	*/
-	FORCE_INLINE void SetAutomaticFocalDistance(const bool value) NOEXCEPT
-	{
-		_AutomaticFocalDistance = value;
-	}
-
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	/*
 	*	Locks the frustum.
@@ -361,9 +345,6 @@ private:
 
 	//The focal distance.
 	float32 _FocalDistance{ 1.0f };
-
-	//Denotes whether or not to this camera should use automatic focal distance.
-	bool _AutomaticFocalDistance{ false };
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	//Denotes whether or not the frustum is locked.
