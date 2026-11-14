@@ -5,7 +5,7 @@
 #include <Core/Containers/StaticArray.h>
 
 //Concurrency.
-#include <Concurrency/Spinlock.h>
+#include <Concurrency/SpinLock.h>
 #include <Concurrency/ScopedLock.h>
 
 //Math.
@@ -291,7 +291,7 @@ public:
 private:
 
 	//The lock.
-	mutable Spinlock _Lock;
+	mutable SpinLock _Lock;
 
 	//The world transform.
 	WorldTransform _WorldTransform;

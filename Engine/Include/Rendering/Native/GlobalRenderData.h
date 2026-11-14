@@ -5,7 +5,7 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Concurrency.
-#include <Concurrency/Spinlock.h>
+#include <Concurrency/SpinLock.h>
 
 //Rendering.
 #include <Rendering/Native/RenderingCore.h>
@@ -83,7 +83,7 @@ public:
 	DynamicArray<RenderDataTableHandle> _RenderDataTables;
 
 	//The global texture lock.
-	Spinlock _GlobalTexturesLock;
+	SpinLock _GlobalTexturesLock;
 
 	//The global texture slots.
 	StaticArray<bool, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES> _GlobalTextureSlots;

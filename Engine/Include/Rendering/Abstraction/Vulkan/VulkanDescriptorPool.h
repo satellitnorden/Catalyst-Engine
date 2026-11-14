@@ -6,7 +6,7 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Concurrency.
-#include <Concurrency/Spinlock.h>
+#include <Concurrency/SpinLock.h>
 
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>
@@ -52,7 +52,7 @@ private:
 	VkDescriptorPool _VulkanDescriptorPool;
 
 	//The lock for the descriptor pool.
-	mutable Spinlock _Lock;
+	mutable SpinLock _Lock;
 
 	/*
 	*	Creates a descriptor pool size.

@@ -8,13 +8,13 @@
 #include <Concurrency/Concurrency.h>
 
 #if defined(CATALYST_CXX20) && 0 //C++20 implementation of a spinlock. NOTE - Doesn't work I guess for C++20. Just go with old version. :x
-class Spinlock final
+class SpinLock final
 {
 
 public:
 
 	/*
-	*	Locks this spinlock.
+	*	Locks this spin lock.
 	*/
 	FORCE_INLINE void Lock() NOEXCEPT
 	{
@@ -40,13 +40,13 @@ private:
 
 };
 #else //Normal implementation of a spinlock.
-class Spinlock final
+class SpinLock final
 {
 
 public:
 
 	/*
-	*	Locks this spinlock.
+	*	Locks this spin lock.
 	*/
 	FORCE_INLINE void Lock() NOEXCEPT
 	{

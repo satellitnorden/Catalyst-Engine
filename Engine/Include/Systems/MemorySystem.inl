@@ -35,9 +35,9 @@ FORCE_INLINE RESTRICTED NO_DISCARD PoolAllocator<sizeof(TYPE)> *const RESTRICT M
 *	Returns the pool allocator lock specific to the given type.
 */
 template <typename TYPE>
-FORCE_INLINE RESTRICTED NO_DISCARD Spinlock *const RESTRICT MemorySystem::TypePoolAllocatorLock() NOEXCEPT
+FORCE_INLINE RESTRICTED NO_DISCARD SpinLock *const RESTRICT MemorySystem::TypePoolAllocatorLock() NOEXCEPT
 {
-	static Spinlock lock;
+	static SpinLock lock;
 
 	return &lock;
 }

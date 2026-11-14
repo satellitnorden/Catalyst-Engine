@@ -6,7 +6,7 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Concurrency.
-#include <Concurrency/Spinlock.h>
+#include <Concurrency/SpinLock.h>
 
 //Math.
 #include <Math/General/Vector.h>
@@ -112,13 +112,13 @@ public:
 private:
 
 	//The debug circle renders lock.
-	Spinlock _DebugCircleRendersLock;
+	SpinLock _DebugCircleRendersLock;
 
 	//Container for all debug circle renders.
 	DynamicArray<DebugCircleRender> _DebugCircleRenders;
 
 	//The debug rectangle renders lock.
-	Spinlock _DebugRectangleRendersLock;
+	SpinLock _DebugRectangleRendersLock;
 
 	//Container for all debug rectangle renders.
 	DynamicArray<DebugRectangleRender> _DebugRectangleRenders;

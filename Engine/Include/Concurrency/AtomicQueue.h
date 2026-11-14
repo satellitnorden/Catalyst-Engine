@@ -11,7 +11,7 @@
 
 //Concurrency.
 #include <Concurrency/ScopedLock.h>
-#include <Concurrency/Spinlock.h>
+#include <Concurrency/SpinLock.h>
 
 //Math.
 #include <Math/Core/BaseMath.h>
@@ -102,7 +102,7 @@ public:
 private:
 
 	//The lock.
-	Spinlock _Lock;
+	SpinLock _Lock;
 
 	//The underlying queue.
 	StaticArray<TYPE, SIZE> _Queue;

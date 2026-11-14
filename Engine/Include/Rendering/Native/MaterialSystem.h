@@ -6,7 +6,7 @@
 #include <Core/Containers/StaticArray.h>
 
 //Concurrency.
-#include <Concurrency/Spinlock.h>
+#include <Concurrency/SpinLock.h>
 
 //Content.
 #include <Content/Assets/MaterialAsset.h>
@@ -58,7 +58,7 @@ public:
 private:
 
 	//The materials lock.
-	Spinlock _MaterialsLock;
+	SpinLock _MaterialsLock;
 
 	//Container for all material slots.
 	StaticArray<bool, CatalystShaderConstants::MAXIMUM_NUMBER_OF_GLOBAL_MATERIALS> _MaterialSlots;

@@ -14,7 +14,7 @@
 
 //Third party.
 #define RTMIDI_USE_NAMESPACE
-#include <ThirdParty/RtMidi/RtMidi.h>
+#include <ThirdParty/rtmidi/RtMidi.h>
 
 /*
 *	System for interfacing with MIDI devices.

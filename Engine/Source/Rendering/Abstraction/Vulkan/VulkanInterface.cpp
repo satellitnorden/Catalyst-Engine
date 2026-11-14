@@ -4,7 +4,7 @@
 
 //Concurrency.
 #include <Concurrency/ScopedLock.h>
-#include <Concurrency/Spinlock.h>
+#include <Concurrency/SpinLock.h>
 
 //Profiling.
 #include <Profiling/Profiling.h>

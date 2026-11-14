@@ -124,6 +124,10 @@ public:
 	OptionalWithDefault<RenderingPath> _InitialRenderingPath{ RenderingPath::VIRTUAL_REALITY };
 #elif defined(CATALYST_PLATFORM_WINDOWS)
 	OptionalWithDefault<RenderingPath> _InitialRenderingPath{ RenderingPath::DEFAULT };
+#elif defined(CATALYST_PLATFORM_LINUX)
+	OptionalWithDefault<RenderingPath> _InitialRenderingPath{ RenderingPath::DEFAULT };
+#else
+	#error "Unknown platform!"
 #endif
 
 	/*
@@ -213,7 +217,7 @@ public:
 
 	/*
 	*	The world grid size.
-	*	The world is divided into a three-dimensional grid in the Catalyst Engine™ to enable infinite worlds. 
+	*	The world is divided into a three-dimensional grid in the Catalyst Engineï¿½ to enable infinite worlds. 
 	*	This is the size of each grid cell.
 	*/
 	OptionalWithDefault<float32> _WorldGridSize{ 1'024.0f };

@@ -10,6 +10,8 @@ namespace MIDISystemConstants
 	//The default API.
 #if defined(CATALYST_PLATFORM_WINDOWS)
 	constexpr RtMidi::Api DEFAULT_API{ RtMidi::Api::WINDOWS_MM };
+#elif defined(CATALYST_PLATFORM_LINUX)
+	constexpr RtMidi::Api DEFAULT_API{ RtMidi::Api::LINUX_ALSA };
 #else
 	#error "Unknown platform!";
 #endif

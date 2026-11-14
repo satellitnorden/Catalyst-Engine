@@ -77,7 +77,7 @@ void VirtualRealitySystem::RenderUpdate() NOEXCEPT
 
     	virtual_reality_uniform_data._EyeWorldToClipMatrices[i] = projection_matrix * view_matrix;
     }
-#elif defined(CATALYST_PLATFORM_WINDOWS)
+#elif defined(CATALYST_PLATFORM_WINDOWS) || defined(CATALYST_PLATFORM_LINUX)
 		virtual_reality_uniform_data._EyeWorldToClipMatrices[0] = virtual_reality_uniform_data._EyeWorldToClipMatrices[1] = *RenderingSystem::Instance->GetCameraSystem()->GetCurrentCamera()->GetViewMatrix();
 #else
 	#error "Unknown platform!"

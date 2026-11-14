@@ -53,7 +53,7 @@ namespace LogSystemData
 {
 
 	//The lock.
-	Spinlock _Lock;
+	SpinLock _Lock;
 
 	//The temporary message buffer.
 	char _TemporaryMessageBuffer[LogSystemConstants::MAXIMUM_LINE_LENGTH];

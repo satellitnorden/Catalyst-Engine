@@ -7,6 +7,9 @@
 #include <Math/Core/BaseMath.h>
 #include <Math/General/Vector.h>
 
+//STD.
+#include <cmath>
+
 namespace PhysicallyBasedLighting
 {
 
@@ -22,7 +25,7 @@ namespace PhysicallyBasedLighting
 	*/
 	static float Distribution(float roughness, float microsurface_angle)
 	{
-		float roughness_squared = powf(roughness, 4.0f);
+		float roughness_squared = std::pow(roughness, 4.0f);
 		float microsurface_angle_squared = microsurface_angle * microsurface_angle;
 
 		float nominator = roughness_squared;
@@ -87,7 +90,7 @@ namespace PhysicallyBasedLighting
 	static Vector3<float32> Fresnel(Vector3<float32> surface_color, float difference_angle)
 	{
 		//Calculate the fresnel.
-		return surface_color + (Vector3<float32>(1.0f) - surface_color) * powf(1.0f - difference_angle, 5.0f);
+		return surface_color + (Vector3<float32>(1.0f) - surface_color) * std::pow(1.0f - difference_angle, 5.0f);
 	}
 
 	/*
@@ -105,12 +108,12 @@ namespace PhysicallyBasedLighting
 	static Vector3<float32> DisneyDiffuse(Vector3<float32> albedo, float roughness, float difference_angle, float radiance_angle, float outgoing_angle)
 	{
 		//Calculate some stuff.
-		float FD90 = 0.5f + 2.0f * roughness * powf(cosf(difference_angle), 2.0f);
+		float FD90 = 0.5f + 2.0f * roughness * std::pow(std::cos(difference_angle), 2.0f);
 
 		//Set up terms.
 		Vector3<float32> term_1 = albedo / BaseMathConstants::PI;
-		float term_2 = 1.0f + (FD90 - 1.0f) * powf(1.0f - cosf(radiance_angle), 5.0f);
-		float term_3 = 1.0f + (FD90 - 1.0f) * powf(1.0f - cosf(outgoing_angle), 5.0f);
+		float term_2 = 1.0f + (FD90 - 1.0f) * std::pow(1.0f - std::cos(radiance_angle), 5.0f);
+		float term_3 = 1.0f + (FD90 - 1.0f) * std::pow(1.0f - std::cos(outgoing_angle), 5.0f);
 
 		return term_1 * term_2 * term_3;
 	}

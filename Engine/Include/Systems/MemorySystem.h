@@ -5,7 +5,7 @@
 
 //Concurrency.
 #include <Concurrency/ScopedLock.h>
-#include <Concurrency/Spinlock.h>
+#include <Concurrency/SpinLock.h>
 
 //Memory.
 #include <Memory/FrameAllocator.h>
@@ -63,7 +63,7 @@ private:
 	FrameAllocator<1'024 * 1'024 * 4> _FrameAllocator;
 
 	//The frame allocator lock.
-	Spinlock _FrameAllocatorLock;
+	SpinLock _FrameAllocatorLock;
 
 	/*
 	*	Returns the  pool allocator specific to the given type.
@@ -75,7 +75,7 @@ private:
 	*	Returns the pool allocator lock specific to the given type.
 	*/
 	template <typename TYPE>
-	FORCE_INLINE RESTRICTED NO_DISCARD Spinlock* const RESTRICT TypePoolAllocatorLock() NOEXCEPT;
+	FORCE_INLINE RESTRICTED NO_DISCARD SpinLock *const RESTRICT TypePoolAllocatorLock() NOEXCEPT;
 
 };
 

@@ -4,7 +4,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Concurrency.
-#include <Concurrency/Spinlock.h>
+#include <Concurrency/SpinLock.h>
 
 //File.
 #include <File/Types/ModelFile.h>
@@ -127,7 +127,7 @@ public:
 private:
 
 	//The initialization lock.
-	Spinlock _InitializationLock;
+	SpinLock _InitializationLock;
 
 	//Denotes if the physics system is initialized.
 	bool _Initialized{ false };

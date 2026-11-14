@@ -166,8 +166,8 @@ public:
 		{
 			if (_Keys[i] == key)
 			{
-				_Keys.EraseAt<false>(i);
-				_Values.EraseAt<false>(i);
+				_Keys.template EraseAt<false>(i);
+				_Values.template EraseAt<false>(i);
 
 				return;
 			}

@@ -11,7 +11,7 @@
 #include <Components/Core/ComponentStatistics.h>
 
 //Concurrency.
-#include <Concurrency/Spinlock.h>
+#include <Concurrency/SpinLock.h>
 #include <Concurrency/ScopedLock.h>
 
 //Entities.
@@ -612,7 +612,7 @@ public:																																										\
 	}																																										\
 private:																																									\
 	friend class Components;																																				\
-	Spinlock POOL_ALLOCATOR_LOCK;																																			\
+	SpinLock POOL_ALLOCATOR_LOCK;																																			\
 	PoolAllocator<sizeof(X##InitializationData)> POOL_ALLOCATOR;																											\
 	DynamicArray<X##InstanceData> _InstanceData;																															\
 																																											\

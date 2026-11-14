@@ -8,7 +8,7 @@
 //Concurrency.
 #include <Concurrency/AtomicQueue.h>
 #include <Concurrency/Task.h>
-#include <Concurrency/Spinlock.h>
+#include <Concurrency/SpinLock.h>
 
 //Content.
 #include <Content/Core/AssetPointer.h>
@@ -136,7 +136,7 @@ private:
 	};
 
 	//The entity allocator lock.
-	Spinlock _EntityAllocatorLock;
+	SpinLock _EntityAllocatorLock;
 
 	//The allocator.
 	PoolAllocator<sizeof(Entity)> _EntityAllocator;
@@ -145,7 +145,7 @@ private:
 	PoolAllocator<sizeof(EntityPreProcessingQueueItem)> _PreProcessingAllocator;
 
 	//The entity identifier lock.
-	Spinlock _EntityIdentifierLock;
+	SpinLock _EntityIdentifierLock;
 
 	//The entity identifier counter.
 	EntityIdentifier _EntityIdentifierCounter{ 0 };

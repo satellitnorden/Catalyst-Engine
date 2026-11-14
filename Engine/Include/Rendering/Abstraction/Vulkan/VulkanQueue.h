@@ -5,7 +5,7 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Concurrency.
-#include <Concurrency/Spinlock.h>
+#include <Concurrency/SpinLock.h>
 
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>
@@ -50,7 +50,7 @@ private:
 	VkQueue _VulkanQueue;
 
 	//The lock for the queue.
-	mutable Spinlock _Lock;
+	mutable SpinLock _Lock;
 
 	/*
 	*	Creates a submit info for a single command buffer.
