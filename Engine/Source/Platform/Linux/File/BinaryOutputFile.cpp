@@ -1,6 +1,6 @@
 #if defined(CATALYST_PLATFORM_LINUX)
 //Header file.
-#include <File/Core/BinaryOutputFile.h>
+#include <Platform/File/BinaryOutputFile.h>
 
 //STL.
 #include <fstream>
@@ -24,7 +24,7 @@ namespace Platform
 
 	};
 
-	static_assert(sizeof(WindowsBinaryOutputFileImplementation) <= BinaryOutputFile::ANY_SIZE, "Increase any size!");
+	static_assert(sizeof(BinaryOutputFileImplementation) <= BinaryOutputFile::ANY_SIZE, "Increase any size!");
 
 	/*
 	*	Constructor taking the file path.
@@ -32,10 +32,10 @@ namespace Platform
 	BinaryOutputFile::BinaryOutputFile(const char *const RESTRICT file_path) NOEXCEPT
 	{
 		//Cache the implementation.
-		WindowsBinaryOutputFileImplementation *const RESTRICT implementation{ _Implementation.Get<WindowsBinaryOutputFileImplementation>() };
+		BinaryOutputFileImplementation *const RESTRICT implementation{ _Implementation.Get<BinaryOutputFileImplementation>() };
 
 		//Construct the implementation.
-		new (implementation) WindowsBinaryOutputFileImplementation();
+		new (implementation) BinaryOutputFileImplementation();
 
 		//Open the file stream.
 		implementation->_FileStream.open(file_path, std::ios::out | std::ios::binary);
@@ -50,7 +50,7 @@ namespace Platform
 	RESTRICTED NO_DISCARD const char *const RESTRICT BinaryOutputFile::GetFilePath() const NOEXCEPT
 	{
 		//Cache the implementation.
-		const WindowsBinaryOutputFileImplementation *const RESTRICT implementation{ _Implementation.Get<WindowsBinaryOutputFileImplementation>() };
+		const BinaryOutputFileImplementation *const RESTRICT implementation{ _Implementation.Get<BinaryOutputFileImplementation>() };
 
 		//Return the file path.
 		return implementation->_FilePath;
@@ -62,7 +62,7 @@ namespace Platform
 	void BinaryOutputFile::Write(const void *const RESTRICT input, const uint64 size) NOEXCEPT
 	{
 		//Cache the implementation.
-		WindowsBinaryOutputFileImplementation *const RESTRICT implementation{ _Implementation.Get<WindowsBinaryOutputFileImplementation>() };
+		BinaryOutputFileImplementation *const RESTRICT implementation{ _Implementation.Get<BinaryOutputFileImplementation>() };
 
 		//Write!
 		implementation->_FileStream.write(static_cast<const char *const RESTRICT>(input), size);
@@ -74,7 +74,7 @@ namespace Platform
 	void BinaryOutputFile::Close() NOEXCEPT
 	{
 		//Cache the implementation.
-		WindowsBinaryOutputFileImplementation *const RESTRICT implementation{ _Implementation.Get<WindowsBinaryOutputFileImplementation>() };
+		BinaryOutputFileImplementation *const RESTRICT implementation{ _Implementation.Get<BinaryOutputFileImplementation>() };
 
 		//Close the file.
 		implementation->_FileStream.close();

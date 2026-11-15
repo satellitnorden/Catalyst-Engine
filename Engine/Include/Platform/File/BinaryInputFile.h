@@ -15,7 +15,7 @@ namespace Platform
 		
 	public:
 
-		constexpr static uint64 ANY_SIZE{ 96 };
+		constexpr static uint64 ANY_SIZE{ 536 };
 
 		/*
 		*	Default constructor - prohibited, must be constructed with the proper arguments.

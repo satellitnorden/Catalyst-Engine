@@ -2,7 +2,6 @@
 #include <Core/Essential/CatalystEssential.h>
 
 #if defined(CATALYST_MSVC)
-
 //MSVC.
 #include <intrin.h>
 
