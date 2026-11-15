@@ -4,9 +4,9 @@
 #include <Core/Essential/CatalystEssential.h>
 
 #if defined(CATALYST_PLATFORM_WINDOWS)
-    #include <Platform/Windows/DynamicLibrary.h>
+    #include <Platform/Platforms/Windows/Core/DynamicLibrary.h>
 #endif
 
 #if defined(CATALYST_PLATFORM_LINUX)
-    #include <Platform/Linux/DynamicLibrary.h>
+    #include <Platform/Platforms/Linux/Core/DynamicLibrary.h>
 #endif

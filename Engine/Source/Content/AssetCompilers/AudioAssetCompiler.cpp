@@ -6,9 +6,11 @@
 
 //File.
 #include <File/Core/File.h>
-#include <File/Core/BinaryOutputFile.h>
 #include <File/Readers/WAVReader.h>
 #include <File/Utilities/TextParsingUtilities.h>
+
+//Platform.
+#include <Platform/File/BinaryOutputFile.h>
 
 //Profiling.
 #include <Profiling/Profiling.h>
@@ -151,7 +153,7 @@ void AudioAssetCompiler::Compile(const CompileContext &compile_context) NOEXCEPT
 	SPRINTF(output_file_path, "%s\\%s.ca", directory_path, compile_context._Name.Data());
 
 	//Open the output file.
-	BinaryOutputFile output_file{ output_file_path };
+	Platform::BinaryOutputFile output_file{ output_file_path };
 
 	//Write the asset header to the file.
 	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_context._Name.Data()), compile_context._Name.Data() };

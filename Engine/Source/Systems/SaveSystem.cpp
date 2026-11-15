@@ -3,8 +3,10 @@
 
 //File.
 #include <File/Core/File.h>
-#include <File/Core/BinaryInputFile.h>
-#include <File/Core/BinaryOutputFile.h>
+
+//Platform.
+#include <Platform/File/BinaryInputFile.h>
+#include <Platform/File/BinaryOutputFile.h>
 
 //Save.
 #include <Save/SaveHeader.h>
@@ -153,7 +155,7 @@ void SaveSystem::LoadSingleEntry(const SaveEntry &entry) NOEXCEPT
 		File::CreateFile(entry._FilePath.Data());
 
 		//Write it to file.
-		BinaryOutputFile file{ entry._FilePath.Data() };
+		Platform::BinaryOutputFile file{ entry._FilePath.Data() };
 		file.Write(&save_header, sizeof(SaveHeader));
 		file.Write(save_data, size);
 		file.Close();
@@ -168,7 +170,7 @@ void SaveSystem::LoadSingleEntry(const SaveEntry &entry) NOEXCEPT
 	else
 	{
 		//Open the file.
-		BinaryInputFile file{ entry._FilePath.Data() };
+		Platform::BinaryInputFile file{ entry._FilePath.Data() };
 
 		//Remember the save size.
 		const uint64 save_size{ file.Size() };
@@ -208,7 +210,7 @@ void SaveSystem::SaveSingleEntry(const SaveEntry &entry) NOEXCEPT
 	entry._SaveCallback(save_data);
 
 	//Write it to file.
-	BinaryOutputFile file{ entry._FilePath.Data() };
+	Platform::BinaryOutputFile file{ entry._FilePath.Data() };
 	file.Write(&save_header, sizeof(SaveHeader));
 	file.Write(save_data, size);
 	file.Close();

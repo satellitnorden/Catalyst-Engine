@@ -7,8 +7,10 @@
 
 //File.
 #include <File/Core/File.h>
-#include <File/Core/BinaryOutputFile.h>
 #include <File/Utilities/TextParsingUtilities.h>
+
+//Platform.
+#include <Platform/File/BinaryOutputFile.h>
 
 //Profiling.
 #include <Profiling/Profiling.h>
@@ -636,7 +638,7 @@ void RenderPipelineAssetCompiler::Compile(const CompileContext &compile_context)
 	//Define constants.
 	constexpr auto WriteShaderData
 	{
-		[](const DynamicArray<byte> &shader_data, BinaryOutputFile *const RESTRICT file)
+		[](const DynamicArray<byte> &shader_data, Platform::BinaryOutputFile *const RESTRICT file)
 		{
 			const uint64 shader_data_size{shader_data.Size()};
 			file->Write(&shader_data_size, sizeof(uint64));
@@ -710,7 +712,7 @@ void RenderPipelineAssetCompiler::Compile(const CompileContext &compile_context)
 	SPRINTF(output_file_path, "%s\\%s.ca", directory_path, compile_context._Name.Data());
 
 	//Open the output file.
-	BinaryOutputFile output_file{ output_file_path };
+	Platform::BinaryOutputFile output_file{ output_file_path };
 
 	//Write the asset header to the file.
 	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_context._Name.Data()), compile_context._Name.Data() };

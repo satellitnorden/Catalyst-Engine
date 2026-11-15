@@ -39,7 +39,7 @@
 #if defined(CATALYST_PLATFORM_ANDROID) || defined(CATALYST_PLATFORM_OCULUS_QUEST)
 	#include <vulkan/vulkan.h>
 #elif defined(CATALYST_PLATFORM_WINDOWS)
-	#include <Platform/Windows/CatalystPlatformWindows.h> //Included here for the undefine stuff.
+	#include <Platform/Platforms/Windows/CatalystPlatformWindows.h> //Included here for the undefine stuff.
 	#include <vulkan/vulkan.h>
 #elif defined(CATALYST_PLATFORM_LINUX)
 	#include <vulkan/vulkan.h>

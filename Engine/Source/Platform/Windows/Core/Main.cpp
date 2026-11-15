@@ -1,9 +1,9 @@
-#if defined(CATALYST_PLATFORM_WINDOWS)
+#if defined(CATALYST_PLATFORM_WINDOWS) && !defined(AUDIO_PLUGIN_CLAP) && !defined(AUDIO_PLUGIN_VST3)
 //Header file.
 #include <Platform/Core/Main.h>
 
 //Platform.
-#include <Platform/Windows/CatalystPlatformWindows.h>
+#include <Platform/Platforms/Windows/CatalystPlatformWindows.h>
 
 /*
 *	The main function.
@@ -23,7 +23,7 @@ int32 WINAPI WinMain
 	CatalystPlatformWindows::_ShowCommand = nCmdShow;
 
 	//Call the game's main function.
-	Main();
+	Platform::Main();
 
 	//Return success!
 	return 0;

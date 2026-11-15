@@ -24,9 +24,9 @@
 #include <Content/AssetCompilers/Texture2DAssetCompiler.h>
 #include <Content/AssetCompilers/TextureCubeAssetCompiler.h>
 
-//File.
-#include <File/Core/BinaryInputFile.h>
-#include <File/Core/BinaryOutputFile.h>
+//Platform.
+#include <Platform/File/BinaryInputFile.h>
+#include <Platform/File/BinaryOutputFile.h>
 
 //Profiling.
 #include <Profiling/Profiling.h>
@@ -333,7 +333,7 @@ void ContentSystem::LoadAssetCollection(const char *const RESTRICT file_path) NO
 	TimePoint start_time;
 
 	//Open the input file.
-	BinaryInputFile input_file{ file_path };
+	Platform::BinaryInputFile input_file{ file_path };
 
 	//Load the file into a stream archive.
 	StreamArchive stream_archive;
@@ -624,7 +624,7 @@ void ContentSystem::CompileAssetsInDirectory
 /*
 *	Creates asset collections from the given directory path.
 */
-void ContentSystem::CreateAssetCollections(const char *const RESTRICT directory_path, BinaryOutputFile *const RESTRICT file) NOEXCEPT
+void ContentSystem::CreateAssetCollections(const char *const RESTRICT directory_path, Platform::BinaryOutputFile *const RESTRICT file) NOEXCEPT
 {
 	for (const auto &entry : std::filesystem::directory_iterator(std::string(directory_path)))
 	{
@@ -659,7 +659,7 @@ void ContentSystem::CreateAssetCollections(const char *const RESTRICT directory_
 				SPRINTF(collection_path, "%s\\..\\Collections\\%s.cac", directory_path, collection_name.c_str());
 
 				//Set up the file.
-				BinaryOutputFile _file{ collection_path };
+				Platform::BinaryOutputFile _file{ collection_path };
 				
 				//Call recursively!
 				CreateAssetCollections(_directory_path.c_str(), &_file);
@@ -693,7 +693,7 @@ void ContentSystem::CreateAssetCollections(const char *const RESTRICT directory_
 		}
 
 		//Open the input file.
-		BinaryInputFile input_file{ file_path.c_str() };
+		Platform::BinaryInputFile input_file{ file_path.c_str() };
 
 		//Write the file size.
 		const uint64 file_size{ input_file.Size() };

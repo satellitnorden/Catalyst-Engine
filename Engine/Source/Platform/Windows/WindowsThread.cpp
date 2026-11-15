@@ -3,7 +3,7 @@
 #include <Concurrency/Thread.h>
 
 //Platform.
-#include <Platform/Windows/CatalystPlatformWindows.h>
+#include <Platform/Platforms/Windows/CatalystPlatformWindows.h>
 
 //STL.
 #include <string>

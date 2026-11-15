@@ -6,8 +6,8 @@
 //Audio.
 #include <Audio/AudioStream.h>
 
-//File.
-#include <File/Core/BinaryInputFile.h>
+//Platform.
+#include <Platform/File/BinaryInputFile.h>
 
 //Third party.
 #include <ThirdParty/OpenMP3/openmp3.h>
@@ -23,7 +23,7 @@ public:
 	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file_path, AudioStream *const RESTRICT audio_stream) NOEXCEPT
 	{
 		//Read the file.
-		BinaryInputFile file{ file_path };
+		Platform::BinaryInputFile file{ file_path };
 
 		//Read the raw data.
 		byte *const RESTRICT raw_data{ static_cast<byte *const RESTRICT>(Memory::Allocate(file.Size())) };

@@ -5,13 +5,13 @@
 #include <Core/Containers/ArrayProxy.h>
 #include <Core/Containers/DynamicArray.h>
 
-//File.
-#include <File/Core/BinaryInputFile.h>
-#include <File/Core/BinaryOutputFile.h>
-
 //Math.
 #include <Math/MachineLearning/ActivationFunctions.h>
 #include <Math/MachineLearning/NeuralNetwork.h>
+
+//Platform.
+#include <Platform/File/BinaryInputFile.h>
+#include <Platform/File/BinaryOutputFile.h>
 
 /*
 *	Class representing a single neuron.
@@ -383,7 +383,7 @@ public:
 	FORCE_INLINE void ExportTrainingData(const char *const RESTRICT file_path) NOEXCEPT
 	{
 		//Open the output file.
-		BinaryOutputFile output_file{ file_path };
+		Platform::BinaryOutputFile output_file{ file_path };
 
 		//Write all weights for all neurons.
 		for (const Neuron &neuron : _InputLayer._Neurons)
@@ -423,7 +423,7 @@ public:
 	FORCE_INLINE void ImportTrainingData(const char *const RESTRICT file_path) NOEXCEPT
 	{
 		//Open the input file.
-		BinaryInputFile input_file{ file_path };
+		Platform::BinaryInputFile input_file{ file_path };
 
 		//Write all weights for all neurons.
 		for (Neuron &neuron : _InputLayer._Neurons)

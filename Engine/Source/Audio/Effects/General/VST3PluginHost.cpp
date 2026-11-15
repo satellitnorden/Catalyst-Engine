@@ -54,7 +54,7 @@ public:
 	VST3::ComponentHandler _ComponentHandler;
 
 	//The dynamic library.
-	DynamicLibrary _DynamicLibrary;
+	Platform::DynamicLibrary _DynamicLibrary;
 
 	//The plugin factory.
 	Steinberg::IPluginFactory *RESTRICT _PluginFactory{ nullptr };

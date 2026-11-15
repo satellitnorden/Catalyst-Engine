@@ -147,7 +147,10 @@ void GenerateAudioPlugin::GenerateFiles(const ProjectSettings &project_settings,
 		file << std::endl;
 
 		file << "//Platform." << std::endl;
-		file << "#include <Platform/Windows/CatalystPlatformWindows.h>" << std::endl;
+		file << "#include <Platform/Core/Main.h>" << std::endl;
+		file << "#if defined(CATALYST_PLATFORM_WINDOWS)" << std::endl;
+		file << "\t#include <Platform/Platforms/Windows/CatalystPlatformWindows.h>" << std::endl;
+		file << "#endif" << std::endl;
 		file << std::endl;
 
 		file << "//Systems." << std::endl;
@@ -198,8 +201,8 @@ void GenerateAudioPlugin::GenerateFiles(const ProjectSettings &project_settings,
 		file << "}" << std::endl;
 		file << std::endl;
 
-		file << "MAIN_FUNCTION" << std::endl;
-		file << "(" << std::endl;
+		file << "void Platform::Main() NOEXCEPT" << std::endl;
+		file << "{" << std::endl;
 
 		file << "\t//Call the pre-initialize standalone function." << std::endl;
 		file << "\t" << audio_plugin._NameNoSpaces.c_str() << "PreInitialize();" << std::endl;
@@ -220,7 +223,11 @@ void GenerateAudioPlugin::GenerateFiles(const ProjectSettings &project_settings,
 
 		file << "\t//Initialize the plugin editor." << std::endl;
 		file << "\tPLUGIN_EDITOR.Initialize(&PLUGIN);" << std::endl;
+		file << "#if defined(CATALYST_PLATFORM_WINDOWS)" << std::endl;
 		file << "\tPLUGIN_EDITOR.CreateEditor(CatalystPlatformWindows::_MainWindow);" << std::endl;
+		file << "#else" << std::endl;
+		file << "\tPLUGIN_EDITOR.CreateEditor(nullptr);" << std::endl;
+		file << "#endif" << std::endl;
 		file << std::endl;
 
 		file << "\t//Add the plugin handler." << std::endl;
@@ -239,7 +246,7 @@ void GenerateAudioPlugin::GenerateFiles(const ProjectSettings &project_settings,
 		file << "\t//Terminate the engine system." << std::endl;
 		file << "\tCatalystEngineSystem::Instance->Terminate();" << std::endl;
 
-		file << ")" << std::endl;
+		file << "}" << std::endl;
 
 		file << "#endif";
 

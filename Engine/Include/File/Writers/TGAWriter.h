@@ -3,8 +3,8 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
-//File.
-#include <File/Core/BinaryOutputFile.h>
+//Platform.
+#include <Platform/File/BinaryOutputFile.h>
 
 //Rendering.
 #include <Rendering/Native/Texture2D.h>
@@ -41,7 +41,7 @@ namespace TGAWriter
 	FORCE_INLINE void Write(const Texture2D<Vector4<float32>> &image, const char *const RESTRICT file) NOEXCEPT
 	{
 		//Create the output file.
-		BinaryOutputFile output_file{ file };
+		Platform::BinaryOutputFile output_file{ file };
 
 		//Write the header.
 		output_file.Write(&TGAWriterConstants::TARGA_HEADER_DEFAULT_ID_LENGTH,			sizeof(TGAWriterConstants::TARGA_HEADER_DEFAULT_ID_LENGTH));

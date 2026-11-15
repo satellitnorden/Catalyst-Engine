@@ -6,9 +6,11 @@
 
 //File.
 #include <File/Core/File.h>
-#include <File/Core/BinaryInputFile.h>
-#include <File/Core/BinaryOutputFile.h>
 #include <File/Utilities/TextParsingUtilities.h>
+
+//Platform.
+#include <Platform/File/BinaryInputFile.h>
+#include <Platform/File/BinaryOutputFile.h>
 
 //Profiling.
 #include <Profiling/Profiling.h>
@@ -119,7 +121,7 @@ void RawDataAssetCompiler::Compile(const CompileContext &compile_context) NOEXCE
 	DynamicArray<byte> data;
 
 	{
-		BinaryInputFile file{ parameters._File.Data() };
+		Platform::BinaryInputFile file{ parameters._File.Data() };
 
 		data.Upsize<false>(file.Size());
 		file.Read(data.Data(), file.Size());
@@ -155,7 +157,7 @@ void RawDataAssetCompiler::Compile(const CompileContext &compile_context) NOEXCE
 	SPRINTF(output_file_path, "%s\\%s.ca", directory_path, compile_context._Name.Data());
 
 	//Open the output file.
-	BinaryOutputFile output_file{ output_file_path };
+	Platform::BinaryOutputFile output_file{ output_file_path };
 
 	//Write the asset header to the file.
 	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_context._Name.Data()), compile_context._Name.Data() };

@@ -6,8 +6,8 @@
 //Audio.
 #include <Audio/AudioStream.h>
 
-//File.
-#include <File/Core/BinaryOutputFile.h>
+//Platform.
+#include <Platform/File/BinaryOutputFile.h>
 
 //Third party.
 #include <ThirdParty/AudioFile/AudioFile.h>
@@ -23,7 +23,7 @@ public:
 	FORCE_INLINE static NO_DISCARD bool Write(const char *const RESTRICT file_path, const AudioStream &audio_stream) NOEXCEPT
 	{
 		//Open the output file.
-		BinaryOutputFile output_file{ file_path };
+		Platform::BinaryOutputFile output_file{ file_path };
 
 		//Cache the bit depth.
 		const uint8 bit_depth{ Audio::BitsPerSample(audio_stream.GetFormat()) };

@@ -23,7 +23,7 @@
 #include <audioclient.h>
 #include <mmdeviceapi.h>
 
-#include <Platform/Windows/WindowsUndefines.h>
+#include <Platform/Platforms/Windows/WindowsUndefines.h>
 
 class CatalystPlatformWindows final
 {

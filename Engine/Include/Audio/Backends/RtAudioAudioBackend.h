@@ -9,7 +9,7 @@
 
 //Third party.
 #include <RtAudio/RtAudio.h>
-#include <Platform/Windows/WindowsUndefines.h>
+#include <Platform/Platforms/Windows/WindowsUndefines.h>
 
 class RtAudioAudioBackend : public AudioBackend
 {

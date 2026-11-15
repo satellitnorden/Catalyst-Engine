@@ -5,7 +5,7 @@
 //TODO: Check if Linux has some more "special" main function, for now, just go with a standard C++ one.
 int main()
 {
-	Main();
+	Platform::Main();
 
 	return 0;
 }

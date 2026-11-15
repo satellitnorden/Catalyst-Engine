@@ -232,7 +232,7 @@ private:
 	Task _InitializationTask;
 
 	//The dynamic library.
-	DynamicLibrary _DynamicLibrary;
+	Platform::DynamicLibrary _DynamicLibrary;
 
 	//The entry.
 	const clap_plugin_entry *RESTRICT _Entry{ nullptr };

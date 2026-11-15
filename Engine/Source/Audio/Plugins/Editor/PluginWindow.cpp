@@ -5,7 +5,7 @@
 //Platform specific stuff.
 #if defined(CATALYST_PLATFORM_WINDOWS)
 //Platform.
-#include <Platform/Windows/CatalystPlatformWindows.h>
+#include <Platform/Platforms/Windows/CatalystPlatformWindows.h>
 
 //Rendering.
 #include <Rendering/Abstraction/OpenGL/OpenGL.h>

@@ -3,7 +3,7 @@
 
 #if defined(CATALYST_PLATFORM_WINDOWS)
 //Platform.
-#include <Platform/Windows/CatalystPlatformWindows.h>
+#include <Platform/Platforms/Windows/CatalystPlatformWindows.h>
 #endif
 
 /*

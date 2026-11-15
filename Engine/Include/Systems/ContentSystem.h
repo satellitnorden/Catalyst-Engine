@@ -20,8 +20,11 @@
 #include <Systems/System.h>
 
 //Forward declarations.
-class BinaryInputFile;
-class BinaryOutputFile;
+namespace Platform
+{
+	class BinaryInputFile;
+	class BinaryOutputFile;
+}
 class ContentCache;
 
 //Type aliases.
@@ -248,7 +251,7 @@ private:
 	/*
 	*	Creates asset collections from the given directory path.
 	*/
-	void CreateAssetCollections(const char *const RESTRICT directory_path, BinaryOutputFile *const RESTRICT file) NOEXCEPT;
+	void CreateAssetCollections(const char *const RESTRICT directory_path, Platform::BinaryOutputFile *const RESTRICT file) NOEXCEPT;
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 	/*

@@ -1,0 +1,97 @@
+#pragma once
+
+//Core.
+#include <Core/Essential/CatalystEssential.h>
+#include <Core/General/Any.h>
+
+//File.
+#include <File/Core/File.h>
+
+namespace Platform
+{
+
+	class BinaryInputFile final
+	{
+		
+	public:
+
+		constexpr static uint64 ANY_SIZE{ 96 };
+
+		/*
+		*	Default constructor - prohibited, must be constructed with the proper arguments.
+		*/
+		BinaryInputFile() NOEXCEPT = delete;
+
+		/*
+		*	Constructor taking the file path.
+		*/
+		BinaryInputFile(const char *const RESTRICT file_path) NOEXCEPT;
+
+		/*
+		*	Default destructor.
+		*/
+		~BinaryInputFile() NOEXCEPT;
+
+		/*
+		*	Bool operator overload.
+		*/
+		NO_DISCARD operator bool() NOEXCEPT;
+
+		/*
+		*	Returns the file path.
+		*/
+		RESTRICTED NO_DISCARD const char *const RESTRICT GetFilePath() const NOEXCEPT;
+
+		/*
+		*	Returns the size of this binary input file, in bytes.
+		*/
+		NO_DISCARD uint64 Size() const NOEXCEPT;
+
+		/*
+		*	Reads from this binary file.
+		*/
+		void Read(void *const RESTRICT output, const uint64 size, const File::Endian endian = File::Endian::LITTLE) NOEXCEPT;
+
+		/*
+		*	Returns the current position, in bytes.
+		*/
+		NO_DISCARD uint64 GetCurrentPosition() NOEXCEPT;
+
+		/*
+		*	Sets the current position, in bytes.
+		*/
+		void SetCurrentPosition(const uint64 position) NOEXCEPT;
+
+		/*
+		*	Skips a number of bytes.
+		*/
+		void Skip(const uint64 size) NOEXCEPT;
+
+		/*
+		*	Returns if this binary file has reached the end of file.
+		*/
+		NO_DISCARD bool HasReachedEndOfFile() NOEXCEPT;
+
+		/*
+		*	Returns if this binary input file is mapped.
+		*/
+		NO_DISCARD bool IsMapped() const NOEXCEPT;
+
+		/*
+		*	Returns the mapped data (assuming this binary input file is mapped).
+		*/
+		NO_DISCARD const void *const RESTRICT GetMappedData() const NOEXCEPT;
+
+		/*
+		*	Closes this binary file.
+		*/
+		void Close() NOEXCEPT;
+
+	private:
+
+		//The implementation.
+		Any<ANY_SIZE> _Implementation;
+
+	};
+
+}

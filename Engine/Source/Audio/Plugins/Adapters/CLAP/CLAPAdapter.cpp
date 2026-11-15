@@ -4,7 +4,7 @@
 
 //Platform.
 #if defined(CATALYST_PLATFORM_WINDOWS)
-#include <Platform/Windows/CatalystPlatformWindows.h>
+#include <Platform/Platforms/Windows/CatalystPlatformWindows.h>
 #endif
 
 //Third party.

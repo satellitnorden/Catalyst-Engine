@@ -6,9 +6,11 @@
 
 //File.
 #include <File/Core/File.h>
-#include <File/Core/BinaryOutputFile.h>
 #include <File/Readers/FBXReader.h>
 #include <File/Utilities/TextParsingUtilities.h>
+
+//Platform.
+#include <Platform/File/BinaryOutputFile.h>
 
 //Profiling.
 #include <Profiling/Profiling.h>
@@ -62,7 +64,7 @@ NO_DISCARD uint64 AnimatedModelAssetCompiler::CurrentVersion() const NOEXCEPT
 /*
 *	Writes a single bone.
 */
-FORCE_INLINE void WriteBone(const Bone &bone, BinaryOutputFile *const RESTRICT output_file, uint32 *const RESTRICT total_number_of_bones) NOEXCEPT
+FORCE_INLINE void WriteBone(const Bone &bone, Platform::BinaryOutputFile *const RESTRICT output_file, uint32 *const RESTRICT total_number_of_bones) NOEXCEPT
 {
 	//Write the name.
 	output_file->Write(&bone._Name, sizeof(HashString));
@@ -175,7 +177,7 @@ void AnimatedModelAssetCompiler::Compile(const CompileContext &compile_context) 
 	SPRINTF(output_file_path, "%s\\%s.ca", directory_path, compile_context._Name.Data());
 
 	//Open the output file.
-	BinaryOutputFile output_file{ output_file_path };
+	Platform::BinaryOutputFile output_file{ output_file_path };
 
 	//Write the asset header to the file.
 	AssetHeader asset_header{ AssetTypeIdentifier(), CurrentVersion(), HashString(compile_context._Name.Data()), compile_context._Name.Data() };

@@ -6,8 +6,8 @@
 //Audio.
 #include <Audio/AudioStream.h>
 
-//File.
-#include <File/Core/BinaryInputFile.h>
+//Platform.
+#include <Platform/File/BinaryInputFile.h>
 
 //Third party.
 #include <ThirdParty/AudioFile/AudioFile.h>
@@ -91,7 +91,7 @@ public:
 		}
 
 		//Open the file.
-		BinaryInputFile file{ file_path };
+		Platform::BinaryInputFile file{ file_path };
 
 		//Read the header.
 		WAVFileHeader header;
@@ -320,7 +320,7 @@ public:
 		};
 
 		//Open the file.
-		BinaryInputFile file{ file_path };
+		Platform::BinaryInputFile file{ file_path };
 
 		if (!file)
 		{
