@@ -12,7 +12,7 @@
 #include <Systems/LogSystem.h>
 
 //Third party.
-#include <minizip/unzip.h>
+#include <minizip/minizip/unzip.h>
 #include <ThirdParty/pugixml/pugixml.hpp>
 
 //Defines.

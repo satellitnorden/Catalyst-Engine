@@ -524,8 +524,8 @@ bool ShouldIncludeThirdPartyFile(const ProjectSettings &project_settings, const 
 #if defined(PLATFORM_LINUX)
 	constexpr const char *DISCARDED_FILES[]
 	{
-		"../../Catalyst-Engine/Engine/Third Party/minizip/minizip/iowin32.h",
-		"../../Catalyst-Engine/Engine/Third Party/minizip/iowin32.c"
+		"../../Catalyst-Engine/Engine/Third Party/minizip/minizip/minizip/iowin32.h",
+		"../../Catalyst-Engine/Engine/Third Party/minizip/minizip/iowin32.c"
 	};
 
 	for (const char *discarded_file : DISCARDED_FILES)
