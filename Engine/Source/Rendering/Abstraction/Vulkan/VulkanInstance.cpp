@@ -39,6 +39,9 @@ DynamicArray<const char *const RESTRICT> extensions;
 */
 void VulkanInstance::Initialize() NOEXCEPT
 {
+	//Initialize Volk.
+	VULKAN_ERROR_CHECK(volkInitialize());
+
 	//Create the application info.
 	VkApplicationInfo application_info;
 	
@@ -60,6 +63,9 @@ void VulkanInstance::Initialize() NOEXCEPT
 		PROFILING_SCOPE("vkCreateInstance");
 		VULKAN_ERROR_CHECK(vkCreateInstance(&instance_create_info, nullptr, &_VulkanInstance));
 	}
+
+	//Load the Volk instance.
+	volkLoadInstance(_VulkanInstance);
 }
 
 /*

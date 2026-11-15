@@ -83,6 +83,9 @@ void VulkanLogicalDevice::Initialize() NOEXCEPT
 		PROFILING_SCOPE("Retrieve Queues");
 		RetrieveQueues();
 	}
+
+	//Load the Volk device.
+	volkLoadDevice(_VulkanLogicalDevice);
 }
 
 /*

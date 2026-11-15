@@ -245,6 +245,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 	//Add platform-specific preprocessor definitions.
 #if defined(PLATFORM_WIN64)
 	preprocessor_definitions->emplace_back("CATALYST_PLATFORM_WINDOWS");
+	preprocessor_definitions->emplace_back("VK_USE_PLATFORM_WIN32_KHR");
 	preprocessor_definitions->emplace_back("CATALYST_HAS_LIBSOUNDWAVE");
 	preprocessor_definitions->emplace_back("__WINDOWS_WASAPI__");
 	preprocessor_definitions->emplace_back("__WINDOWS_ASIO__");
@@ -253,11 +254,14 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 
 #if defined(PLATFORM_LINUX)
 	preprocessor_definitions->emplace_back("CATALYST_PLATFORM_LINUX");
+	preprocessor_definitions->emplace_back("VK_USE_PLATFORM_WAYLAND_KHR");
 	preprocessor_definitions->emplace_back("__LINUX_ALSA__");
 	preprocessor_definitions->emplace_back("__LINUX_PULSE__");
 #endif
 
 	//Add global preprocessor definitions.
+	preprocessor_definitions->emplace_back("VK_NO_PROTOTYPES");
+	preprocessor_definitions->emplace_back("IMGUI_IMPL_VULKAN_USE_VOLK");
 	preprocessor_definitions->emplace_back("CATALYST_DISTRIBUTION_NULL");
 	preprocessor_definitions->emplace_back("NAM_ENABLE_A2_FAST");
 
@@ -297,16 +301,10 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 */
 void AddLibraryIncludes(const ProjectSettings &project_settings, const char *configuration_name, std::vector<std::string> *library_includes)
 {
-#if defined(PLATFORM_WIN64)
-	#define VULKAN_NAME "vulkan-1.lib"
-#elif defined(PLATFORM_LINUX)
-	#define VULKAN_NAME "volk.a"
-#endif
 
 	//Add configuration specific library includes.
 	if (strcmp(configuration_name, "Debug") == 0)
 	{
-		library_includes->emplace_back(VULKAN_NAME);
 		Platform::AddVulkanShaderCLibraries("Debug", library_includes);
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Debug/libsoundwave.lib");
@@ -316,7 +314,6 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "Debug Editor") == 0)
 	{
-		library_includes->emplace_back(VULKAN_NAME);
 		Platform::AddVulkanShaderCLibraries("Debug", library_includes);
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Debug/libsoundwave.lib");
@@ -326,7 +323,6 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "Profile") == 0)
 	{
-		library_includes->emplace_back(VULKAN_NAME);
 		Platform::AddVulkanShaderCLibraries("Profile", library_includes);
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Profile/libsoundwave.lib");
@@ -336,7 +332,6 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "Profile Editor") == 0)
 	{
-		library_includes->emplace_back(VULKAN_NAME);
 		Platform::AddVulkanShaderCLibraries("Profile", library_includes);
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Profile/libsoundwave.lib");
@@ -346,7 +341,6 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "Final") == 0)
 	{
-		library_includes->emplace_back(VULKAN_NAME);
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Final/libsoundwave.lib");
 	#endif
@@ -354,7 +348,6 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "Debug Static") == 0)
 	{
-		library_includes->emplace_back(VULKAN_NAME);
 		Platform::AddVulkanShaderCLibraries("Debug", library_includes);
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Debug/libsoundwave.lib");
@@ -364,7 +357,6 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "Profile Static") == 0)
 	{
-		library_includes->emplace_back(VULKAN_NAME);
 		Platform::AddVulkanShaderCLibraries("Profile", library_includes);
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Profile/libsoundwave.lib");
@@ -374,7 +366,6 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "Final Static") == 0)
 	{
-		library_includes->emplace_back(VULKAN_NAME);
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Final/libsoundwave.lib");
 	#endif
@@ -382,9 +373,8 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "Standalone Debug") == 0)
 	{
-		library_includes->emplace_back(VULKAN_NAME);
-		library_includes->emplace_back("opengl32.lib");
 		Platform::AddVulkanShaderCLibraries("Debug", library_includes);
+		library_includes->emplace_back("opengl32.lib");
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Debug/libsoundwave.lib");
 		library_includes->emplace_back("Debug/assimp.lib");
@@ -393,9 +383,8 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "Standalone Profile") == 0)
 	{
-		library_includes->emplace_back(VULKAN_NAME);
-		library_includes->emplace_back("opengl32.lib");
 		Platform::AddVulkanShaderCLibraries("Profile", library_includes);
+		library_includes->emplace_back("opengl32.lib");
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Profile/libsoundwave.lib");
 		library_includes->emplace_back("Profile/assimp.lib");
@@ -404,7 +393,6 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "Standalone Final") == 0)
 	{
-		library_includes->emplace_back(VULKAN_NAME);
 		library_includes->emplace_back("opengl32.lib");
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Final/libsoundwave.lib");

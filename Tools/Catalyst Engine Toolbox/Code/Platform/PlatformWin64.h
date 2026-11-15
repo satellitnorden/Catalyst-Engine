@@ -21,15 +21,7 @@ namespace Platform
     */
     static void AddVulkanShaderCLibraries(const char *directory, std::vector<std::string> *library_includes)
     {
-        if (strcmp(directory, "Debug") == 0)
-        {
-            library_includes->emplace_back("Debug/shaderc_shared.lib");
-        }
-        
-        else
-        {
-            library_includes->emplace_back("Profile/shaderc_shared.lib");
-        }
+        library_includes->emplace_back("shaderc_shared.lib");
     }
 
 }

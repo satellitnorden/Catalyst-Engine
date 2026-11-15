@@ -903,7 +903,7 @@ RESTRICTED VulkanShaderModule *const RESTRICT VulkanInterface::CreateShaderModul
 */
 void VulkanInterface::CreateVulkanMemoryAllocator() NOEXCEPT
 {
-	VmaAllocatorCreateInfo info;
+	VmaAllocatorCreateInfo info{ };
 
 	info.flags = 0;
 	info.physicalDevice = _VulkanPhysicalDevice.Get();
@@ -912,7 +912,6 @@ void VulkanInterface::CreateVulkanMemoryAllocator() NOEXCEPT
 	info.pAllocationCallbacks = nullptr;
 	info.pDeviceMemoryCallbacks = nullptr;
 	info.pHeapSizeLimit = nullptr;
-	info.pVulkanFunctions = nullptr;
 	info.instance = _VulkanInstance.Get();
 
 #if defined(CATALYST_PLATFORM_ANDROID)
@@ -924,6 +923,10 @@ void VulkanInterface::CreateVulkanMemoryAllocator() NOEXCEPT
 #endif
 
 	info.pTypeExternalMemoryHandleTypes = nullptr;
+
+	VmaVulkanFunctions vma_vulkan_functions{ };
+	vmaImportVulkanFunctionsFromVolk(&info, &vma_vulkan_functions);
+	info.pVulkanFunctions = &vma_vulkan_functions;
 
 	vmaCreateAllocator(&info, &VULKAN_MEMORY_ALLOCATOR);
 }
