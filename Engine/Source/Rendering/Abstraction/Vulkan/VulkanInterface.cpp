@@ -918,7 +918,7 @@ void VulkanInterface::CreateVulkanMemoryAllocator() NOEXCEPT
 	info.vulkanApiVersion = VK_API_VERSION_1_0;
 #endif
 
-#if defined(CATALYST_PLATFORM_WINDOWS)
+#if defined(CATALYST_PLATFORM_WINDOWS) || defined(CATALYST_PLATFORM_LINUX)
 	info.vulkanApiVersion = VK_API_VERSION_1_4;
 #endif
 

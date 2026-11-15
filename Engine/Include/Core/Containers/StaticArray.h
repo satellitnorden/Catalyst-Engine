@@ -35,9 +35,7 @@ public:
 	*/
 	FORCE_INLINE constexpr NO_DISCARD const TYPE &operator[](const uint64 index) const NOEXCEPT
 	{
-#if defined(CATALYST_PLATFORM_WINDOWS)
 		ASSERT(index < SIZE, "Index is out of bounds!");
-#endif
 
 		return _Array[index];
 	}
@@ -47,9 +45,7 @@ public:
 	*/
 	FORCE_INLINE constexpr NO_DISCARD TYPE &operator[](const uint64 index) NOEXCEPT
 	{
-#if defined(CATALYST_PLATFORM_WINDOWS)
 		ASSERT(index < SIZE, "Index is out of bounds!");
-#endif
 
 		return _Array[index];
 	}
@@ -123,9 +119,7 @@ public:
 	*/
 	FORCE_INLINE constexpr NO_DISCARD const TYPE& At(const uint64 index) const NOEXCEPT
 	{
-#if defined(CATALYST_PLATFORM_WINDOWS)
 		ASSERT(index < SIZE, "Index is out of bounds!");
-#endif
 
 		return _Array[index];
 	}
@@ -135,9 +129,7 @@ public:
 	*/
 	FORCE_INLINE constexpr NO_DISCARD TYPE& At(const uint64 index) NOEXCEPT
 	{
-#if defined(CATALYST_PLATFORM_WINDOWS)
 		ASSERT(index < SIZE, "Index is out of bounds!");
-#endif
 
 		return _Array[index];
 	}
