@@ -6,6 +6,7 @@
 //Audio.
 #include <Audio/AudioStream.h>
 
+#if (CATALYST_HAS_LIB_SOUNDWAVE)
 //Third party.
 #include <ThirdParty/libsoundwave/OpusDecoder.h>
 
@@ -44,3 +45,19 @@ public:
 	}
 
 };
+#else
+class OPUSReader final
+{
+
+public:
+
+	/*
+	*	Reads the sound asset at the given file path. Returns if the read was succesful.
+	*/
+	FORCE_INLINE static NO_DISCARD bool Read(const char *const RESTRICT file_path, AudioStream *const RESTRICT audio_stream) NOEXCEPT
+	{
+		return false;
+	}
+
+};
+#endif

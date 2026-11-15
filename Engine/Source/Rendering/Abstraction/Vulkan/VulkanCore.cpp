@@ -8,7 +8,7 @@
 /*
 *	Functions definitions.
 */
-#if !DEFINE_FUNCTION_PROTOTYPES
+#if !DEFINE_FUNCTION_PROTOTYPES && !defined(CATALYST_PLATFORM_LINUX) //TODO: Clean this up, rely on one approach?
 VKAPI_ATTR VkResult VKAPI_CALL vkBindAccelerationStructureMemoryNV(
 	VkDevice                                    device,
 	uint32_t                                    bindInfoCount,

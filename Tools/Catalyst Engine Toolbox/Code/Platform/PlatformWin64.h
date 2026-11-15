@@ -13,6 +13,27 @@
 //STD.
 #include <string>
 
+namespace Platform
+{
+
+    /*
+    *   Adds the Vulkan 'shaderc' libraries.
+    */
+    static void AddVulkanShaderCLibraries(const char *directory, std::vector<std::string> *library_includes)
+    {
+        if (strcmp(directory, "Debug") == 0)
+        {
+            library_includes->emplace_back("Debug/shaderc_shared.lib");
+        }
+        
+        else
+        {
+            library_includes->emplace_back("Profile/shaderc_shared.lib");
+        }
+    }
+
+}
+
 namespace PlatformWin64
 {
 
