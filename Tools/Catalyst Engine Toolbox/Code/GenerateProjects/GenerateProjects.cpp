@@ -290,10 +290,12 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 	}
 
 	//Add special preprocessor definitions.
+#if defined(PLATFORM_WIN64)
 	if (project_settings._IncludeONNXRuntimeLibrary)
 	{
 		preprocessor_definitions->emplace_back("CATALYST_HAS_ONNX");
 	}
+#endif
 }
 
 /*
