@@ -42,7 +42,7 @@ void GenerateCMake::Generate(const GenerateProjectParameters &parameters)
 
     //Add the minimum required version.
     file << "# Set the minimum required version." << std::endl;
-    file << "cmake_minimum_required(VERSION 4.4.4)" << std::endl;
+    file << "cmake_minimum_required(VERSION 4.4.2)" << std::endl;
     file << std::endl;
 
     //Add the the project.

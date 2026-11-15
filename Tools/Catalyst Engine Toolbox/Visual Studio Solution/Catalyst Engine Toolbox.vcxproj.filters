@@ -66,6 +66,9 @@
     <ClCompile Include="..\Code\GenerateProjects\GenerateAudioPlugin.cpp">
       <Filter>GenerateProjects</Filter>
     </ClCompile>
+    <ClCompile Include="..\Code\GenerateProjects\GenerateCLion.cpp">
+      <Filter>GenerateProjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Core\Core.h">
@@ -135,6 +138,9 @@
       <Filter>GenerateCode</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\GenerateProjects\GenerateAudioPlugin.h">
+      <Filter>GenerateProjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\GenerateProjects\GenerateCLion.h">
       <Filter>GenerateProjects</Filter>
     </ClInclude>
   </ItemGroup>

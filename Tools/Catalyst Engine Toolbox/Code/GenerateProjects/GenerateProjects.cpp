@@ -9,6 +9,7 @@
 
 //Generate projects.
 #include <GenerateProjects/GenerateAudioPlugin.h>
+#include <GenerateProjects/GenerateCLion.h>
 #include <GenerateProjects/GenerateCMake.h>
 #include <GenerateProjects/GenerateVisualStudioCodeWorkspace.h>
 #include <GenerateProjects/GenerateVisualStudioSolution.h>
@@ -23,6 +24,20 @@
 
 //Macros.
 #define CHECK_ERROR_CODE() if (error_code) { std::cerr << "Error at " << __LINE__ << ": " << error_code.message() << std::endl; }
+
+/*
+*	Returns the CLion directory.
+*/
+std::string CLionDirectory()
+{
+#if defined(PLATFORM_WIN64)
+	return "Win64/CLion";
+#elif defined(PLATFORM_LINUX)
+	return "Linux/CLion";
+#else
+	#error "Unknown platform!"
+#endif
+}
 
 /*
 *	Returns the CMake directory.
@@ -864,6 +879,12 @@ void GenerateDefaultProjects(const ProjectSettings &project_settings)
 
 	//Generate the code generation file.
 	GenerateRunCodeGenerationBatchFile(VisualStudioSolutionDirectory(), project_settings);
+
+	//Generate the CLion project.
+	{
+		parameters._DirectoryPath = CLionDirectory();
+		GenerateCLion::Generate(parameters);
+	}
 
 	//Generate the CMake file.
 	{
