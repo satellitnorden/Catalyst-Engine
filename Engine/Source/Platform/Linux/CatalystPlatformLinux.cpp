@@ -5,6 +5,10 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//STD.
+#include <cstdarg>
+#include <iostream>
+
 /*
 *	Returns the CPU information.
 */
@@ -47,7 +51,7 @@ void CatalystPlatform::PlatformPostUpdate() NOEXCEPT
 */
 void CatalystPlatform::Terminate() NOEXCEPT
 {
-
+	
 }
 
 /*
@@ -191,7 +195,11 @@ void CatalystPlatform::ShowInterstitialAd() NOEXCEPT
 */
 void CatalystPlatform::PrintToOutput(const char *const RESTRICT format, ...) NOEXCEPT
 {
-	
+	va_list args;
+    va_start(args, format);
+    vfprintf(stdout, format, args);
+    va_end(args);
+    std::cout << std::endl;
 }
 #endif
 #endif

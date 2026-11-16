@@ -450,6 +450,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 	library_includes->emplace_back("pulse.a");
 	library_includes->emplace_back("pulse-simple.a");
 	library_includes->emplace_back("asound.a");
+	library_includes->emplace_back("wayland-client.a");
 #endif
 
 	//Add special library includes.
@@ -519,6 +520,13 @@ bool ShouldIncludeThirdPartyDirectory(const ProjectSettings &project_settings, c
 	{
 		return project_settings._Physics == ProjectSettings::Physics::JOLT;
 	}
+
+#if defined(PLATFORM_WIN64)
+	if (path == "../../Catalyst-Engine/Engine/Third Party/Wayland")
+	{
+		return false;
+	}
+#endif
 
 	return true;
 }
