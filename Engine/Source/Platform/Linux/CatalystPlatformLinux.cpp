@@ -59,22 +59,6 @@ NO_DISCARD const char *const RESTRICT CatalystPlatform::GetExecutableDirectorypa
 }
 
 /*
-*	Returns if the given platform window is alive.
-*/
-NO_DISCARD bool CatalystPlatform::IsPlatformWindowAlive(void *const RESTRICT window) NOEXCEPT
-{
-	return false;
-}
-
-/*
-*	Creates a platform window with the given description.
-*/
-void *const RESTRICT CatalystPlatform::CreatePlatformWindow(const WindowDescription &description) NOEXCEPT
-{
-	return nullptr;
-}
-
-/*
 *	Sets the size of a platform window.
 */
 void CatalystPlatform::SetPlatformWindowSize(void *const RESTRICT window, const uint32 width, const uint32 height) NOEXCEPT
@@ -178,14 +162,6 @@ void CatalystPlatform::ShowCursor() NOEXCEPT
 bool CatalystPlatform::IsCursorShown() NOEXCEPT
 {
 	return false;
-}
-
-/*
-*	Returns the scroll wheel step and resets it.
-*/
-int8 CatalystPlatform::GetAndResetScrollWheelStep() NOEXCEPT
-{
-	return 0;
 }
 
 /*

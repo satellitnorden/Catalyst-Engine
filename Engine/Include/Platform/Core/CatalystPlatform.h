@@ -27,59 +27,6 @@ public:
 	};
 
 	/*
-	*	Window description class definition.
-	*/
-	class WindowDescription final
-	{
-
-	public:
-
-		/*
-		*	Enumeration covering all flags.
-		*/
-		enum class Flag : uint8
-		{
-			/*
-			*	No flags. (:
-			*/
-			NONE = 0,
-
-			/*
-			*	Denotes that this is a fullscreen window.
-			*/
-			FULLSCREEN = BIT(0),
-
-			/*
-			*	Denotes that this is a windowed window.
-			*/
-			WINDOWED = BIT(1),
-
-			/*
-			*	Denotes that this is a popup window.
-			*/
-			POPUP = BIT(2),
-
-			/*
-			*	Denotes that this is a child window.
-			*/
-			CHILD = BIT(3)
-		};
-
-		//The title.
-		char _Title[64];
-
-		//The width.
-		uint32 _Width;
-
-		//The height.
-		uint32 _Height;
-
-		//The flags.
-		Flag _Flags;
-
-	};
-
-	/*
 	*	Returns the CPU information.
 	*/
 	static NO_DISCARD CPUInformation GetCPUInformation() NOEXCEPT;
@@ -108,16 +55,6 @@ public:
 	*	Returns the directory path of the current executable.
 	*/
 	static NO_DISCARD const char *const RESTRICT GetExecutableDirectorypath() NOEXCEPT;
-
-	/*
-	*	Returns if the given platform window is alive.
-	*/
-	static NO_DISCARD bool IsPlatformWindowAlive(void *const RESTRICT window) NOEXCEPT;
-
-	/*
-	*	Creates a platform window with the given description.
-	*/
-	static void *const RESTRICT CreatePlatformWindow(const WindowDescription &description) NOEXCEPT;
 
 	/*
 	*	Sets the size of a platform window.
@@ -186,11 +123,6 @@ public:
 	static bool IsCursorShown() NOEXCEPT;
 
 	/*
-	*	Returns the scroll wheel step and resets it.
-	*/
-	static int8 GetAndResetScrollWheelStep() NOEXCEPT;
-
-	/*
 	*	Retrieves the user name.
 	*/
 	static bool RetrieveUserName(DynamicString *const RESTRICT output) NOEXCEPT;
@@ -213,5 +145,3 @@ public:
 #endif
 
 };
-
-ENUMERATION_BIT_OPERATIONS(CatalystPlatform::WindowDescription::Flag);

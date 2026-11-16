@@ -26,7 +26,7 @@ public:
 	(
 		InputSystem,
 		SYSTEM_INITIALIZE()
-		SYSTEM_UPDATE(RANGE(INPUT, GAMEPLAY))
+		SYSTEM_UPDATE(RANGE(INPUT, GAMEPLAY), RANGE(POST, PRE))
 	);
 
 	/*
@@ -160,18 +160,18 @@ private:
 	InputDeviceType _LastUpdatedInputDeviceType;
 
 	/*
+	*	Updates during the input update phase.
+	*/
+	void UpdateInput() NOEXCEPT;
+
+	/*
+	*	Updates during the post update phase.
+	*/
+	void UpdatePost() NOEXCEPT;
+
+	/*
 	*	Updates the gamepad state at the given index.
 	*/
 	void UpdateGamepadState(const uint8 index) NOEXCEPT;
-
-	/*
-	*	Updates the keyboard state.
-	*/
-	void UpdateKeyboardState() NOEXCEPT;
-
-	/*
-	*	Updates the touch state.
-	*/
-	void UpdateTouchState() NOEXCEPT;
 
 };

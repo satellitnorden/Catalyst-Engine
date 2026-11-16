@@ -8,6 +8,9 @@
 //Audio.
 #include <Audio/VST3/ReferenceCounting.h>
 
+//Platform.
+#include <Platform/Core/WindowManager.h>
+
 //Third party.
 #include <VST3/pluginterfaces/gui/iplugview.h>
 
@@ -89,7 +92,7 @@ namespace VST3
 		*/
 		FORCE_INLINE NO_DISCARD bool HasFrameWindow() const NOEXCEPT
 		{
-			return _FrameWindow != nullptr && CatalystPlatform::IsPlatformWindowAlive(_FrameWindow);
+			return _FrameWindow != Platform::INVALID_WINDOW_HANDLE && Platform::WindowManager::IsAlive(_FrameWindow);
 		}
 
 		/*
@@ -98,22 +101,21 @@ namespace VST3
 		FORCE_INLINE void CreateFrameWindow(const char *const RESTRICT name, const Steinberg::ViewRect &view_rect) NOEXCEPT
 		{
 			//Create the frame window.
-			CatalystPlatform::WindowDescription description;
+			Platform::WindowManager::CreateParameters parameters;
 
-			SPRINTF(description._Title, "%s", name);
-			description._Width = view_rect.getWidth();
-			description._Height = view_rect.getHeight();
-			description._Flags = CatalystPlatform::WindowDescription::Flag::POPUP;
+			SNPRINTF(parameters._Title.Data(), parameters._Title.Size(), "%s", name);
+			parameters._Resolution = Resolution(view_rect.getWidth(), view_rect.getHeight());
+			parameters._FullScreen = false;
 
-			_FrameWindow = CatalystPlatform::CreatePlatformWindow(description);
+			_FrameWindow = Platform::WindowManager::Create(parameters);
 		}
 
 		/*
 		*	Returns the frame window.
 		*/
-		FORCE_INLINE NO_DISCARD void *const RESTRICT GetFrameWindow() const NOEXCEPT
+		FORCE_INLINE NO_DISCARD Platform::WindowHandle GetFrameWindow() const NOEXCEPT
 		{
-			return _FrameWindow;
+			return Platform::WindowManager::GetPlatformNativeHandle(_FrameWindow);
 		}
 
 		/*
@@ -121,14 +123,14 @@ namespace VST3
 		*/
 		FORCE_INLINE void DestroyFrameWindow() NOEXCEPT
 		{
-			CatalystPlatform::DestroyPlayformWindow(_FrameWindow);
-			_FrameWindow = nullptr;
+			Platform::WindowManager::Destroy(_FrameWindow);
+			_FrameWindow = Platform::INVALID_WINDOW_HANDLE;
 		}
 
 	private:
 
 		//The frame window.
-		void *RESTRICT _FrameWindow{ nullptr };
+		Platform::WindowHandle _FrameWindow{ Platform::INVALID_WINDOW_HANDLE };
 
 	};
 

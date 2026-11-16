@@ -36,12 +36,6 @@ public:
 	//The command to show the window.
 	static int32 _ShowCommand;
 
-	//Denotes whether or not the window info is registered.
-	static bool _WindowInfoRegistered;
-
-	//The window info.
-	static WNDCLASSEX _WindowInfo;
-
 	//Handle to the main window.
 	static HWND _MainWindow;
 

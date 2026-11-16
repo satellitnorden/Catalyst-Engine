@@ -31,8 +31,6 @@
 //Static variable definitions.
 HINSTANCE CatalystPlatformWindows::_Instance;
 int32 CatalystPlatformWindows::_ShowCommand;
-bool CatalystPlatformWindows::_WindowInfoRegistered{ false };
-WNDCLASSEX CatalystPlatformWindows::_WindowInfo;
 HWND CatalystPlatformWindows::_MainWindow;
 DynamicArray<uint64> CatalystPlatformWindows::_KeyDownEvents;
 DynamicArray<uint64> CatalystPlatformWindows::_KeyUpEvents;
@@ -52,9 +50,6 @@ namespace CatalystWindowsData
 
 	//The cached cursor position.
 	POINT _CachedCursorPosition{ 0, 0 };
-
-	//The scroll wheel step.
-	int8 _ScrollWheelStep{ 0 };
 
 }
 
@@ -141,95 +136,6 @@ namespace CatalystWindowsLogic
 }
 
 /*
-*	Window procedure handling.
-*/
-LRESULT CALLBACK WindowProcedure(	_In_ HWND   window,
-									_In_ UINT   message,
-									_In_ WPARAM wParam,
-									_In_ LPARAM lParam) NOEXCEPT
-{
-	if (window != CatalystPlatformWindows::_MainWindow)
-	{
-		return DefWindowProc(window, message, wParam, lParam);
-	}
-
-	switch (message)
-	{
-		case WM_DESTROY:
-		{
-			CatalystEngineSystem::Instance->SetShouldTerminate();
-
-			break;
-		}
-
-		case WM_MOUSEWHEEL:
-		{
-			CatalystWindowsData::_ScrollWheelStep = GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA;
-
-			break;
-		}
-
-		case WM_KEYDOWN:
-		{
-			CatalystPlatformWindows::_KeyDownEvents.Emplace(wParam);
-
-			break;
-		}
-
-		case WM_KEYUP:
-		{
-			CatalystPlatformWindows::_KeyUpEvents.Emplace(wParam);
-
-			break;
-		}
-
-		case WM_CHAR:
-		{
-			CatalystPlatformWindows::_InputCharacters.Emplace((char)(wParam & 255));
-
-			break;
-		}
-	}
-
-	return DefWindowProc(window, message, wParam, lParam);
-}
-
-/*
-*	Registers the window info.
-*/
-FORCE_INLINE void RegisterWindowInfo() NOEXCEPT
-{
-	if (CatalystPlatformWindows::_WindowInfoRegistered)
-	{
-		return;
-	}
-
-	CatalystPlatformWindows::_WindowInfo.cbSize = sizeof(WNDCLASSEX);
-	CatalystPlatformWindows::_WindowInfo.style = 0;
-	CatalystPlatformWindows::_WindowInfo.lpfnWndProc = WindowProcedure;
-	CatalystPlatformWindows::_WindowInfo.cbClsExtra = 0;
-	CatalystPlatformWindows::_WindowInfo.cbWndExtra = 0;
-	CatalystPlatformWindows::_WindowInfo.hInstance = CatalystPlatformWindows::_Instance;
-	CatalystPlatformWindows::_WindowInfo.hIcon = LoadIcon(CatalystPlatformWindows::_Instance, IDI_APPLICATION);
-	CatalystPlatformWindows::_WindowInfo.hCursor = LoadCursor(NULL, IDC_ARROW);
-	CatalystPlatformWindows::_WindowInfo.hbrBackground = 0;
-	CatalystPlatformWindows::_WindowInfo.lpszMenuName = NULL;
-	CatalystPlatformWindows::_WindowInfo.lpszClassName = _T("Catalyst Engine");
-	CatalystPlatformWindows::_WindowInfo.hIconSm = LoadIcon(CatalystPlatformWindows::_WindowInfo.hInstance, IDI_APPLICATION);
-
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-	if (!RegisterClassEx(&CatalystPlatformWindows::_WindowInfo))
-	{
-		BREAKPOINT();
-	}
-#else
-	RegisterClassEx(&CatalystPlatformWindows::_WindowInfo);
-#endif
-
-	CatalystPlatformWindows::_WindowInfoRegistered = true;
-}
-
-/*
 *	Sets the visibility of the cursor.
 */
 FORCE_INLINE void SetCursorVisibility(const bool visibility) NOEXCEPT
@@ -266,52 +172,6 @@ NO_DISCARD CatalystPlatform::CPUInformation CatalystPlatform::GetCPUInformation(
 */
 void CatalystPlatform::Initialize() NOEXCEPT
 {
-	//Create the window.
-	{
-		//Gather data.
-		char window_name_buffer[256];
-
-#if defined(CATALYST_EDITOR)
-		SPRINTF(window_name_buffer, "Catalyst Editor - %s", CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data());
-#else
-		SPRINTF(window_name_buffer, "%s", CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data());
-#endif
-
-		Resolution resolution;
-
-		if (CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution.Valid())
-		{
-			resolution = CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution.Get();
-		}
-
-		else
-		{
-			CatalystPlatform::GetDefaultResolution(&resolution._Width, &resolution._Height);
-		}
-
-		const bool fullscreen{ CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._InitialFullScreen };
-
-		//Fill out the description.
-		WindowDescription description;
-
-		SPRINTF(description._Title, "%s", window_name_buffer);
-		description._Width = resolution._Width;
-		description._Height = resolution._Height;
-		description._Flags = fullscreen ? WindowDescription::Flag::FULLSCREEN : WindowDescription::Flag::WINDOWED;
-
-		//Create the window!
-		CatalystPlatformWindows::_MainWindow = static_cast<HWND>(CreatePlatformWindow(description));
-	}
-
-#if !defined(CATALYST_CONFIGURATION_FINAL)
-	if (!CatalystPlatformWindows::_MainWindow)
-	{
-		const DWORD result{ GetLastError() };
-
-		BREAKPOINT();
-	}
-#endif
-
 	//Allocate an appropriate amount of memory for keyboard events.
 	CatalystPlatformWindows::_KeyDownEvents.Reserve(32);
 	CatalystPlatformWindows::_KeyUpEvents.Reserve(32);
@@ -331,7 +191,7 @@ void CatalystPlatform::PlatformPreUpdate() NOEXCEPT
 */
 void CatalystPlatform::PlatformPostUpdate() NOEXCEPT
 {
-	CatalystWindowsLogic::UpdatePlatformWindow(CatalystPlatformWindows::_MainWindow);
+	
 }
 
 /*
@@ -367,87 +227,6 @@ NO_DISCARD const char *const RESTRICT CatalystPlatform::GetExecutableDirectorypa
 	}
 
 	return file_path;
-}
-
-/*
-*	Returns if the given platform window is alive.
-*/
-NO_DISCARD bool CatalystPlatform::IsPlatformWindowAlive(void* const RESTRICT window) NOEXCEPT
-{
-	return IsWindow(static_cast<HWND>(window));
-}
-
-/*
-*	Creates a platform window with the given description.
-*/
-void *const RESTRICT CatalystPlatform::CreatePlatformWindow(const WindowDescription &description) NOEXCEPT
-{
-	//Register the window info.
-	RegisterWindowInfo();
-
-	//Set up the style.
-	DWORD style{ 0 };
-
-	if (TEST_BIT(description._Flags, WindowDescription::Flag::FULLSCREEN))
-	{
-		style = WS_POPUP | WS_VISIBLE;
-	}
-
-	else if (TEST_BIT(description._Flags, WindowDescription::Flag::WINDOWED))
-	{
-		style = WS_CAPTION | WS_SYSMENU;
-	}
-
-	else if (TEST_BIT(description._Flags, WindowDescription::Flag::POPUP))
-	{
-		style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU;
-	}
-
-	else if (TEST_BIT(description._Flags, WindowDescription::Flag::CHILD))
-	{
-		style = WS_CHILD;
-	}
-
-	//Set up the rectangle for the window.
-	RECT rectangle;
-
-	rectangle.left = 0;
-	rectangle.top = 0;
-	rectangle.right = description._Width;
-	rectangle.bottom = description._Height;
-
-	AdjustWindowRect(&rectangle, style, FALSE);
-
-	//Create the window!
-	const HWND window
-	{
-		CreateWindow
-		(
-			CatalystPlatformWindows::_WindowInfo.lpszClassName,
-			_T(description._Title),
-			style,
-			CW_USEDEFAULT,
-			CW_USEDEFAULT,
-			rectangle.right - rectangle.left,
-			rectangle.bottom - rectangle.top,
-			nullptr,
-			nullptr,
-			CatalystPlatformWindows::_Instance,
-			nullptr
-		)
-	};
-
-	if (window)
-	{
-		//Show the window.
-		ShowWindow(window, CatalystPlatformWindows::_ShowCommand);
-
-		//Update the window.
-		UpdateWindow(window);
-	}
-
-	//Return the window.
-	return window;
 }
 
 /*
@@ -698,9 +477,6 @@ void CatalystPlatform::UpdateMouseState(MouseState *const RESTRICT mouse_state, 
 	UpdateButtonState(VK_LBUTTON, &mouse_state->_Left);
 	UpdateButtonState(VK_MBUTTON, &mouse_state->_ScrollWheel);
 	UpdateButtonState(VK_RBUTTON, &mouse_state->_Right);
-
-	//Update the scroll wheel step.
-	mouse_state->_ScrollWheelStep = CatalystPlatform::GetAndResetScrollWheelStep();
 }
 
 /*
@@ -741,18 +517,6 @@ void CatalystPlatform::ShowCursor() NOEXCEPT
 bool CatalystPlatform::IsCursorShown() NOEXCEPT
 {
 	return CatalystWindowsData::_CursorCurrentVisibility;
-}
-
-/*
-*	Returns the scroll wheel step and resets it.
-*/
-int8 CatalystPlatform::GetAndResetScrollWheelStep() NOEXCEPT
-{
-	const int8 old{ CatalystWindowsData::_ScrollWheelStep };
-
-	CatalystWindowsData::_ScrollWheelStep = 0;
-
-	return old;
 }
 
 /*

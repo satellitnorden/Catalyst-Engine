@@ -3,12 +3,16 @@
 
 //Core.
 #include <Core/General/DeltaTimer.h>
+#include <Core/General/Print.h>
 
 //Components.
 #include <Components/Core/Component.h>
 
 //Concurrency.
 #include <Concurrency/Concurrency.h>
+
+//Platform.
+#include <Platform/Core/WindowManager.h>
 
 //Profiling.
 #include <Profiling/Profiling.h>
@@ -66,6 +70,59 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 	{
 		PROFILING_SCOPE("CatalystPlatform::Initialize();");
 		CatalystPlatform::Initialize();
+	}
+
+	//Initialize the window manager.
+	Platform::WindowManager::Initialize();
+
+	//Create the master window.
+	{
+		//Set up the parameters.
+		Platform::WindowManager::CreateParameters parameters;
+
+		//Figure out the title.
+#if defined(CATALYST_EDITOR)
+		SNPRINTF(parameters._Title.Data(), parameters._Title.Size(), "Catalyst Editor - %s", CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data());
+#else
+		SNPRINTF(parameters._Title.Data(), parameters._Title.Size(), "%s", CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data());
+#endif
+
+		//Figure out the resolution.
+		if (CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution.Valid())
+		{
+			parameters._Resolution = CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution.Get();
+		}
+
+		else
+		{
+			CatalystPlatform::GetDefaultResolution(&parameters._Resolution._Width, &parameters._Resolution._Height);
+		}
+
+		//Set if this window should be fullscreen.
+		parameters._FullScreen = CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._InitialFullScreen;
+
+#if defined(CATALYST_EDITOR)
+		parameters._ResolutionIncludesPlatformElements = true;
+#else
+		parameters._ResolutionIncludesPlatformElements = false;
+#endif
+
+		//Create the window!
+		const Platform::WindowHandle window{ Platform::WindowManager::Create(parameters) };
+
+		//Set this as the master window.
+		Platform::WindowManager::SetMasterWindow(window);
+
+		//Add the window closed callback.
+		Platform::WindowManager::AddWindowClosedCallback
+		(
+			window,
+			[](void *const RESTRICT arguments)
+			{
+				CatalystEngineSystem::Instance->SetShouldTerminate();
+			},
+			nullptr
+		);
 	}
 
 	//Initialize the task system here, as subsequent steps might use that.
@@ -285,6 +342,9 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	//Post-update the platform.
 	CatalystPlatform::PlatformPostUpdate();
 
+	//Update the window manager.
+	Platform::WindowManager::Update();
+
 	//Post-update the frame pacer.
 	_FramePacer.PostUpdate(preferred_refresh_rate);
 
@@ -316,6 +376,9 @@ void CatalystEngineSystem::Terminate() NOEXCEPT
 
 	//Terminate the platform.
 	CatalystPlatform::Terminate();
+
+	//Terminate the window manager.
+	Platform::WindowManager::Terminate();
 
 	//Post-terminate all systems.
 	Systems::PostTerminate();
