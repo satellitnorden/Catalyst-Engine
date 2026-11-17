@@ -7,6 +7,7 @@
 //Audio.
 #include <Audio/Backends/ALSAAudioBackend.h>
 #include <Audio/Backends/ASIOAudioBackend.h>
+#include <Audio/Backends/PulseAudioBackend.h>
 #include <Audio/Backends/WASAPIAudioBackend.h>
 
 //Profiling.
@@ -374,6 +375,13 @@ void AudioSystem::InitializeBackend(const Audio::Backend backend) NOEXCEPT
 		case Audio::Backend::ASIO:
 		{
 			_Backend = new ASIOAudioBackend(CreateBackendParameters());
+
+			break;
+		}
+
+		case Audio::Backend::PULSE:
+		{
+			_Backend = new PulseAudioBackend(CreateBackendParameters());
 
 			break;
 		}

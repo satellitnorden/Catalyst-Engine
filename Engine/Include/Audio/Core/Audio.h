@@ -22,6 +22,7 @@ namespace Audio
 		WASAPI,
 		ASIO,
 
+		PULSE,
 		ALSA
 	};
 
