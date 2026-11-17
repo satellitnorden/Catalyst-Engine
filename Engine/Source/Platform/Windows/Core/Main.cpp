@@ -20,7 +20,6 @@ int32 WINAPI WinMain
 
 	//Set the instance/show command.
 	CatalystPlatformWindows::_Instance = hInstance;
-	CatalystPlatformWindows::_ShowCommand = nCmdShow;
 
 	//Call the game's main function.
 	Platform::Main();

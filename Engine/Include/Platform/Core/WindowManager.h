@@ -90,15 +90,75 @@ namespace Platform
 		static NO_DISCARD WindowHandle Create(const CreateParameters &parameters) NOEXCEPT;
 
 		/*
-		*	Returns the platform native handle for the given window handle.
-		*	May or may not be the same as the window handle, depending on the platform.
+		*	Returns a platform native window handle for the given window.
+		*	Not all platforms may return a valid handle here, as the concept of a "window" may differ between platforms.
 		*/
-		static NO_DISCARD WindowHandle GetPlatformNativeHandle(const WindowHandle window) NOEXCEPT;
+		static NO_DISCARD PlatformNativeWindowHandle GetWindowHandle(const WindowHandle window) NOEXCEPT;
+
+		/*
+		*	Returns a platform native display handle for the given window.
+		*	Not all platforms may return a valid handle here, as the concept of a "display" may differ between platforms.
+		*/
+		static NO_DISCARD PlatformNativeWindowHandle GetDisplayHandle(const WindowHandle window) NOEXCEPT;
+
+		/*
+		*	Returns a platform native surface handle for the given window.
+		*	Not all platforms may return a valid handle here, as the concept of a "surface" may differ between platforms.
+		*/
+		static NO_DISCARD PlatformNativeWindowHandle GetSurfaceHandle(const WindowHandle window) NOEXCEPT;
+
+		/*
+		*	Returns the resolution of the given window.
+		*	The resolution passed in to 'Create()' may not be the final resolution of the window,
+		*	due to some platforms making other decisions,
+		*	so call this to query the actual resolution of the renderable area of the window.
+		*/
+		static NO_DISCARD Resolution GetResolution(const WindowHandle window) NOEXCEPT;
+
+		/*
+		*	Sets the resolution of the given window.
+		*/
+		static void SetResolution(const WindowHandle window, const Resolution &resolution) NOEXCEPT;
 
 		/*
 		*	Returns if the given window is alive.
 		*/
 		static NO_DISCARD bool IsAlive(const WindowHandle window) NOEXCEPT;
+
+		/*
+		*	Returns if the given window is focused.
+		*/
+		static NO_DISCARD bool IsFocused(const WindowHandle window) NOEXCEPT;
+
+		/*
+		*	Shows the given window.
+		*/
+		static void Show(const WindowHandle window) NOEXCEPT;
+
+		/*
+		*	Hides the given window.
+		*/
+		static void Hide(const WindowHandle window) NOEXCEPT;
+
+		/*
+		*	Renders to the given window with the given data.
+		*/
+		static void Render(const WindowHandle window, const uint32 *const RESTRICT data) NOEXCEPT;
+
+		/*
+		*	Returns if the given window supports OpenGL.
+		*/
+		static NO_DISCARD bool SupportsOpenGL(const WindowHandle window) NOEXCEPT;
+
+		/*
+		*	Prepares OpenGL for the given window.
+		*/
+		static void PrepareOpenGL(const WindowHandle window) NOEXCEPT;
+
+		/*
+		*	Finalizes OpenGL for the given window.
+		*/
+		static void FinalizeOpenGL(const WindowHandle window) NOEXCEPT;
 
 		/*
 		*	Returns the master window.
@@ -123,6 +183,7 @@ namespace Platform
 		using MouseButtonDownCallback = void(*)(const MouseButton mouse_button, void *const RESTRICT user_data);
 		using MouseButtonUpCallback = void(*)(const MouseButton mouse_button, void *const RESTRICT user_data);
 		using MouseScrollWheelCallback = void(*)(const int8 step, void *const RESTRICT user_data);
+		using TimerCallback = void(*)(void *const RESTRICT user_data);
 
 		/*
 		*	Adds window closed callback to the given window.
@@ -158,6 +219,18 @@ namespace Platform
 		*	Adds a mouse scroll wheel callback to the given window.
 		*/
 		static void AddMouseScrollWheelCallback(const WindowHandle window, const MouseScrollWheelCallback callback, void *const RESTRICT user_data) NOEXCEPT;
+
+		/*
+		*	Adds a timer callback to the given window.
+		*	Frequency is denoted in milliseconds.
+		*	Returns an identifier that can be used to remove the timer later.
+		*/
+		static NO_DISCARD uint64 AddTimerCallback(const WindowHandle window, const uint64 frequency, const TimerCallback callback, void *const RESTRICT user_data) NOEXCEPT;
+
+		/*
+		*	Removes the timer with the given identifier from the given window.
+		*/
+		static void RemoveTimerCallback(const WindowHandle window, const uint64 identifier) NOEXCEPT;
 
 		/*
 		*	Callbacks class definition.
@@ -375,6 +448,68 @@ namespace Platform
 				for (uint64 i{ 0 }; i < _NumberOfMouseScrollWheelCallbacks; ++i)
 				{
 					_MouseScrollWheelCallbacks[i](step, _MouseScrollWheelCallbackUserData[i]);
+				}
+			}
+
+			/*
+			*	Timer callback data class definition.
+			*/
+			class TimerCallbackData final
+			{
+
+			public:
+
+				//The identifier.
+				uint64 _Identifier;
+
+				//The callback.
+				TimerCallback _Callback;
+
+				//The user data.
+				void *RESTRICT _UserData;
+
+			};
+
+			//The timer callback data.
+			DynamicArray<TimerCallbackData> _TimerCallbackData;
+
+			/*
+			*	Adds a timer callback.
+			*/
+			FORCE_INLINE void AddTimerCallback(const uint64 identifier, const TimerCallback callback, void *const RESTRICT user_data) NOEXCEPT
+			{
+				_TimerCallbackData.Emplace(identifier, callback, user_data);
+			}
+
+			/*
+			*	Calls the timer callback with the given identifier.
+			*/
+			FORCE_INLINE void CallTimerCallback(const uint64 identifier) NOEXCEPT
+			{
+				for (const TimerCallbackData &data : _TimerCallbackData)
+				{
+					if (data._Identifier == identifier)
+					{
+						data._Callback(data._UserData);
+
+						return;
+					}
+				}
+			}
+
+			/*
+			*	Removes the timer callback with the given identifier.
+			*/
+			FORCE_INLINE void RemoveTimerCallback(const uint64 identifier) NOEXCEPT
+			{
+				for (uint64 i{ 0 }; i < _TimerCallbackData.Size(); ++i)
+				{
+					if (_TimerCallbackData[i]._Identifier == identifier)
+					{
+						_TimerCallbackData.EraseAt<false>(i);
+
+						return;
+					}
 				}
 			}
 

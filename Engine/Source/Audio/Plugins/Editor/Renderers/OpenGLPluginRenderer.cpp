@@ -265,9 +265,6 @@ namespace Audio
 		{
 			Render(render_command);
 		}
-
-		//Finally, swap the buffers!
-		_Window->SwapBuffers();
 	}
 
 	/*

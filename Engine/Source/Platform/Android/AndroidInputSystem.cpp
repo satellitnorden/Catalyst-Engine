@@ -19,14 +19,6 @@ void InputSystem::UpdateKeyboardState() NOEXCEPT
 }
 
 /*
-*	Updates the mouse state.
-*/
-void InputSystem::UpdateMouseState() NOEXCEPT
-{
-	//Android doesn't have mouses. (:
-}
-
-/*
 *	Updates the touch state.
 */
 void InputSystem::UpdateTouchState() NOEXCEPT

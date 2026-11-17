@@ -271,15 +271,6 @@ void CatalystPlatform::Terminate() NOEXCEPT
 }
 
 /*
-*	Returns whether or not the window is in focus.
-*/
-bool CatalystPlatform::IsWindowInFocus() NOEXCEPT
-{
-	//Uhm. The Window is always in focus?
-	return true;
-}
-
-/*
 *	Returns the default resolution.
 */
 Resolution CatalystPlatform::GetDefaultResolution() NOEXCEPT

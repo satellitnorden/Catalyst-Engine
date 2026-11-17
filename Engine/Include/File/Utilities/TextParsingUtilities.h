@@ -131,8 +131,12 @@ namespace TextParsingUtilities
 				}
 			}
 
+			//Figure out if this character position is the start of a comment.
+			const bool start_of_comment{ string[i] == '/' && i < (string_length - 1) && (string[i + 1] == '/' || string[i + 1] == '*') };
+			const bool end_of_comment{ string[i] == '/' && i > 0 && (string[i - 1] == '/' || string[i - 1] == '*') };
+
 			//Add to the buffer if we're currently parsing an argument.
-			if (currently_parsing_argument && !IsWhitespace(string[i]) && string[i] != '/')
+			if (currently_parsing_argument && !IsWhitespace(string[i]) && !start_of_comment && !end_of_comment)
 			{
 				buffer[current_buffer_index++] = string[i];
 			}

@@ -6,6 +6,7 @@
 #include <Core/General/Pair.h>
 
 //Platform.
+#include <Platform/Core/WindowManager.h>
 #include <Platform/Platforms/Windows/CatalystPlatformWindows.h>
 
 //Windows.
@@ -102,7 +103,7 @@ void InputSystem::UpdateGamepadState(const uint8 index) NOEXCEPT
 	}
 
 	//No need to update if the window isn't in focus.
-	if (!CatalystPlatform::IsWindowInFocus(nullptr))
+	if (!Platform::WindowManager::IsFocused(Platform::WindowManager::GetMasterWindow()))
 	{
 		return;
 	}

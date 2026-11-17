@@ -2,9 +2,10 @@
 //Header file.
 #include <Rendering/Abstraction/Vulkan/VulkanSurface.h>
 
-#if defined(CATALYST_PLATFORM_WINDOWS)
 //Platform.
-#include <Platform/Platforms/Windows/CatalystPlatformWindows.h>
+#include <Platform/Core/WindowManager.h>
+#if defined(CATALYST_PLATFORM_WINDOWS)
+	#include <Platform/Platforms/Windows/CatalystPlatformWindows.h>
 #endif
 
 //Vulkan.
@@ -38,9 +39,21 @@ void VulkanSurface::Initialize() NOEXCEPT
 	surfaceCreateInfo.pNext = nullptr;
 	surfaceCreateInfo.flags = 0;
 	surfaceCreateInfo.hinstance = CatalystPlatformWindows::_Instance;
-	surfaceCreateInfo.hwnd = CatalystPlatformWindows::_MainWindow;
+	surfaceCreateInfo.hwnd = static_cast<HWND>(Platform::WindowManager::GetDisplayHandle(Platform::WindowManager::GetMasterWindow()));
 
 	VULKAN_ERROR_CHECK(vkCreateWin32SurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &surfaceCreateInfo, nullptr, &_VulkanSurface));
+#endif
+
+#if defined(CATALYST_PLATFORM_LINUX)
+	VkWaylandSurfaceCreateInfoKHR surfaceCreateInfo;
+
+	surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
+	surfaceCreateInfo.pNext = nullptr;
+	surfaceCreateInfo.flags = 0;
+	surfaceCreateInfo.display = static_cast<wl_display*>(Platform::WindowManager::GetDisplayHandle(Platform::WindowManager::GetMasterWindow()));
+	surfaceCreateInfo.surface = static_cast<wl_surface*>(Platform::WindowManager::GetSurfaceHandle(Platform::WindowManager::GetMasterWindow()));
+
+	VULKAN_ERROR_CHECK(vkCreateWaylandSurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &surfaceCreateInfo, nullptr, &_VulkanSurface));
 #endif
 }
 

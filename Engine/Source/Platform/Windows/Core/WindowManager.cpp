@@ -23,8 +23,20 @@ class WindowData final
 
 public:
 
+	//The parameters.
+	Platform::WindowManager::CreateParameters _Parameters;
+
 	//The handle.
 	HWND _Handle;
+
+	//The device context.
+	HDC _DeviceContext;
+
+	//The render context.
+	HGLRC _RenderContext;
+
+	//Denotes whether or not this window supports OpenGL.
+	bool _SupportsOpenGL{ false };
 
 	//Denotes whether or not this window is focused.
 	bool _Focused{ false };
@@ -34,6 +46,23 @@ public:
 
 	//The last mouse position.
 	Vector2<float32> _LastMousePosition{ 0.5f, 0.5f };
+
+	//The last mouse button states.
+	StaticArray<ButtonState, UNDERLYING(MouseButton::NUMBER_OF_MOUSE_BUTTONS)> _LastMouseButtonStates;
+
+	//The timer identifier generator.
+	uint64 _TimerIdentifierGenerator{ 0 };
+
+	/*
+	*	Default constructor.
+	*/
+	FORCE_INLINE WindowData() NOEXCEPT
+	{
+		for (ButtonState &last_mouse_button_state : _LastMouseButtonStates)
+		{
+			last_mouse_button_state = ButtonState::RELEASED;
+		}
+	}
 
 };
 
@@ -64,8 +93,6 @@ FORCE_INLINE NO_DISCARD WindowData *const RESTRICT FindWindowData(const HWND han
 			return window_data;
 		}
 	}
-
-	ASSERT(false, "Couldn't find window data!");
 
 	return nullptr;
 }
@@ -277,6 +304,49 @@ FORCE_INLINE NO_DISCARD Vector2<float32> GetMousePosition(const HWND window) NOE
 }
 
 /*
+*	Updates the mouse state for the given window data.
+*/
+FORCE_INLINE void UpdateMouseStateForWindowData(WindowData *const RESTRICT window_data) NOEXCEPT
+{
+	//Retrieve the mouse position for this window.
+	const Vector2<float32> mouse_position{ GetMousePosition(window_data->_Handle) };
+
+	//If it has changed, update it and call the callbacks.
+	if (window_data->_LastMousePosition != mouse_position)
+	{
+		window_data->_Callbacks.CallMouseMoveCallbacks(mouse_position);
+		window_data->_LastMousePosition = mouse_position;
+	}
+
+	//Update the mouse button states.
+	{
+		constexpr DWORD KEY_CODES[]
+		{
+			VK_LBUTTON,
+			VK_MBUTTON,
+			VK_RBUTTON
+		};
+
+		for (uint64 i{ 0 }; i < window_data->_LastMouseButtonStates.Size(); ++i)
+		{
+			const bool pressed{ static_cast<bool>(GetKeyState(KEY_CODES[i]) & 0x8000) };
+
+			if (pressed && window_data->_LastMouseButtonStates[i] == ButtonState::RELEASED)
+			{
+				window_data->_Callbacks.CallMouseButtonDownCallbacks(static_cast<MouseButton>(i));
+				window_data->_LastMouseButtonStates[i] = ButtonState::PRESSED;
+			}
+
+			else if (!pressed && window_data->_LastMouseButtonStates[i] == ButtonState::PRESSED)
+			{
+				window_data->_Callbacks.CallMouseButtonUpCallbacks(static_cast<MouseButton>(i));
+				window_data->_LastMouseButtonStates[i] = ButtonState::RELEASED;
+			}
+		}
+	}
+}
+
+/*
 *	The window procedure function.
 */
 LRESULT CALLBACK WindowProcedure
@@ -294,8 +364,11 @@ LRESULT CALLBACK WindowProcedure
 			//Find the window data.
 			WindowData *const RESTRICT window_data{ FindWindowData(window) };
 
-			//Call the callbacks.
-			window_data->_Callbacks.CallWindowClosedCallbacks();
+			if (window_data)
+			{
+				//Call the callbacks.
+				window_data->_Callbacks.CallWindowClosedCallbacks();
+			}
 
 			return 0;
 		}
@@ -363,68 +436,23 @@ LRESULT CALLBACK WindowProcedure
 			return 0;
 		}
 
-		case WM_LBUTTONDOWN:
+		case WM_TIMER:
 		{
 			//Find the window data.
-			WindowData *const RESTRICT window_data{ FindWindowData(window) };
+			if (WindowData *const RESTRICT window_data{ FindWindowData(window) })
+			{
+				/*
+				*	A bit of a hack, but currently only audio plugins use this feature,
+				*	so get the mouse position here and pass it along,
+				*	since audio plugins don't run the regular update loop.
+				*/
+			#if defined(AUDIO_PLUGIN)
+				UpdateMouseStateForWindowData(window_data);
+			#endif
 
-			//Call the callbacks.
-			window_data->_Callbacks.CallMouseButtonDownCallbacks(MouseButton::LEFT);
-
-			return 0;
-		}
-
-		case WM_LBUTTONUP:
-		{
-			//Find the window data.
-			WindowData *const RESTRICT window_data{ FindWindowData(window) };
-
-			//Call the callbacks.
-			window_data->_Callbacks.CallMouseButtonUpCallbacks(MouseButton::LEFT);
-
-			return 0;
-		}
-
-		case WM_RBUTTONDOWN:
-		{
-			//Find the window data.
-			WindowData *const RESTRICT window_data{ FindWindowData(window) };
-
-			//Call the callbacks.
-			window_data->_Callbacks.CallMouseButtonDownCallbacks(MouseButton::RIGHT);
-
-			return 0;
-		}
-
-		case WM_RBUTTONUP:
-		{
-			//Find the window data.
-			WindowData *const RESTRICT window_data{ FindWindowData(window) };
-
-			//Call the callbacks.
-			window_data->_Callbacks.CallMouseButtonUpCallbacks(MouseButton::RIGHT);
-
-			return 0;
-		}
-
-		case WM_MBUTTONDOWN:
-		{
-			//Find the window data.
-			WindowData *const RESTRICT window_data{ FindWindowData(window) };
-
-			//Call the callbacks.
-			window_data->_Callbacks.CallMouseButtonDownCallbacks(MouseButton::MIDDLE);
-
-			return 0;
-		}
-
-		case WM_MBUTTONUP:
-		{
-			//Find the window data.
-			WindowData *const RESTRICT window_data{ FindWindowData(window) };
-
-			//Call the callbacks.
-			window_data->_Callbacks.CallMouseButtonUpCallbacks(MouseButton::MIDDLE);
+				//Call the timer callback.
+				window_data->_Callbacks.CallTimerCallback(wParam);
+			}
 
 			return 0;
 		}
@@ -512,6 +540,7 @@ FORCE_INLINE NO_DISCARD bool RegisterWindowInfo() NOEXCEPT
 	return _WindowInfoRegistered;
 }
 
+#if (CATALYST_HAS_OPEN_GL)
 /*
 *	Tries to create an OpenGL plugin window.
 */
@@ -519,7 +548,9 @@ FORCE_INLINE NO_DISCARD HWND TryCreateOpenGLPluginWindow
 (
 	const Platform::WindowManager::CreateParameters &parameters,
 	const DWORD style,
-	const RECT rectangle
+	const RECT rectangle,
+	HDC *const RESTRICT device_context,
+	HGLRC *const RESTRICT render_context
 ) NOEXCEPT
 {
 	//Register the window info.
@@ -746,12 +777,19 @@ FORCE_INLINE NO_DISCARD HWND TryCreateOpenGLPluginWindow
 		return nullptr;
 	}
 
+	//Set the device context.
+	*device_context = final_device_context;
+
+	//Set the render context.
+	*render_context = final_render_context;
+
 	//Retrieve the function pointers for OpenGL.
 	OpenGL::RetrieveOpenGLFunctionPointers();
 
 	//Return the final window. (:
 	return final_window;
 }
+#endif
 
 namespace Platform
 {
@@ -793,15 +831,7 @@ namespace Platform
 				continue;
 			}
 
-			//Retrieve the mouse position for this window.
-			const Vector2<float32> mouse_position{ GetMousePosition(window_data->_Handle) };
-
-			//If it has changed, update it and call the callbacks.
-			if (window_data->_LastMousePosition != mouse_position)
-			{
-				window_data->_Callbacks.CallMouseMoveCallbacks(mouse_position);
-				window_data->_LastMousePosition = mouse_position;
-			}
+			UpdateMouseStateForWindowData(window_data);
 		}
 	}
 
@@ -866,11 +896,15 @@ namespace Platform
 		
 		//Create the window!
 		HWND window{ nullptr };
+		HDC device_context{ nullptr };
+		HGLRC render_context{ nullptr };
 
+#if defined(CATALYST_HAS_OPEN_GL)
 		if (parameters._SupportOpenGL)
 		{
-			window = TryCreateOpenGLPluginWindow(parameters, style, rectangle);
+			window = TryCreateOpenGLPluginWindow(parameters, style, rectangle, &device_context, &render_context);
 		}
+#endif
 
 		if (!window)
 		{
@@ -899,8 +933,20 @@ namespace Platform
 		//Allocate the window data.
 		WindowData *const RESTRICT window_data{ new WindowData() };
 
+		//Set the parameters.
+		window_data->_Parameters = parameters;
+
 		//Set the handle.
 		window_data->_Handle = window;
+
+		//Set the device context.
+		window_data->_DeviceContext = device_context;
+
+		//Set the render context.
+		window_data->_RenderContext = render_context;
+
+		//Set whether or not this window supports OpenGL.
+		window_data->_SupportsOpenGL = render_context != nullptr;
 
 		//Add the window data.
 		{
@@ -919,12 +965,75 @@ namespace Platform
 	}
 
 	/*
-	*	Returns the platform native handle for the given window handle.
-	*	May or may not be the same as the window handle, depending on the platform.
+	*	Returns a platform native window handle for the given window.
+	*	Not all platforms may return a valid handle here, as the concept of a "window" may differ between platforms.
 	*/
-	NO_DISCARD WindowHandle WindowManager::GetPlatformNativeHandle(const WindowHandle window) NOEXCEPT
+	NO_DISCARD PlatformNativeWindowHandle GetWindowHandle(const WindowHandle window) NOEXCEPT
 	{
-		return static_cast<WindowData *const RESTRICT>(window)->_Handle;
+		//Cache the window data.
+		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
+
+		//Return the window.
+		return window_data->_Handle;
+	}
+
+	/*
+	*	Returns a platform native display handle for the given window.
+	*	Not all platforms may return a valid handle here, as the concept of a "display" may differ between platforms.
+	*/
+	NO_DISCARD PlatformNativeWindowHandle GetDisplayHandle(const WindowHandle window) NOEXCEPT
+	{
+		//Windows does not understand the concept of a "display" handle.
+		return INVALID_WINDOW_HANDLE;
+	}
+
+	/*
+	*	Returns a platform native surface handle for the given window.
+	*	Not all platforms may return a valid handle here, as the concept of a "surface" may differ between platforms.
+	*/
+	NO_DISCARD PlatformNativeWindowHandle WindowManager::GetSurfaceHandle(const WindowHandle window) NOEXCEPT
+	{
+		//Windows does not understand the concept of a "surface" handle.
+		return INVALID_WINDOW_HANDLE;
+	}
+
+	/*
+	*	Returns the resolution of the given window.
+	*	The resolution passed in to 'Create()' may not be the final resolution of the window,
+	*	due to some platforms making other decisions,
+	*	so call this to query the actual resolution of the renderable area of the window.
+	*/
+	NO_DISCARD Resolution WindowManager::GetResolution(const WindowHandle window) NOEXCEPT
+	{
+		//Cache the window data.
+		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
+
+		/*
+		*	TODO: Query if the actual resolution is different, but most of the time on Windows,
+		*	it will be the same as requested when creating the window.
+		*/
+		return window_data->_Parameters._Resolution;
+	}
+
+	/*
+	*	Sets the resolution of the given window.
+	*/
+	void WindowManager::SetResolution(const WindowHandle window, const Resolution &resolution) NOEXCEPT
+	{
+		//Cache the window data.
+		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
+
+		//Set the resolution.
+		SetWindowPos
+		(
+			window_data->_Handle,
+			nullptr,
+			0,
+			0,
+			resolution._Width,
+			resolution._Height,
+			SWP_NOMOVE | SWP_NOZORDER
+		);
 	}
 
 	/*
@@ -933,6 +1042,117 @@ namespace Platform
 	NO_DISCARD bool WindowManager::IsAlive(const WindowHandle window) NOEXCEPT
 	{
 		return IsWindow(static_cast<WindowData *const RESTRICT>(window)->_Handle);
+	}
+
+	/*
+	*	Returns if the given window is focused.
+	*/
+	NO_DISCARD bool WindowManager::IsFocused(const WindowHandle window) NOEXCEPT
+	{
+		return static_cast<WindowData *const RESTRICT>(window)->_Focused;
+	}
+
+	/*
+	*	Shows the given window.
+	*/
+	void WindowManager::Show(const WindowHandle window) NOEXCEPT
+	{
+		ShowWindow(static_cast<WindowData *const RESTRICT>(window)->_Handle, SW_SHOW);
+	}
+
+	/*
+	*	Hides the given window.
+	*/
+	void WindowManager::Hide(const WindowHandle window) NOEXCEPT
+	{
+		ShowWindow(static_cast<WindowData *const RESTRICT>(window)->_Handle, SW_HIDE);
+	}
+
+	/*
+	*	Renders to the given window with the given data.
+	*/
+	void WindowManager::Render(const WindowHandle window, const uint32 *const RESTRICT data) NOEXCEPT
+	{
+		//Cache the window data.
+		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
+
+		//Begin the paint.
+		HDC device_context = GetDC(window_data->_Handle);
+
+		//Set up the bitmap info.
+		BITMAPINFO bitmap_info{ };
+
+		bitmap_info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+		bitmap_info.bmiHeader.biWidth = window_data->_Parameters._Resolution._Width;
+		bitmap_info.bmiHeader.biHeight = window_data->_Parameters._Resolution._Height;
+		bitmap_info.bmiHeader.biPlanes = 1;
+		bitmap_info.bmiHeader.biBitCount = 32;
+		bitmap_info.bmiHeader.biCompression = BI_RGB;
+
+		//Retrieve the client rectangle.
+		RECT client_rectangle{ };
+		GetClientRect(window_data->_Handle, &client_rectangle);
+
+		//Do the paint!
+		StretchDIBits
+		(
+			device_context,
+			0,
+			0,
+			client_rectangle.right,
+			client_rectangle.bottom,
+			0,
+			0,
+			window_data->_Parameters._Resolution._Width,
+			window_data->_Parameters._Resolution._Height,
+			data,
+			&bitmap_info,
+			DIB_RGB_COLORS,
+			SRCCOPY
+		);
+
+		//End the paint.
+		ReleaseDC(window_data->_Handle, device_context);
+	}
+
+	/*
+	*	Returns if the given window supports OpenGL.
+	*/
+	NO_DISCARD bool WindowManager::SupportsOpenGL(const WindowHandle window) NOEXCEPT
+	{
+		return static_cast<WindowData *const RESTRICT>(window)->_SupportsOpenGL;
+	}
+
+	/*
+	*	Prepares OpenGL for the given window.
+	*/
+	void WindowManager::PrepareOpenGL(const WindowHandle window) NOEXCEPT
+	{
+		ASSERT(SupportsOpenGL(window), "This window does not support OpenGL!");
+
+	#if defined(CATALYST_HAS_OPEN_GL)
+		//Cache the window data.
+		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
+
+		//Set the current OpenGL context.
+		wglMakeCurrent(window_data->_DeviceContext, window_data->_RenderContext);
+	#endif
+	}
+
+	/*
+	*	Finalizes OpenGL for the given window.
+	*/
+	void WindowManager::FinalizeOpenGL(const WindowHandle window) NOEXCEPT
+	{
+		ASSERT(SupportsOpenGL(window), "This window does not support OpenGL!");
+
+	#if defined(CATALYST_HAS_OPEN_GL)
+		//Cache the window data.
+		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
+
+		//Swap the buffers.
+		SwapBuffers(window_data->_DeviceContext);
+	#endif
 	}
 
 	/*
@@ -950,9 +1170,6 @@ namespace Platform
 	{
 		//Set the master window data.
 		_MasterWindowData = static_cast<WindowData *const RESTRICT>(window);
-
-		//TODO: Keep this contained in this class, but for now, set the main window on the platform.
-		CatalystPlatformWindows::_MainWindow = static_cast<WindowData *const RESTRICT>(window)->_Handle;
 	}
 
 	/*
@@ -995,6 +1212,18 @@ namespace Platform
 
 		//Add the callback.
 		window_data->_Callbacks.AddKeyboardButtonDownCallback(callback, user_data);
+	}
+
+	/*
+	*	Adds a keyboard button up callback to the given window.
+	*/
+	void WindowManager::AddKeyboardButtonUpCallback(const WindowHandle window, const KeyboardButtonUpCallback callback, void *const RESTRICT user_data) NOEXCEPT
+	{
+		//Cache the window data.
+		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
+
+		//Add the callback.
+		window_data->_Callbacks.AddKeyboardButtonUpCallback(callback, user_data);
 	}
 
 	/*
@@ -1046,17 +1275,42 @@ namespace Platform
 		window_data->_Callbacks.AddMouseScrollWheelCallback(callback, user_data);
 	}
 
-
 	/*
-	*	Adds a keyboard button up callback to the given window.
+	*	Adds a timer callback to the given window.
+	*	Frequency is denoted in milliseconds.
+	*	Returns an identifier that can be used to remove the timer later.
 	*/
-	void WindowManager::AddKeyboardButtonUpCallback(const WindowHandle window, const KeyboardButtonUpCallback callback, void *const RESTRICT user_data) NOEXCEPT
+	NO_DISCARD uint64 WindowManager::AddTimerCallback(const WindowHandle window, const uint64 frequency, const TimerCallback callback, void *const RESTRICT user_data) NOEXCEPT
 	{
 		//Cache the window data.
 		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
 
+		//Generate the identifier.
+		const uint64 identifier{ window_data->_TimerIdentifierGenerator++ };
+
 		//Add the callback.
-		window_data->_Callbacks.AddKeyboardButtonUpCallback(callback, user_data);
+		window_data->_Callbacks.AddTimerCallback(identifier, callback, user_data);
+
+		//Set the timer.
+		SetTimer(window_data->_Handle, identifier, frequency, nullptr);
+
+		//Return the identifier.
+		return identifier;
+	}
+
+	/*
+	*	Removes the timer with the given identifier from the given window.
+	*/
+	void WindowManager::RemoveTimerCallback(const WindowHandle window, const uint64 identifier) NOEXCEPT
+	{
+		//Cache the window data.
+		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
+
+		//Kill the timer.
+		KillTimer(window_data->_Handle, identifier);
+
+		//Remove the callback.
+		window_data->_Callbacks.RemoveTimerCallback(identifier);
 	}
 
 }

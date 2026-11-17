@@ -33,18 +33,6 @@ public:
 	//Handle to the instance.
 	static HINSTANCE _Instance;
 
-	//The command to show the window.
-	static int32 _ShowCommand;
-
-	//Handle to the main window.
-	static HWND _MainWindow;
-
-	//The key down events.
-	static DynamicArray<uint64> _KeyDownEvents;
-
-	//The key up events.
-	static DynamicArray<uint64> _KeyUpEvents;
-
 	//The input characters.
 	static DynamicArray<char> _InputCharacters;
 

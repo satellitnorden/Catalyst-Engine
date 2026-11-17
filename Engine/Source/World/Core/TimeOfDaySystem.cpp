@@ -72,7 +72,7 @@ void TimeOfDaySystem::Terminate() NOEXCEPT
 	if (_Enabled)
 	{
 		DynamicString time_of_day_save_data_file_path{ _TimeOfDayParameters._SaveFolder };
-		time_of_day_save_data_file_path += "\\TimeOfDaySaveData.save";
+		time_of_day_save_data_file_path += "/TimeOfDaySaveData.save";
 
 		Platform::BinaryOutputFile time_of_day_save_data_file{ time_of_day_save_data_file_path.Data() };
 
@@ -95,7 +95,7 @@ void TimeOfDaySystem::Enable(const TimeOfDayParameters &time_of_day_parameters) 
 	if (time_of_day_parameters._SaveFolder.Length() > 0)
 	{
 		DynamicString time_of_day_save_data_file_path{ time_of_day_parameters._SaveFolder };
-		time_of_day_save_data_file_path += "\\TimeOfDaySaveData.save";
+		time_of_day_save_data_file_path += "/TimeOfDaySaveData.save";
 
 		if (File::Exists(time_of_day_save_data_file_path.Data()))
 		{

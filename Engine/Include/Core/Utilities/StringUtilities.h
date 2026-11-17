@@ -45,7 +45,7 @@ public:
 
 		for (int64 i{ static_cast<int64>(length) - 1 }; i >= 0; --i)
 		{
-			if (file_path[i] == '\\')
+			if (file_path[i] == '\\' || file_path[i] == '/')
 			{
 				return &file_path[i + 1];
 			}

@@ -5,8 +5,6 @@
 
 //Forward declarations.
 class DynamicString;
-class KeyboardState;
-class MouseState;
 
 class CatalystPlatform final
 {
@@ -57,29 +55,9 @@ public:
 	static NO_DISCARD const char *const RESTRICT GetExecutableDirectorypath() NOEXCEPT;
 
 	/*
-	*	Sets the size of a platform window.
-	*/
-	static void SetPlatformWindowSize(void *const RESTRICT window, const uint32 width, const uint32 height) NOEXCEPT;
-
-	/*
-	*	Shows the given platform window.
-	*/
-	static void ShowPlatformWindow(void *const RESTRICT window) NOEXCEPT;
-
-	/*
-	*	Hides the given platform window.
-	*/
-	static void HidePlatformWindow(void *const RESTRICT window) NOEXCEPT;
-
-	/*
 	*	Destroys a platform window.
 	*/
 	static void DestroyPlayformWindow(void *const RESTRICT window) NOEXCEPT;
-
-	/*
-	*	Returns whether or not the window is in focus.
-	*/
-	static bool IsWindowInFocus(void *const RESTRICT window) NOEXCEPT;
 
 	/*
 	*	Returns the default resolution.
@@ -90,12 +68,6 @@ public:
 	*	Returns the default refresh rate.
 	*/
 	static float32 GetDefaultRefreshRate() NOEXCEPT;
-
-	/*
-	*	Updates the given mouse state for the given window.
-	*	If window is nullptr, then the main window will be used.
-	*/
-	static void UpdateMouseState(MouseState *const RESTRICT mouse_state, void *const RESTRICT window) NOEXCEPT;
 
 	/*
 	*	Returns the number of input characters for this frame.

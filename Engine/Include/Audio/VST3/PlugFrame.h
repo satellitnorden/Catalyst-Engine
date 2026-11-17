@@ -80,8 +80,8 @@ namespace VST3
 				return Steinberg::kInvalidArgument;
 			}
 
-			//Set the window size.
-			CatalystPlatform::SetPlatformWindowSize(_FrameWindow, newSize->getWidth(), newSize->getHeight());
+			//Set the window resolution.
+			Platform::WindowManager::SetResolution(_FrameWindow, Resolution(newSize->getWidth(), newSize->getHeight()));
 
 			//The resize succeeded!
 			return Steinberg::kResultOk;
@@ -115,7 +115,7 @@ namespace VST3
 		*/
 		FORCE_INLINE NO_DISCARD Platform::WindowHandle GetFrameWindow() const NOEXCEPT
 		{
-			return Platform::WindowManager::GetPlatformNativeHandle(_FrameWindow);
+			return Platform::WindowManager::GetWindowHandle(_FrameWindow);
 		}
 
 		/*

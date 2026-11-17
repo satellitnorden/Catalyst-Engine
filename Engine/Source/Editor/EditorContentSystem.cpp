@@ -337,7 +337,7 @@ void EditorContentSystem::CreateModelGatherFiles(const char *const RESTRICT dire
 	for (const auto &entry : std::filesystem::directory_iterator(std::string(directory_path)))
 	{
 		//Cache the entry path.
-		const std::string entry_path{ entry.path().string() };
+		const std::string entry_path{ entry.path().generic_string() };
 
 		//Gather recursively if this is a directory.
 		if (entry.is_directory())

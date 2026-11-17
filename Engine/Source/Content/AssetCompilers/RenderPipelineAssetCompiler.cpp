@@ -29,8 +29,8 @@
 #include <string>
 
 //Defines.
-#define ENGINE_RENDERING_PATH "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Rendering"
-#define GAME_RENDERING_PATH "..\\..\\..\\Rendering"
+#define ENGINE_RENDERING_PATH "../../../../Catalyst-Engine/Engine/Rendering"
+#define GAME_RENDERING_PATH "../../../Rendering"
 
 #define COMPILE_SINGLE_THREADED (0)
 #define LOAD_SINGLE_THREADED (0)
@@ -660,10 +660,10 @@ void RenderPipelineAssetCompiler::Compile(const CompileContext &compile_context)
 	DynamicArray<DynamicString> lines;
 
 	//Start with the global render data.
-	RetrieveLines(ENGINE_RENDERING_PATH "\\Global Render Data\\GlobalRenderData.global_render_data", &lines);
+	RetrieveLines(ENGINE_RENDERING_PATH "/Global Render Data/GlobalRenderData.global_render_data", &lines);
 
 	//Add the dependency to the global render data.
-	compile_context._Dependencies.Emplace(ENGINE_RENDERING_PATH "\\Global Render Data\\GlobalRenderData.global_render_data");
+	compile_context._Dependencies.Emplace(ENGINE_RENDERING_PATH "/Global Render Data/GlobalRenderData.global_render_data");
 
 	//Then add in the lines from the file.
 	RetrieveLines(compile_context._FilePath.Data(), &lines);
@@ -689,12 +689,12 @@ void RenderPipelineAssetCompiler::Compile(const CompileContext &compile_context)
 
 	if (compile_context._Collection)
 	{
-		SPRINTF(collection_directory_path, "%s\\COLLECTION %s", compile_context._CompiledDirectoryPath, compile_context._Collection.Data());
+		SPRINTF(collection_directory_path, "%s/COLLECTION %s", compile_context._CompiledDirectoryPath, compile_context._Collection.Data());
 	}
 
 	else
 	{
-		SPRINTF(collection_directory_path, "%s\\COLLECTION Base", compile_context._CompiledDirectoryPath);
+		SPRINTF(collection_directory_path, "%s/COLLECTION Base", compile_context._CompiledDirectoryPath);
 	}
 
 	//Create the compiled directory, if it doesn't exist.
@@ -702,14 +702,14 @@ void RenderPipelineAssetCompiler::Compile(const CompileContext &compile_context)
 
 	//Determine the directory path.
 	char directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	SPRINTF(directory_path, "%s\\RenderPipelines", collection_directory_path);
+	SPRINTF(directory_path, "%s/RenderPipelines", collection_directory_path);
 
 	//Create the compiled directory, if it doesn't exist.
 	File::CreateDirectory(directory_path);
 
 	//Determine the output file path.
 	char output_file_path[MAXIMUM_FILE_PATH_LENGTH];
-	SPRINTF(output_file_path, "%s\\%s.ca", directory_path, compile_context._Name.Data());
+	SPRINTF(output_file_path, "%s/%s.ca", directory_path, compile_context._Name.Data());
 
 	//Open the output file.
 	Platform::BinaryOutputFile output_file{ output_file_path };
@@ -1158,7 +1158,7 @@ NO_DISCARD bool RenderPipelineAssetCompiler::SearchForFile
 	char buffer[MAXIMUM_FILE_PATH_LENGTH];
 
 	//Check if the file exists in the engine directory path.
-	SPRINTF(buffer, "%s\\%s", engine_directory_path, file_path);
+	SPRINTF(buffer, "%s/%s", engine_directory_path, file_path);
 
 	if (File::Exists(buffer))
 	{
@@ -1167,7 +1167,7 @@ NO_DISCARD bool RenderPipelineAssetCompiler::SearchForFile
 	}
 
 	//Check if the file exists in the game directory path.
-	SPRINTF(buffer, "%s\\%s", game_directory_path, file_path);
+	SPRINTF(buffer, "%s/%s", game_directory_path, file_path);
 
 	if (File::Exists(buffer))
 	{
@@ -1213,10 +1213,10 @@ void RenderPipelineAssetCompiler::ResolveInclude
 
 	//Search for the file in both the engine and game directories.
 	char engine_directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	SPRINTF(engine_directory_path, "%s\\%s", ENGINE_RENDERING_PATH, sub_folder);
+	SPRINTF(engine_directory_path, "%s/%s", ENGINE_RENDERING_PATH, sub_folder);
 
 	char game_directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	SPRINTF(game_directory_path, "%s\\%s", GAME_RENDERING_PATH, sub_folder);
+	SPRINTF(game_directory_path, "%s/%s", GAME_RENDERING_PATH, sub_folder);
 
 	const bool found_file
 	{
@@ -4274,11 +4274,11 @@ void RenderPipelineAssetCompiler::CompileGLSLShaders
 
 			//Figure out the file name.
 			std::string file_name{ compile_context._FilePath.Data() };
-			file_name = file_name.substr(file_name.find_last_of('\\') + 1);
+			file_name = file_name.substr(file_name.find_last_of('/') + 1);
 			file_name = file_name.substr(0, file_name.find_last_of('.'));
 
 			//Figure out the file path.
-			SPRINTF(file_path, "%s\\%s %s.glsl", "RenderPipelineAssetCompiler GLSL Shaders", file_name.c_str(), ShaderStageString(shader_stage._ShaderStage));
+			SPRINTF(file_path, "%s/%s %s.glsl", "RenderPipelineAssetCompiler GLSL Shaders", file_name.c_str(), ShaderStageString(shader_stage._ShaderStage));
 
 			//Open the file.
 			std::ofstream file{ file_path };

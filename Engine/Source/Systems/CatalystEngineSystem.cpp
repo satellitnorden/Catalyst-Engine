@@ -146,13 +146,13 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 
 	//Load assets.
 #if !defined(CATALYST_CONFIGURATION_FINAL)
-	ContentSystem::Instance->LoadAssetCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Collections\\Base.cac");
+	ContentSystem::Instance->LoadAssetCollection("../../../../Catalyst-Engine/Engine/Content/Collections/Base.cac");
 #else
-	ContentSystem::Instance->LoadAssetCollection("EngineContent\\Base.cac");
+	ContentSystem::Instance->LoadAssetCollection("EngineContent/Base.cac");
 #endif
 
 #if defined(CATALYST_EDITOR)
-	ContentSystem::Instance->LoadAssetCollection("..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content\\Collections\\Editor.cac");
+	ContentSystem::Instance->LoadAssetCollection("../../../../Catalyst-Engine/Engine/Content/Collections/Editor.cac");
 #endif
 
 	//Load assets for all systems.
@@ -217,7 +217,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	//Retrieve the preferred refresh rate.
 	float32 preferred_refresh_rate;
 
-	if (CatalystPlatform::IsWindowInFocus(nullptr))
+	if (Platform::WindowManager::IsFocused(Platform::WindowManager::GetMasterWindow()))
 	{
 		preferred_refresh_rate = _ProjectConfiguration._RenderingConfiguration._FocusedRefreshRate;
 	}

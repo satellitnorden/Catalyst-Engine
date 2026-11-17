@@ -19,6 +19,9 @@
 //Systems.
 #include <Systems/System.h>
 
+//Forward declarations.
+class MouseState;
+
 class UISystem final
 {
 

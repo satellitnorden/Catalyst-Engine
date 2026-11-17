@@ -154,6 +154,9 @@ namespace Audio
 
 		//Render!
 		_Renderer->Render(_UISystem.GetRenderCommands());
+
+		//Finalize rendering.
+		_Window.FinalizeRendering();
 	}
 
 }

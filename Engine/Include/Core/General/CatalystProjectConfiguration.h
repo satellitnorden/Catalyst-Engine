@@ -156,7 +156,7 @@ public:
 #endif
 
 	/*
-	*	The resolution.
+	*	The resolution of the window.
 	*/
 	Optional<Resolution> _Resolution;
 

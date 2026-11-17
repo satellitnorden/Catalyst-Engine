@@ -30,10 +30,6 @@
 
 //Static variable definitions.
 HINSTANCE CatalystPlatformWindows::_Instance;
-int32 CatalystPlatformWindows::_ShowCommand;
-HWND CatalystPlatformWindows::_MainWindow;
-DynamicArray<uint64> CatalystPlatformWindows::_KeyDownEvents;
-DynamicArray<uint64> CatalystPlatformWindows::_KeyUpEvents;
 DynamicArray<char> CatalystPlatformWindows::_InputCharacters;
 
 //Catalyst Windows data.
@@ -50,88 +46,6 @@ namespace CatalystWindowsData
 
 	//The cached cursor position.
 	POINT _CachedCursorPosition{ 0, 0 };
-
-}
-
-//Catalyst Windows logic.
-namespace CatalystWindowsLogic
-{
-
-	/*
-	*	Updates the given platform window.
-	*/
-	void UpdatePlatformWindow(void *const RESTRICT window) NOEXCEPT
-	{
-		HWND _window{ static_cast<HWND>(window) };
-
-		if (_window == CatalystPlatformWindows::_MainWindow)
-		{
-			//Determine if the window is in focus.
-			CatalystWindowsData::_IsWindowInFocus = GetFocus() == _window;
-
-			//Clear the keyboard events.
-			CatalystPlatformWindows::_KeyDownEvents.Clear();
-			CatalystPlatformWindows::_KeyUpEvents.Clear();
-			CatalystPlatformWindows::_InputCharacters.Clear();
-		}
-
-		//Process messages.
-		MSG message;
-
-		while (PeekMessage(&message, NULL, 0, 0, PM_REMOVE) > 0)
-		{
-			TranslateMessage(&message);
-			DispatchMessage(&message);
-		}
-
-		if (_window == CatalystPlatformWindows::_MainWindow)
-		{
-			//Update the cursor.
-			if (CatalystWindowsData::_CursorCurrentVisibility != CatalystWindowsData::_CursorRequestedVisibility)
-			{
-				//If the cursor is being hidden, remember the cursor position for when it is shown again.
-				if (CatalystWindowsData::_CursorCurrentVisibility)
-				{
-					POINT cursor_position;
-
-					if (GetCursorPos(&cursor_position))
-					{
-						CatalystWindowsData::_CachedCursorPosition = cursor_position;
-
-						RECT rectangle;
-
-						if (GetClientRect(_window, &rectangle))
-						{
-							POINT minimum{ rectangle.left, rectangle.bottom };
-							POINT maximum{ rectangle.right, rectangle.top };
-
-							if (ClientToScreen(_window, &minimum) && ClientToScreen(_window, &maximum))
-							{
-								SetCursorPos(minimum.x + ((maximum.x - minimum.x) / 2), minimum.y + ((maximum.y - minimum.y) / 2));
-							}
-						}
-					}
-				}
-
-				else
-				{
-					SetCursorPos(CatalystWindowsData::_CachedCursorPosition.x, CatalystWindowsData::_CachedCursorPosition.y);
-				}
-
-				CatalystWindowsData::_CursorCurrentVisibility = CatalystWindowsData::_CursorRequestedVisibility;
-
-				if (CatalystWindowsData::_CursorRequestedVisibility)
-				{
-					while (ShowCursor(true) < 0);
-				}
-
-				else
-				{
-					while (ShowCursor(false) >= 0);
-				}
-			}
-		}
-	}
 
 }
 
@@ -173,8 +87,6 @@ NO_DISCARD CatalystPlatform::CPUInformation CatalystPlatform::GetCPUInformation(
 void CatalystPlatform::Initialize() NOEXCEPT
 {
 	//Allocate an appropriate amount of memory for keyboard events.
-	CatalystPlatformWindows::_KeyDownEvents.Reserve(32);
-	CatalystPlatformWindows::_KeyUpEvents.Reserve(32);
 	CatalystPlatformWindows::_InputCharacters.Reserve(32);
 }
 
@@ -230,60 +142,11 @@ NO_DISCARD const char *const RESTRICT CatalystPlatform::GetExecutableDirectorypa
 }
 
 /*
-*	Sets the size of a platform window.
-*/
-void CatalystPlatform::SetPlatformWindowSize(void *const RESTRICT window, const uint32 width, const uint32 height) NOEXCEPT
-{
-	SetWindowPos
-	(
-		static_cast<HWND>(window),
-		nullptr,
-		0,
-		0,
-		width,
-		height,
-		SWP_NOMOVE | SWP_NOZORDER
-	);
-}
-
-/*
-*	Shows the given platform window.
-*/
-void CatalystPlatform::ShowPlatformWindow(void *const RESTRICT window) NOEXCEPT
-{
-	ShowWindow(static_cast<HWND>(window), SW_SHOW);
-}
-
-/*
-*	Hides the given platform window.
-*/
-void CatalystPlatform::HidePlatformWindow(void *const RESTRICT window) NOEXCEPT
-{
-	ShowWindow(static_cast<HWND>(window), SW_HIDE);
-}
-
-/*
 *	Destroys a platform window.
 */
 void CatalystPlatform::DestroyPlayformWindow(void *const RESTRICT window) NOEXCEPT
 {
 	DestroyWindow(static_cast<HWND>(window));
-}
-
-/*
-*	Returns whether or not the window is in focus.
-*/
-bool CatalystPlatform::IsWindowInFocus(void *const RESTRICT window) NOEXCEPT
-{
-	if (window)
-	{
-		return GetFocus() == static_cast<HWND>(window);
-	}
-
-	else
-	{
-		return CatalystWindowsData::_IsWindowInFocus;
-	}
 }
 
 /*
@@ -323,160 +186,6 @@ float32 CatalystPlatform::GetDefaultRefreshRate() NOEXCEPT
 	EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &dev_mode);
 
 	return static_cast<float32>(dev_mode.dmDisplayFrequency);
-}
-
-/*
-*	Updates the given button state for the given button.
-*/
-FORCE_INLINE void UpdateButtonState(const uint16 button, ButtonState *const RESTRICT button_state) NOEXCEPT
-{
-	//The Windows button is not pressed.
-	if (!static_cast<bool>(GetKeyState(button) & 0x8000))
-	{
-		if (*button_state == ButtonState::PRESSED_HELD || *button_state == ButtonState::PRESSED)
-		{
-			*button_state = ButtonState::RELEASED;
-		}
-
-		else if (*button_state == ButtonState::RELEASED)
-		{
-			*button_state = ButtonState::RELEASED_HELD;
-		}
-	}
-
-	//The Windows button is pressed.
-	else
-	{
-		if (*button_state == ButtonState::RELEASED_HELD || *button_state == ButtonState::RELEASED)
-		{
-			*button_state = ButtonState::PRESSED;
-		}
-
-		else if (*button_state == ButtonState::PRESSED)
-		{
-			*button_state = ButtonState::PRESSED_HELD;
-		}
-	}
-}
-
-/*
-*	Updates the given mouse state for the given window.
-*	If window is nullptr, then the main window will be used.
-*/
-void CatalystPlatform::UpdateMouseState(MouseState *const RESTRICT mouse_state, void *const RESTRICT window) NOEXCEPT
-{
-	//Cache the window.
-	const HWND _window{ window ? static_cast<HWND>(window) : CatalystPlatformWindows::_MainWindow };
-
-	//Don't update if the window is not in focus, but only if it is the main window. If we have an explicit window passed in, always update.
-	if (!window && !CatalystPlatform::IsWindowInFocus(nullptr))
-	{
-		return;
-	}
-
-	//Copy the previous X and Y positions.
-	mouse_state->_PreviousX = mouse_state->_CurrentX;
-	mouse_state->_PreviousY = mouse_state->_CurrentY;
-
-	//Get the current cursor position.
-	POINT point;
-
-	if (GetCursorPos(&point))
-	{
-		if (ScreenToClient(_window, &point))
-		{
-			RECT rectangle;
-
-			if (GetClientRect(_window, &rectangle))
-			{
-				mouse_state->_CurrentX = static_cast<float32>(point.x) / static_cast<float32>(rectangle.right - rectangle.left);
-				mouse_state->_CurrentY = 1.0f - static_cast<float32>(point.y) / static_cast<float32>(rectangle.bottom - rectangle.top);
-
-				mouse_state->_DeltaX = mouse_state->_CurrentX - mouse_state->_PreviousX;
-				mouse_state->_DeltaY = mouse_state->_CurrentY - mouse_state->_PreviousY;
-			}
-
-			else
-			{
-				ASSERT(false, "Could not retrieve window rectangle.");
-			}
-		}
-
-		else
-		{
-			ASSERT(false, "Could not convert cursor position to window coordinates.");
-		}
-	}
-
-	else
-	{
-		ASSERT(false, "Could not retrieve the current cursor position.");
-	}
-
-	//Special handling for if the cursor is not shown.
-	if (!CatalystPlatform::IsCursorShown())
-	{
-		//Imagine that the cursor is always at the center of the screen.
-		mouse_state->_CurrentX = mouse_state->_CurrentY = mouse_state->_PreviousX = mouse_state->_PreviousY = 0.5f;
-
-		//Get the current cursor position.
-		POINT point;
-
-		if (GetCursorPos(&point))
-		{
-			if (ScreenToClient(_window, &point))
-			{
-				RECT rectangle;
-
-				if (GetClientRect(_window, &rectangle))
-				{
-					//Calculate the center and always place the cursor at the center of the screen.
-					POINT center;
-					POINT adjusted_center;
-
-					center.x = adjusted_center.x = rectangle.left + ((rectangle.right - rectangle.left) / 2);
-					center.y = adjusted_center.y = rectangle.top + ((rectangle.bottom - rectangle.top) / 2);
-
-					if (ClientToScreen(_window, &adjusted_center))
-					{
-						SetCursorPos(adjusted_center.x, adjusted_center.y);
-
-						const float current_x{ BaseMath::Clamp<float>(static_cast<float>(point.x) / static_cast<float>(rectangle.right - rectangle.left), 0.0f, 1.0f) };
-						const float current_y{ BaseMath::Clamp<float>(1.0f - static_cast<float>(point.y) / static_cast<float>(rectangle.bottom - rectangle.top), 0.0f, 1.0f) };
-
-						//Don't bother moving the cursor if it hasn't moved N pixels to account for integer rounding errors.
-						mouse_state->_DeltaX = (current_x - 0.5f) * static_cast<float>(BaseMath::Absolute<int32>(point.x - center.x) > 0);
-						mouse_state->_DeltaY = (current_y - 0.5f) * static_cast<float>(BaseMath::Absolute<int32>(point.y - center.y) > 0);
-					}
-
-					else
-					{
-						ASSERT(false, "Could not convert cursor position to window coordinates.");
-					}
-				}
-
-				else
-				{
-					ASSERT(false, "Could not retrieve window rectangle.");
-				}
-			}
-
-			else
-			{
-				ASSERT(false, "Could not convert cursor position to window coordinates.");
-			}
-		}
-
-		else
-		{
-			ASSERT(false, "Could not retrieve the current cursor position.");
-		}
-	}
-
-	//Update the button states.
-	UpdateButtonState(VK_LBUTTON, &mouse_state->_Left);
-	UpdateButtonState(VK_MBUTTON, &mouse_state->_ScrollWheel);
-	UpdateButtonState(VK_RBUTTON, &mouse_state->_Right);
 }
 
 /*

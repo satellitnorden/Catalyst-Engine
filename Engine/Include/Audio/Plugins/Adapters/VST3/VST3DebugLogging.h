@@ -16,7 +16,7 @@
 
 FORCE_INLINE static void VST3DebugLog(const char *const RESTRICT message)
 {
-	constexpr const char *FILE_PATH{ "C:\\VST3 Debug Log.txt" };
+	constexpr const char *FILE_PATH{ "C:/VST3 Debug Log.txt" };
 
 	if (!std::filesystem::exists(FILE_PATH))
 	{

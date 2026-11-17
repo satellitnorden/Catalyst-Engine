@@ -48,8 +48,8 @@
 #include <filesystem>
 
 //Constants.
-#define ENGINE_CONTENT_DIRECTORY_PATH "..\\..\\..\\..\\Catalyst-Engine\\Engine\\Content"
-#define GAME_CONTENT_DIRECTORY_PATH "..\\..\\..\\Content"
+#define ENGINE_CONTENT_DIRECTORY_PATH "../../../../Catalyst-Engine/Engine/Content"
+#define GAME_CONTENT_DIRECTORY_PATH "../../../Content"
 
 #if !defined(CATALYST_CONFIGURATION_FINAL)
 //Denotes whether or not the statistics window is open.
@@ -190,19 +190,19 @@ bool ContentSystem::Compile(const char *const RESTRICT directory_path) NOEXCEPT
 
 	//Cache the directories.
 	char source_directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	SPRINTF(source_directory_path, "%s\\Source", directory_path);
+	SPRINTF(source_directory_path, "%s/Source", directory_path);
 
 	char assets_directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	SPRINTF(assets_directory_path, "%s\\Assets", directory_path);
+	SPRINTF(assets_directory_path, "%s/Assets", directory_path);
 
 	char compiled_directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	SPRINTF(compiled_directory_path, "%s\\Compiled", directory_path);
+	SPRINTF(compiled_directory_path, "%s/Compiled", directory_path);
 
 	char collections_directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	SPRINTF(collections_directory_path, "%s\\Collections", directory_path);
+	SPRINTF(collections_directory_path, "%s/Collections", directory_path);
 
 	char rendering_directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	SPRINTF(rendering_directory_path, "%s\\..\\Rendering", directory_path);
+	SPRINTF(rendering_directory_path, "%s/../Rendering", directory_path);
 
 	//Ensure all of the directories exist.
 	std::filesystem::create_directories(source_directory_path);
@@ -224,7 +224,7 @@ RECOMPILE:
 	ContentCache content_cache;
 
 	char content_cache_file_path[MAXIMUM_FILE_PATH_LENGTH];
-	SPRINTF(content_cache_file_path, "%s\\ContentCache.json", compiled_directory_path);
+	SPRINTF(content_cache_file_path, "%s/ContentCache.json", compiled_directory_path);
 	content_cache.Read(content_cache_file_path);
 
 	//Always reset '_TriggerCompile'.
@@ -510,7 +510,7 @@ void ContentSystem::CompileAssetsInDirectory
 		if (entry.is_directory())
 		{
 			//Cache the directory path.
-			const std::string _directory_path{ entry.path().string() };
+			const std::string _directory_path{ entry.path().generic_string() };
 
 			//Check if this should be a collection.
 			const char *RESTRICT _collection{ collection };
@@ -526,13 +526,13 @@ void ContentSystem::CompileAssetsInDirectory
 				}
 			}
 
-			CompileAssetsInDirectory(source_directory_path, compiled_directory_path, content_cache, entry.path().string().data(), _collection, compile_result);
+			CompileAssetsInDirectory(source_directory_path, compiled_directory_path, content_cache, entry.path().generic_string().data(), _collection, compile_result);
 
 			continue;
 		}
 
 		//Cache the file path string.
-		const std::string file_path{ entry.path().string() };
+		const std::string file_path{ entry.path().generic_string() };
 
 		//Figure out the extension.
 		std::string extension;
@@ -571,7 +571,7 @@ void ContentSystem::CompileAssetsInDirectory
 		std::string name;
 
 		{
-			const size_t last_slash_position{ file_path.find_last_of("\\") };
+			const size_t last_slash_position{ file_path.find_last_of("/") };
 			name = file_path.substr(last_slash_position + 1, file_path.length() - last_slash_position - strlen(extension.c_str()) - 2);
 		}
 
@@ -632,13 +632,13 @@ void ContentSystem::CreateAssetCollections(const char *const RESTRICT directory_
 		if (entry.is_directory())
 		{
 			//Cache the directory path.
-			const std::string _directory_path{ entry.path().string() };
+			const std::string _directory_path{ entry.path().generic_string() };
 
 			//Determine the sub-directory path.
 			std::string sub_directory_path{ _directory_path };
 
 			{
-				const size_t position{ _directory_path.find_last_of('\\') };
+				const size_t position{ _directory_path.find_last_of('/') };
 
 				if (position != std::string::npos)
 				{
@@ -656,7 +656,7 @@ void ContentSystem::CreateAssetCollections(const char *const RESTRICT directory_
 
 				//Determine the collection path.
 				char collection_path[MAXIMUM_FILE_PATH_LENGTH];
-				SPRINTF(collection_path, "%s\\..\\Collections\\%s.cac", directory_path, collection_name.c_str());
+				SPRINTF(collection_path, "%s/../Collections/%s.cac", directory_path, collection_name.c_str());
 
 				//Set up the file.
 				Platform::BinaryOutputFile _file{ collection_path };
@@ -678,7 +678,7 @@ void ContentSystem::CreateAssetCollections(const char *const RESTRICT directory_
 		}
 
 		//Cache the file path.
-		const std::string file_path{ entry.path().string() };
+		const std::string file_path{ entry.path().generic_string() };
 
 		//Ignore the .gitignore file.
 		if (file_path.find(".gitignore") != std::string::npos)

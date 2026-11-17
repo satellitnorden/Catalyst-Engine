@@ -15,6 +15,9 @@
 #include <Math/Core/CatalystRandomMath.h>
 #include <Math/Noise/HammersleySequence.h>
 
+//Platform.
+#include <Platform/Core/WindowManager.h>
+
 //Profiling.
 #include <Profiling/Profiling.h>
 
@@ -105,15 +108,7 @@ void RenderingSystem::Initialize() NOEXCEPT
 	_CurrentRenderingPath = _Configuration._InitialRenderingPath;
 
 	//Set the full resolution.
-	if (_Configuration._Resolution.Valid())
-	{
-		_FullResolution = _Configuration._Resolution.Get();
-	}
-	 
-	else
-	{
-		CatalystPlatform::GetDefaultResolution(&_FullResolution._Width, &_FullResolution._Height);
-	}
+	_FullResolution = Platform::WindowManager::GetResolution(Platform::WindowManager::GetMasterWindow());
 
 	//Set the scaled resolutions.
 	_ScaledResolutions[0] = Resolution(static_cast<uint32>(static_cast<float32>(_FullResolution._Width) * _Configuration._ResolutionScale), static_cast<uint32>(static_cast<float32>(_FullResolution._Height) * _Configuration._ResolutionScale));

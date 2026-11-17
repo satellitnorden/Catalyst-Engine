@@ -5,7 +5,11 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Input.
+#include <Input/KeyboardState.h>
 #include <Input/MouseState.h>
+
+//Platform.
+#include <Platform/Core/WindowManager.h>
 
 //Rendering.
 #include <Rendering/Native/Resolution.h>
@@ -34,22 +38,6 @@ namespace Audio
 		*	Initializes this plugin window.
 		*/
 		void Initialize(const Resolution resolution, void *const RESTRICT parent_window) NOEXCEPT;
-
-		/*
-		*	Sets the device context.
-		*/
-		FORCE_INLINE void SetDeviceContext(void *const RESTRICT value) NOEXCEPT
-		{
-			_DeviceContext = value;
-		}
-
-		/*
-		*	Sets the renderr context.
-		*/
-		FORCE_INLINE void SetRenderContext(void *const RESTRICT value) NOEXCEPT
-		{
-			_RenderContext = value;
-		}
 
 		/*
 		*	Returns whether or not this window supports OpenGL.
@@ -81,11 +69,6 @@ namespace Audio
 		*	Destroys this plugin window.
 		*/
 		void Destroy();
-
-		/*
-		*	Calls the update function.
-		*/
-		void CallUpdateFunction() NOEXCEPT;
 
 		/*
 		*	Returns the resolution.
@@ -124,9 +107,9 @@ namespace Audio
 		void PrepareRendering() NOEXCEPT;
 
 		/*
-		*	Swaps the buffers.
+		*	Finalizes rendering.
 		*/
-		void SwapBuffers() NOEXCEPT;
+		void FinalizeRendering() NOEXCEPT;
 
 		/*
 		*	Renders to this window.
@@ -145,16 +128,16 @@ namespace Audio
 		Resolution _Resolution;
 
 		//The window.
-		void *RESTRICT _Window{ nullptr };
+		Platform::WindowHandle _Window{ Platform::INVALID_WINDOW_HANDLE };
 
-		//The device context.
-		void *RESTRICT _DeviceContext{ nullptr };
-
-		//The render context.
-		void *RESTRICT _RenderContext{ nullptr };
+		//The timer identifier.
+		uint64 _TimerIdentifier{ UINT64_MAXIMUM };
 
 		//Denotes whether or not this window supports OpenGL.
 		bool _SupportsOpenGL{ false };
+
+		//The keyboard state.
+		KeyboardState _KeyboardState;
 
 		//The mouse state.
 		MouseState _MouseState;

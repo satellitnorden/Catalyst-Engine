@@ -63,43 +63,11 @@ NO_DISCARD const char *const RESTRICT CatalystPlatform::GetExecutableDirectorypa
 }
 
 /*
-*	Sets the size of a platform window.
-*/
-void CatalystPlatform::SetPlatformWindowSize(void *const RESTRICT window, const uint32 width, const uint32 height) NOEXCEPT
-{
-	
-}
-
-/*
-*	Shows the given platform window.
-*/
-void CatalystPlatform::ShowPlatformWindow(void *const RESTRICT window) NOEXCEPT
-{
-	
-}
-
-/*
-*	Hides the given platform window.
-*/
-void CatalystPlatform::HidePlatformWindow(void *const RESTRICT window) NOEXCEPT
-{
-	
-}
-
-/*
 *	Destroys a platform window.
 */
 void CatalystPlatform::DestroyPlayformWindow(void *const RESTRICT window) NOEXCEPT
 {
 	
-}
-
-/*
-*	Returns whether or not the window is in focus.
-*/
-bool CatalystPlatform::IsWindowInFocus(void *const RESTRICT window) NOEXCEPT
-{
-	return false;	
 }
 
 /*
@@ -117,15 +85,6 @@ void CatalystPlatform::GetDefaultResolution(uint32 *const RESTRICT width, uint32
 float32 CatalystPlatform::GetDefaultRefreshRate() NOEXCEPT
 {
 	return 1.0f / 60.0f;
-}
-
-/*
-*	Updates the given mouse state for the given window.
-*	If window is nullptr, then the main window will be used.
-*/
-void CatalystPlatform::UpdateMouseState(MouseState *const RESTRICT mouse_state, void *const RESTRICT window) NOEXCEPT
-{
-	
 }
 
 /*

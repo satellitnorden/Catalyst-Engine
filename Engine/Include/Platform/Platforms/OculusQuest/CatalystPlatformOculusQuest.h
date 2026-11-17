@@ -60,11 +60,6 @@ public:
 	static void Terminate() NOEXCEPT;
 
 	/*
-	*	Returns whether or not the window is in focus.
-	*/
-	static bool IsWindowInFocus() NOEXCEPT;
-
-	/*
 	*	Returns the default resolution.
 	*/
 	static Resolution GetDefaultResolution() NOEXCEPT;

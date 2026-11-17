@@ -5,6 +5,9 @@
 //Math.
 #include <Math/Core/BaseMath.h>
 
+//Platform.
+#include <Platform/Core/WindowManager.h>
+
 //Profiling.
 #include <Profiling/Profiling.h>
 
@@ -128,23 +131,13 @@ void VulkanSwapchain::Present(const VulkanSemaphore *const RESTRICT renderFinish
 */
 void VulkanSwapchain::FindMostOptimalSwapExtent() NOEXCEPT
 {
-	VkSurfaceCapabilitiesKHR surfaceCapabilities;
-	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(VulkanInterface::Instance->GetPhysicalDevice().Get(), VulkanInterface::Instance->GetSurface().Get(), &surfaceCapabilities));
+	VkSurfaceCapabilitiesKHR surface_capabilities;
+	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(VulkanInterface::Instance->GetPhysicalDevice().Get(), VulkanInterface::Instance->GetSurface().Get(), &surface_capabilities));
 
-	Resolution resolution;
+	const Resolution resolution{ Platform::WindowManager::GetResolution(Platform::WindowManager::GetMasterWindow()) };
 
-	if (CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution.Valid())
-	{
-		resolution = CatalystEngineSystem::Instance->GetProjectConfiguration()->_RenderingConfiguration._Resolution.Get();
-	}
-
-	else
-	{
-		CatalystPlatform::GetDefaultResolution(&resolution._Width, &resolution._Height);
-	}
-
-	_SwapExtent.width = BaseMath::Clamp<uint32>(resolution._Width, surfaceCapabilities.minImageExtent.width, surfaceCapabilities.maxImageExtent.width);
-	_SwapExtent.height = BaseMath::Clamp<uint32>(resolution._Height, surfaceCapabilities.minImageExtent.height, surfaceCapabilities.maxImageExtent.height);
+	_SwapExtent.width = BaseMath::Clamp<uint32>(resolution._Width, surface_capabilities.minImageExtent.width, surface_capabilities.maxImageExtent.width);
+	_SwapExtent.height = BaseMath::Clamp<uint32>(resolution._Height, surface_capabilities.minImageExtent.height, surface_capabilities.maxImageExtent.height);
 }
 
 /*

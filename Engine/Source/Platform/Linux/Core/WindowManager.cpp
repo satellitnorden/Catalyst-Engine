@@ -232,6 +232,9 @@ class WindowData final
 
 public:
 
+	//The parameters.
+	Platform::WindowManager::CreateParameters _Parameters;
+
 	//The surface.
 	wl_surface *RESTRICT _Surface{ nullptr };
 
@@ -240,6 +243,12 @@ public:
 
 	//The XDG top level.
 	xdg_toplevel *RESTRICT _XDGTopLevel{ nullptr };
+
+	//The final resolution.
+	Resolution _FinalResolution;
+
+	//Denotes whether or not this window is configured yet.
+	bool _Configured{ false };
 
 	//Denotes whether or not this window is focused.
 	bool _Focused{ false };
@@ -250,6 +259,125 @@ public:
 	//The last mouse position.
 	Vector2<float32> _LastMousePosition{ 0.5f, 0.5f };
 
+	//The timer identifier generator.
+	uint64 _TimerIdentifierGenerator{ 0 };
+
+};
+
+/*
+*	The XDG surface listener configure function.
+*/
+void XDGSurfaceListenerConfigure
+(
+	void *data,
+	xdg_surface *xdg_surface,
+	uint32_t serial
+)
+{
+	PRINT_TO_OUTPUT("XDGSurfaceListen called!");
+
+	//Cache the window data.
+	WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(data) };
+
+	//Acknowledge the configure.
+	xdg_surface_ack_configure(xdg_surface, serial);
+
+	//This window is now configured!
+	window_data->_Configured = true;
+}
+
+//The XDG surface listener.
+constexpr xdg_surface_listener XDG_SURFACE_LISTENER
+{
+	XDGSurfaceListenerConfigure
+};
+
+/*
+*	The XDG top level listener configure function.
+*/
+void XDGTopLevelListenerConfigure
+(
+	void *data,
+	xdg_toplevel *xdg_toplevel,
+	int32_t width,
+	int32_t height,
+	wl_array *states
+)
+{
+	PRINT_TO_OUTPUT("XDGTopLevelListenerConfigure called!");
+
+	//Cache the window data.
+	WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(data) };
+
+	//Set the width of the final resolution.
+	if (width > 0)
+	{
+		window_data->_FinalResolution._Width = width;
+	}
+
+	else
+	{
+		window_data->_FinalResolution._Width = window_data->_Parameters._Resolution._Width;
+	}
+
+	//Set the height of the final resolution.
+	if (height > 0)
+	{
+		window_data->_FinalResolution._Height = height;
+	}
+
+	else
+	{
+		window_data->_FinalResolution._Height = window_data->_Parameters._Resolution._Height;
+	}
+}
+
+/*
+*	The XDG top level listener close function.
+*/
+void XDGTopLevelListenerClose
+(
+	void *data,
+	xdg_toplevel *xdg_toplevel
+)
+{
+	PRINT_TO_OUTPUT("XDGTopLevelListenerClose called!");
+}
+
+/*
+*	The XDG top level listener configure bounds function.
+*/
+void XDGTopLevelListenerConfigureBounds
+(
+	void *data,
+	xdg_toplevel *xdg_toplevel,
+	int32_t width,
+	int32_t height
+)
+{
+	PRINT_TO_OUTPUT("XDGTopLevelListenerConfigureBounds called!");
+}
+
+/*
+*	The XDG top level listener WM capabilities function.
+*/
+void XDGTopLevelListenerWMCapabilities
+(
+	void *data,
+	xdg_toplevel *xdg_toplevel,
+	wl_array *capabilities
+)
+{
+	PRINT_TO_OUTPUT("XDGTopLevelListenerWMCapabilities called!");
+}
+
+//The XDG top level listener.
+constexpr xdg_toplevel_listener XDG_TOP_LEVEL_LISTENER
+{
+	XDGTopLevelListenerConfigure,
+	XDGTopLevelListenerClose,
+	XDGTopLevelListenerConfigureBounds,
+	XDGTopLevelListenerWMCapabilities
 };
 
 //The wayland context.
@@ -340,6 +468,9 @@ namespace Platform
 		//Allocate the window data.
 		WindowData *const RESTRICT window_data{ new WindowData() };
 
+		//Set the parameters.
+		window_data->_Parameters = parameters;
+
 		//Set the surface.
 		window_data->_Surface = surface;
 
@@ -348,6 +479,49 @@ namespace Platform
 
 		//Set the XDG top level.
 		window_data->_XDGTopLevel = xdg_top_level;
+
+		//Add the surface listener.
+		xdg_surface_add_listener
+		(
+			window_data->_XDGSurface,
+			&XDG_SURFACE_LISTENER,
+			window_data
+		);
+
+		//Add the top level listener.
+		xdg_toplevel_add_listener
+		(
+			window_data->_XDGTopLevel,
+			&XDG_TOP_LEVEL_LISTENER,
+			window_data
+		);
+
+		//Set the title.
+		xdg_toplevel_set_title(window_data->_XDGTopLevel, parameters._Title.Data());
+
+		//Set the preferred resolution.
+		xdg_toplevel_set_min_size(window_data->_XDGTopLevel, parameters._Resolution._Width, parameters._Resolution._Height);
+		xdg_toplevel_set_max_size(window_data->_XDGTopLevel, parameters._Resolution._Width, parameters._Resolution._Height);
+
+		//Set fullscreen.
+		if (parameters._FullScreen)
+		{
+			xdg_toplevel_set_fullscreen(window_data->_XDGTopLevel, nullptr);
+		}
+
+		//Do the initial commit.
+		wl_surface_commit(window_data->_Surface);
+
+		//Wait for the window to get configured.
+		while (!window_data->_Configured)
+		{
+			if (wl_display_dispatch(_WaylandContext._Display) == -1)
+			{
+				delete window_data;
+
+				return INVALID_WINDOW_HANDLE;
+			}
+		}
 
 		//Add the window data.
 		{
@@ -360,12 +534,59 @@ namespace Platform
 	}
 
 	/*
-	*	Returns the platform native handle for the given window handle.
-	*	May or may not be the same as the window handle, depending on the platform.
+	*	Returns a platform native window handle for the given window.
+	*	Not all platforms may return a valid handle here, as the concept of a "window" may differ between platforms.
 	*/
-	NO_DISCARD WindowHandle WindowManager::GetPlatformNativeHandle(const WindowHandle window) NOEXCEPT
+	NO_DISCARD PlatformNativeWindowHandle WindowManager::GetWindowHandle(const WindowHandle window) NOEXCEPT
 	{
+		//Linux does not understand the concept of a "window" handle.
 		return INVALID_WINDOW_HANDLE;
+	}
+
+	/*
+	*	Returns a platform native display handle for the given window.
+	*	Not all platforms may return a valid handle here, as the concept of a "display" may differ between platforms.
+	*/
+	NO_DISCARD PlatformNativeWindowHandle WindowManager::GetDisplayHandle(const WindowHandle window) NOEXCEPT
+	{
+		//Return the display.
+		return _WaylandContext._Display;
+	}
+
+	/*
+	*	Returns a platform native surface handle for the given window.
+	*	Not all platforms may return a valid handle here, as the concept of a "surface" may differ between platforms.
+	*/
+	NO_DISCARD PlatformNativeWindowHandle WindowManager::GetSurfaceHandle(const WindowHandle window) NOEXCEPT
+	{
+		//Cache the window data.
+		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
+
+		//Return the surface.
+		return window_data->_Surface;
+	}
+
+	/*
+	*	Returns the resolution of the given window.
+	*	The resolution passed in to 'Create()' may not be the final resolution of the window,
+	*	due to some platforms making other decisions,
+	*	so call this to query the actual resolution of the renderable area of the window.
+	*/
+	NO_DISCARD Resolution WindowManager::GetResolution(const WindowHandle window) NOEXCEPT
+	{
+		//Cache the window data.
+		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
+
+		//Return the final resolution.
+		return window_data->_FinalResolution;
+	}
+
+	/*
+	*	Sets the resolution of the given window.
+	*/
+	void WindowManager::SetResolution(const WindowHandle window, const Resolution &resolution) NOEXCEPT
+	{
+
 	}
 
 	/*
@@ -374,6 +595,62 @@ namespace Platform
 	NO_DISCARD bool WindowManager::IsAlive(const WindowHandle window) NOEXCEPT
 	{
 		return true;
+	}
+
+	/*
+	*	Returns if the given window is focused.
+	*/
+	NO_DISCARD bool WindowManager::IsFocused(const WindowHandle window) NOEXCEPT
+	{
+		return true;
+	}
+
+	/*
+	*	Shows the given window.
+	*/
+	void WindowManager::Show(const WindowHandle window) NOEXCEPT
+	{
+		
+	}
+
+	/*
+	*	Hides the given window.
+	*/
+	void WindowManager::Hide(const WindowHandle window) NOEXCEPT
+	{
+		
+	}
+
+	/*
+	*	Renders to the given window with the given data.
+	*/
+	void WindowManager::Render(const WindowHandle window, const uint32 *const RESTRICT data) NOEXCEPT
+	{
+		
+	}
+
+	/*
+	*	Returns if the given window supports OpenGL.
+	*/
+	NO_DISCARD bool WindowManager::SupportsOpenGL(const WindowHandle window) NOEXCEPT
+	{
+		return false;
+	}
+
+	/*
+	*	Prepares OpenGL for the given window.
+	*/
+	void WindowManager::PrepareOpenGL(const WindowHandle window) NOEXCEPT
+	{
+		ASSERT(SupportsOpenGL(window), "This window does not support OpenGL!");
+	}
+
+	/*
+	*	Finalizes OpenGL for the given window.
+	*/
+	void WindowManager::FinalizeOpenGL(const WindowHandle window) NOEXCEPT
+	{
+		ASSERT(SupportsOpenGL(window), "This window does not support OpenGL!");
 	}
 
 	/*
@@ -442,6 +719,18 @@ namespace Platform
 	}
 
 	/*
+	*	Adds a keyboard button up callback to the given window.
+	*/
+	void WindowManager::AddKeyboardButtonUpCallback(const WindowHandle window, const KeyboardButtonUpCallback callback, void *const RESTRICT user_data) NOEXCEPT
+	{
+		//Cache the window data.
+		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
+
+		//Add the callback.
+		window_data->_Callbacks.AddKeyboardButtonUpCallback(callback, user_data);
+	}
+
+	/*
 	*	Adds a mouse move callback to the given window.
 	*/
 	void WindowManager::AddMouseMoveCallback(const WindowHandle window, const MouseMoveCallback callback, void *const RESTRICT user_data) NOEXCEPT
@@ -490,17 +779,42 @@ namespace Platform
 		window_data->_Callbacks.AddMouseScrollWheelCallback(callback, user_data);
 	}
 
-
 	/*
-	*	Adds a keyboard button up callback to the given window.
+	*	Adds a timer callback to the given window.
+	*	Frequency is denoted in milliseconds.
+	*	Returns an identifier that can be used to remove the timer later.
 	*/
-	void WindowManager::AddKeyboardButtonUpCallback(const WindowHandle window, const KeyboardButtonUpCallback callback, void *const RESTRICT user_data) NOEXCEPT
+	NO_DISCARD uint64 WindowManager::AddTimerCallback(const WindowHandle window, const uint64 frequency, const TimerCallback callback, void *const RESTRICT user_data) NOEXCEPT
 	{
 		//Cache the window data.
 		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
 
+		//Generate the identifier.
+		const uint64 identifier{ window_data->_TimerIdentifierGenerator++ };
+
 		//Add the callback.
-		window_data->_Callbacks.AddKeyboardButtonUpCallback(callback, user_data);
+		window_data->_Callbacks.AddTimerCallback(identifier, callback, user_data);
+
+		//Set the timer.
+		//SetTimer(window_data->_Handle, identifier, frequency, nullptr);
+
+		//Return the identifier.
+		return identifier;
+	}
+
+	/*
+	*	Removes the timer with the given identifier from the given window.
+	*/
+	void WindowManager::RemoveTimerCallback(const WindowHandle window, const uint64 identifier) NOEXCEPT
+	{
+		//Cache the window data.
+		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
+
+		//Kill the timer.
+		//KillTimer(window_data->_Handle, identifier);
+
+		//Remove the callback.
+		window_data->_Callbacks.RemoveTimerCallback(identifier);
 	}
 
 }

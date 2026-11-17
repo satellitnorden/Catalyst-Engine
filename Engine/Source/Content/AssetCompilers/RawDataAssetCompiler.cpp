@@ -134,12 +134,12 @@ void RawDataAssetCompiler::Compile(const CompileContext &compile_context) NOEXCE
 
 	if (compile_context._Collection)
 	{
-		SPRINTF(collection_directory_path, "%s\\COLLECTION %s", compile_context._CompiledDirectoryPath, compile_context._Collection.Data());
+		SPRINTF(collection_directory_path, "%s/COLLECTION %s", compile_context._CompiledDirectoryPath, compile_context._Collection.Data());
 	}
 
 	else
 	{
-		SPRINTF(collection_directory_path, "%s\\COLLECTION Default", compile_context._CompiledDirectoryPath);
+		SPRINTF(collection_directory_path, "%s/COLLECTION Default", compile_context._CompiledDirectoryPath);
 	}
 
 	//Create the compiled directory, if it doesn't exist.
@@ -147,14 +147,14 @@ void RawDataAssetCompiler::Compile(const CompileContext &compile_context) NOEXCE
 
 	//Determine the directory path.
 	char directory_path[MAXIMUM_FILE_PATH_LENGTH];
-	SPRINTF(directory_path, "%s\\RawData", collection_directory_path);
+	SPRINTF(directory_path, "%s/RawData", collection_directory_path);
 
 	//Create the compiled directory, if it doesn't exist.
 	File::CreateDirectory(directory_path);
 
 	//Determine the output file path.
 	char output_file_path[MAXIMUM_FILE_PATH_LENGTH];
-	SPRINTF(output_file_path, "%s\\%s.ca", directory_path, compile_context._Name.Data());
+	SPRINTF(output_file_path, "%s/%s.ca", directory_path, compile_context._Name.Data());
 
 	//Open the output file.
 	Platform::BinaryOutputFile output_file{ output_file_path };
