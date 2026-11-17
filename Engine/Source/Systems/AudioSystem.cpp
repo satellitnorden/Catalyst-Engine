@@ -5,6 +5,7 @@
 #include <Core/General/SIMD.h>
 
 //Audio.
+#include <Audio/Backends/ALSAAudioBackend.h>
 #include <Audio/Backends/ASIOAudioBackend.h>
 #include <Audio/Backends/WASAPIAudioBackend.h>
 
@@ -373,6 +374,13 @@ void AudioSystem::InitializeBackend(const Audio::Backend backend) NOEXCEPT
 		case Audio::Backend::ASIO:
 		{
 			_Backend = new ASIOAudioBackend(CreateBackendParameters());
+
+			break;
+		}
+
+		case Audio::Backend::ALSA:
+		{
+			_Backend = new ALSAAudioBackend(CreateBackendParameters());
 
 			break;
 		}

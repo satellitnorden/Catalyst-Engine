@@ -84,7 +84,7 @@ void CatalystPlatform::GetDefaultResolution(uint32 *const RESTRICT width, uint32
 */
 float32 CatalystPlatform::GetDefaultRefreshRate() NOEXCEPT
 {
-	return 1.0f / 60.0f;
+	return 60.0f;
 }
 
 /*

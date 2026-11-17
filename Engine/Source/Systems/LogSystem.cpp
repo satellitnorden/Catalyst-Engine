@@ -208,7 +208,7 @@ void LogSystem::Log(const LogLevel log_level,
 	va_list variadic_arguments;
 	va_start(variadic_arguments, format);
 
-#if defined(CATALYST_PLATFORM_ANDROID)
+#if defined(CATALYST_PLATFORM_ANDROID) || defined(CATALYST_PLATFORM_LINUX)
 	vsprintf(LogSystemData::_TemporaryMessageBuffer, format, variadic_arguments);
 #endif
 

@@ -13,6 +13,58 @@
 #include <cstring>
 
 /*
+*	Window data class definition.
+*/
+class WindowData final
+{
+
+public:
+
+	//The parameters.
+	Platform::WindowManager::CreateParameters _Parameters;
+
+	//The surface.
+	wl_surface *RESTRICT _Surface{ nullptr };
+
+	//The XDG surface.
+	xdg_surface *RESTRICT _XDGSurface{ nullptr };
+
+	//The XDG top level.
+	xdg_toplevel *RESTRICT _XDGTopLevel{ nullptr };
+
+	//The final resolution.
+	Resolution _FinalResolution;
+
+	//Denotes whether or not this window is configured yet.
+	bool _Configured{ false };
+
+	//Denotes whether or not the mouse has entered this window.
+	bool _MouseEntered{ false };
+
+	//Denotes whether or not this window is focused.
+	bool _Focused{ false };
+
+	//The callbacks.
+	Platform::WindowManager::Callbacks _Callbacks;
+
+	//The last mouse position.
+	Vector2<float32> _LastMousePosition{ 0.5f, 0.5f };
+
+	//The timer identifier generator.
+	uint64 _TimerIdentifierGenerator{ 0 };
+
+};
+
+//The window data lock.
+SpinLock _WindowDataLock;
+
+//The window data.
+DynamicArray<WindowData *RESTRICT> _WindowData;
+
+//The master window data.
+WindowData *RESTRICT _MasterWindowData{ nullptr };
+
+/*
 *	Wayland context class definition.
 */
 class WaylandContext final
@@ -35,6 +87,12 @@ public:
 	//The XDG window manager.
 	xdg_wm_base *RESTRICT _XDGWindowManager{ nullptr };
 
+	//The seat.
+	wl_seat *RESTRICT _Seat{ nullptr };
+
+	//The pointer.
+	wl_pointer *RESTRICT _Pointer{ nullptr };
+
 	/*
 	*	Initializes this Wayland context.
 	*	Returns if the initialization succeded.
@@ -42,14 +100,10 @@ public:
 	FORCE_INLINE NO_DISCARD bool Initialize() NOEXCEPT
 	{
 		//Define constants.
-		constexpr wl_registry_listener REGISTRY_LISTENER
+		static constexpr wl_registry_listener REGISTRY_LISTENER
 		{
 			RegistryListen,
 			RegistryRemove
-		};
-		constexpr xdg_wm_base_listener XDG_WINDOW_MANAGER_BASE_LISTENER
-		{
-			XDGWindowManagerPing
 		};
 
 		//Skip if we're already initialized.
@@ -96,14 +150,6 @@ public:
 
 		//Check that we have the required interfaces.
 		if (!_Compositor || !_XDGWindowManager)
-		{
-			Clean();
-
-			return false;
-		}
-
-		//Add the XDG window manager listener.
-		if (xdg_wm_base_add_listener(_XDGWindowManager, &XDG_WINDOW_MANAGER_BASE_LISTENER, this) != 0)
 		{
 			Clean();
 
@@ -160,6 +206,17 @@ private:
 		uint32_t version
 	)
 	{
+		//Define constants.
+		static constexpr xdg_wm_base_listener XDG_WINDOW_MANAGER_BASE_LISTENER
+		{
+			XDGWindowManagerPing
+		};
+		static constexpr wl_seat_listener SEAT_LISTENER
+		{
+			SeatListenerCapabilities,
+			SeatListenerName
+		};
+
 		//Cache the context.
 		WaylandContext *const RESTRICT context{ static_cast<WaylandContext *const RESTRICT>(data) };
 
@@ -193,6 +250,26 @@ private:
 					std::min(version, static_cast<uint32_t>(xdg_wm_base_interface.version))
 				)
 			);
+
+			xdg_wm_base_add_listener(context->_XDGWindowManager, &XDG_WINDOW_MANAGER_BASE_LISTENER, context);
+		}
+
+		else if (strcmp(interface, wl_seat_interface.name) == 0)
+		{
+			PRINT_TO_OUTPUT("Found 'wl_seat_interface' interface!");
+
+			context->_Seat = static_cast<wl_seat *const RESTRICT>
+			(
+				wl_registry_bind
+				(
+					registry,
+					name,
+					&wl_seat_interface,
+					std::min(version, static_cast<uint32_t>(wl_seat_interface.version))
+				)
+			);
+
+			wl_seat_add_listener(context->_Seat, &SEAT_LISTENER, context);
 		}
 	}
 
@@ -222,47 +299,251 @@ private:
 		xdg_wm_base_pong(xdg_window_manager, serial);
 	}
 
+	/*
+	*	The seat listener capabilities function.
+	*/
+	static void SeatListenerCapabilities
+	(
+		void *data,
+		wl_seat *seat,
+		uint capabilities
+	)
+	{
+		//Define constants.
+		static constexpr wl_pointer_listener POINTER_LISTENER
+		{
+			PointerListenerEnter,
+			PointerListenerLeave,
+			PointerListenerMotion,
+			PointerListenerButton,
+			PointerListenerAxis,
+			PointerListenerFrame,
+			PointerListenerAxisSource,
+			PointerListenerAxisStop,
+			PointerListenerAxisDiscrete
+		};
+
+		//Cache the context.
+		WaylandContext *const RESTRICT context{ static_cast<WaylandContext *const RESTRICT>(data) };
+
+		//Check if this seat has a pointer capability.
+		if (TEST_BIT(capabilities, WL_SEAT_CAPABILITY_POINTER))
+		{
+			//Create the pointer.
+			if (!context->_Pointer)
+			{
+				context->_Pointer = wl_seat_get_pointer(seat);
+
+				if (context->_Pointer)
+				{
+					if (wl_pointer_add_listener(context->_Pointer, &POINTER_LISTENER, context) < 0)
+					{
+						wl_pointer_release(context->_Pointer);
+						context->_Pointer = nullptr;
+					}
+				}
+			}
+		}
+
+		else
+		{
+			//Destroy the pointer.
+			if (context->_Pointer)
+			{
+				wl_pointer_release(context->_Pointer);
+				context->_Pointer = nullptr;
+			}
+		}
+	}
+
+	/*
+	*	The seat listener name function.
+	*/
+	static void SeatListenerName
+	(
+		void *data,
+		wl_seat *seat,
+		const char *name
+	)
+	{
+
+	}
+
+	/*
+	*	The pointer listener enter function.
+	*/
+	static void PointerListenerEnter
+	(
+		void *data,
+		wl_pointer *pointer,
+		uint serial,
+		wl_surface *surface,
+		wl_fixed_t surface_x,
+		wl_fixed_t surface_y
+	)
+	{
+		for (WindowData *const RESTRICT window_data : _WindowData)
+		{
+			if (window_data->_Surface == surface)
+			{
+				window_data->_MouseEntered = true;
+			}
+		}
+	}
+
+	/*
+	*	The pointer listener leave function.
+	*/
+	static void PointerListenerLeave
+	(
+		void *data,
+		wl_pointer *pointer,
+		uint serial,
+		wl_surface *surface
+	)
+	{
+		for (WindowData *const RESTRICT window_data : _WindowData)
+		{
+			if (window_data->_Surface == surface)
+			{
+				window_data->_MouseEntered = false;
+			}
+		}
+	}
+
+	/*
+	*	The pointer listener motion function.
+	*/
+	static void PointerListenerMotion
+	(
+		void *data,
+		wl_pointer *pointer,
+		uint time,
+		wl_fixed_t surface_x,
+		wl_fixed_t surface_y
+	)
+	{
+		//Find the window data that the mouse has entered - Presumably that should only be one.
+		WindowData *RESTRICT window_data{ nullptr };
+
+		for (WindowData *const RESTRICT _window_data : _WindowData)
+		{
+			if (_window_data->_MouseEntered)
+			{
+				window_data = _window_data;
+
+				break;
+			}
+		}
+
+		if (!window_data)
+		{
+			return;
+		}
+
+		//Calculate the mouse position.
+		const Vector2<float32> mouse_position
+		{
+			static_cast<float32>(wl_fixed_to_double(surface_x)) / static_cast<float32>(window_data->_FinalResolution._Width),
+			1.0f - static_cast<float32>(wl_fixed_to_double(surface_y)) / static_cast<float32>(window_data->_FinalResolution._Height)
+		};
+
+		//Call the callbacks if the mouse position changed.
+		if (window_data->_LastMousePosition != mouse_position)
+		{
+			window_data->_Callbacks.CallMouseMoveCallbacks(mouse_position);
+			window_data->_LastMousePosition = mouse_position;
+		}
+	}
+
+	/*
+	*	The pointer listener button function.
+	*/
+	static void PointerListenerButton
+	(
+		void *data,
+		wl_pointer *pointer,
+		uint serial,
+		uint time,
+		uint button,
+		uint state
+	)
+	{
+
+	}
+
+	/*
+	*	The pointer listener axis function.
+	*/
+	static void PointerListenerAxis
+	(
+		void *data,
+		wl_pointer *wl_pointer,
+		uint tie,
+		uint axis,
+		wl_fixed_t value
+	)
+	{
+
+	}
+
+	/*
+	*	The poointer listener frame function.
+	*/
+	static void PointerListenerFrame
+	(
+		void *data,
+		wl_pointer *pointer
+	)
+	{
+
+	}
+
+	/*
+	*	The pointer listener axis source function.
+	*/
+	static void PointerListenerAxisSource
+	(
+		void *data,
+		wl_pointer *pointer,
+		uint axis_source
+	)
+	{
+
+	}
+
+	/*
+	*	The pointer listener axis stop function.
+	*/
+	static void PointerListenerAxisStop
+	(
+		void *data,
+		wl_pointer *pointer,
+		uint time,
+		uint axis
+	)
+	{
+
+	}
+
+	/*
+	*	The pointer listener axis discrete function.
+	*/
+	static void PointerListenerAxisDiscrete
+	(
+		void *data,
+		wl_pointer *pointer,
+		uint axis,
+		int discrete
+	)
+	{
+
+	}
+
 };
 
-/*
-*	Window data class definition.
-*/
-class WindowData final
-{
-
-public:
-
-	//The parameters.
-	Platform::WindowManager::CreateParameters _Parameters;
-
-	//The surface.
-	wl_surface *RESTRICT _Surface{ nullptr };
-
-	//The XDG surface.
-	xdg_surface *RESTRICT _XDGSurface{ nullptr };
-
-	//The XDG top level.
-	xdg_toplevel *RESTRICT _XDGTopLevel{ nullptr };
-
-	//The final resolution.
-	Resolution _FinalResolution;
-
-	//Denotes whether or not this window is configured yet.
-	bool _Configured{ false };
-
-	//Denotes whether or not this window is focused.
-	bool _Focused{ false };
-
-	//The callbacks.
-	Platform::WindowManager::Callbacks _Callbacks;
-
-	//The last mouse position.
-	Vector2<float32> _LastMousePosition{ 0.5f, 0.5f };
-
-	//The timer identifier generator.
-	uint64 _TimerIdentifierGenerator{ 0 };
-
-};
+//The wayland context.
+WaylandContext _WaylandContext;
 
 /*
 *	The XDG surface listener configure function.
@@ -287,7 +568,7 @@ void XDGSurfaceListenerConfigure
 }
 
 //The XDG surface listener.
-constexpr xdg_surface_listener XDG_SURFACE_LISTENER
+static constexpr xdg_surface_listener XDG_SURFACE_LISTENER
 {
 	XDGSurfaceListenerConfigure
 };
@@ -372,7 +653,7 @@ void XDGTopLevelListenerWMCapabilities
 }
 
 //The XDG top level listener.
-constexpr xdg_toplevel_listener XDG_TOP_LEVEL_LISTENER
+static constexpr xdg_toplevel_listener XDG_TOP_LEVEL_LISTENER
 {
 	XDGTopLevelListenerConfigure,
 	XDGTopLevelListenerClose,
@@ -380,17 +661,6 @@ constexpr xdg_toplevel_listener XDG_TOP_LEVEL_LISTENER
 	XDGTopLevelListenerWMCapabilities
 };
 
-//The wayland context.
-WaylandContext _WaylandContext;
-
-//The window data lock.
-SpinLock _WindowDataLock;
-
-//The window data.
-DynamicArray<WindowData *RESTRICT> _WindowData;
-
-//The master window data.
-WindowData *RESTRICT _MasterWindowData{ nullptr };
 
 namespace Platform
 {
@@ -408,7 +678,11 @@ namespace Platform
 	*/
 	void WindowManager::Update() NOEXCEPT
 	{
-		
+		//Dispatch the display.
+		if (_WaylandContext._Display)
+		{
+			wl_display_dispatch(_WaylandContext._Display);
+		}
 	}
 
 	/*

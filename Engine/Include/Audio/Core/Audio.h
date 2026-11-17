@@ -20,7 +20,9 @@ namespace Audio
 		NONE,
 
 		WASAPI,
-		ASIO
+		ASIO,
+
+		ALSA
 	};
 
 	//Enumeration covering all formats.
