@@ -8,6 +8,9 @@
 
 //Third party.
 #include <Wayland/xdg-shell-client-protocol.h>
+#include <linux/input-event-codes.h>
+#include <errno.h>
+#include <poll.h>
 
 //STD.
 #include <cstring>
@@ -469,7 +472,93 @@ private:
 		uint state
 	)
 	{
+		//Find the window data that the mouse has entered - Presumably that should only be one.
+		WindowData *RESTRICT window_data{ nullptr };
 
+		for (WindowData *const RESTRICT _window_data : _WindowData)
+		{
+			if (_window_data->_MouseEntered)
+			{
+				window_data = _window_data;
+
+				break;
+			}
+		}
+
+		if (!window_data)
+		{
+			return;
+		}
+
+		//Call the callbacks.
+		switch (button)
+		{
+			case BTN_LEFT:
+			{
+				switch (state)
+				{
+					case WL_POINTER_BUTTON_STATE_PRESSED:
+					{
+						window_data->_Callbacks.CallMouseButtonDownCallbacks(MouseButton::LEFT);
+
+						break;
+					}
+
+					case WL_POINTER_BUTTON_STATE_RELEASED:
+					{
+						window_data->_Callbacks.CallMouseButtonUpCallbacks(MouseButton::LEFT);
+
+						break;
+					}
+				}
+
+				break;
+			}
+
+			case BTN_MIDDLE:
+			{
+				switch (state)
+				{
+					case WL_POINTER_BUTTON_STATE_PRESSED:
+					{
+						window_data->_Callbacks.CallMouseButtonDownCallbacks(MouseButton::MIDDLE);
+
+						break;
+					}
+
+					case WL_POINTER_BUTTON_STATE_RELEASED:
+					{
+						window_data->_Callbacks.CallMouseButtonUpCallbacks(MouseButton::MIDDLE);
+
+						break;
+					}
+				}
+
+				break;
+			}
+
+			case BTN_RIGHT:
+			{
+				switch (state)
+				{
+					case WL_POINTER_BUTTON_STATE_PRESSED:
+					{
+						window_data->_Callbacks.CallMouseButtonDownCallbacks(MouseButton::RIGHT);
+
+						break;
+					}
+
+					case WL_POINTER_BUTTON_STATE_RELEASED:
+					{
+						window_data->_Callbacks.CallMouseButtonUpCallbacks(MouseButton::RIGHT);
+
+						break;
+					}
+				}
+
+				break;
+			}
+		}
 	}
 
 	/*
@@ -681,7 +770,73 @@ namespace Platform
 		//Dispatch the display.
 		if (_WaylandContext._Display)
 		{
-			wl_display_dispatch(_WaylandContext._Display);
+			//Try to prepare a read.
+			while (wl_display_prepare_read(_WaylandContext._Display) != 0)
+			{
+				if (wl_display_dispatch_pending(_WaylandContext._Display) < 0)
+				{
+					//There was an error, return.
+					return;
+				}
+			}
+
+			//Flush the display.
+			const int32 flush_result{ wl_display_flush(_WaylandContext._Display) };
+
+			//Determine if we need to write.
+			bool write_needed{ false };
+			
+			if (flush_result < 0)
+			{
+				if (errno == EAGAIN)
+				{
+					write_needed = true;
+				}
+
+				else
+				{
+					wl_display_cancel_read(_WaylandContext._Display);
+
+					return;
+				}
+			}
+
+			//Poll the Wayland display socket.
+			pollfd fd{ };
+			fd.fd = wl_display_get_fd(_WaylandContext._Display);
+			fd.events = POLLIN;
+
+			if (write_needed)
+			{
+				fd.events |= POLLOUT;
+			}
+			const int32 poll_result{ poll(&fd, 1, 0) };
+
+			if (poll_result < 0)
+			{
+				wl_display_cancel_read(_WaylandContext._Display);
+
+				return;
+			}
+
+			//Read the incoming events.
+			if (poll_result > 0 && (fd.revents & POLLIN))
+			{
+				if (wl_display_read_events(_WaylandContext._Display) < 0)
+				{
+					return;
+				}
+			}
+			else
+			{
+				wl_display_cancel_read(_WaylandContext._Display);
+			}
+
+			//Dispatch events.
+			if (wl_display_dispatch_pending(_WaylandContext._Display) < 0)
+			{
+				return;
+			}
 		}
 	}
 

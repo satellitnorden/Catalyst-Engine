@@ -22,38 +22,38 @@ void VulkanSurface::Initialize() NOEXCEPT
 	}
 
 #if defined(CATALYST_PLATFORM_ANDROID) || defined(CATALYST_PLATFORM_OCULUS_QUEST)
-	VkAndroidSurfaceCreateInfoKHR surfaceCreateInfo;
+	VkAndroidSurfaceCreateInfoKHR surface_create_info;
 
-	surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
-	surfaceCreateInfo.pNext = nullptr;
-	surfaceCreateInfo.flags = 0;
-	surfaceCreateInfo.window = CatalystPlatform::_Window;
+	surface_create_info.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
+	surface_create_info.pNext = nullptr;
+	surface_create_info.flags = 0;
+	surface_create_info.window = CatalystPlatform::_Window;
 
-	VULKAN_ERROR_CHECK(vkCreateAndroidSurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &surfaceCreateInfo, nullptr, &_VulkanSurface));
+	VULKAN_ERROR_CHECK(vkCreateAndroidSurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &surface_create_info, nullptr, &_VulkanSurface));
 #endif
 
 #if defined(CATALYST_PLATFORM_WINDOWS)
-	VkWin32SurfaceCreateInfoKHR surfaceCreateInfo;
+	VkWin32SurfaceCreateInfoKHR surface_create_info;
 
-	surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-	surfaceCreateInfo.pNext = nullptr;
-	surfaceCreateInfo.flags = 0;
-	surfaceCreateInfo.hinstance = CatalystPlatformWindows::_Instance;
-	surfaceCreateInfo.hwnd = static_cast<HWND>(Platform::WindowManager::GetDisplayHandle(Platform::WindowManager::GetMasterWindow()));
+	surface_create_info.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+	surface_create_info.pNext = nullptr;
+	surface_create_info.flags = 0;
+	surface_create_info.hinstance = CatalystPlatformWindows::_Instance;
+	surface_create_info.hwnd = static_cast<HWND>(Platform::WindowManager::GetWindowHandle(Platform::WindowManager::GetMasterWindow()));
 
-	VULKAN_ERROR_CHECK(vkCreateWin32SurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &surfaceCreateInfo, nullptr, &_VulkanSurface));
+	VULKAN_ERROR_CHECK(vkCreateWin32SurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &surface_create_info, nullptr, &_VulkanSurface));
 #endif
 
 #if defined(CATALYST_PLATFORM_LINUX)
-	VkWaylandSurfaceCreateInfoKHR surfaceCreateInfo;
+	VkWaylandSurfaceCreateInfoKHR surface_create_info;
 
-	surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
-	surfaceCreateInfo.pNext = nullptr;
-	surfaceCreateInfo.flags = 0;
-	surfaceCreateInfo.display = static_cast<wl_display*>(Platform::WindowManager::GetDisplayHandle(Platform::WindowManager::GetMasterWindow()));
-	surfaceCreateInfo.surface = static_cast<wl_surface*>(Platform::WindowManager::GetSurfaceHandle(Platform::WindowManager::GetMasterWindow()));
+	surface_create_info.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
+	surface_create_info.pNext = nullptr;
+	surface_create_info.flags = 0;
+	surface_create_info.display = static_cast<wl_display*>(Platform::WindowManager::GetDisplayHandle(Platform::WindowManager::GetMasterWindow()));
+	surface_create_info.surface = static_cast<wl_surface*>(Platform::WindowManager::GetSurfaceHandle(Platform::WindowManager::GetMasterWindow()));
 
-	VULKAN_ERROR_CHECK(vkCreateWaylandSurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &surfaceCreateInfo, nullptr, &_VulkanSurface));
+	VULKAN_ERROR_CHECK(vkCreateWaylandSurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &surface_create_info, nullptr, &_VulkanSurface));
 #endif
 }
 

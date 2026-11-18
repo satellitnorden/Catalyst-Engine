@@ -41,7 +41,7 @@ void Vulkan2DTexture::Initialize(const uint32 textureMipmapLevels, const uint32 
 	uint32 compression_ratio{ 1 };
 
 	//Create the command pool.
-	static thread_local VulkanCommandPool *const RESTRICT command_pool{ VulkanInterface::Instance->CreateAsyncTransferCommandPool(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT) };
+	static thread_local VulkanCommandPool *const RESTRICT command_pool{ VulkanInterface::Instance->CreateMainCommandPool(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT) };
 
 	//Create the command buffer.
 	VulkanCommandBuffer command_buffer;
@@ -139,7 +139,7 @@ void Vulkan2DTexture::Initialize(const uint32 textureMipmapLevels, const uint32 
 		//Submit the command buffer.
 		VulkanFence fence;
 		fence.Initialize(0);
-		VulkanInterface::Instance->GetAsyncTransferQueue()->Submit(command_buffer, 0, nullptr, 0, 0, nullptr, fence.Get());
+		VulkanInterface::Instance->GetMainQueue()->Submit(command_buffer, 0, nullptr, 0, 0, nullptr, fence.Get());
 
 		//Create the image view.
 		VulkanUtilities::CreateVulkanImageView(_VulkanImage, VK_IMAGE_VIEW_TYPE_2D, format, VK_IMAGE_ASPECT_COLOR_BIT, textureMipmapLevels, 1, _VulkanImageView);
@@ -205,7 +205,7 @@ void Vulkan2DTexture::Initialize(const uint32 textureMipmapLevels, const uint32 
 		//Submit the command buffer.
 		VulkanFence fence;
 		fence.Initialize(0);
-		VulkanInterface::Instance->GetAsyncTransferQueue()->Submit(command_buffer, 0, nullptr, 0, 0, nullptr, fence.Get());
+		VulkanInterface::Instance->GetMainQueue()->Submit(command_buffer, 0, nullptr, 0, 0, nullptr, fence.Get());
 
 		//Create the image view.
 		VulkanUtilities::CreateVulkanImageView(_VulkanImage, VK_IMAGE_VIEW_TYPE_2D, format, VK_IMAGE_ASPECT_COLOR_BIT, textureMipmapLevels, 1, _VulkanImageView);

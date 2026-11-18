@@ -15,5 +15,13 @@ namespace Platform
         library_includes->emplace_back("shaderc_combined.a");
     }
 
+    /*
+    *   Adds the Assimp libraries.
+    */
+    static void AddAssimpLibraries(const char *directory, std::vector<std::string> *library_includes)
+    {
+        library_includes->emplace_back("assimp.so");
+    }
+
 }
 #endif

@@ -61,8 +61,37 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanErrorReporting::ErrorCallback(	VkDebugUtils
 																	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 																	void *pUserData)
 {
-	LOG_ERROR(pCallbackData->pMessage);
+	switch (messageSeverity)
+	{
+		case VkDebugUtilsMessageSeverityFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+		{
+			LOG_INFORMATION(pCallbackData->pMessage);
 
+			break;
+		}
+
+		case VkDebugUtilsMessageSeverityFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+		{
+			LOG_WARNING(pCallbackData->pMessage);
+
+			break;
+		}
+
+		case VkDebugUtilsMessageSeverityFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+		{
+			LOG_ERROR(pCallbackData->pMessage);
+
+			break;
+		}
+
+		default:
+		{
+			LOG_INFORMATION(pCallbackData->pMessage);
+
+			break;
+		}
+	}
+	
 #if 0
 	{
 		DynamicString message{ pCallbackData->pMessage };

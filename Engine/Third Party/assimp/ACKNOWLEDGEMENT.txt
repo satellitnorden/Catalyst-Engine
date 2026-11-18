@@ -1,4 +1,4 @@
-This version of the "Assimp" library was downloaded 2026-11-12 from https://github.com/assimp/assimp with the following license:
+This version (6.0.6) of the "Assimp" library was downloaded 2026-11-12 from https://github.com/assimp/assimp with the following license:
 
 	Open Asset Import Library (assimp)
 

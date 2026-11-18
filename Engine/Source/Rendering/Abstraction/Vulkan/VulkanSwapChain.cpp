@@ -109,7 +109,17 @@ void VulkanSwapchain::UpdateNextImageIndex(const VulkanSemaphore *const RESTRICT
 #if VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM
 	VulkanPlatform::UpdateNextSwapchainImageIndex(this);
 #else
-	VULKAN_ERROR_CHECK(vkAcquireNextImageKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanSwapchain, UINT64_MAXIMUM, imageAvailableSemaphore->Get(), VK_NULL_HANDLE, &_CurrentImageIndex));
+	const VkResult result{ vkAcquireNextImageKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanSwapchain, UINT64_MAXIMUM, imageAvailableSemaphore->Get(), VK_NULL_HANDLE, &_CurrentImageIndex) };
+
+	if (result == VkResult::VK_ERROR_OUT_OF_DATE_KHR)
+	{
+		VulkanInterface::Instance->GetLogicalDevice().WaitIdle();
+
+		Release();
+		Initialize();
+
+		VULKAN_ERROR_CHECK(vkAcquireNextImageKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanSwapchain, UINT64_MAXIMUM, imageAvailableSemaphore->Get(), VK_NULL_HANDLE, &_CurrentImageIndex));
+	}
 #endif
 }
 
@@ -134,10 +144,27 @@ void VulkanSwapchain::FindMostOptimalSwapExtent() NOEXCEPT
 	VkSurfaceCapabilitiesKHR surface_capabilities;
 	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(VulkanInterface::Instance->GetPhysicalDevice().Get(), VulkanInterface::Instance->GetSurface().Get(), &surface_capabilities));
 
-	const Resolution resolution{ Platform::WindowManager::GetResolution(Platform::WindowManager::GetMasterWindow()) };
+	const Resolution preferred_resolution{ Platform::WindowManager::GetResolution(Platform::WindowManager::GetMasterWindow()) };
 
-	_SwapExtent.width = BaseMath::Clamp<uint32>(resolution._Width, surface_capabilities.minImageExtent.width, surface_capabilities.maxImageExtent.width);
-	_SwapExtent.height = BaseMath::Clamp<uint32>(resolution._Height, surface_capabilities.minImageExtent.height, surface_capabilities.maxImageExtent.height);
+	if (surface_capabilities.currentExtent.width != UINT32_MAX)
+	{
+		_SwapExtent.width = surface_capabilities.currentExtent.width;
+	}
+
+	else
+	{
+		_SwapExtent.width = BaseMath::Clamp<uint32>(preferred_resolution._Width, surface_capabilities.minImageExtent.width, surface_capabilities.maxImageExtent.width);
+	}
+
+	if (surface_capabilities.currentExtent.height != UINT32_MAX)
+	{
+		_SwapExtent.height = surface_capabilities.currentExtent.height;
+	}
+
+	else
+	{
+		_SwapExtent.height = BaseMath::Clamp<uint32>(preferred_resolution._Height, surface_capabilities.minImageExtent.height, surface_capabilities.maxImageExtent.height);
+	}
 }
 
 /*

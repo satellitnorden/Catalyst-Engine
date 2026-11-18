@@ -132,7 +132,7 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 	//Load the dynamic library.
 	if (!implementation->_DynamicLibrary.Load(plugin_file_path))
 	{
-		ASSERT(false, "Couldn't load %s!", plugin_file_path);
+		LOG_ERROR("Couldn't load VST3 plugin '%s'!", plugin_file_path);
 		return false;
 	}
 

@@ -92,9 +92,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 		preprocessor_definitions->emplace_back("_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_HAS_VULKAN");
-	#if !defined(PLATFORM_LINUX)
 		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
-	#endif
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
 		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
 	}
@@ -104,9 +102,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 		preprocessor_definitions->emplace_back("_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_HAS_VULKAN");
-	#if !defined(PLATFORM_LINUX)
 		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
-	#endif
 		preprocessor_definitions->emplace_back("CATALYST_EDITOR");
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
 		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
@@ -117,9 +113,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 		preprocessor_definitions->emplace_back("NDEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_PROFILE");
 		preprocessor_definitions->emplace_back("CATALYST_HAS_VULKAN");
-	#if !defined(PLATFORM_LINUX)
 		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
-	#endif
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
 		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
 	}
@@ -129,9 +123,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 		preprocessor_definitions->emplace_back("NDEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_PROFILE");
 		preprocessor_definitions->emplace_back("CATALYST_HAS_VULKAN");
-	#if !defined(PLATFORM_LINUX)
 		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
-	#endif
 		preprocessor_definitions->emplace_back("CATALYST_EDITOR");
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
 		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
@@ -149,9 +141,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 		preprocessor_definitions->emplace_back("_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_HAS_VULKAN");
-	#if !defined(PLATFORM_LINUX)
 		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
-	#endif
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
 		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
 	}
@@ -161,9 +151,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 		preprocessor_definitions->emplace_back("NDEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_PROFILE");
 		preprocessor_definitions->emplace_back("CATALYST_HAS_VULKAN");
-	#if !defined(PLATFORM_LINUX)
 		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
-	#endif
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
 		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
 	}
@@ -181,9 +169,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_DEBUG");
 		preprocessor_definitions->emplace_back("CATALYST_HAS_VULKAN");
 		preprocessor_definitions->emplace_back("CATALYST_HAS_OPEN_GL");
-	#if !defined(PLATFORM_LINUX)
 		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
-	#endif
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
 		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
 	}
@@ -194,9 +180,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 		preprocessor_definitions->emplace_back("CATALYST_CONFIGURATION_PROFILE");
 		preprocessor_definitions->emplace_back("CATALYST_HAS_VULKAN");
 		preprocessor_definitions->emplace_back("CATALYST_HAS_OPEN_GL");
-	#if !defined(PLATFORM_LINUX)
 		preprocessor_definitions->emplace_back("CATALYST_HAS_ASSIMP");
-	#endif
 		preprocessor_definitions->emplace_back("TRACY_ENABLE");
 		preprocessor_definitions->emplace_back("TRACY_ON_DEMAND");
 	}
@@ -308,36 +292,36 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 	if (strcmp(configuration_name, "Debug") == 0)
 	{
 		Platform::AddVulkanShaderCLibraries("Debug", library_includes);
+		Platform::AddAssimpLibraries("Debug", library_includes);
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Debug/libsoundwave.lib");
-		library_includes->emplace_back("Debug/assimp.lib");
 	#endif
 	}
 
 	else if (strcmp(configuration_name, "Debug Editor") == 0)
 	{
 		Platform::AddVulkanShaderCLibraries("Debug", library_includes);
+		Platform::AddAssimpLibraries("Debug", library_includes);
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Debug/libsoundwave.lib");
-		library_includes->emplace_back("Debug/assimp.lib");
 	#endif
 	}
 
 	else if (strcmp(configuration_name, "Profile") == 0)
 	{
 		Platform::AddVulkanShaderCLibraries("Profile", library_includes);
+		Platform::AddAssimpLibraries("Profile", library_includes);
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Profile/libsoundwave.lib");
-		library_includes->emplace_back("Profile/assimp.lib");
 	#endif
 	}
 
 	else if (strcmp(configuration_name, "Profile Editor") == 0)
 	{
 		Platform::AddVulkanShaderCLibraries("Profile", library_includes);
+		Platform::AddAssimpLibraries("Profile", library_includes);
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Profile/libsoundwave.lib");
-		library_includes->emplace_back("Profile/assimp.lib");
 	#endif
 	}
 
@@ -351,18 +335,18 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 	else if (strcmp(configuration_name, "Debug Static") == 0)
 	{
 		Platform::AddVulkanShaderCLibraries("Debug", library_includes);
+		Platform::AddAssimpLibraries("Debug", library_includes);
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Debug/libsoundwave.lib");
-		library_includes->emplace_back("Debug/assimp.lib");
 	#endif
 	}
 
 	else if (strcmp(configuration_name, "Profile Static") == 0)
 	{
 		Platform::AddVulkanShaderCLibraries("Profile", library_includes);
+		Platform::AddAssimpLibraries("Profile", library_includes);
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Profile/libsoundwave.lib");
-		library_includes->emplace_back("Profile/assimp.lib");
 	#endif
 	}
 
@@ -376,20 +360,20 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 	else if (strcmp(configuration_name, "Standalone Debug") == 0)
 	{
 		Platform::AddVulkanShaderCLibraries("Debug", library_includes);
+		Platform::AddAssimpLibraries("Debug", library_includes);
 		library_includes->emplace_back("opengl32.lib");
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Debug/libsoundwave.lib");
-		library_includes->emplace_back("Debug/assimp.lib");
 	#endif
 	}
 
 	else if (strcmp(configuration_name, "Standalone Profile") == 0)
 	{
 		Platform::AddVulkanShaderCLibraries("Profile", library_includes);
+		Platform::AddAssimpLibraries("Profile", library_includes);
 		library_includes->emplace_back("opengl32.lib");
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Profile/libsoundwave.lib");
-		library_includes->emplace_back("Profile/assimp.lib");
 	#endif
 	}
 

@@ -637,7 +637,7 @@ This version of the "minizip" library was downloaded 2026-11-12 from https://git
 ASSIMP
 
 This software uses the "Assimp" library for parsing model/animation files.
-This version of the "Assimp" library was downloaded 2026-11-12 from https://github.com/assimp/assimp with the following license:
+This version (6.0.6) of the "Assimp" library was downloaded 2026-11-12 from https://github.com/assimp/assimp with the following license:
 
 	Open Asset Import Library (assimp)
 

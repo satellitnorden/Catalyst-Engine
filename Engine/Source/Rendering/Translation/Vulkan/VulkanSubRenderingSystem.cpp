@@ -268,13 +268,16 @@ namespace VulkanSubRenderingSystemLogic
 
 			if (pipeline->IsRenderingDirectlyToScreen())
 			{
+				const VkAttachmentLoadOp color_load_operator{ VulkanTranslationUtilities::GetVulkanAttachmentLoadOperator(pipeline->GetColorAttachmentLoadOperator()) };
+				const VkImageLayout initial_layout{ (color_load_operator == VK_ATTACHMENT_LOAD_OP_DONT_CARE || color_load_operator == VK_ATTACHMENT_LOAD_OP_CLEAR) ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_PRESENT_SRC_KHR };
+
 				attachmentDescriptions.Emplace(VulkanUtilities::CreateAttachmentDescription(VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format,
 																							VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT,
-																							VulkanTranslationUtilities::GetVulkanAttachmentLoadOperator(pipeline->GetColorAttachmentLoadOperator()),
+																							color_load_operator,
 																							VulkanTranslationUtilities::GetVulkanAttachmentStoreOperator(pipeline->GetColorAttachmentStoreOperator()),
 																							VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 																							VK_ATTACHMENT_STORE_OP_DONT_CARE,
-																							VK_IMAGE_LAYOUT_UNDEFINED,
+																							initial_layout,
 																							VK_IMAGE_LAYOUT_PRESENT_SRC_KHR));
 
 				colorAttachmentReferences.Emplace(VkAttachmentReference{ counter++, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL });

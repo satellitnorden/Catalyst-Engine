@@ -24,6 +24,22 @@ namespace Platform
         library_includes->emplace_back("shaderc_shared.lib");
     }
 
+    /*
+    *   Adds the Assimp libraries.
+    */
+    static void AddAssimpLibraries(const char *directory, std::vector<std::string> *library_includes)
+    {
+        if (strcmp(directory, "Debug") == 0)
+        {
+            library_includes->emplace_back("Debug/assimp.lib");
+        }
+        
+        else
+        {
+            library_includes->emplace_back("Profile/assimp.lib");
+        }
+    }
+
 }
 
 namespace PlatformWin64

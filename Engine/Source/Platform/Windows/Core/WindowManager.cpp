@@ -968,7 +968,7 @@ namespace Platform
 	*	Returns a platform native window handle for the given window.
 	*	Not all platforms may return a valid handle here, as the concept of a "window" may differ between platforms.
 	*/
-	NO_DISCARD PlatformNativeWindowHandle GetWindowHandle(const WindowHandle window) NOEXCEPT
+	NO_DISCARD PlatformNativeWindowHandle WindowManager::GetWindowHandle(const WindowHandle window) NOEXCEPT
 	{
 		//Cache the window data.
 		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
@@ -981,7 +981,7 @@ namespace Platform
 	*	Returns a platform native display handle for the given window.
 	*	Not all platforms may return a valid handle here, as the concept of a "display" may differ between platforms.
 	*/
-	NO_DISCARD PlatformNativeWindowHandle GetDisplayHandle(const WindowHandle window) NOEXCEPT
+	NO_DISCARD PlatformNativeWindowHandle WindowManager::GetDisplayHandle(const WindowHandle window) NOEXCEPT
 	{
 		//Windows does not understand the concept of a "display" handle.
 		return INVALID_WINDOW_HANDLE;

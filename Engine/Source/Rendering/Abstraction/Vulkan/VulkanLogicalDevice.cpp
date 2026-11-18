@@ -266,6 +266,7 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 	{
 		queue_family_index = UINT32_MAXIMUM;
 	}
+
 	//Reset all queue indices.
 	for (uint32 &queue_index : _QueueIndices)
 	{
@@ -290,7 +291,7 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 
 		uint32 temp_counter{ 0 };
 
-		for (VkQueueFamilyProperties& queue_family_property : queue_family_properties)
+		for (VkQueueFamilyProperties &queue_family_property : queue_family_properties)
 		{
 			//We want the graphics and present queue to come from the same family.
 			VkBool32 has_present_support{ false };
@@ -331,7 +332,7 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 	*/
 	uint32 queue_family_counter{ 0 };
 
-	for (VkQueueFamilyProperties& queue_family_property : queue_family_properties)
+	for (VkQueueFamilyProperties &queue_family_property : queue_family_properties)
 	{
 #if !VULKAN_RECEIVES_SWAPCHAIN_FROM_PLATFORM
 		//We want the graphics and present queue to come from the same family.
@@ -396,7 +397,7 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 	*/
 	queue_family_counter = 0;
 
-	for (VkQueueFamilyProperties& queue_family_property : queue_family_properties)
+	for (VkQueueFamilyProperties &queue_family_property : queue_family_properties)
 	{
 		if (queue_family_property.queueCount >= 1
 			&& number_of_allocated_queues[queue_family_counter] < queue_family_property.queueCount
