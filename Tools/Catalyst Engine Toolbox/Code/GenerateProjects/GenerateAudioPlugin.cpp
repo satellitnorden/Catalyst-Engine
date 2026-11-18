@@ -148,9 +148,7 @@ void GenerateAudioPlugin::GenerateFiles(const ProjectSettings &project_settings,
 
 		file << "//Platform." << std::endl;
 		file << "#include <Platform/Core/Main.h>" << std::endl;
-		file << "#if defined(CATALYST_PLATFORM_WINDOWS)" << std::endl;
-		file << "\t#include <Platform/Platforms/Windows/CatalystPlatformWindows.h>" << std::endl;
-		file << "#endif" << std::endl;
+		file << "#include <Platform/Core/WindowManager.h>" << std::endl;
 		file << std::endl;
 
 		file << "//Systems." << std::endl;
@@ -224,7 +222,7 @@ void GenerateAudioPlugin::GenerateFiles(const ProjectSettings &project_settings,
 		file << "\t//Initialize the plugin editor." << std::endl;
 		file << "\tPLUGIN_EDITOR.Initialize(&PLUGIN);" << std::endl;
 		file << "#if defined(CATALYST_PLATFORM_WINDOWS)" << std::endl;
-		file << "\tPLUGIN_EDITOR.CreateEditor(CatalystPlatformWindows::_MainWindow);" << std::endl;
+		file << "\tPLUGIN_EDITOR.CreateEditor(Platform::WindowManager::GetWindowHandle(Platform::WindowManager::GetMasterWindow()));" << std::endl;
 		file << "#else" << std::endl;
 		file << "\tPLUGIN_EDITOR.CreateEditor(nullptr);" << std::endl;
 		file << "#endif" << std::endl;
@@ -526,7 +524,7 @@ void GenerateAudioPlugin::GenerateFiles(const ProjectSettings &project_settings,
 			file << "{" << std::endl;
 			file << "#if !defined(CATALYST_CONFIGURATION_FINAL)" << std::endl;
 			file << "\t//Compile content." << std::endl;
-			file << "\tContentSystem::Instance->Compile(\"..//..//..//AudioPlugins//" << audio_plugin._NameNoSpaces.c_str() << "//Content\");" << std::endl;
+			file << "\tContentSystem::Instance->Compile(\"../../../AudioPlugins/" << audio_plugin._NameNoSpaces.c_str() << "/Content\");" << std::endl;
 			file << "#endif" << std::endl;
 			file << "}";
 
@@ -563,6 +561,12 @@ void GenerateAudioPlugin::GenerateFiles(const ProjectSettings &project_settings,
 
 			file << std::endl;
 			file << "public:" << std::endl;
+			file << std::endl;
+
+			file << "\t/*" << std::endl;
+			file << "\t*\tDefault constructor." << std::endl;
+			file << "\t*/" << std::endl;
+			file << "\t" << audio_plugin._NameNoSpaces.c_str() << "UIScene(UISystem *const RESTRICT system) NOEXCEPT;" << std::endl;
 			file << std::endl;
 
 			file << "\t/*" << std::endl;
@@ -615,6 +619,17 @@ void GenerateAudioPlugin::GenerateFiles(const ProjectSettings &project_settings,
 			file << std::endl;
 
 			file << "/*" << std::endl;
+			file << "*\tDefault constructor." << std::endl;
+			file << "*/" << std::endl;
+			file  << audio_plugin._NameNoSpaces.c_str() << "UIScene::" << audio_plugin._NameNoSpaces.c_str() << "UIScene(UISystem *const RESTRICT system) NOEXCEPT" << std::endl;
+			file << "\t:" << std::endl;
+			file << "\tUI::Scene(system)" << std::endl;
+			file << "{" << std::endl;
+			file << std::endl;
+			file << "}" << std::endl;
+			file << std::endl;
+
+			file << "/*" << std::endl;
 			file << "*\tSets the plugin." << std::endl;
 			file << "*/" << std::endl;
 			file << "void " << audio_plugin._NameNoSpaces.c_str() << "UIScene::SetPlugin(" << audio_plugin._ClassName.c_str() << " *const RESTRICT value) NOEXCEPT" << std::endl;
@@ -625,7 +640,7 @@ void GenerateAudioPlugin::GenerateFiles(const ProjectSettings &project_settings,
 			file << std::endl;
 
 			file << "/*" << std::endl;
-			file << "*\tBuilds this scene.." << std::endl;
+			file << "*\tBuilds this scene." << std::endl;
 			file << "*/" << std::endl;
 			file << "void " << audio_plugin._NameNoSpaces.c_str() << "UIScene::Build(const UI::BuildContext &context) NOEXCEPT" << std::endl;
 			file << "{" << std::endl;

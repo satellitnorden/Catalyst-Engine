@@ -45,6 +45,13 @@ const clap_plugin_descriptor_t PLUGIN_DESCRIPTOR
 				break;
 			}
 
+			case Audio::Plugin::MainCategory::AUDIO_EFFECT:
+			{
+				FEATURES[0] = CLAP_PLUGIN_FEATURE_AUDIO_EFFECT;
+
+				break;
+			}
+
 			case Audio::Plugin::MainCategory::INSTRUMENT:
 			{
 				FEATURES[0] = CLAP_PLUGIN_FEATURE_INSTRUMENT;
@@ -65,6 +72,13 @@ const clap_plugin_descriptor_t PLUGIN_DESCRIPTOR
 			case Audio::Plugin::SubCategory::NONE:
 			{
 				ASSERT(false, "Plugin needs a sub category!");
+
+				break;
+			}
+
+			case Audio::Plugin::SubCategory::DISTORTION:
+			{
+				FEATURES[1] = CLAP_PLUGIN_FEATURE_DISTORTION;
 
 				break;
 			}

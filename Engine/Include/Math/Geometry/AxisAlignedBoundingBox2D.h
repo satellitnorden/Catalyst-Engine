@@ -182,4 +182,30 @@ public:
 				&& _Minimum._Y <= _Maximum._Y;
 	}
 
+	/*
+	*	Minimizes this bounding box to a square.
+	*/
+	FORCE_INLINE void MinimizeToSquare() NOEXCEPT
+	{
+		const Vector2<float32> dimensions{ Dimensions() };
+
+		if (dimensions._X > dimensions._Y)
+		{
+			const float32 difference{ dimensions._X - dimensions._Y };
+			const float32 half_difference{ difference * 0.5f };
+
+			_Minimum._X += half_difference;
+			_Maximum._X -= half_difference;
+		}
+
+		else if (dimensions._Y > dimensions._X)
+		{
+			const float32 difference{ dimensions._Y - dimensions._X };
+			const float32 half_difference{ difference * 0.5f };
+
+			_Minimum._Y += half_difference;
+			_Maximum._Y -= half_difference;
+		}
+	}
+
 };

@@ -45,6 +45,7 @@ namespace Audio
 		{
 			NONE,
 
+			AUDIO_EFFECT,
 			INSTRUMENT
 		};
 
@@ -53,6 +54,7 @@ namespace Audio
 		{
 			NONE,
 
+			DISTORTION,
 			SAMPLER,
 			SYNTHESIZER
 		};
