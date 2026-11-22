@@ -2,6 +2,9 @@
 //Header file.
 #include <Rendering/Abstraction/OpenGL/OpenGL.h>
 
+//Systems.
+#include <Systems/LogSystem.h>
+
 namespace OpenGL
 {
 	/*
@@ -9,14 +12,9 @@ namespace OpenGL
 	*/
 	void RetrieveOpenGLFunctionPointers() NOEXCEPT
 	{
-#define OPEN_GL_FUNCTION(TYPE, NAME) NAME = reinterpret_cast<TYPE>(wglGetProcAddress(#NAME)); ASSERT(NAME != nullptr, "Could not retrieve " #NAME " OpenGL function pointer!");
-		OPEN_GL_FUNCTIONS
-#undef OPEN_GL_FUNCTION
+		const int32 version{ gladLoaderLoadGL() };
+		LOG_INFORMATION("Load OpenGL function pointers for version %i.%i", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
+
 	}
 }
-
-//List of all function pointers.
-#define OPEN_GL_FUNCTION(TYPE, NAME) TYPE NAME;
-OPEN_GL_FUNCTIONS
-#undef OPEN_GL_FUNCTION
 #endif

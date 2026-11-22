@@ -15,6 +15,9 @@
 //Rendering.
 #include <Rendering/Abstraction/OpenGL/OpenGL.h>
 
+//Third party.
+#include <gl/wglext.h>
+
 /*
 *	Window data class definition.
 */
