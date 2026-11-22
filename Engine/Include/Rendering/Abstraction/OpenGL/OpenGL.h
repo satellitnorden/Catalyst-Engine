@@ -6,13 +6,15 @@
 
 //Platform.
 #if defined(CATALYST_PLATFORM_WINDOWS)
-#include <Platform/Platforms/Windows/CatalystPlatformWindows.h>
+	#include <Platform/Platforms/Windows/CatalystPlatformWindows.h>
 #endif
 
 //Third party.
-#include <gl/GL.h>
+#include <GL/gl.h>
 #include <gl/glext.h>
-#include <gl/wglext.h>
+#if defined(CATALYST_PLATFORM_WINDOWS)
+	#include <gl/wglext.h>
+#endif
 
 //Macros.
 #define OPEN_GL_CALL(X) X; OpenGL::CheckError();

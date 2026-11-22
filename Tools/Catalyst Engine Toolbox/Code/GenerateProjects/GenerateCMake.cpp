@@ -273,6 +273,9 @@ void GenerateCMake::Generate(const GenerateProjectParameters &parameters)
         //Always support AVX2 instructions.
         file << "\t\t-mavx2" << std::endl;
 
+        //Always support FMA instructions.
+        file << "\t\t-mfma" << std::endl;
+
         file << "\t)" << std::endl;
 
         file << "endif()" << std::endl;

@@ -362,7 +362,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 	{
 		Platform::AddVulkanShaderCLibraries("Debug", library_includes);
 		Platform::AddAssimpLibraries("Debug", library_includes);
-		library_includes->emplace_back("opengl32.lib");
+		Platform::AddOpenGLLibraries(library_includes);
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Debug/libsoundwave.lib");
 	#endif
@@ -372,7 +372,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 	{
 		Platform::AddVulkanShaderCLibraries("Profile", library_includes);
 		Platform::AddAssimpLibraries("Profile", library_includes);
-		library_includes->emplace_back("opengl32.lib");
+		Platform::AddOpenGLLibraries(library_includes);
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Profile/libsoundwave.lib");
 	#endif
@@ -380,7 +380,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "Standalone Final") == 0)
 	{
-		library_includes->emplace_back("opengl32.lib");
+		Platform::AddOpenGLLibraries(library_includes);
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Final/libsoundwave.lib");
 	#endif
@@ -388,7 +388,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "CLAP Debug") == 0)
 	{
-		library_includes->emplace_back("opengl32.lib");
+		Platform::AddOpenGLLibraries(library_includes);
 		Platform::AddVulkanShaderCLibraries("Debug", library_includes);
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Debug/libsoundwave.lib");
@@ -397,7 +397,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "CLAP Final") == 0)
 	{
-		library_includes->emplace_back("opengl32.lib");
+		Platform::AddOpenGLLibraries(library_includes);
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Final/libsoundwave.lib");
 	#endif
@@ -405,7 +405,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "VST3 Debug") == 0)
 	{
-		library_includes->emplace_back("opengl32.lib");
+		Platform::AddOpenGLLibraries(library_includes);
 		Platform::AddVulkanShaderCLibraries("Debug", library_includes);
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Debug/libsoundwave.lib");
@@ -414,7 +414,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 
 	else if (strcmp(configuration_name, "VST3 Final") == 0)
 	{
-		library_includes->emplace_back("opengl32.lib");
+		Platform::AddOpenGLLibraries(library_includes);
 	#if defined(PLATFORM_WIN64)
 		library_includes->emplace_back("Final/libsoundwave.lib");
 	#endif

@@ -16,6 +16,14 @@ namespace Platform
     }
 
     /*
+    *   Adds the OpenGL libraries.
+    */
+    static void AddOpenGLLibraries(std::vector<std::string> *library_includes)
+    {
+        library_includes->emplace_back("GL.a");
+    }
+
+    /*
     *   Adds the Assimp libraries.
     */
     static void AddAssimpLibraries(const char *directory, std::vector<std::string> *library_includes)

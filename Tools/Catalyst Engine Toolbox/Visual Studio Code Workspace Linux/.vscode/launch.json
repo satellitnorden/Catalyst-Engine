@@ -8,7 +8,7 @@
             "program": "${command:cmake.launchTargetPath}",
             "preLaunchTask": "CMake: build",
 
-            "cwd": "${userHome}/Documents/GitHub/DrumAttack/Projects",
+            "cwd": "${userHome}/Documents/GitHub/Audio-Plugins/Projects",
             "args": ["generate_projects"]
         }
     ]
