@@ -137,7 +137,4 @@ public:
 	//The directories.
 	std::vector<Directory> _Directories;
 
-	//The embedded resources.
-	std::vector<std::string> _EmbeddedResources;
-
 };

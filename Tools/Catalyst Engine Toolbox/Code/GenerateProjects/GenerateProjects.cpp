@@ -11,6 +11,7 @@
 #include <GenerateProjects/GenerateAudioPlugin.h>
 #include <GenerateProjects/GenerateCLion.h>
 #include <GenerateProjects/GenerateCMake.h>
+#include <GenerateProjects/GenerateEmbeddedResources.h>
 #include <GenerateProjects/GenerateVisualStudioCodeWorkspace.h>
 #include <GenerateProjects/GenerateVisualStudioSolution.h>
 
@@ -479,6 +480,7 @@ void ScanDirectory(GenerateProjectParameters::Directory *directory, const char *
 				|| extension == ".inl"
 				|| extension == ".cpp"
 				|| extension == ".c"
+				|| extension == ".rc"
 				|| extension == ".common_shader"
 				|| extension == ".global_render_data"
 				|| extension == ".render_pipeline"
@@ -1086,6 +1088,32 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		platform._Name = "x64";
 	}
 
+	//Embed some resources.
+	{
+		std::vector<std::string> embedded_resources;
+
+		embedded_resources.emplace_back("../../../../Catalyst-Engine/Engine/Content/Collections/Base.cac");
+
+		{
+			const std::string collections_directory{ GenerateAudioPlugin::ContentDirectory(audio_plugin) + "/Collections" };
+
+			if (std::filesystem::exists(collections_directory))
+			{
+				for (const auto &entry : std::filesystem::directory_iterator(collections_directory))
+				{
+					const std::string file_path{ entry.path().generic_string() };
+
+					if (file_path.ends_with(".cac"))
+					{
+						embedded_resources.emplace_back("../../" + file_path);
+					}
+				}
+			}
+		}
+
+		GenerateEmbeddedResources::Generate(embedded_resources, std::string(GenerateAudioPlugin::CodeDirectory(audio_plugin) + "/Resources").c_str());
+	}
+
 	//Generate the audio plugin files.
 	GenerateAudioPlugin::GenerateFiles(project_settings, audio_plugin);
 
@@ -1104,26 +1132,6 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 
 	//Generate the code generation file.
 	GenerateRunCodeGenerationBatchFile(GenerateAudioPlugin::VisualStudioSolutionDirectory(audio_plugin), project_settings);
-
-	//Embed some resources.
-	parameters._EmbeddedResources.emplace_back("../../../../Catalyst-Engine/Engine/Content/Collections/Base.cac");
-
-	{
-		const std::string collections_directory{ GenerateAudioPlugin::ContentDirectory(audio_plugin) + "/Collections" };
-
-		if (std::filesystem::exists(collections_directory))
-		{
-			for (const auto &entry : std::filesystem::directory_iterator(collections_directory))
-			{
-				const std::string file_path{ entry.path().generic_string() };
-
-				if (file_path.ends_with(".cac"))
-				{
-					parameters._EmbeddedResources.emplace_back("../../" + file_path);
-				}
-			}
-		}
-	}
 
 	//Define that we have embedded resource.
 	for (GenerateProjectParameters::Configuration &configuration : parameters._Configurations)

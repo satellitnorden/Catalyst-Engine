@@ -24,11 +24,6 @@ public:
 private:
 
 	/*
-	*	Generates the resource file.
-	*/
-	static void GenerateResourceFile(const GenerateProjectParameters &parameters);
-
-	/*
 	*	Generates the project file.
 	*/
 	static void GenerateProjectFile(const GenerateProjectParameters &parameters, const std::string &project_guid);
