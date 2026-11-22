@@ -90,6 +90,7 @@ void GenerateVisualStudioCodeWorkspace::GenerateCodeWorkspaceFile(const Generate
         settings_entry["cmake.options.statusBarVisibility"] = "visible";
         settings_entry["cmake.sourceDirectory"] = "${workspaceFolder}";
         settings_entry["cmake.autoSelectActiveFolder"] = false;
+        settings_entry["cmake.setBuildTargetSameAsLaunchTarget"] = true;
     }
 
     //Figure out the file path.
@@ -121,20 +122,16 @@ void GenerateVisualStudioCodeWorkspace::GenerateCMakePresetsFile(const GenerateP
     {
         nlohmann::ordered_json &configure_presets_entry{ JSON["configurePresets"] };
 
-        for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
+        nlohmann::ordered_json &configure_preset_entry{ configure_presets_entry.emplace_back() };
+
+        configure_preset_entry["name"] = "Default";
+        configure_preset_entry["displayName"] = "Default";
+        configure_preset_entry["binaryDir"] = "${sourceDir}/Build";
+
         {
-            nlohmann::ordered_json &configure_preset_entry{ configure_presets_entry.emplace_back() };
+            nlohmann::ordered_json &cache_variables_entry{ configure_preset_entry["cacheVariables"] };
 
-            configure_preset_entry["name"] = Utilities::RemoveSpaces(configuration._Name).c_str();
-            configure_preset_entry["displayName"] = Utilities::RemoveSpaces(configuration._Name).c_str();
-            configure_preset_entry["binaryDir"] = "${sourceDir}/Build";
-
-            {
-                nlohmann::ordered_json &cache_variables_entry{ configure_preset_entry["cacheVariables"] };
-
-                cache_variables_entry["CMAKE_BUILD_TYPE"] = Utilities::RemoveSpaces(configuration._Name).c_str();
-                cache_variables_entry["CMAKE_INSTALL_PREFIX"] = "${sourceDir}/Install";
-            }
+            cache_variables_entry["CMAKE_INSTALL_PREFIX"] = "${sourceDir}/Install";
         }
     }
 
@@ -142,14 +139,10 @@ void GenerateVisualStudioCodeWorkspace::GenerateCMakePresetsFile(const GenerateP
     {
         nlohmann::ordered_json &build_presets_entry{ JSON["buildPresets"] };
 
-        for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
-        {
-            nlohmann::ordered_json &build_preset_entry{ build_presets_entry.emplace_back() };
+        nlohmann::ordered_json &build_preset_entry{ build_presets_entry.emplace_back() };
 
-            build_preset_entry["name"] = Utilities::RemoveSpaces(configuration._Name).c_str();
-            build_preset_entry["configurePreset"] = Utilities::RemoveSpaces(configuration._Name).c_str();
-            build_preset_entry["configuration"] = Utilities::RemoveSpaces(configuration._Name).c_str();
-        }
+        build_preset_entry["name"] = "Default";
+        build_preset_entry["configurePreset"] = "Default";
     }
 
     //Figure out the file path.
@@ -245,9 +238,9 @@ void GenerateVisualStudioCodeWorkspace::GenerateTasksFile(const GenerateProjectP
             nlohmann::ordered_json &build_task{ tasks_entry.emplace_back() };
 
             build_task["type"] = "cmake";
-            build_task["label"] = "CMake: build";
+            build_task["label"] = "CMake: Build";
             build_task["command"] = "build";
-            build_task["targets"].emplace_back(Utilities::RemoveSpaces(parameters._ProjectName).c_str());
+            build_task["targets"].emplace_back("${command:cmake.buildTargetName}");
 
             {
                 nlohmann::ordered_json &group_entry{ build_task["group"] };
@@ -256,7 +249,7 @@ void GenerateVisualStudioCodeWorkspace::GenerateTasksFile(const GenerateProjectP
                 group_entry["isDefault"] = true;
             }
 
-            build_task["detail"] = "CMake template build task";
+            build_task["detail"] = "Builds the current CMake target.";
         }
     }
 
@@ -305,7 +298,7 @@ void GenerateVisualStudioCodeWorkspace::GenerateLaunchFile(const GenerateProject
             launch_configuration["request"] = "launch";
             launch_configuration["program"] = "${command:cmake.launchTargetPath}";
             launch_configuration["cwd"] = "${workspaceFolder}";
-            launch_configuration["preLaunchTask"] = "CMake: build";
+            launch_configuration["preLaunchTask"] = "CMake: Build";
         }
     }
 

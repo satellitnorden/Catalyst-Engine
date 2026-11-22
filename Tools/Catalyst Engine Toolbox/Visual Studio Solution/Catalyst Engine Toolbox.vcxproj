@@ -144,6 +144,7 @@
     <ClCompile Include="..\Code\GenerateProjects\GenerateAudioPlugin.cpp" />
     <ClCompile Include="..\Code\GenerateProjects\GenerateCLion.cpp" />
     <ClCompile Include="..\Code\GenerateProjects\GenerateCMake.cpp" />
+    <ClCompile Include="..\Code\GenerateProjects\GenerateEmbeddedResources.cpp" />
     <ClCompile Include="..\Code\GenerateProjects\GenerateProjects.cpp" />
     <ClCompile Include="..\Code\GenerateProjects\GenerateVisualStudioCodeWorkspace.cpp" />
     <ClCompile Include="..\Code\GenerateProjects\GenerateVisualStudioSolution.cpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="..\Code\GenerateProjects\GenerateAudioPlugin.h" />
     <ClInclude Include="..\Code\GenerateProjects\GenerateCLion.h" />
     <ClInclude Include="..\Code\GenerateProjects\GenerateCMake.h" />
+    <ClInclude Include="..\Code\GenerateProjects\GenerateEmbeddedResources.h" />
     <ClInclude Include="..\Code\GenerateProjects\GenerateProjectParameters.h" />
     <ClInclude Include="..\Code\GenerateProjects\GenerateProjects.h" />
     <ClInclude Include="..\Code\GenerateProjects\GenerateVisualStudioCodeWorkspace.h" />

@@ -40,9 +40,19 @@ void GenerateCMake::Generate(const GenerateProjectParameters &parameters)
     //Open file.
     std::ofstream file{ file_path };
 
-    //Add the minimum required version.
+    //Set the minimum required version.
     file << "# Set the minimum required version." << std::endl;
     file << "cmake_minimum_required(VERSION 4.4.2)" << std::endl;
+    file << std::endl;
+
+    //Set the CMake policy.
+    file << "# Set the CMake policy." << std::endl;
+    file << "cmake_policy(SET CMP0184 NEW)" << std::endl;
+    file << std::endl;
+
+    //Disable runtime checks.
+    file << "# Disable runtime checks." << std::endl;
+    file << "set(CMAKE_MSVC_RUNTIME_CHECKS \"\")" << std::endl;
     file << std::endl;
 
     //Add the the project.
@@ -56,16 +66,9 @@ void GenerateCMake::Generate(const GenerateProjectParameters &parameters)
     file << "set(CMAKE_CXX_STANDARD_REQUIRED ON)" << std::endl;
     file << std::endl;
 
-    //Set the configuration types.
-    file << "# Set the configuration types." << std::endl;
-    file << "set(CMAKE_CONFIGURATION_TYPES" << std::endl;;
-
-    for (size_t i{ 0 }; i < parameters._Configurations.size(); ++i)
-    {
-        file << "\t" << Utilities::RemoveSpaces(parameters._Configurations[i]._Name).c_str() << "" << std::endl;
-    }
-
-    file << ")" << std::endl;
+    //Clear compiler flags (we will set our own).
+    file << "# Clear compiler flags (we will set our own)." << std::endl;
+    file << "set(CMAKE_CXX_FLAGS_DEBUG \"\")" << std::endl;
     file << std::endl;
 
     //Collect the source files.
@@ -80,33 +83,72 @@ void GenerateCMake::Generate(const GenerateProjectParameters &parameters)
     file << ")" << std::endl;
     file << std::endl;
 
-    //Add the the executable.
-    file << "# Add the the executable." << std::endl;
-    file << "add_executable(" << Utilities::RemoveSpaces(parameters._ProjectName).c_str() << " ${SOURCE_FILES})" << std::endl;
-    file << std::endl;
-
-    //Set the startup project.
-    file << "# Set the startup project." << std::endl;
-    file << "set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT " << Utilities::RemoveSpaces(parameters._ProjectName).c_str() << ")" << std::endl;
-    file << std::endl;
-
-    //Add the include paths.
-    file << "# Add the include paths." << std::endl;
-
-    for (const std::string &code_include_path : parameters._CodeIncludePaths)
+    /*
+    *   Add a different target per configuration - The incoming configurations work perfectly in Visual Studio, but for CMake we have to do things a bit differently.
+    */
+    for (uint64 configuration_index{ 0 }; configuration_index < parameters._Configurations.size(); ++configuration_index)
     {
-        file << "target_include_directories(" << Utilities::RemoveSpaces(parameters._ProjectName).c_str() << " PRIVATE \"" << Utilities::BackwardToForwardSlashes(code_include_path).c_str() << "\")" << std::endl;
-    }
+        //Cache the configuration.
+        const GenerateProjectParameters::Configuration &configuration{ parameters._Configurations[configuration_index] };
 
-    file << std::endl;
+        //Add the the target.
+        file << "# Add the the target." << std::endl;
 
-    //Add the compile definitions.
-    file << "# Add the compile definitions." << std::endl;
-    file << "target_compile_definitions(" << Utilities::RemoveSpaces(parameters._ProjectName).c_str() << " PRIVATE" << std::endl;
+        switch (configuration._Type)
+        {
+            case GenerateProjectParameters::Configuration::Type::APPLICATION:
+            {
+                file << "add_executable(" << Utilities::RemoveSpaces(configuration._Name).c_str() << " ${SOURCE_FILES})" << std::endl;
+                file << std::endl;
 
-    for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
-    {
-        file << "\t$<$<CONFIG:" << Utilities::RemoveSpaces(configuration._Name).c_str() << ">:";
+                break;
+            }
+
+            case GenerateProjectParameters::Configuration::Type::STATIC_LIBRARY:
+            {
+                file << "add_library(" << Utilities::RemoveSpaces(configuration._Name).c_str() << " STATIC ${SOURCE_FILES})" << std::endl;
+                file << std::endl;
+
+                break;
+            }
+
+            case GenerateProjectParameters::Configuration::Type::DYNAMIC_LIBRARY:
+            {
+                file << "add_library(" << Utilities::RemoveSpaces(configuration._Name).c_str() << " SHARED ${SOURCE_FILES})" << std::endl;
+                file << std::endl;
+
+                break;
+            }
+
+            default:
+            {
+                ASSERT(false, "Invalid case!");
+
+                break;
+            }
+        }
+
+        //Set the startup project.
+        if (configuration_index == 0)
+        {
+            file << "# Set the startup project." << std::endl;
+            file << "set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT " << Utilities::RemoveSpaces(configuration._Name).c_str() << ")" << std::endl;
+            file << std::endl;
+        }
+
+        //Add the include paths.
+        file << "# Add the include paths." << std::endl;
+
+        for (const std::string &code_include_path : parameters._CodeIncludePaths)
+        {
+            file << "target_include_directories(" << Utilities::RemoveSpaces(configuration._Name).c_str() << " PRIVATE \"" << Utilities::BackwardToForwardSlashes(code_include_path).c_str() << "\")" << std::endl;
+        }
+
+        file << std::endl;
+
+        //Add the compile definitions.
+        file << "# Add the compile definitions." << std::endl;
+        file << "target_compile_definitions(" << Utilities::RemoveSpaces(configuration._Name).c_str() << " PRIVATE" << std::endl;
 
         for (size_t preprocessor_definition_index{ 0 }; preprocessor_definition_index < configuration._PreprocessorDefinitions.size(); ++preprocessor_definition_index)
         {
@@ -117,32 +159,25 @@ void GenerateCMake::Generate(const GenerateProjectParameters &parameters)
                 file << ";";
             }
         }
+         
+        file << ")" << std::endl;
+        file << std::endl;
 
-        file << ">" << std::endl;
-    }
+        //Add the library include paths.
+        file << "# Add the library include paths." << std::endl;
+        file << "target_link_directories(" << Utilities::RemoveSpaces(configuration._Name).c_str() << " PRIVATE" << std::endl;
 
-    file << ")" << std::endl;
-    file << std::endl;
+        for (const std::string &library_include_path : parameters._LibraryIncludePaths)
+        {
+            file << "\t\"" << Utilities::BackwardToForwardSlashes(library_include_path).c_str() << "\"" << std::endl;
+        }
 
-    //Add the library include paths.
-    file << "# Add the library include paths." << std::endl;
-    file << "target_link_directories(" << Utilities::RemoveSpaces(parameters._ProjectName).c_str() << " PRIVATE" << std::endl;
+        file << ")" << std::endl;
+        file << std::endl;
 
-    for (const std::string &library_include_path : parameters._LibraryIncludePaths)
-    {
-        file << "\t\"" << Utilities::BackwardToForwardSlashes(library_include_path).c_str() << "\"" << std::endl;
-    }
-
-    file << ")" << std::endl;
-    file << std::endl;
-
-    //Add the library includes.
-    file << "# Add the library includes." << std::endl;
-    file << "target_link_libraries(" << Utilities::RemoveSpaces(parameters._ProjectName).c_str() << " PRIVATE" << std::endl;
-
-    for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
-    {
-        file << "\t$<$<CONFIG:" << Utilities::RemoveSpaces(configuration._Name).c_str() << ">:";
+        //Add the library includes.
+        file << "# Add the library includes." << std::endl;
+        file << "target_link_libraries(" << Utilities::RemoveSpaces(configuration._Name).c_str() << " PRIVATE" << std::endl;
 
         for (size_t library_include_index{ 0 }; library_include_index < configuration._LibraryIncludes.size(); ++library_include_index)
         {
@@ -154,30 +189,95 @@ void GenerateCMake::Generate(const GenerateProjectParameters &parameters)
             }
         }
 
-        file << ">" << std::endl;
+        file << ")" << std::endl;
+        file << std::endl;
+
+        //Set the runtime library.
+        file << "# Set the runtime library." << std::endl;
+        file << "set_property(TARGET " << Utilities::RemoveSpaces(configuration._Name).c_str() << " PROPERTY MSVC_RUNTIME_LIBRARY " << configuration._RuntimeLibrary << ")" << std::endl;
+        file << std::endl;
+    
+        //Set the sub system.
+        file << "# Set the sub system." << std::endl;
+        file << "set_property(TARGET " << Utilities::RemoveSpaces(configuration._Name).c_str() << " PROPERTY WIN32_EXECUTABLE TRUE)" << std::endl;
+        file << std::endl;
+
+        //Set the output directory.
+        file << "# Set the output directory." << std::endl;
+        file << "set_target_properties(" << Utilities::RemoveSpaces(configuration._Name).c_str() << " PROPERTIES" << std::endl;
+        file << "\tRUNTIME_OUTPUT_DIRECTORY_DEBUG \"${CMAKE_BINARY_DIR}/" << Utilities::RemoveSpaces(configuration._Name).c_str() << "\"" << std::endl;
+        file << "\tLIBRARY_OUTPUT_DIRECTORY_DEBUG \"${CMAKE_BINARY_DIR}/" << Utilities::RemoveSpaces(configuration._Name).c_str() << "\"" << std::endl;
+        file << "\tARCHIVE_OUTPUT_DIRECTORY_DEBUG \"${CMAKE_BINARY_DIR}/" << Utilities::RemoveSpaces(configuration._Name).c_str() << "\"" << std::endl;
+        file << "\tOUTPUT_NAME_DEBUG \"" << parameters._ProjectName << "\"" << std::endl;
+        file << "\tSUFFIX \"" << configuration._TargetFileExtension << "\"" << std::endl;
+        file << ")" << std::endl;
+        file << std::endl;
+
+        //Set MSVC-specific flags.
+        file << "# Set MSVC-specific flags." << std::endl;
+        file << "if (CMAKE_CXX_COMPILER_ID STREQUAL \"MSVC\")" << std::endl;
+
+        //Add the compiler flags.
+        file << "\t# Set compiler flags." << std::endl;
+        file << "\ttarget_compile_options(" << Utilities::RemoveSpaces(configuration._Name) << " PRIVATE" << std::endl;
+
+        //Always generate debug information.
+        file << "\t\t/Zi" << std::endl;
+
+        //Set optimizations.
+        if (configuration._ApplyOptimizations)
+        {
+            file << "\t\t/O2" << std::endl;
+            file << "\t\t/GL" << std::endl;
+        }
+
+        else
+        {
+            file << "\t\t/Od" << std::endl;
+        }
+
+        file << "\t)" << std::endl;
+        file << std::endl;
+
+        //Add the linker flags.
+        file << "\t# Set linker flags." << std::endl;
+        file << "\ttarget_link_options(" << Utilities::RemoveSpaces(configuration._Name) << " PRIVATE" << std::endl;
+
+        if (configuration._ApplyOptimizations)
+        {
+            file << "\t\t/LTCG:incremental" << std::endl;
+            file << "\t\t/INCREMENTAL:NO" << std::endl;
+        }
+
+        else
+        {
+            file << "\t\t/INCREMENTAL" << std::endl;
+        }
+
+        file << "\t)" << std::endl;
+
+        file << "endif()" << std::endl;
+        file << std::endl;
+
+        //Set GCC-specific flags.
+        file << "# Set GCC-specific flags." << std::endl;
+        file << "if (CMAKE_CXX_COMPILER_ID STREQUAL \"GNU\")" << std::endl;
+
+        //Add the compiler flags.
+        file << "\t# Set flags." << std::endl;
+        file << "\ttarget_compile_options(" << Utilities::RemoveSpaces(configuration._Name) << " PRIVATE" << std::endl;
+
+        //Always generate debug information.
+        file << "\t\t-g" << std::endl;
+
+        //Always support AVX2 instructions.
+        file << "\t\t-mavx2" << std::endl;
+
+        file << "\t)" << std::endl;
+
+        file << "endif()" << std::endl;
+        file << std::endl;
     }
-
-    file << ")" << std::endl;
-    file << std::endl;
-
-    //Set the runtime library.
-    file << "# Set the runtime library." << std::endl;
-    file << "set_property(TARGET " << Utilities::RemoveSpaces(parameters._ProjectName).c_str() << " PROPERTY MSVC_RUNTIME_LIBRARY" << std::endl;
-    file << "\t";
-
-    for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
-    {
-        file << "$<$<CONFIG:" << Utilities::RemoveSpaces(configuration._Name).c_str() << ">:" << configuration._RuntimeLibrary << ">";
-    }
-
-    file << std::endl;
-    file << ")" << std::endl;
-    file << std::endl;
-
-    //Set the sub system.
-    file << "# Set the sub system." << std::endl;
-    file << "set_property(TARGET " << Utilities::RemoveSpaces(parameters._ProjectName).c_str() << " PROPERTY WIN32_EXECUTABLE TRUE)" << std::endl;
-    file << std::endl;
 
     //Set up the Visual Studio filters.
     file << "# Set up the Visual Studio filters." << std::endl;
@@ -204,97 +304,6 @@ void GenerateCMake::Generate(const GenerateProjectParameters &parameters)
         file << "source_group(TREE \"${CMAKE_CURRENT_SOURCE_DIR}/" << Utilities::BackwardToForwardSlashes(directory._Path).c_str() << "\" PREFIX \"" << directory._Name.c_str() << "\" FILES ${" << Utilities::RemoveSpaces(directory._Name).c_str() << "_FILES})" << std::endl;
         file << std::endl;
     }
-
-    //Set MSVC-specific flags.
-    file << "# Set MSVC-specific flags." << std::endl;
-    file << "if (CMAKE_CXX_COMPILER_ID STREQUAL \"MSVC\")" << std::endl;
-
-    for (size_t configuration_index{ 0 }; configuration_index < parameters._Configurations.size(); ++configuration_index)
-    {
-        //Cache the configuration.
-        const GenerateProjectParameters::Configuration &configuration{ parameters._Configurations[configuration_index] };
-
-        //Figure out the names.
-        const std::string compiler_flags_name{ std::string("CMAKE_CXX_FLAGS_") + Utilities::ToUpperCase(Utilities::RemoveSpaces(configuration._Name)) };
-        const std::string linker_flags_name{ std::string("CMAKE_EXE_LINKER_FLAGS_") + Utilities::ToUpperCase(Utilities::RemoveSpaces(configuration._Name)) };
-
-        //Add the compiler flags.
-        file << "\t# Set compiler flags." << std::endl;
-        file << "\tset(" << compiler_flags_name << " \"";
-
-        //Always generate debug information.
-        file << "/Zi";
-
-        //Set optimizations.
-        if (configuration._ApplyOptimizations)
-        {
-            file << " /O2";
-            file << " /GL";
-        }
-
-        else
-        {
-            file << " /Od";
-        }
-
-        file << "\")" << std::endl;
-
-        //Add the linker flags.
-        file << "\t# Set linker flags." << std::endl;
-        file << "\tset(" << linker_flags_name << " \"/DEBUG";
-
-        if (configuration._ApplyOptimizations)
-        {
-            file << " /LTCG:incremental";
-            file << " /INCREMENTAL:NO";
-        }
-
-        else
-        {
-            file << " /INCREMENTAL";
-        }
-
-        file << "\")" << std::endl;
-
-        if (configuration_index < (parameters._Configurations.size() - 1))
-        {
-            file << std::endl;
-        }
-    }
-
-    file << "endif()" << std::endl;
-    file << std::endl;
-
-    //Set GCC-specific flags.
-    file << "# Set GCC-specific flags." << std::endl;
-    file << "if (CMAKE_CXX_COMPILER_ID STREQUAL \"GNU\")" << std::endl;
-
-    for (size_t configuration_index{ 0 }; configuration_index < parameters._Configurations.size(); ++configuration_index)
-    {
-        //Cache the configuration.
-        const GenerateProjectParameters::Configuration &configuration{ parameters._Configurations[configuration_index] };
-
-        //Figure out the names.
-        const std::string flags_name{ std::string("CMAKE_CXX_FLAGS_") + Utilities::ToUpperCase(Utilities::RemoveSpaces(configuration._Name)) };
-        //Add the compiler flags.
-        file << "\t# Set flags." << std::endl;
-        file << "\tset(" << flags_name << " \"";
-
-        //Always generate debug information.
-        file << "-g";
-
-        //Always support AVX2 instructions.
-        file << " -mavx2";
-
-        file << "\")" << std::endl;
-
-        if (configuration_index < (parameters._Configurations.size() - 1))
-        {
-            file << std::endl;
-        }
-    }
-
-    file << "endif()" << std::endl;
 
     //Close the file.
     file.close();
