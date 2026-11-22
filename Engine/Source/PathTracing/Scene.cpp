@@ -378,7 +378,7 @@ namespace PathTracing
 		{
 			return RadianceResult
 			{
-				true,
+				false,
 				Vector3<float32>(_MissRadiance._R, _MissRadiance._G, _MissRadiance._G),
 				_MissRadiance._A
 			};

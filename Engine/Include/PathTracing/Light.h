@@ -7,6 +7,9 @@
 #include <Math/General/RandomNumberGenerator.h>
 #include <Math/General/Vector.h>
 
+//Path tracing.
+#include <PathTracing/Transform.h>
+
 namespace PathTracing
 {
 
@@ -21,8 +24,9 @@ namespace PathTracing
 		/*
 		*	Default constructor.
 		*/
-		FORCE_INLINE Light(const Vector3<float32> &color, const float32 intensity) NOEXCEPT
+		FORCE_INLINE Light(const PathTracing::Transform &transform, const Vector3<float32> &color, const float32 intensity) NOEXCEPT
 			:
+			_Transform(transform),
 			_Color(color),
 			_Intensity(intensity)
 		{
@@ -51,6 +55,9 @@ namespace PathTracing
 		virtual NO_DISCARD Vector3<float32> RandomPoint(RandomNumberGenerator *const RESTRICT random_number_generator) const NOEXCEPT = 0;
 
 	protected:
+
+		//The transforrm.
+		PathTracing::Transform _Transform;
 
 		//The color.
 		Vector3<float32> _Color;

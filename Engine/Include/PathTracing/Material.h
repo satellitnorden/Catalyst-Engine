@@ -127,6 +127,14 @@ namespace PathTracing
 		}
 
 		/*
+		*	Sets the texture coordinate multiplier.
+		*/
+		FORCE_INLINE void SetTextureCoordinateMultiplier(const float32 value) NOEXCEPT
+		{
+			_TextureCoordinateMultiplier = value;
+		}
+
+		/*
 		*	Samples the albedo.
 		*/
 		FORCE_INLINE NO_DISCARD Vector3<float32> SampleAlbedo(const Vector2<float32> texture_coordinate) const NOEXCEPT
@@ -134,7 +142,7 @@ namespace PathTracing
 			//If we have a texture, use that.
 			if (_AlbedoTexture.GetWidth() > 0 && _AlbedoTexture.GetHeight() > 0)
 			{
-				return SampleConvert(_AlbedoTexture, texture_coordinate);
+				return SampleConvert(_AlbedoTexture, texture_coordinate * _TextureCoordinateMultiplier);
 			}
 
 			//Otherwise, use the constant value.
@@ -152,7 +160,7 @@ namespace PathTracing
 			//If we have a texture, use that.
 			if (_NormalMapTexture.GetWidth() > 0 && _NormalMapTexture.GetHeight() > 0)
 			{
-				return SampleConvert(_NormalMapTexture, texture_coordinate);
+				return SampleConvert(_NormalMapTexture, texture_coordinate * _TextureCoordinateMultiplier);
 			}
 
 			//Otherwise, use the constant value.
@@ -170,7 +178,7 @@ namespace PathTracing
 			//If we have a texture, use that.
 			if (_RoughnessTexture.GetWidth() > 0 && _RoughnessTexture.GetHeight() > 0)
 			{
-				return SampleConvert(_RoughnessTexture, texture_coordinate);
+				return SampleConvert(_RoughnessTexture, texture_coordinate * _TextureCoordinateMultiplier);
 			}
 
 			//Otherwise, use the constant value.
@@ -188,7 +196,7 @@ namespace PathTracing
 			//If we have a texture, use that.
 			if (_MetallicTexture.GetWidth() > 0 && _MetallicTexture.GetHeight() > 0)
 			{
-				return SampleConvert(_MetallicTexture, texture_coordinate);
+				return SampleConvert(_MetallicTexture, texture_coordinate * _TextureCoordinateMultiplier);
 			}
 
 			//Otherwise, use the constant value.
@@ -206,7 +214,7 @@ namespace PathTracing
 			//If we have a texture, use that.
 			if (_EmissiveRadianceTexture.GetWidth() > 0 && _EmissiveRadianceTexture.GetHeight() > 0)
 			{
-				return SampleConvert(_EmissiveRadianceTexture, texture_coordinate);
+				return SampleConvert(_EmissiveRadianceTexture, texture_coordinate * _TextureCoordinateMultiplier);
 			}
 
 			//Otherwise, use the constant value.
@@ -250,6 +258,9 @@ namespace PathTracing
 
 		//The emissive radiance texture.
 		Texture2D<Vector3<byte>> _EmissiveRadianceTexture;
+
+		//The texture coordinate multiplier.
+		float32 _TextureCoordinateMultiplier{ 1.0f };
 
 	};
 

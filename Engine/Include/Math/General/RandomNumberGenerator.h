@@ -99,6 +99,32 @@ public:
 	}
 
 	/*
+	*	Returns a random point in a sphere with the given radius.
+	*/
+	FORCE_INLINE NO_DISCARD Vector3<float32> RandomPointInSphere(const float32 radius = 1.0f) NOEXCEPT
+	{
+		const float32 u{ RandomFloat<float32>() };
+		const float32 v{ RandomFloat<float32>() };
+
+		const float32 theta{ u * 2.0f * BaseMathConstants::PI };
+		const float32 phi{ BaseMath::ArcCosine(2.0f * v - 1.0f) };
+
+		const float32 r{ BaseMath::CubeRoot(RandomFloat<float32>()) };
+
+		const float32 sin_theta{ BaseMath::Sine(theta) };
+		const float32 cos_theta{ BaseMath::Cosine(theta) };
+
+		const float32 sin_phi{ BaseMath::Sine(phi) };
+		const float32 cos_phi{ BaseMath::Cosine(phi) };
+
+		const float32 X{ r * sin_phi * cos_theta };
+		const float32 Y{ r * sin_phi * sin_theta };
+		const float32 Z{ r * cos_phi };
+
+		return Vector3<float32>(X, Y, Z) * radius;
+	}
+
+	/*
 	*	Returns a random point on a sphere with the given radius.
 	*/
 	FORCE_INLINE NO_DISCARD Vector3<float32> RandomPointOnSphere(const float32 radius = 1.0f) NOEXCEPT

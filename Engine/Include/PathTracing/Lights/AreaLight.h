@@ -22,11 +22,9 @@ namespace PathTracing
 		*/
 		AreaLight
 		(
+			const PathTracing::Transform &transform,
 			const Vector3<float32> &color,
-			const float32 intensity,
-			const Vector3<float32> &position,
-			const Quaternion &rotation,
-			const Vector2<float32> size
+			const float32 intensity
 		) NOEXCEPT;
 
 		/*
@@ -38,17 +36,6 @@ namespace PathTracing
 		*	Retrieves a random point on this light.
 		*/
 		NO_DISCARD Vector3<float32> RandomPoint(RandomNumberGenerator *const RESTRICT random_number_generator) const NOEXCEPT override;
-
-	private:
-
-		//The position.
-		Vector3<float32> _Position;
-
-		//The rotation.
-		Quaternion _Rotation;
-
-		//The size.
-		Vector2<float32> _Size;
 
 	};
 

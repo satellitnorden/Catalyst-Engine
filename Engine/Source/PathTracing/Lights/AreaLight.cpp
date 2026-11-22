@@ -9,17 +9,12 @@ namespace PathTracing
 	*/
 	AreaLight::AreaLight
 	(
+		const PathTracing::Transform &transform,
 		const Vector3<float32> &color,
-		const float32 intensity,
-		const Vector3<float32> &position,
-		const Quaternion &rotation,
-		const Vector2<float32> size
+		const float32 intensity
 	) NOEXCEPT
 		:
-		Light(color, intensity),
-		_Position(position),
-		_Rotation(rotation),
-		_Size(size)
+		Light(transform, color, intensity)
 	{
 
 	}
@@ -41,15 +36,15 @@ namespace PathTracing
 		//Calculate the offset.
 		Vector3<float32> offset
 		{
-			BaseMath::LinearlyInterpolate(-_Size._X * 0.5f, _Size._X * 0.5f, random_number_generator->RandomFloat<float32>()),
-			BaseMath::LinearlyInterpolate(-_Size._Y * 0.5f, _Size._Y * 0.5f, random_number_generator->RandomFloat<float32>()),
+			BaseMath::LinearlyInterpolate(-_Transform._Scale._X * 0.5f, _Transform._Scale._X * 0.5f, random_number_generator->RandomFloat<float32>()),
+			BaseMath::LinearlyInterpolate(-_Transform._Scale._Y * 0.5f, _Transform._Scale._Y * 0.5f, random_number_generator->RandomFloat<float32>()),
 			0.0f
 		};
 
-		offset = _Rotation * offset;
+		offset = _Transform._Rotation * offset;
 
 		//Return the random point.
-		return _Position + offset;
+		return _Transform._Position + offset;
 	}
 
 }
