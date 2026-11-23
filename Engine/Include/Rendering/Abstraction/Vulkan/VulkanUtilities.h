@@ -712,7 +712,20 @@ public:
 	/*
 	*	Transitions a Vulkan image to a layout.
 	*/
-	static void TransitionImageToLayout(VulkanCommandBuffer *const RESTRICT command_buffer, const VkAccessFlags sourceAccessMask, const VkAccessFlags destinationAccessMask, const VkImageAspectFlags aspectMask, const VkImageLayout oldLayout, const VkImageLayout newLayout, const uint32 mipLevels, const uint32 layerCount, const VkPipelineStageFlags sourceStageMask, const VkPipelineStageFlags destinationStageMask, VkImage& vulkanImage) NOEXCEPT
+	static void TransitionImageToLayout
+	(
+		VulkanCommandBuffer *const RESTRICT command_buffer,
+		const VkAccessFlags sourceAccessMask,
+		const VkAccessFlags destinationAccessMask,
+		const VkImageAspectFlags aspectMask,
+		const VkImageLayout oldLayout,
+		const VkImageLayout newLayout,
+		const uint32 mipLevels,
+		const uint32 layerCount,
+		const VkPipelineStageFlags sourceStageMask,
+		const VkPipelineStageFlags destinationStageMask,
+		VkImage &vulkanImage
+	) NOEXCEPT
 	{
 		//Create the image memory barrier.
 		VkImageMemoryBarrier imageMemoryBarrier;

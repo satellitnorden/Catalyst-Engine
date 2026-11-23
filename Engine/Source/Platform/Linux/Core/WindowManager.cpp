@@ -15,11 +15,15 @@
 //Third party.
 #include <Wayland/xdg-shell-client-protocol.h>
 #include <linux/input-event-codes.h>
-#include <EGL/egl.h>
-#include <EGL/eglext.h>
+#if defined(CATALYST_HAS_OPEN_GL)
+	#include <EGL/egl.h>
+	#include <EGL/eglext.h>
+#endif
 #include <errno.h>
 #include <poll.h>
-#include <wayland-egl.h>
+#if defined(CATALYST_HAS_OPEN_GL)
+	#include <wayland-egl.h>
+#endif
 
 //STD.
 #include <cstring>
@@ -44,6 +48,7 @@ public:
 	//The XDG top level.
 	xdg_toplevel *RESTRICT _XDGTopLevel{ nullptr };
 
+#if defined(CATALYST_HAS_OPEN_GL)
 	//The EGL window.
 	wl_egl_window *RESTRICT _EGLWindow{ nullptr };
 
@@ -55,6 +60,7 @@ public:
 
 	//The EGL surface.
 	EGLSurface _EGLSurface;
+#endif
 
 	//Denotes whether or not this window supports OpenGL.
 	bool _SupportsOpenGL{ false };
@@ -774,6 +780,7 @@ static constexpr xdg_toplevel_listener XDG_TOP_LEVEL_LISTENER
 	XDGTopLevelListenerWMCapabilities
 };
 
+#if defined(CATALYST_HAS_OPEN_GL)
 /*
 *	Creates an OpenGL window for the given window data. Returns if it succeeded.
 */
@@ -909,6 +916,7 @@ FORCE_INLINE NO_DISCARD bool CreateOpenGLWindow
 
 	return true;
 }
+#endif
 
 namespace Platform
 {
@@ -1112,11 +1120,13 @@ namespace Platform
 			}
 		}
 
+	#if defined(CATALYST_HAS_OPEN_GL)
 		//If this window is being asked to support OpenGL, set that up.
 		if (parameters._SupportOpenGL)
 		{
 			window_data->_SupportsOpenGL = CreateOpenGLWindow(parameters, window_data);
 		}
+	#endif
 
 		//Add the window data.
 		{
@@ -1243,6 +1253,7 @@ namespace Platform
 	{
 		ASSERT(SupportsOpenGL(window), "This window does not support OpenGL!");
 
+	#if defined(CATALYST_HAS_OPEN_GL)
 		//Cache the window data.
 		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
 
@@ -1254,6 +1265,7 @@ namespace Platform
 			window_data->_EGLSurface,
 			window_data->_EGLContext
 		);
+	#endif
 	}
 
 	/*
@@ -1263,11 +1275,13 @@ namespace Platform
 	{
 		ASSERT(SupportsOpenGL(window), "This window does not support OpenGL!");
 
+	#if defined(CATALYST_HAS_OPEN_GL)
 		//Cache the window data.
 		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
 
 		//Swap the buffers.
 		eglSwapBuffers(window_data->_EGLDisplay, window_data->_EGLSurface);
+	#endif
 	}
 
 	/*
