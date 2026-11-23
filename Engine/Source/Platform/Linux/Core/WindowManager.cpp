@@ -969,6 +969,7 @@ namespace Platform
 			{
 				fd.events |= POLLOUT;
 			}
+			
 			const int32 poll_result{ poll(&fd, 1, 0) };
 
 			if (poll_result < 0)
