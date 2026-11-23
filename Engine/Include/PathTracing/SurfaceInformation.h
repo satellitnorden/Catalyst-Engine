@@ -99,5 +99,34 @@ namespace PathTracing
 			_EmissiveRadiance = material->SampleEmissiveRadiance(_TextureCoordinate);
 		}
 
+		/*
+		*	Returns if this surface information is valid.
+		*/
+		FORCE_INLINE NO_DISCARD bool IsValid() const NOEXCEPT
+		{
+			if (BaseMath::IsNaN(_GeometryNormal._X)
+				|| BaseMath::IsNaN(_GeometryNormal._Y)
+				|| BaseMath::IsNaN(_GeometryNormal._Z))
+			{
+				return false;
+			}
+
+			if (BaseMath::IsNaN(_Tangent._X)
+				|| BaseMath::IsNaN(_Tangent._Y)
+				|| BaseMath::IsNaN(_Tangent._Z))
+			{
+				return false;
+			}
+
+			if (BaseMath::IsNaN(_ShadingNormal._X)
+				|| BaseMath::IsNaN(_ShadingNormal._Y)
+				|| BaseMath::IsNaN(_ShadingNormal._Z))
+			{
+				return false;
+			}
+
+			return true;
+		}
+
 	};
 }

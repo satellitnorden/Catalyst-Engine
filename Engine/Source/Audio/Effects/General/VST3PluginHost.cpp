@@ -465,9 +465,9 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 }
 
 /*
-*	Sets a parameter (normalized) with the given identifier. Returns if it succeeded.
+*	Returns the parameter (plain) with the given identifier. Returns if it succeeded.
 */
-NO_DISCARD bool VST3PluginHost::SetParameterNormalized(const HashString identifier, const float64 value) NOEXCEPT
+NO_DISCARD bool VST3PluginHost::GetParameterPlain(const HashString identifier, float64 *const RESTRICT value) NOEXCEPT
 {
 	//Can't set parameters if we're not initialized.
 	if (!_Initialized)
@@ -488,18 +488,17 @@ NO_DISCARD bool VST3PluginHost::SetParameterNormalized(const HashString identifi
 		return false;
 	}
 
-	//Set the value.
-	if (implementation->_EditController->setParamNormalized(parameter->_FormatIdentifier._uint32, value) != Steinberg::kResultOk)
-	{
-		ASSERT(false, "Could not set parameter value!");
+	//Retrieve the parameter value.
+	const Steinberg::Vst::ParamValue parameter_value{ implementation->_EditController->getParamNormalized(parameter->_FormatIdentifier._uint32) };
 
-		return false;
-	}
+	//Convert to plain.
+	const Steinberg::Vst::ParamValue plain_parameter_value{ implementation->_EditController->normalizedParamToPlain(parameter->_FormatIdentifier._uint32, parameter_value) };
 
-	else
-	{
-		return true;
-	}
+	//Write the value!
+	*value = plain_parameter_value;
+
+	//Return success.
+	return true;
 }
 
 /*
@@ -531,6 +530,78 @@ NO_DISCARD bool VST3PluginHost::SetParameterPlain(const HashString identifier, c
 
 	//Set the value.
 	if (implementation->_EditController->setParamNormalized(parameter->_FormatIdentifier._uint32, normalized_value) != Steinberg::kResultOk)
+	{
+		ASSERT(false, "Could not set parameter value!");
+
+		return false;
+	}
+
+	else
+	{
+		return true;
+	}
+}
+
+/*
+*	Returns the parameter (normalized) with the given identifier. Returns if it succeeded.
+*/
+NO_DISCARD bool VST3PluginHost::GetParameterNormalized(const HashString identifier, float64 *const RESTRICT value) NOEXCEPT
+{
+	//Can't set parameters if we're not initialized.
+	if (!_Initialized)
+	{
+		return false;
+	}
+
+	//Cache the implementation.
+	VST3PluginHostImplementation *const RESTRICT implementation{ Implementation() };
+
+	//Find the parameter.
+	const Parameter *const RESTRICT parameter{ FindParameter(identifier) };
+
+	if (!parameter)
+	{
+		ASSERT(false, "Could not find parameter!");
+
+		return false;
+	}
+
+	//Retrieve the parameter value.
+	const Steinberg::Vst::ParamValue parameter_value{ implementation->_EditController->getParamNormalized(parameter->_FormatIdentifier._uint32) };
+
+	//Write the value!
+	*value = parameter_value;
+
+	//Return success.
+	return true;
+}
+
+/*
+*	Sets a parameter (normalized) with the given identifier. Returns if it succeeded.
+*/
+NO_DISCARD bool VST3PluginHost::SetParameterNormalized(const HashString identifier, const float64 value) NOEXCEPT
+{
+	//Can't set parameters if we're not initialized.
+	if (!_Initialized)
+	{
+		return false;
+	}
+
+	//Cache the implementation.
+	VST3PluginHostImplementation *const RESTRICT implementation{ Implementation() };
+
+	//Find the parameter.
+	const Parameter *const RESTRICT parameter{ FindParameter(identifier) };
+
+	if (!parameter)
+	{
+		ASSERT(false, "Could not find parameter!");
+
+		return false;
+	}
+
+	//Set the value.
+	if (implementation->_EditController->setParamNormalized(parameter->_FormatIdentifier._uint32, value) != Steinberg::kResultOk)
 	{
 		ASSERT(false, "Could not set parameter value!");
 
@@ -709,7 +780,20 @@ NO_DISCARD bool VST3PluginHost::SetState(StreamArchive *const RESTRICT stream_ar
 	bit_stream.SetStreamArchive(stream_archive);
 
 	//Set the component state.
-	return implementation->_AudioEffectComponent->setState(&bit_stream) == Steinberg::kResultOk;
+	const bool succeeded{ implementation->_AudioEffectComponent->setState(&bit_stream) == Steinberg::kResultOk };
+
+	//If we succeeded, cache the current parameter values, as the state most likely contained changes to them.
+	if (succeeded)
+	{
+		CacheCurrentParameterValues();
+
+		return true;
+	}
+
+	else
+	{
+		return false;
+	}
 }
 
 /*
@@ -1076,6 +1160,18 @@ NO_DISCARD bool VST3PluginHost::DestroyEditController() NOEXCEPT
 
 	//There's nothing that can fail here really, so just return true.
 	return true;
+}
+
+/*
+*	Caches the current parameter values.
+*/
+void VST3PluginHost::CacheCurrentParameterValues() NOEXCEPT
+{
+	for (Parameter &parameter : _Parameters)
+	{
+		GetParameterPlain(parameter._Identifier, &parameter._CurrentPlainValue);
+		GetParameterNormalized(parameter._Identifier, &parameter._CurrentNormalizedValue);
+	}
 }
 
 /*

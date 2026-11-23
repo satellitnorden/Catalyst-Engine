@@ -31,6 +31,23 @@ NO_DISCARD bool ModelFile::IsValid() const NOEXCEPT
 		{
 			return false;
 		}
+
+		for (const Vertex &vertex : mesh._Vertices)
+		{
+			if (BaseMath::IsNaN(vertex._Normal._X)
+				|| BaseMath::IsNaN(vertex._Normal._Y)
+				|| BaseMath::IsNaN(vertex._Normal._Z))
+			{
+				return false;
+			}
+
+			if (BaseMath::IsNaN(vertex._Tangent._X)
+				|| BaseMath::IsNaN(vertex._Tangent._Y)
+				|| BaseMath::IsNaN(vertex._Tangent._Z))
+			{
+				return false;
+			}
+		}
 	}
 
 	return true;

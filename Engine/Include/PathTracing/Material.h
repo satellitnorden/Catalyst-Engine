@@ -127,6 +127,14 @@ namespace PathTracing
 		}
 
 		/*
+		*	Sets the emissive radiance intensity.
+		*/
+		FORCE_INLINE void SetEmissiveRadianceIntensity(const float32 value) NOEXCEPT
+		{
+			_EmissiveRadianceIntensity = value;
+		}
+
+		/*
 		*	Sets the texture coordinate multiplier.
 		*/
 		FORCE_INLINE void SetTextureCoordinateMultiplier(const float32 value) NOEXCEPT
@@ -214,13 +222,13 @@ namespace PathTracing
 			//If we have a texture, use that.
 			if (_EmissiveRadianceTexture.GetWidth() > 0 && _EmissiveRadianceTexture.GetHeight() > 0)
 			{
-				return SampleConvert(_EmissiveRadianceTexture, texture_coordinate * _TextureCoordinateMultiplier);
+				return SampleConvert(_EmissiveRadianceTexture, texture_coordinate * _TextureCoordinateMultiplier) * _EmissiveRadianceIntensity;
 			}
 
 			//Otherwise, use the constant value.
 			else
 			{
-				return _EmissiveRadianceValue;
+				return _EmissiveRadianceValue * _EmissiveRadianceIntensity;
 			}
 		}
 
@@ -258,6 +266,9 @@ namespace PathTracing
 
 		//The emissive radiance texture.
 		Texture2D<Vector3<byte>> _EmissiveRadianceTexture;
+
+		//The emissive radiance intensity.
+		float32 _EmissiveRadianceIntensity{ 1.0f };
 
 		//The texture coordinate multiplier.
 		float32 _TextureCoordinateMultiplier{ 1.0f };

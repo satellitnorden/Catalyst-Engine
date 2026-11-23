@@ -16,7 +16,9 @@
 #include <Rendering/Abstraction/OpenGL/OpenGL.h>
 
 //Third party.
-#include <gl/wglext.h>
+#if (CATALYST_HAS_OPEN_GL)
+	#include <gl/wglext.h>
+#endif
 
 /*
 *	Window data class definition.

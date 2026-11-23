@@ -62,17 +62,27 @@ public:
 	/*
 	*	Initializes this plugin host. Returns if it succeeded.
 	*/
-	virtual NO_DISCARD bool Initialize(const char* const RESTRICT plugin_file_path) NOEXCEPT = 0;
+	virtual NO_DISCARD bool Initialize(const char *const RESTRICT plugin_file_path) NOEXCEPT = 0;
 
 	/*
-	*	Sets a parameter (normalized) with the given identifier. Returns if it succeeded.
+	*	Returns the parameter (plain) with the given identifier. Returns if it succeeded.
 	*/
-	virtual NO_DISCARD bool SetParameterNormalized(const HashString identifier, const float64 value) NOEXCEPT = 0;
+	virtual NO_DISCARD bool GetParameterPlain(const HashString identifier, float64 *const RESTRICT value) NOEXCEPT = 0;
 
 	/*
 	*	Sets a parameter (plain) with the given identifier. Returns if it succeeded.
 	*/
 	virtual NO_DISCARD bool SetParameterPlain(const HashString identifier, const float64 value) NOEXCEPT = 0;
+
+	/*
+	*	Returns the parameter (normalized) with the given identifier. Returns if it succeeded.
+	*/
+	virtual NO_DISCARD bool GetParameterNormalized(const HashString identifier, float64 *const RESTRICT value) NOEXCEPT = 0;
+
+	/*
+	*	Sets a parameter (normalized) with the given identifier. Returns if it succeeded.
+	*/
+	virtual NO_DISCARD bool SetParameterNormalized(const HashString identifier, const float64 value) NOEXCEPT = 0;
 
 	/*
 	*	Shows the UI. Returns if it succeeded.

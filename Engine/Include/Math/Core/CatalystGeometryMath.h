@@ -47,7 +47,10 @@ public:
 		const float d20{ Vector3<float>::DotProduct(v2, v0) };
 		const float d21{ Vector3<float>::DotProduct(v2, v1) };
 
-		const float denom{ 1.0f / (d00 * d11 - d01 * d01) };
+		const Vector3<float32> cross{ Vector3<float32>::CrossProduct(v0, v1) };
+		const float32 determinant{ Vector3<float32>::DotProduct(cross, cross) };
+
+		const float denom{ 1.0f / determinant };
 
 		Vector3<float32> output;
 

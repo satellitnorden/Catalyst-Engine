@@ -7,6 +7,7 @@
 
 //Rendering.
 #include <Rendering/Native/Shader/CatalystToneMapping.h>
+#include <Rendering/Native/ToneMapper.h>
 
 //Systems.
 #include <Systems/LogSystem.h>
@@ -261,6 +262,8 @@ namespace PathTracing
 
 		if (_AccelerationStructure.TraceSurface(ray, &surface_information))
 		{
+			ASSERT(surface_information.IsValid(), "Surface information is not valid!");
+
 			//Calculate the offset hit position.
 			const Vector3<float32> offset_hit_position{ OffsetHitPosition(surface_information._HitPosition, surface_information._GeometryNormal) };
 
@@ -458,7 +461,7 @@ namespace PathTracing
 					texture->At(X, Y)._B
 				};
 
-				tonemapped = CatalystToneMapping::ApplyToneMapping(tonemapped);
+				tonemapped = ToneMapper::AgX(tonemapped);
 
 				texture->At(X, Y)._R = tonemapped._R;
 				texture->At(X, Y)._G = tonemapped._G;

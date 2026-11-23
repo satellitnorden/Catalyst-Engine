@@ -13,7 +13,6 @@ namespace UI
 	SwitchWidget::SwitchWidget() NOEXCEPT
 	{
 		//Set up the clickable interface.
-		//Set up the clickable interface.
 		_ClickableInterface._IsInside = [](const Widget *const RESTRICT widget, ClickableInterface *const RESTRICT clickable_interface, const Vector2<float32> position)
 		{
 			//Cache the switch widget.
@@ -314,25 +313,7 @@ namespace UI
 		//Make it square if we have texture indices.
 		if (_HasTextureIndices)
 		{
-			const Vector2<float32> dimensions{ switch_bounding_box.Dimensions() };
-
-			if (dimensions._X > dimensions._Y)
-			{
-				const float32 difference{ dimensions._X - dimensions._Y };
-				const float32 half_difference{ difference * 0.5f };
-
-				switch_bounding_box._Minimum._X += half_difference;
-				switch_bounding_box._Maximum._X -= half_difference;
-			}
-
-			else if (dimensions._Y > dimensions._X)
-			{
-				const float32 difference{ dimensions._Y - dimensions._X };
-				const float32 half_difference{ difference * 0.5f };
-
-				switch_bounding_box._Minimum._Y += half_difference;
-				switch_bounding_box._Maximum._Y -= half_difference;
-			}
+			switch_bounding_box.MinimizeToSquare();
 		}
 
 		return switch_bounding_box;

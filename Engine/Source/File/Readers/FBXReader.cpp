@@ -695,6 +695,9 @@ NO_DISCARD bool FBXReader::Read(const char *const RESTRICT file_path, ModelFile 
 	//Post process the model file.
 	model_file->PostProcess();
 
+	//Sanity check that the model file is valid.
+	ASSERT(model_file->IsValid(), "Model file is not valid!");
+
 	//Return that the read succeeded!
 	return true;
 }

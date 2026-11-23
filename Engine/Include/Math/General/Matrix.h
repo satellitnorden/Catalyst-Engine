@@ -75,6 +75,21 @@ public:
 	}
 
 	/*
+	*	Constructor taking all values as arguments.
+	*/
+	FORCE_INLINE constexpr Matrix3x3
+	(
+		const float32 _0_0, const float32 _0_1, const float32 _0_2,
+		const float32 _1_0, const float32 _1_1, const float32 _1_2,
+		const float32 _2_0, const float32 _2_1, const float32 _2_2
+	) NOEXCEPT
+		:
+		_Matrix{ { _0_0, _0_1, _0_2 }, { _1_0, _1_1, _1_2 }, { _2_0, _2_1, _2_2 } }
+	{
+
+	}
+
+	/*
 	*	Constructor taking the three vectors as arguments.
 	*/
 	FORCE_INLINE constexpr Matrix3x3(const Vector3<float> &first, const Vector3<float> &second, const Vector3<float> &third) NOEXCEPT
