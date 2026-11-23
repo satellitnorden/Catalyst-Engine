@@ -21,6 +21,8 @@ namespace Platform
     static void AddOpenGLLibraries(std::vector<std::string> *library_includes)
     {
         library_includes->emplace_back("GL.a");
+        library_includes->emplace_back("EGL.a");
+        library_includes->emplace_back("wayland-egl.a");
     }
 
     /*

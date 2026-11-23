@@ -6,11 +6,20 @@
 #include <Concurrency/ScopedLock.h>
 #include <Concurrency/SpinLock.h>
 
+//Rendering.
+#include <Rendering/Abstraction/OpenGL/OpenGL.h>
+
+//Systems.
+#include <Systems/LogSystem.h>
+
 //Third party.
 #include <Wayland/xdg-shell-client-protocol.h>
 #include <linux/input-event-codes.h>
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
 #include <errno.h>
 #include <poll.h>
+#include <wayland-egl.h>
 
 //STD.
 #include <cstring>
@@ -34,6 +43,21 @@ public:
 
 	//The XDG top level.
 	xdg_toplevel *RESTRICT _XDGTopLevel{ nullptr };
+
+	//The EGL window.
+	wl_egl_window *RESTRICT _EGLWindow{ nullptr };
+
+	//The EGL display.
+	EGLDisplay _EGLDisplay;
+
+	//The EGL context.
+	EGLContext _EGLContext;
+
+	//The EGL surface.
+	EGLSurface _EGLSurface;
+
+	//Denotes whether or not this window supports OpenGL.
+	bool _SupportsOpenGL{ false };
 
 	//The final resolution.
 	Resolution _FinalResolution;
@@ -750,6 +774,141 @@ static constexpr xdg_toplevel_listener XDG_TOP_LEVEL_LISTENER
 	XDGTopLevelListenerWMCapabilities
 };
 
+/*
+*	Creates an OpenGL window for the given window data. Returns if it succeeded.
+*/
+FORCE_INLINE NO_DISCARD bool CreateOpenGLWindow
+(
+	const Platform::WindowManager::CreateParameters &parameters,
+	WindowData *const RESTRICT window_data
+) NOEXCEPT
+{
+	//Create the EGL window.
+	window_data->_EGLWindow = wl_egl_window_create(window_data->_Surface, parameters._Resolution._Width, parameters._Resolution._Height);
+
+	if (!window_data->_EGLWindow)
+	{
+		return false;
+	}
+
+	//Create the EGL display.
+	window_data->_EGLDisplay = eglGetDisplay(_WaylandContext._Display);
+
+	if (window_data->_EGLDisplay == EGL_NO_DISPLAY)
+	{
+		return false;
+	}
+
+	//Initialize EGL.
+	EGLint major_version;
+	EGLint minor_version;
+
+	if (!eglInitialize(window_data->_EGLDisplay, &major_version, &minor_version))
+	{
+		return false;
+	}
+
+	LOG_INFORMATION("Initialized EGL with version %i.%i", major_version, minor_version);
+
+	//Choose the config.
+	constexpr EGLint CONFIG_ATTRIBUTES[]
+	{
+		EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+		EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
+
+		EGL_RED_SIZE, 8,
+		EGL_GREEN_SIZE, 8,
+		EGL_BLUE_SIZE, 8,
+		EGL_ALPHA_SIZE, 8,
+
+		EGL_DEPTH_SIZE, 24,
+		EGL_STENCIL_SIZE, 8,
+
+		EGL_NONE
+	};
+
+	EGLConfig chosen_config;
+	EGLint number_of_configs;
+
+	if
+	(	!eglChooseConfig
+		(
+			window_data->_EGLDisplay,
+			CONFIG_ATTRIBUTES,
+			&chosen_config,
+			1,
+			&number_of_configs
+		)
+		||
+		number_of_configs == 0
+	)
+	{
+		return false;
+	}
+
+	//Bind the API.
+	if (eglBindAPI(EGL_OPENGL_API) == EGL_FALSE)
+	{
+		return false;
+	}
+
+	//Create the EGL context.
+	constexpr EGLint CONTEXT_ATTRIBUTES[]
+	{
+		EGL_CONTEXT_MAJOR_VERSION, 3,
+		EGL_CONTEXT_MINOR_VERSION, 3,
+		EGL_CONTEXT_OPENGL_PROFILE_MASK, EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
+
+		EGL_NONE
+	};
+
+	window_data->_EGLContext = eglCreateContext
+	(
+		window_data->_EGLDisplay,
+		chosen_config,
+		EGL_NO_CONTEXT,
+		CONTEXT_ATTRIBUTES
+	);
+
+	if (window_data->_EGLContext == EGL_NO_CONTEXT)
+	{
+		return false;
+	}
+
+	//Create the EGL surface.
+	window_data->_EGLSurface = eglCreateWindowSurface
+	(
+		window_data->_EGLDisplay,
+		chosen_config,
+		reinterpret_cast<NativeWindowType>(window_data->_EGLWindow),
+		nullptr
+	);
+
+	if (window_data->_EGLSurface == EGL_NO_SURFACE)
+	{
+		return false;
+	}
+
+	//Set the current context.
+	if
+	(
+		!eglMakeCurrent
+		(
+			window_data->_EGLDisplay,
+			window_data->_EGLSurface,
+			window_data->_EGLSurface,
+			window_data->_EGLContext
+		)
+	)
+	{
+		return false;
+	}
+
+	//Retrieve the function pointers for OpenGL.
+	OpenGL::RetrieveOpenGLFunctionPointers();
+
+	return true;
+}
 
 namespace Platform
 {
@@ -952,6 +1111,12 @@ namespace Platform
 			}
 		}
 
+		//If this window is being asked to support OpenGL, set that up.
+		if (parameters._SupportOpenGL)
+		{
+			window_data->_SupportsOpenGL = CreateOpenGLWindow(parameters, window_data);
+		}
+
 		//Add the window data.
 		{
 			SCOPED_LOCK(_WindowDataLock);
@@ -1063,7 +1228,11 @@ namespace Platform
 	*/
 	NO_DISCARD bool WindowManager::SupportsOpenGL(const WindowHandle window) NOEXCEPT
 	{
-		return false;
+		//Cache the window data.
+		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
+
+		//Return if this window supports OpenGL.
+		return window_data->_SupportsOpenGL;
 	}
 
 	/*
@@ -1072,6 +1241,18 @@ namespace Platform
 	void WindowManager::PrepareOpenGL(const WindowHandle window) NOEXCEPT
 	{
 		ASSERT(SupportsOpenGL(window), "This window does not support OpenGL!");
+
+		//Cache the window data.
+		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
+
+		//Set the current context.
+		eglMakeCurrent
+		(
+			window_data->_EGLDisplay,
+			window_data->_EGLSurface,
+			window_data->_EGLSurface,
+			window_data->_EGLContext
+		);
 	}
 
 	/*
@@ -1080,6 +1261,12 @@ namespace Platform
 	void WindowManager::FinalizeOpenGL(const WindowHandle window) NOEXCEPT
 	{
 		ASSERT(SupportsOpenGL(window), "This window does not support OpenGL!");
+
+		//Cache the window data.
+		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
+
+		//Swap the buffers.
+		eglSwapBuffers(window_data->_EGLDisplay, window_data->_EGLSurface);
 	}
 
 	/*
