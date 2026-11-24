@@ -140,7 +140,7 @@ void GenerateVisualStudioSolution::GenerateProjectFile(const GenerateProjectPara
             }
 
             file << "\t\t<UseDebugLibraries>" << (configuration._UseDebugLibraries ? "true" : "false") << "</UseDebugLibraries>" << std::endl;
-            file << "\t\t<PlatformToolset>v143</PlatformToolset>" << std::endl;
+            file << "\t\t<PlatformToolset>v145</PlatformToolset>" << std::endl;
             file << "\t\t<CharacterSet>MultiByte</CharacterSet>" << std::endl;
             file << "\t\t<WholeProgramOptimization>true</WholeProgramOptimization>" << std::endl;
             file << "\t\t<PreferredToolArchitecture>x64</PreferredToolArchitecture>" << std::endl;

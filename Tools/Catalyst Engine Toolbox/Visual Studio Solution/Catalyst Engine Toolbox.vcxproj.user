@@ -9,5 +9,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LocalDebuggerCommandArguments>generate_projects</LocalDebuggerCommandArguments>
     <RemoteDebuggerCommandArguments>generate_projects</RemoteDebuggerCommandArguments>
+    <LocalDebuggerCommandArgumentsHistory>generate_projects|</LocalDebuggerCommandArgumentsHistory>
   </PropertyGroup>
 </Project>
