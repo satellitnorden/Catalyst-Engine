@@ -34,6 +34,9 @@
 //Terrain.
 #include <Terrain/TerrainVertex.h>
 
+//STD.
+#include <cstddef>
+
 //Push constant data struct definitions.
 struct ModelDepthPushConstantData
 {

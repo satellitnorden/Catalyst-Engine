@@ -10,6 +10,9 @@
 //Rendering.
 #include <Rendering/Native/RenderingUtilities.h>
 
+//STD.
+#include <cstring>
+
 /*
 *	Returns if this model file is valid.
 */
@@ -68,7 +71,7 @@ void ModelFile::PostProcess() NOEXCEPT
 			nullptr,
 			[](const void *const RESTRICT user_data, const ModelFile::Mesh *const RESTRICT A, const ModelFile::Mesh *const RESTRICT B)
 			{
-				return strcmp(A->_Name.Data(), B->_Name.Data()) < 0;
+				return std::strcmp(A->_Name.Data(), B->_Name.Data()) < 0;
 			}
 		);
 	}

@@ -20,6 +20,9 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/WorldSystem.h>
 
+//STD.
+#include <cstddef>
+
 //Shadows systems constants.
 namespace ShadowsSystemConstants
 {

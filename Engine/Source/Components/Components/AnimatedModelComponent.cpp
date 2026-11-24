@@ -12,6 +12,9 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/WorldSystem.h>
 
+//STD.
+#include <cstddef>
+
 /*
 *	Animated model push constant data.
 */
