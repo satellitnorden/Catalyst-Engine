@@ -136,15 +136,8 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 		return false;
 	}
 
-	//Retrieve the init module function.
-	InitModuleProc init_module_function{ reinterpret_cast<InitModuleProc>(implementation->_DynamicLibrary.GetSymbol("InitDll")) };
-
-	if (!init_module_function)
-	{
-		init_module_function = reinterpret_cast<InitModuleProc>(implementation->_DynamicLibrary.GetSymbol("ModuleEntry"));
-	}
-
-	if (init_module_function && !init_module_function())
+	//Try to initialize the dynamic library.
+	if (!implementation->_DynamicLibrary.Initialize())
 	{
 		ASSERT(false, "Could not initialize the module!");
 		Terminate();
@@ -297,8 +290,8 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 
 					VST3::Utilities::ConvertString128(parameter_info.title, &new_parameter._Name);
 					new_parameter._Identifier = HashString(new_parameter._Name.Data());
-					new_parameter._DefaultNormalizedValue = new_parameter._CurrentNormalizedValue = parameter_info.defaultNormalizedValue;
 					new_parameter._DefaultPlainValue = new_parameter._CurrentPlainValue = implementation->_EditController->normalizedParamToPlain(parameter_info.id, parameter_info.defaultNormalizedValue);
+					new_parameter._DefaultNormalizedValue = new_parameter._CurrentNormalizedValue = parameter_info.defaultNormalizedValue;
 					new_parameter._FormatIdentifier._uint32 = parameter_info.id;
 				}
 			}

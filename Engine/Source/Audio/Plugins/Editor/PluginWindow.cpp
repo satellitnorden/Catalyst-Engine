@@ -6,18 +6,6 @@ namespace Audio
 {
 
 	/*
-	*	Sets the update function.
-	*/
-	void PluginWindow::SetUpdateFunction(const UpdateFunction function, void *const RESTRICT arguments) NOEXCEPT
-	{
-		//Set the update function.
-		_UpdateFunction = function;
-
-		//Set the update arguments.
-		_UpdateArguments = arguments;
-	}
-
-	/*
 	*	Initializes this plugin window.
 	*/
 	void PluginWindow::Initialize(const Resolution resolution, void *const RESTRICT parent_window) NOEXCEPT
@@ -62,7 +50,7 @@ namespace Audio
 		Platform::WindowManager::AddMouseMoveCallback
 		(
 			_Window,
-			[](const Vector2<float32> position, void* const RESTRICT user_data)
+			[](const Vector2<float32> position, void *const RESTRICT user_data)
 			{
 				MouseState *const RESTRICT mouse_state{ static_cast<MouseState *const RESTRICT>(user_data) };
 
@@ -169,20 +157,7 @@ namespace Audio
 	*	Shows this plugin window.
 	*/
 	void PluginWindow::Show()
-	{
-		//Add the timer.
-		_TimerIdentifier = Platform::WindowManager::AddTimerCallback
-		(
-			_Window,
-			1,
-			[](void *const RESTRICT arguments)
-			{
-				PluginWindow *const RESTRICT plugin_window{ static_cast<PluginWindow *const RESTRICT>(arguments) };
-				plugin_window->_UpdateFunction(plugin_window->_UpdateArguments);
-			},
-			this
-		);
-		
+	{		
 		//Show the window.
 		Platform::WindowManager::Show(_Window);
 	}
@@ -191,11 +166,7 @@ namespace Audio
 	*	Hides this plugin window.
 	*/
 	void PluginWindow::Hide()
-	{
-		//Remove the timer.
-		Platform::WindowManager::RemoveTimerCallback(_Window, _TimerIdentifier);
-		_TimerIdentifier = UINT64_MAXIMUM;
-		
+	{		
 		//Hide the window.
 		Platform::WindowManager::Hide(_Window);
 	}
@@ -218,6 +189,8 @@ namespace Audio
 	*/
 	void PluginWindow::PrepareRendering() NOEXCEPT
 	{
+		Platform::WindowManager::Update(_Window);
+
 		if (!Platform::WindowManager::SupportsOpenGL(_Window))
 		{
 			return;

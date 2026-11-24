@@ -40,8 +40,9 @@ namespace Platform
 
 		/*
 		*	Updates the window manager.
+		*	Can optionally specify a specific window handle to update, otherwise will update all managed windows.
 		*/
-		static void Update() NOEXCEPT;
+		static void Update(const WindowHandle window) NOEXCEPT;
 
 		/*
 		*	Terminates the window manager.

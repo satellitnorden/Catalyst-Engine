@@ -931,8 +931,9 @@ namespace Platform
 
 	/*
 	*	Updates the window manager.
+	*	Can optionally specify a specific window handle to update, otherwise will update all managed windows.
 	*/
-	void WindowManager::Update() NOEXCEPT
+	void WindowManager::Update(const WindowHandle window) NOEXCEPT
 	{
 		//Dispatch the display.
 		if (_WaylandContext._Display)

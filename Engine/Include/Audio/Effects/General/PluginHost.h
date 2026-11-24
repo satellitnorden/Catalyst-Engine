@@ -31,17 +31,17 @@ public:
 		//The name.
 		StaticString<128> _Name;
 
-		//The default normalized value.
-		float64 _DefaultNormalizedValue;
-
-		//The current normalized value.
-		float64 _CurrentNormalizedValue;
-
 		//The default plain value.
 		float64 _DefaultPlainValue;
 
 		//The current plain value.
 		float64 _CurrentPlainValue;
+
+		//The default normalized value.
+		float64 _DefaultNormalizedValue;
+
+		//The current normalized value.
+		float64 _CurrentNormalizedValue;
 
 		//The format identifier - Different formats (.vst3, .clap etc) stores identifiers differently, so support them all.
 		union

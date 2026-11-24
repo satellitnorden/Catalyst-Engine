@@ -809,34 +809,46 @@ namespace Platform
 
 	/*
 	*	Updates the window manager.
+	*	Can optionally specify a specific window handle to update, otherwise will update all managed windows.
 	*/
-	void WindowManager::Update() NOEXCEPT
+	void WindowManager::Update(const WindowHandle window) NOEXCEPT
 	{
+		//Cache the window data.
+		WindowData *const RESTRICT window_data{ window != INVALID_WINDOW_HANDLE ? static_cast<WindowData *const RESTRICT>(window) : nullptr };
+
 		//Dispatch messages.
 		MSG message;
 
-		while (PeekMessage(&message, NULL, 0, 0, PM_REMOVE) > 0)
+		while (PeekMessage(&message, window_data ? window_data->_Handle : NULL, 0, 0, PM_REMOVE) > 0)
 		{
 			TranslateMessage(&message);
 			DispatchMessage(&message);
 		}
 
 		//We want mouse move events to be able to be sent even outside the window, so can't rely on the window procedure, need to query that explicitly.
-		for (WindowData *const RESTRICT window_data : _WindowData)
+		if (window_data)
 		{
-			//Only update for focused windows.
-			if (!window_data->_Focused)
-			{
-				continue;
-			}
-
-			//If this window has no mouse move callbacks added, no need to query the mouse position.
-			if (window_data->_Callbacks._NumberOfMouseMoveCallbacks == 0)
-			{
-				continue;
-			}
-
 			UpdateMouseStateForWindowData(window_data);
+		}
+		
+		else
+		{
+			for (WindowData *const RESTRICT _window_data : _WindowData)
+			{
+				//Only update for focused windows.
+				if (!_window_data->_Focused)
+				{
+					continue;
+				}
+
+				//If this window has no mouse move callbacks added, no need to query the mouse position.
+				if (_window_data->_Callbacks._NumberOfMouseMoveCallbacks == 0)
+				{
+					continue;
+				}
+
+				UpdateMouseStateForWindowData(_window_data);
+			}
 		}
 	}
 

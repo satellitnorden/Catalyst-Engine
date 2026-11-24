@@ -15,7 +15,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan semaphore.
 	*/
-	const VkSemaphore& Get() const NOEXCEPT { return _VulkanSemaphore; }
+	const VkSemaphore &Get() const NOEXCEPT { return _VulkanSemaphore; }
 
 	/*
 	*	Initializes this Vulkan semaphore.

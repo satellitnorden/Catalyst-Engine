@@ -45,6 +45,30 @@ namespace Platform
 		}
 
 		/*
+		*	Initializes this dynamic library.
+		*/
+		FORCE_INLINE NO_DISCARD bool Initialize() NOEXCEPT
+		{
+			//Type aliases.
+			using InitModuleProc = bool(*)();
+
+			//Try to call the 'InitDll' symbol.
+			if (InitModuleProc symbol{ reinterpret_cast<InitModuleProc>(GetSymbol("InitDll")) })
+			{
+				return symbol();
+			}
+
+			//Try to call the 'ModuleEntry' symbol.
+			if (InitModuleProc symbol{ reinterpret_cast<InitModuleProc>(GetSymbol("ModuleEntry")) })
+			{
+				return symbol();
+			}
+
+			//Otherwise, this dynamic library may not expose an entry function, assume it succeeds.
+			return true;
+		}
+
+		/*
 		*	Returns a pointer to the given symbol.
 		*/
 		FORCE_INLINE NO_DISCARD void *const RESTRICT GetSymbol(const char *const RESTRICT name) NOEXCEPT

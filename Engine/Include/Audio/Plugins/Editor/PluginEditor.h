@@ -63,6 +63,11 @@ namespace Audio
 			_Window.Hide();
 		}
 
+		/*
+		*	Updates this plugin editor.
+		*/
+		void Update() NOEXCEPT;
+
 	private:
 
 		//The window.
@@ -77,13 +82,13 @@ namespace Audio
 		//The plugin.
 		Audio::Plugin *RESTRICT _Plugin{ nullptr };
 
+	#if defined(AUDIO_PLUGIN_STANDALONE)
+		//The update identifier.
+		uint64 _UpdateIdentifier{ UINT64_MAXIMUM };
+	#endif
+
 		//The delta timer.
 		DeltaTimer<float32> _DeltaTimer;
-
-		/*
-		*	Updates this plugin editor.
-		*/
-		void Update() NOEXCEPT;
 
 	};
 

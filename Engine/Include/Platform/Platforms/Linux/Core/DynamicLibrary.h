@@ -33,6 +33,14 @@ namespace Platform
 		}
 
 		/*
+		*	Initializes this dynamic library.
+		*/
+		FORCE_INLINE NO_DISCARD bool Initialize() NOEXCEPT
+		{
+			return false;
+		}
+
+		/*
 		*	Returns a pointer to the given symbol.
 		*/
 		FORCE_INLINE NO_DISCARD void *const RESTRICT GetSymbol(const char *const RESTRICT name) NOEXCEPT

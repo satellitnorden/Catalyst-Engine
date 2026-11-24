@@ -343,7 +343,7 @@ bool CatalystEngineSystem::Update() NOEXCEPT
 	CatalystPlatform::PlatformPostUpdate();
 
 	//Update the window manager.
-	Platform::WindowManager::Update();
+	Platform::WindowManager::Update(Platform::INVALID_WINDOW_HANDLE);
 
 	//Post-update the frame pacer.
 	_FramePacer.PostUpdate(preferred_refresh_rate);

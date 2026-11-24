@@ -26,14 +26,6 @@ namespace Audio
 
 	public:
 
-		//Type aliases.
-		using UpdateFunction = void(*)(void *const RESTRICT /*arguments*/);
-
-		/*
-		*	Sets the update function.
-		*/
-		void SetUpdateFunction(const UpdateFunction function, void *const RESTRICT arguments) NOEXCEPT;
-
 		/*
 		*	Initializes this plugin window.
 		*/
@@ -118,20 +110,11 @@ namespace Audio
 
 	private:
 
-		//The update function.
-		UpdateFunction _UpdateFunction;
-
-		//The update arguments.
-		void *RESTRICT _UpdateArguments;
-
 		//The resolution.
 		Resolution _Resolution;
 
 		//The window.
 		Platform::WindowHandle _Window{ Platform::INVALID_WINDOW_HANDLE };
-
-		//The timer identifier.
-		uint64 _TimerIdentifier{ UINT64_MAXIMUM };
 
 		//Denotes whether or not this window supports OpenGL.
 		bool _SupportsOpenGL{ false };

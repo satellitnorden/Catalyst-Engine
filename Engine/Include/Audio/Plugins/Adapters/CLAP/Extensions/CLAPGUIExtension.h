@@ -54,6 +54,9 @@ namespace CLAPGUIExtension
 		//Cache the plugin data.
 		CLAPPluginData *const RESTRICT plugin_data{ static_cast<CLAPPluginData *const RESTRICT>(plugin->plugin_data) };
 
+		//Unregister the timer.
+		plugin_data->UnregisterTimer();
+
 		//Terminate the editor.
 		plugin_data->_Editor.DestroyEditor();
 	}
@@ -159,6 +162,9 @@ namespace CLAPGUIExtension
 		//Show the editor window.
 		plugin_data->_Editor.ShowEditorWindow();
 
+		//Register the timer.
+		plugin_data->RegisterTimer();
+
 		//Return success!
 		return true;
 	}
@@ -170,6 +176,9 @@ namespace CLAPGUIExtension
 	{
 		//Cache the plugin data.
 		CLAPPluginData *const RESTRICT plugin_data{ static_cast<CLAPPluginData *const RESTRICT>(plugin->plugin_data) };
+
+		//Unregister the timer.
+		plugin_data->UnregisterTimer();
 
 		//Hide the editor window.
 		plugin_data->_Editor.HideEditorWindow();

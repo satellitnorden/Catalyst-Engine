@@ -7,6 +7,7 @@
 #include <Audio/Plugins/Adapters/CLAP/Extensions/CLAPGUIExtension.h>
 #include <Audio/Plugins/Adapters/CLAP/Extensions/CLAPNotePortsExtension.h>
 #include <Audio/Plugins/Adapters/CLAP/Extensions/CLAPParamsExtension.h>
+#include <Audio/Plugins/Adapters/CLAP/Extensions/CLAPTimerExtension.h>
 #include <Audio/Plugins/Adapters/CLAP/CLAPPluginData.h>
 
 //Third party.
@@ -25,6 +26,9 @@ namespace CLAPPlugin
 
 		//Initialize the editor.
 		plugin_data->_Editor.Initialize(plugin_data->_Plugin);
+
+		//Query host extensions.
+		plugin_data->_HostTimerSupportExtension = static_cast<const clap_host_timer_support *const RESTRICT>(plugin_data->_Host->get_extension(plugin_data->_Host, CLAP_EXT_TIMER_SUPPORT));
 
 		//Return success!
 		return true;
@@ -205,6 +209,11 @@ namespace CLAPPlugin
 		else if (strcmp(id, CLAP_EXT_PARAMS) == 0 && CLAPParamsExtension::IsSupported(plugin))
 		{
 			return &CLAPParamsExtension::EXTENSION;
+		}
+
+		else if (strcmp(id, CLAP_EXT_TIMER_SUPPORT) == 0 && CLAPTimerExtension::IsSupported(plugin))
+		{
+			return &CLAPTimerExtension::EXTENSION;
 		}
 
 		//Not a supported extension.

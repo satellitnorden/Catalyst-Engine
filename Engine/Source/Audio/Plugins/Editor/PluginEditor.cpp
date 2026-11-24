@@ -10,6 +10,9 @@
 #include <Profiling/Profiling.h>
 
 //Systems.
+#if defined(AUDIO_PLUGIN_STANDALONE)
+	#include <Systems/CatalystEngineSystem.h>
+#endif
 #include <Systems/ContentSystem.h>
 
 //Audio plugin.
@@ -79,16 +82,6 @@ namespace Audio
 		//Only do all of this if we're using internal rendering.
 		if (USE_INTERNAL_RENDERING)
 		{
-			//Set the update function on the window.
-			_Window.SetUpdateFunction
-			(
-				[](void* const RESTRICT arguments)
-				{
-					static_cast<PluginEditor* const RESTRICT>(arguments)->Update();
-				},
-				this
-			);
-
 			//Initialize the window.
 			_Window.Initialize(_Plugin->GetResolution(), parent_window);
 
@@ -116,6 +109,22 @@ namespace Audio
 
 			//Initialize the renderer.
 			_Renderer->Initialize(_Plugin->GetResolution(), &_Window);
+
+		#if defined(AUDIO_PLUGIN_STANDALONE)
+			//Register the update.
+			_UpdateIdentifier = CatalystEngineSystem::Instance->RegisterUpdate
+			(
+				[](void *const RESTRICT arguments)
+				{
+					static_cast<PluginEditor *const RESTRICT>(arguments)->Update();
+				},
+				this,
+				UpdatePhase::PRE,
+				UpdatePhase::PRE,
+				true,
+				false
+			);
+		#endif
 		}
 	}
 
@@ -126,6 +135,12 @@ namespace Audio
 	{
 		if (USE_INTERNAL_RENDERING)
 		{
+		#if defined(AUDIO_PLUGIN_STANDALONE)
+			//De-register the update.
+			CatalystEngineSystem::Instance->DeregisterUpdate(_UpdateIdentifier);
+			_UpdateIdentifier = UINT64_MAXIMUM;
+		#endif
+
 			//Destroy the renderer.
 			if (_Renderer)
 			{
@@ -146,11 +161,11 @@ namespace Audio
 	{
 		PROFILING_SCOPE("PluginEditor::Update()");
 
-		//Update the UI system.
-		_UISystem.Update(_DeltaTimer.Update(), _Window.GetMouseState());
-
 		//Prepare rendering.
 		_Window.PrepareRendering();
+
+		//Update the UI system.
+		_UISystem.Update(_DeltaTimer.Update(), _Window.GetMouseState());
 
 		//Render!
 		_Renderer->Render(_UISystem.GetRenderCommands());
