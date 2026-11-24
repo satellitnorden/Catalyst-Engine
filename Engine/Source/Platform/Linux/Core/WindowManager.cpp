@@ -14,6 +14,7 @@
 
 //Third party.
 #include <Wayland/xdg-shell-client-protocol.h>
+#include <Wayland/xdg-decoration-unstable-v1-client-protocol.h>
 #include <linux/input-event-codes.h>
 #if defined(CATALYST_HAS_OPEN_GL)
 	#include <EGL/egl.h>
@@ -47,6 +48,9 @@ public:
 
 	//The XDG top level.
 	xdg_toplevel *RESTRICT _XDGTopLevel{ nullptr };
+
+	//The decoration.
+	zxdg_toplevel_decoration_v1 *RESTRICT _Decoration{ nullptr };
 
 #if defined(CATALYST_HAS_OPEN_GL)
 	//The EGL window.
@@ -125,6 +129,9 @@ public:
 
 	//The pointer.
 	wl_pointer *RESTRICT _Pointer{ nullptr };
+
+	//The ZXDG decoration manager.
+	zxdg_decoration_manager_v1 *RESTRICT _ZXDGDecorationManager{ nullptr };
 
 	/*
 	*	Initializes this Wayland context.
@@ -303,6 +310,22 @@ private:
 			);
 
 			wl_seat_add_listener(context->_Seat, &SEAT_LISTENER, context);
+		}
+
+		else if (strcmp(interface, zxdg_decoration_manager_v1_interface.name) == 0)
+		{
+			PRINT_TO_OUTPUT("Found 'zxdg_decoration_manager_v1_interface' interface!");
+
+			context->_ZXDGDecorationManager = static_cast<zxdg_decoration_manager_v1 *const RESTRICT>
+			(
+				wl_registry_bind
+				(
+					registry,
+					name,
+					&zxdg_decoration_manager_v1_interface,
+					std::min(version, static_cast<uint32_t>(zxdg_decoration_manager_v1_interface.version))
+				)
+			);
 		}
 	}
 
@@ -1063,6 +1086,12 @@ namespace Platform
 			return INVALID_WINDOW_HANDLE;
 		}
 
+		//Create the decoration.
+		zxdg_toplevel_decoration_v1 *const RESTRICT decoration{ zxdg_decoration_manager_v1_get_toplevel_decoration(_WaylandContext._ZXDGDecorationManager, xdg_top_level) };
+
+		//Add the decoration.
+		zxdg_toplevel_decoration_v1_set_mode(decoration, ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE);
+
 		//Allocate the window data.
 		WindowData *const RESTRICT window_data{ new WindowData() };
 
@@ -1077,6 +1106,9 @@ namespace Platform
 
 		//Set the XDG top level.
 		window_data->_XDGTopLevel = xdg_top_level;
+
+		//Set the decoration.
+		window_data->_Decoration = decoration;
 
 		//Add the surface listener.
 		xdg_surface_add_listener
@@ -1309,6 +1341,9 @@ namespace Platform
 	{
 		//Cache the window data.
 		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
+
+		//Destroy the decoration.
+		zxdg_toplevel_decoration_v1_destroy(window_data->_Decoration);
 
 		//Destroy the XDG top level.
 		xdg_toplevel_destroy(window_data->_XDGTopLevel);

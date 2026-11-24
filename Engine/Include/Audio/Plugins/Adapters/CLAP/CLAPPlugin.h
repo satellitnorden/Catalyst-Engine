@@ -13,6 +13,9 @@
 //Third party.
 #include <ThirdParty/CLAP/clap.h>
 
+//STD.
+#include <cstring>
+
 namespace CLAPPlugin
 {
 
@@ -191,27 +194,27 @@ namespace CLAPPlugin
 		CLAPPluginData *const RESTRICT plugin_data{ static_cast<CLAPPluginData *const RESTRICT>(plugin->plugin_data) };
 
 		//Query for supported extensions.
-		if (strcmp(id, CLAP_EXT_AUDIO_PORTS) == 0 && CLAPAudioPortsExtension::IsSupported(plugin))
+		if (std::strcmp(id, CLAP_EXT_AUDIO_PORTS) == 0 && CLAPAudioPortsExtension::IsSupported(plugin))
 		{
 			return &CLAPAudioPortsExtension::EXTENSION;
 		}
 
-		else if (strcmp(id, CLAP_EXT_GUI) == 0 && CLAPGUIExtension::IsSupported(plugin))
+		else if (std::strcmp(id, CLAP_EXT_GUI) == 0 && CLAPGUIExtension::IsSupported(plugin))
 		{
 			return &CLAPGUIExtension::EXTENSION;
 		}
 
-		else if (strcmp(id, CLAP_EXT_NOTE_PORTS) == 0 && CLAPNotePortsExtension::IsSupported(plugin))
+		else if (std::strcmp(id, CLAP_EXT_NOTE_PORTS) == 0 && CLAPNotePortsExtension::IsSupported(plugin))
 		{
 			return &CLAPNotePortsExtension::EXTENSION;
 		}
 
-		else if (strcmp(id, CLAP_EXT_PARAMS) == 0 && CLAPParamsExtension::IsSupported(plugin))
+		else if (std::strcmp(id, CLAP_EXT_PARAMS) == 0 && CLAPParamsExtension::IsSupported(plugin))
 		{
 			return &CLAPParamsExtension::EXTENSION;
 		}
 
-		else if (strcmp(id, CLAP_EXT_TIMER_SUPPORT) == 0 && CLAPTimerExtension::IsSupported(plugin))
+		else if (std::strcmp(id, CLAP_EXT_TIMER_SUPPORT) == 0 && CLAPTimerExtension::IsSupported(plugin))
 		{
 			return &CLAPTimerExtension::EXTENSION;
 		}

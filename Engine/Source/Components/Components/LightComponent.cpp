@@ -4,6 +4,9 @@
 //Profiling.
 #include <Profiling/Profiling.h>
 
+//STD.
+#include <cstddef>
+
 /*
 *	Initializes this component.
 */

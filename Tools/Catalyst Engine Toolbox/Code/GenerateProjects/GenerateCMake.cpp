@@ -205,10 +205,20 @@ void GenerateCMake::Generate(const GenerateProjectParameters &parameters)
         //Set the output directory.
         file << "# Set the output directory." << std::endl;
         file << "set_target_properties(" << Utilities::RemoveSpaces(configuration._Name).c_str() << " PROPERTIES" << std::endl;
+    #if defined(PLATFORM_WIN64)
         file << "\tRUNTIME_OUTPUT_DIRECTORY_DEBUG \"${CMAKE_BINARY_DIR}/" << Utilities::RemoveSpaces(configuration._Name).c_str() << "\"" << std::endl;
         file << "\tLIBRARY_OUTPUT_DIRECTORY_DEBUG \"${CMAKE_BINARY_DIR}/" << Utilities::RemoveSpaces(configuration._Name).c_str() << "\"" << std::endl;
         file << "\tARCHIVE_OUTPUT_DIRECTORY_DEBUG \"${CMAKE_BINARY_DIR}/" << Utilities::RemoveSpaces(configuration._Name).c_str() << "\"" << std::endl;
         file << "\tOUTPUT_NAME_DEBUG \"" << parameters._ProjectName << "\"" << std::endl;
+    #elif defined(PLATFORM_LINUX)
+        file << "\tRUNTIME_OUTPUT_DIRECTORY \"${CMAKE_BINARY_DIR}/" << Utilities::RemoveSpaces(configuration._Name).c_str() << "\"" << std::endl;
+        file << "\tLIBRARY_OUTPUT_DIRECTORY \"${CMAKE_BINARY_DIR}/" << Utilities::RemoveSpaces(configuration._Name).c_str() << "\"" << std::endl;
+        file << "\tARCHIVE_OUTPUT_DIRECTORY \"${CMAKE_BINARY_DIR}/" << Utilities::RemoveSpaces(configuration._Name).c_str() << "\"" << std::endl;
+        file << "\tOUTPUT_NAME \"" << parameters._ProjectName << "\"" << std::endl;
+    #else
+        #error "Unknown platform!"
+    #endif
+        file << "\tPREFIX \"\"" << std::endl;
         file << "\tSUFFIX \"" << configuration._TargetFileExtension << "\"" << std::endl;
         file << ")" << std::endl;
         file << std::endl;

@@ -10,6 +10,9 @@
 //Third party.
 #include <ThirdParty/CLAP/clap.h>
 
+//STD.
+#include <cstring>
+
 namespace CLAPGUIExtension
 {
 
@@ -18,7 +21,7 @@ namespace CLAPGUIExtension
 	*/
 	bool CLAP_ABI is_api_supported(const clap_plugin_t *plugin, const char *api, bool is_floating)
 	{
-		return strcmp(api, CLAP_WINDOW_API_WIN32) == 0 && !is_floating;
+		return std::strcmp(api, CLAP_WINDOW_API_WIN32) == 0 && !is_floating;
 	}
 
 	/*
