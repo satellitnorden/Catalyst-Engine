@@ -10,6 +10,7 @@
 #include <Audio/VST3/EventList.h>
 #include <Audio/VST3/HostApplication.h>
 #include <Audio/VST3/PlugFrame.h>
+#include <Audio/VST3/ParameterChanges.h>
 #include <Audio/VST3/Utilities.h>
 
 //Concurrency.
@@ -35,6 +36,22 @@
 //Type aliases.
 using InitModuleProc = bool(*)();
 using ExitModuleProc = bool(*)();
+
+/*
+*	VST3 Parameter value change class definition.
+*/
+class VST3ParameterValueChange final
+{
+
+public:
+
+	//The identifier.
+	Steinberg::Vst::ParamID _Identifier;
+
+	//The value.
+	Steinberg::Vst::ParamValue _Value;
+
+};
 
 /*
 *	VST3 plugin host implementation class definition.
@@ -83,8 +100,14 @@ public:
 	//The output buffer.
 	DynamicArray<DynamicArray<float32>> _OutputBuffer;
 
+	//The input parameter changes.
+	VST3::ParameterChanges _InputParameterChanges;
+
 	//The input event list.
 	VST3::EventList _InputEventList;
+
+	//The incoming parameter value changes.
+	AtomicQueue<VST3ParameterValueChange, 128, AtomicQueueMode::MULTIPLE, AtomicQueueMode::MULTIPLE> _IncomingParameterValueChanges;
 
 	//The incoming MIDI messages.
 	AtomicQueue<MIDIMessage, 128, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _IncomingMIDIMessages;
@@ -288,6 +311,7 @@ NO_DISCARD bool VST3PluginHost::Initialize(const char *const RESTRICT plugin_fil
 					_Parameters.Emplace();
 					Parameter &new_parameter{ _Parameters.Back() };
 
+					new_parameter._Index = parameter_index;
 					VST3::Utilities::ConvertString128(parameter_info.title, &new_parameter._Name);
 					new_parameter._Identifier = HashString(new_parameter._Name.Data());
 					new_parameter._DefaultPlainValue = new_parameter._CurrentPlainValue = implementation->_EditController->normalizedParamToPlain(parameter_info.id, parameter_info.defaultNormalizedValue);
@@ -521,18 +545,16 @@ NO_DISCARD bool VST3PluginHost::SetParameterPlain(const HashString identifier, c
 	//Convert the value to normalized.
 	const Steinberg::Vst::ParamValue normalized_value{ implementation->_EditController->plainParamToNormalized(parameter->_FormatIdentifier._uint32, value) };
 
-	//Set the value.
-	if (implementation->_EditController->setParamNormalized(parameter->_FormatIdentifier._uint32, normalized_value) != Steinberg::kResultOk)
-	{
-		ASSERT(false, "Could not set parameter value!");
+	//Set the value on the edit controller.
+	const bool succeeded{ implementation->_EditController->setParamNormalized(parameter->_FormatIdentifier._uint32, normalized_value) == Steinberg::kResultOk };
 
-		return false;
-	}
+	//Push the parameter value change.
+	implementation->_IncomingParameterValueChanges.Push(VST3ParameterValueChange{ parameter->_FormatIdentifier._uint32, normalized_value });
 
-	else
-	{
-		return true;
-	}
+	//Return if it succeeded.
+	ASSERT(succeeded, "Failed to set parameter!");
+
+	return succeeded;
 }
 
 /*
@@ -593,18 +615,16 @@ NO_DISCARD bool VST3PluginHost::SetParameterNormalized(const HashString identifi
 		return false;
 	}
 
-	//Set the value.
-	if (implementation->_EditController->setParamNormalized(parameter->_FormatIdentifier._uint32, value) != Steinberg::kResultOk)
-	{
-		ASSERT(false, "Could not set parameter value!");
+	//Set the value on the edit controller.
+	const bool succeeded{ implementation->_EditController->setParamNormalized(parameter->_FormatIdentifier._uint32, value) == Steinberg::kResultOk };
 
-		return false;
-	}
+	//Push the parameter value change.
+	implementation->_IncomingParameterValueChanges.Push(VST3ParameterValueChange{ parameter->_FormatIdentifier._uint32, value });
 
-	else
-	{
-		return true;
-	}
+	//Return if it succeeded.
+	ASSERT(succeeded, "Failed to set parameter!");
+
+	return succeeded;
 }
 
 /*
@@ -945,6 +965,9 @@ void VST3PluginHost::Process
 	//Do some sanity checking.
 	ASSERT(number_of_channels == 2, "This assumes we have stereo in/stereo out!");
 
+	//Process the incoming parameter value changes.
+	ProcessIncomingParameterValueChanges();
+
 	//Process the incoming MIDI messages.
 	ProcessIncomingMIDIMessages();
 
@@ -1001,7 +1024,7 @@ void VST3PluginHost::Process
 
 	process_data.outputs = &output_buffers;
 
-	process_data.inputParameterChanges = nullptr;
+	process_data.inputParameterChanges = &implementation->_InputParameterChanges;
 	process_data.outputParameterChanges = nullptr;
 	process_data.inputEvents = &implementation->_InputEventList;
 	process_data.outputEvents = nullptr;
@@ -1030,6 +1053,9 @@ void VST3PluginHost::Process
 
 	//Update the project time.
 	implementation->_ProjectTime += static_cast<int64>(number_of_samples);
+
+	//Clear the input parameter changes.
+	implementation->_InputParameterChanges.Clear();
 
 	//Clear the input event list.
 	implementation->_InputEventList.Clear();
@@ -1164,6 +1190,28 @@ void VST3PluginHost::CacheCurrentParameterValues() NOEXCEPT
 	{
 		GetParameterPlain(parameter._Identifier, &parameter._CurrentPlainValue);
 		GetParameterNormalized(parameter._Identifier, &parameter._CurrentNormalizedValue);
+	}
+}
+
+/*
+*	Processes the incoming parameter value changes.
+*/
+void VST3PluginHost::ProcessIncomingParameterValueChanges() NOEXCEPT
+{
+	//Cache the implementation.
+	VST3PluginHostImplementation *const RESTRICT implementation{ Implementation() };
+
+	//Process the incoming parameter value change.
+	Optional<VST3ParameterValueChange> incoming_parameter_value_change{ implementation->_IncomingParameterValueChanges.Pop() };
+
+	while (incoming_parameter_value_change.Valid())
+	{
+		const VST3ParameterValueChange &_incoming_parameter_value_change{ incoming_parameter_value_change.Get() };
+
+		int32 dummy;
+		implementation->_InputParameterChanges.addParameterData(_incoming_parameter_value_change._Identifier, dummy)->addPoint(0, _incoming_parameter_value_change._Value, dummy);
+
+		incoming_parameter_value_change = implementation->_IncomingParameterValueChanges.Pop();
 	}
 }
 

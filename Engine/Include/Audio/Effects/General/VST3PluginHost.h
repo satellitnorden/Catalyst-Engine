@@ -16,7 +16,7 @@ class VST3PluginHost final : public PluginHost
 public:
 
 	//Constants.
-	constexpr static uint64 IMPLEMENTATION_SIZE{ 1'024 };
+	constexpr static uint64 IMPLEMENTATION_SIZE{ 4'096 };
 
 	/*
 	*	Default constructor.
@@ -129,6 +129,11 @@ private:
 	*	Caches the current parameter values.
 	*/
 	void CacheCurrentParameterValues() NOEXCEPT;
+
+	/*
+	*	Processes the incoming parameter value changes.
+	*/
+	void ProcessIncomingParameterValueChanges() NOEXCEPT;
 
 	/*
 	*	Processes the incoming MIDI messages.

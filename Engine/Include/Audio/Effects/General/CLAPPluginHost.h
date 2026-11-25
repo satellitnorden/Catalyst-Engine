@@ -2,96 +2,21 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
-#include <Core/General/DynamicString.h>
-#include <Core/General/HashString.h>
+#include <Core/General/Any.h>
 
 //Audio.
-#include <Audio/Effects/Core/AudioEffect.h>
-
-//Concurrency.
-#include <Concurrency/AtomicFlag.h>
-#include <Concurrency/AtomicQueue.h>
-#include <Concurrency/Task.h>
-
-//Platform.
-#include <Platform/Core/DynamicLibrary.h>
-
-//Third party.
-#include <ThirdParty/CLAP/clap.h>
+#include <Audio/Effects/General/PluginHost.h>
 
 /*
 *	Audio effect that loads and manages a single .clap plugin.
 */
-class CLAPPluginHost final : public AudioEffect
+class CLAPPluginHost final : public PluginHost
 {
 
 public:
 
-	/*
-	*	Main thread request class definition.
-	*/
-	class MainThreadRequest final
-	{
-
-	public:
-
-		//Enumeration covering all types.
-		enum class Type : uint8
-		{
-			NONE,
-
-			FINALIZE_PLUGIN,
-			UPDATE_PLUGIN,
-			SHOW_GUI,
-			HIDE_GUI
-		};
-
-		//The type.
-		Type _Type{ Type::NONE };
-	};
-
-	/*
-	*	Audio thread request class definition.
-	*/
-	class AudioThreadRequest final
-	{
-
-	public:
-
-		//Enumeration covering all types.
-		enum class Type : uint8
-		{
-			NONE,
-
-			START_PROCESSING,
-			SET_PARAMETER
-		};
-
-		//The type.
-		Type _Type{ Type::NONE };
-
-		//The data.
-		union
-		{
-			struct
-			{
-				//The identifier.
-				HashString _Identifier;
-
-				//The value.
-				float64 _Value;
-			} _SetParameterData;
-		};
-
-		/*
-		*	Default constructor.
-		*/
-		FORCE_INLINE AudioThreadRequest() NOEXCEPT
-		{
-			Memory::Set(this, 0, sizeof(AudioThreadRequest));
-		}
-
-	};
+	//Constants.
+	constexpr static uint64 IMPLEMENTATION_SIZE{ 2'048 };
 
 	/*
 	*	Default constructor.
@@ -102,16 +27,6 @@ public:
 	*	Default destructor.
 	*/
 	~CLAPPluginHost() NOEXCEPT;
-
-	/*
-	*	Initializes this CLAP plugin.
-	*/
-	void Initialize(const char *const RESTRICT plugin_file_path) NOEXCEPT;
-
-	/*
-	*	Terminates this CLAP plugin.
-	*/
-	void Terminate() NOEXCEPT;
 
 	/*
 	*	Returns if this audio effect wants updates on the main thread.
@@ -127,158 +42,110 @@ public:
 	void MainThreadUpdate() NOEXCEPT override;
 
 	/*
+	*	Initializes this plugin host. Returns if it succeeded.
+	*/
+	NO_DISCARD bool Initialize(const char *const RESTRICT plugin_file_path) NOEXCEPT override;
+
+	/*
+	*	Returns the parameter (plain) with the given identifier. Returns if it succeeded.
+	*/
+	NO_DISCARD bool GetParameterPlain(const HashString identifier, float64 *const RESTRICT value) NOEXCEPT override;
+
+	/*
+	*	Sets a parameter (plain) with the given identifier. Returns if it succeeded.
+	*/
+	NO_DISCARD bool SetParameterPlain(const HashString identifier, const float64 value) NOEXCEPT override;
+
+	/*
+	*	Returns the parameter (normalized) with the given identifier. Returns if it succeeded.
+	*/
+	NO_DISCARD bool GetParameterNormalized(const HashString identifier, float64 *const RESTRICT value) NOEXCEPT override;
+
+	/*
+	*	Sets a parameter (normalized) with the given identifier. Returns if it succeeded.
+	*/
+	NO_DISCARD bool SetParameterNormalized(const HashString identifier, const float64 value) NOEXCEPT override;
+
+	/*
+	*	Shows the UI. Returns if it succeeded.
+	*/
+	NO_DISCARD bool ShowUI() NOEXCEPT override;
+
+	/*
+	*	Hides the UI. Returns if it succeeded.
+	*/
+	NO_DISCARD bool HideUI() NOEXCEPT override;
+
+	/*
+	*	Returns the state. Returns if it succeeded.
+	*/
+	NO_DISCARD bool GetState(StreamArchive *const RESTRICT stream_archive) NOEXCEPT override;
+
+	/*
+	*	Sets the state. Returns if it succeeded.
+	*/
+	NO_DISCARD bool SetState(StreamArchive *const RESTRICT stream_archive) NOEXCEPT override;
+
+	/*
+	*	Terminates this VST3 plugin.
+	*/
+	void Terminate() NOEXCEPT;
+
+	/*
+	*	Callback for when this plugin receives MIDI messages.
+	*/
+	void OnMIDIMessages(const MIDIMessage *const RESTRICT messages, const uint64 number_of_messages) NOEXCEPT override;
+
+	/*
 	*	Callback for this audio effect to process the given buffer.
 	*/
 	void Process
 	(
-		const AudioProcessContext &context,
+		const AudioProcessContext& context,
 		const DynamicArray<DynamicArray<float32>> &inputs,
 		DynamicArray<DynamicArray<float32>> *const RESTRICT outputs,
 		const uint8 number_of_channels,
 		const uint32 number_of_samples
 	) NOEXCEPT override;
 
-	/*
-	*	Adds a main thread request.
-	*/
-	void AddMainThreadRequest(const MainThreadRequest request) NOEXCEPT;
-
-	/*
-	*	Adds an audio thread request.
-	*/
-	void AddAudioThreadRequest(const AudioThreadRequest request) NOEXCEPT;
-
-	/*
-	*	Sets a parameter with the given identifier to the given value.
-	*/
-	void SetParameter(const HashString identifier, const float64 value) NOEXCEPT;
-
 private:
 
-	/*
-	*	Event class definition.
-	*/
-	class Event final
-	{
-
-	public:
-
-		//Store all possible event types as a union.
-		union
-		{
-			clap_event_param_value_t _ParameterValue;
-			clap_event_param_gesture_t _GestureValue;
-		};
-
-		//The type.
-		uint16_t type;
-
-	};
+	//The implementation.
+	Any<IMPLEMENTATION_SIZE> _Implementation;
 
 	/*
-	*	Parameter class definition.
+	*	Returns the implementation.
 	*/
-	class Parameter final
-	{
-
-	public:
-
-		//The name.
-		DynamicString _Name;
-
-		//The identifier.
-		HashString _Identifier;
-
-		//The ID.
-		clap_id _ID;
-
-		//The cookie.
-		void *RESTRICT _Cookie;
-
-		//The minimum value.
-		float64 _MinimumValue;
-
-		//The maximum value.
-		float64 _MaximumValue;
-
-		//The default value.
-		float64 _DefaultValue;
-
-	};
+	NO_DISCARD class CLAPPluginHostImplementation *const RESTRICT Implementation() NOEXCEPT;
 
 	/*
-	*	GUI class definition.
+	*	Returns the extension with the given identifier (if supported)
 	*/
-	class GUI final
-	{
-
-	public:
-
-		//The extension.
-		const clap_plugin_gui_t *RESTRICT _Extension{ nullptr };
-
-		//The window.
-		void *RESTRICT _Window{ nullptr };
-
-	};
-
-	//The plugin file path.
-	DynamicString _PluginFilePath;
-
-	//Denotes whether or not this plugin is ready.
-	AtomicFlag _PluginReady;
-
-	//The initialization task.
-	Task _InitializationTask;
-
-	//The dynamic library.
-	Platform::DynamicLibrary _DynamicLibrary;
-
-	//The entry.
-	const clap_plugin_entry *RESTRICT _Entry{ nullptr };
-
-	//The factory.
-	const clap_plugin_factory *RESTRICT _Factory{ nullptr };
-
-	//The host.
-	clap_host_t _Host;
-
-	//The plugin.
-	const clap_plugin_t *RESTRICT _Plugin{ nullptr };
-
-	//The parameters.
-	DynamicArray<Parameter> _Parameters;
-
-	//The main thread requests.
-	AtomicQueue<MainThreadRequest, 1'024, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _MainThreadRequests;
-
-	//The audio thread requests.
-	AtomicQueue<AudioThreadRequest, 1'024, AtomicQueueMode::MULTIPLE, AtomicQueueMode::SINGLE> _AudioThreadRequests;
-
-	//The input buffer.
-	DynamicArray<DynamicArray<float32>> _InputBuffer;
-
-	//The input events.
-	DynamicArray<Event> _InputEvents;
-
-	//The output events.
-	DynamicArray<Event> _OutputEvents;
-
-	//The process struct.
-	clap_process_t _Process;
-
-	//The GUI.
-	GUI _GUI;
+	NO_DISCARD const void *const RESTRICT GetExtension(const char *const RESTRICT identifier) NOEXCEPT;
 
 	/*
-	*	Initializes internally.
+	*	Returns the audio ports extension.
 	*/
-	void InitializeInternal(const char *const RESTRICT plugin_file_path) NOEXCEPT;
+	NO_DISCARD const void *const RESTRICT GetAudioPortsExtension() NOEXCEPT;
 
 	/*
-	*	Finalizes the plugin.
+	*	Returns the GUI extension.
 	*/
-	void FinalizePlugin() NOEXCEPT;
+	NO_DISCARD const void *const RESTRICT GetGUIExtension() NOEXCEPT;
 
+	/*
+	*	Returns the log extension.
+	*/
+	NO_DISCARD const void *const RESTRICT GetLogExtension() NOEXCEPT;
+
+	/*
+	*	Returns the thread check extension.
+	*/
+	NO_DISCARD const void *const RESTRICT GetThreadCheckExtension() NOEXCEPT;
+
+	/*
+	*	Processes the incoming parameter value changes.
+	*/
+	void ProcessIncomingParameterValueChanges() NOEXCEPT;
 
 };

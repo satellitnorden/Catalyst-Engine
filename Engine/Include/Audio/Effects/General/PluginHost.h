@@ -25,6 +25,9 @@ public:
 
 	public:
 
+		//The index.
+		uint32 _Index;
+
 		//The identifier.
 		HashString _Identifier;
 
@@ -134,9 +137,9 @@ protected:
 	/*
 	*	Finds the parameter with the given identifier. Returns 'nullptr' if none was found.
 	*/
-	FORCE_INLINE NO_DISCARD const Parameter *const RESTRICT FindParameter(const HashString identifier) NOEXCEPT
+	FORCE_INLINE NO_DISCARD Parameter *const RESTRICT FindParameter(const HashString identifier) NOEXCEPT
 	{
-		for (const Parameter &parameter : _Parameters)
+		for (Parameter &parameter : _Parameters)
 		{
 			if (parameter._Identifier == identifier)
 			{
