@@ -5,6 +5,7 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 #include <Core/General/Print.h>
+#include <Core/General/StaticString.h>
 
 //Input.
 #include <Input/GamepadState.h>

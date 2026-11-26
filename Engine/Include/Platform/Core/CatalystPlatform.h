@@ -55,7 +55,7 @@ public:
 	/*
 	*	Returns the directory path of the current executable.
 	*/
-	static NO_DISCARD bool RESTRICT GetExecutableDirectorypath(StaticString<MAXIMUM_FILE_PATH_LENGTH> *const RESTRICT result) NOEXCEPT;
+	static NO_DISCARD bool GetExecutableDirectorypath(StaticString<MAXIMUM_FILE_PATH_LENGTH> *const RESTRICT result) NOEXCEPT;
 
 	/*
 	*	Destroys a platform window.
