@@ -200,6 +200,27 @@ namespace File
 	}
 
 	/*
+	*	Removes the file from the given path.
+	*/
+	FORCE_INLINE void RemoveFileFromPath(char *const RESTRICT path, uint64 length = UINT64_MAXIMUM) NOEXCEPT
+	{
+		if (length == UINT64_MAXIMUM)
+		{
+			length = StringUtilities::StringLength(path);
+		}
+
+		for (int64 i{ static_cast<int64>(length) - 1 }; i >= 0; --i)
+		{
+			if (path[i] == '/' || path[i] == '\\')
+			{
+				path[i] = '\0';
+
+				return;
+			}
+		}
+	}
+
+	/*
 	*	Browses for a file.
 	*	Returns if the action was successful.
 	*/

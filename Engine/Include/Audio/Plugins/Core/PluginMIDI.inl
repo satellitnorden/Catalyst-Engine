@@ -14,6 +14,17 @@ namespace Audio
 		const uint32 *const RESTRICT sample_offset
 	) NOEXCEPT
 	{
+		//Validate that this is a valid message.
+		if (message._Type == MIDIMessage::Type::NOTE_ON && message._NoteOnNote > 127)
+		{
+			return;
+		}
+
+		else if (message._Type == MIDIMessage::Type::NOTE_OFF && message._NoteOffNote > 127)
+		{
+			return;
+		}
+
 		//Add the requests.
 		{
 			SCOPED_LOCK(_RequestsLock);

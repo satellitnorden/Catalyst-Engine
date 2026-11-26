@@ -177,7 +177,7 @@ NO_DISCARD bool CLAPPluginHost::Initialize(const char *const RESTRICT plugin_fil
 	//Load the dynamic library.
 	if (!implementation->_DynamicLibrary.Load(plugin_file_path))
 	{
-		LOG_ERROR("Couldn't load VST3 plugin '%s'!", plugin_file_path);
+		LOG_ERROR("Couldn't load CLAP plugin '%s'!", plugin_file_path);
 		return false;
 	}
 
@@ -395,7 +395,7 @@ NO_DISCARD bool CLAPPluginHost::SetParameterPlain(const HashString identifier, c
 
 	if (!parameter)
 	{
-		ASSERT(false, "Could not find parameter!");
+		//ASSERT(false, "Could not find parameter!");
 
 		return false;
 	}

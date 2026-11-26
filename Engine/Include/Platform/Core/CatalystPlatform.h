@@ -6,6 +6,9 @@
 //Forward declarations.
 class DynamicString;
 
+template <uint64 SIZE>
+class StaticString;
+
 class CatalystPlatform final
 {
 
@@ -52,7 +55,7 @@ public:
 	/*
 	*	Returns the directory path of the current executable.
 	*/
-	static NO_DISCARD const char *const RESTRICT GetExecutableDirectorypath() NOEXCEPT;
+	static NO_DISCARD bool RESTRICT GetExecutableDirectorypath(StaticString<MAXIMUM_FILE_PATH_LENGTH> *const RESTRICT result) NOEXCEPT;
 
 	/*
 	*	Destroys a platform window.

@@ -113,10 +113,7 @@ void VulkanSwapchain::UpdateNextImageIndex(const VulkanSemaphore *const RESTRICT
 
 	if (result == VkResult::VK_ERROR_OUT_OF_DATE_KHR)
 	{
-		VulkanInterface::Instance->GetLogicalDevice().WaitIdle();
-
-		Release();
-		Initialize();
+		VulkanInterface::Instance->RecreateSwapchain();
 
 		VULKAN_ERROR_CHECK(vkAcquireNextImageKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanSwapchain, UINT64_MAXIMUM, imageAvailableSemaphore->Get(), VK_NULL_HANDLE, &_CurrentImageIndex));
 	}

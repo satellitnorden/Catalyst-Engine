@@ -117,13 +117,13 @@ void CatalystPlatform::Terminate() NOEXCEPT
 /*
 *	Returns the directory path of the current executable.
 */
-NO_DISCARD const char *const RESTRICT CatalystPlatform::GetExecutableDirectorypath() NOEXCEPT
+NO_DISCARD bool CatalystPlatform::GetExecutableDirectorypath(StaticString<MAXIMUM_FILE_PATH_LENGTH> *const RESTRICT result) NOEXCEPT
 {
 	char file_path[MAX_PATH];
 
 	if (GetModuleFileNameA(CatalystPlatformWindows::_Instance, file_path, sizeof(file_path)) == 0)
 	{
-		return "";
+		return false;
 	}
 
 	const uint64 file_path_length{ StringUtilities::StringLength(file_path) };
@@ -138,7 +138,9 @@ NO_DISCARD const char *const RESTRICT CatalystPlatform::GetExecutableDirectorypa
 		}
 	}
 
-	return file_path;
+	SNPRINTF(result->Data(), result->Size(), "%s", file_path);
+
+	return true;
 }
 
 /*

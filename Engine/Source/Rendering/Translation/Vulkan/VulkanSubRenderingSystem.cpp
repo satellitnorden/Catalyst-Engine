@@ -344,18 +344,15 @@ namespace VulkanSubRenderingSystemLogic
 
 					framebufferParameters._RenderPass = data->_RenderPass->Get();
 
-					DynamicArray<VkImageView> attachments;
-					attachments.Reserve(1 + (depth_buffer ? 1 : 0));
+					framebufferParameters._Attachments.Reserve(1 + (depth_buffer ? 1 : 0));
 
 					if (depth_buffer)
 					{
-						attachments.Emplace(depth_buffer->GetImageView());
+						framebufferParameters._Attachments.Emplace(depth_buffer->GetImageView());
 					}
 
-					attachments.Emplace(swapchainImage);
+					framebufferParameters._Attachments.Emplace(swapchainImage);
 
-					framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
-					framebufferParameters._Attachments = attachments.Data();
 					framebufferParameters._Extent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 #if defined(CATALYST_PLATFORM_OCULUS_QUEST)
 					framebufferParameters._NumberOfLayers = 2;
@@ -377,33 +374,30 @@ namespace VulkanSubRenderingSystemLogic
 
 				framebufferParameters._RenderPass = data->_RenderPass->Get();
 
-				DynamicArray<VkImageView> attachments;
-				attachments.Reserve(uniqueAttachments.Size() + resolve_attachments.Size() + (depth_buffer ? 1 : 0));
+				framebufferParameters._Attachments.Reserve(uniqueAttachments.Size() + resolve_attachments.Size() + (depth_buffer ? 1 : 0));
 
 				if (depth_buffer)
 				{
-					attachments.Emplace(depth_buffer->GetImageView());
+					framebufferParameters._Attachments.Emplace(depth_buffer->GetImageView());
 				}
 
 				for (const Pair<VulkanRenderTarget *RESTRICT, uint32> uniqueAttachment : uniqueAttachments)
 				{
-					attachments.Emplace(static_cast<VulkanRenderTarget *const RESTRICT>(uniqueAttachment._First)->GetImageView());
+					framebufferParameters._Attachments.Emplace(static_cast<VulkanRenderTarget *const RESTRICT>(uniqueAttachment._First)->GetImageView());
 				}
 
 				for (const Pair<VulkanRenderTarget *RESTRICT, uint32> resolve_attachment : resolve_attachments)
 				{
-					attachments.Emplace(static_cast<VulkanRenderTarget *const RESTRICT>(resolve_attachment._First)->GetResolveImageView());
+					framebufferParameters._Attachments.Emplace(static_cast<VulkanRenderTarget *const RESTRICT>(resolve_attachment._First)->GetResolveImageView());
 				}
 
-				framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
-				framebufferParameters._Attachments = attachments.Data();
 				framebufferParameters._Extent = { pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height };
 				framebufferParameters._NumberOfLayers = 1;
 
 				data->_FrameBuffers.Reserve(1);
 				data->_FrameBuffers.Emplace(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
 				data->_Extent = { pipeline->GetRenderResolution()._Width, pipeline->GetRenderResolution()._Height };
-				data->_NumberOfAttachments = static_cast<uint32>(attachments.Size());
+				data->_NumberOfAttachments = static_cast<uint32>(framebufferParameters._Attachments.Size());
 				data->_RenderToScreeen = false;
 			}
 		}

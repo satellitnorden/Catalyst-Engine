@@ -765,6 +765,15 @@ void XDGTopLevelListenerClose
 )
 {
 	PRINT_TO_OUTPUT("XDGTopLevelListenerClose called!");
+
+	//Cache the window data.
+	WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(data) };
+
+	if (window_data)
+	{
+		//Call the callbacks.
+		window_data->_Callbacks.CallWindowClosedCallbacks();
+	}
 }
 
 /*
@@ -1087,10 +1096,13 @@ namespace Platform
 		}
 
 		//Create the decoration.
-		zxdg_toplevel_decoration_v1 *const RESTRICT decoration{ zxdg_decoration_manager_v1_get_toplevel_decoration(_WaylandContext._ZXDGDecorationManager, xdg_top_level) };
+		zxdg_toplevel_decoration_v1 *const RESTRICT decoration{ parameters._FullScreen ? nullptr : zxdg_decoration_manager_v1_get_toplevel_decoration(_WaylandContext._ZXDGDecorationManager, xdg_top_level) };
 
 		//Add the decoration.
-		zxdg_toplevel_decoration_v1_set_mode(decoration, ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE);
+		if (!parameters._FullScreen)
+		{
+			zxdg_toplevel_decoration_v1_set_mode(decoration, ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE);
+		}
 
 		//Allocate the window data.
 		WindowData *const RESTRICT window_data{ new WindowData() };
@@ -1343,7 +1355,10 @@ namespace Platform
 		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
 
 		//Destroy the decoration.
-		zxdg_toplevel_decoration_v1_destroy(window_data->_Decoration);
+		if (window_data->_Decoration)
+		{
+			zxdg_toplevel_decoration_v1_destroy(window_data->_Decoration);
+		}
 
 		//Destroy the XDG top level.
 		xdg_toplevel_destroy(window_data->_XDGTopLevel);

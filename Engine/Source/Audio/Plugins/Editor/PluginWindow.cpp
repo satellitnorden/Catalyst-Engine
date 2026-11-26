@@ -2,6 +2,12 @@
 //Header file.
 #include <Audio/Plugins/Editor/PluginWindow.h>
 
+//Systems.
+#include <Systems/CatalystEngineSystem.h>
+
+//Audio plugin.
+#include <AudioPluginGlue.Generated.h>
+
 namespace Audio
 {
 
@@ -16,7 +22,7 @@ namespace Audio
 		//Create the plugin window.
 		Platform::WindowManager::CreateParameters parameters;
 
-		parameters._Title = "Plugin Window";
+		parameters._Title = AudioPluginGlue::GetName();
 		parameters._Resolution = resolution;
 		parameters._Parent = parent_window;
 		parameters._FullScreen = false;
@@ -29,6 +35,15 @@ namespace Audio
 		SetSupportsOpenGL(Platform::WindowManager::SupportsOpenGL(_Window));
 
 		//Register the callbacks.
+		Platform::WindowManager::AddWindowClosedCallback
+		(
+			_Window,
+			[](void *const RESTRICT arguments)
+			{
+				CatalystEngineSystem::Instance->SetShouldTerminate();
+			},
+			nullptr
+		);
 		Platform::WindowManager::AddKeyboardButtonDownCallback
 		(
 			_Window,

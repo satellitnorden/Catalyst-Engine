@@ -258,7 +258,7 @@ namespace Audio
 
 		//Set up the blending.
 		OPEN_GL_CALL(glEnable(GL_BLEND));
-		OPEN_GL_CALL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+		OPEN_GL_CALL(glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ZERO, GL_ONE));
 
 		//Render all render commands.
 		for (const UI::RenderCommand &render_command : render_commands)

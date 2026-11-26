@@ -126,6 +126,11 @@ const clap_plugin_descriptor_t *CLAP_ABI get_plugin_descriptor(const struct clap
 */
 const clap_plugin_t *CLAP_ABI create_plugin(const struct clap_plugin_factory *factory, const clap_host_t *host, const char *plugin_id)
 {
+	if (std::strcmp(plugin_id, PLUGIN_DESCRIPTOR.id) != 0)
+	{
+		return nullptr;
+	}
+
 	clap_plugin_t *const plugin = new clap_plugin_t();
 
 	plugin->desc = &PLUGIN_DESCRIPTOR;

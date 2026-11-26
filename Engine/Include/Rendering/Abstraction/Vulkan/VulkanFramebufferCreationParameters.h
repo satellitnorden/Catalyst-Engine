@@ -3,6 +3,7 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/Containers/DynamicArray.h>
 
 //Vulkan.
 #include <Rendering/Abstraction/Vulkan/VulkanCore.h>
@@ -15,11 +16,8 @@ public:
 	//The render pass.
 	VkRenderPass _RenderPass;
 
-	//The attachment count.
-	uint32 _AttachmentCount;
-
 	//The attachments.
-	const VkImageView *RESTRICT _Attachments;
+	DynamicArray<VkImageView> _Attachments;
 
 	//The extent.
 	VkExtent2D _Extent;

@@ -54,10 +54,10 @@ namespace Audio
 	#if !defined(CATALYST_CONFIGURATION_FINAL)
 			context._Directory = AudioPluginGlue::GetDefaultDirectory();
 	#else
-			context._Directory = CatalystPlatform::GetExecutableDirectorypath();
+			CatalystPlatform::GetExecutableDirectorypath(&context._Directory);
 	#endif
 #else
-			context._Directory = CatalystPlatform::GetExecutableDirectorypath();
+			CatalystPlatform::GetExecutableDirectorypath(&context._Directory);
 #endif
 
 			if (USE_INTERNAL_RENDERING)

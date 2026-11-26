@@ -21,7 +21,13 @@ namespace CLAPGUIExtension
 	*/
 	bool CLAP_ABI is_api_supported(const clap_plugin_t *plugin, const char *api, bool is_floating)
 	{
-		return std::strcmp(api, CLAP_WINDOW_API_WIN32) == 0 && !is_floating;
+		#if defined(CATALYST_PLATFORM_WINDOWS)
+			return std::strcmp(api, CLAP_WINDOW_API_WIN32) == 0 && !is_floating;
+		#elif defined(CATALYST_PLATFORM_LINUX)
+			return std::strcmp(api, CLAP_WINDOW_API_WAYLAND) == 0 && is_floating;
+		#else
+			#error "Unknown platform!"
+		#endif
 	}
 
 	/*
@@ -34,9 +40,16 @@ namespace CLAPGUIExtension
 		bool *is_floating
 	)
 	{
-		*api = CLAP_WINDOW_API_WIN32;
-		*is_floating = false;
-
+		#if defined(CATALYST_PLATFORM_WINDOWS)
+			*api = CLAP_WINDOW_API_WIN32;
+			*is_floating = false;
+		#elif defined(CATALYST_PLATFORM_LINUX)
+			*api = CLAP_WINDOW_API_WAYLAND;
+			*is_floating = true;
+		#else
+			#error "Unknown platform!"
+		#endif
+		
 		return true;
 	}
 

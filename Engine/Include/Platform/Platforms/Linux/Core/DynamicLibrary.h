@@ -4,12 +4,17 @@
 //Core.
 #include <Core/Essential/CatalystEssential.h>
 
+//Systems.
+#include <Systems/LogSystem.h>
+
+//Third party.
+#include <dlfcn.h>
+
 namespace Platform
 {
 
 	/*
 	*	Simple wrapper class for loading a dynamic library (.so) file.
-	*	TODO: Implement this!
 	*/
 	class DynamicLibrary final
 	{
@@ -21,7 +26,7 @@ namespace Platform
 		*/
 		FORCE_INLINE NO_DISCARD bool IsLoaded() const NOEXCEPT
 		{
-			return false;
+			return _Handle != nullptr;
 		}
 
 		/*
@@ -29,7 +34,15 @@ namespace Platform
 		*/
 		FORCE_INLINE NO_DISCARD bool Load(const char *const RESTRICT file_path) NOEXCEPT
 		{
-			return false;
+			//Try to open the file.
+			_Handle = dlopen(file_path, RTLD_LAZY);
+
+			if (!_Handle)
+			{
+				LOG_ERROR("Failed to open '%s' dynamic library: %s", file_path, dlerror());
+			}
+
+			return IsLoaded();
 		}
 
 		/*
@@ -37,7 +50,8 @@ namespace Platform
 		*/
 		FORCE_INLINE NO_DISCARD bool Initialize() NOEXCEPT
 		{
-			return false;
+			//TODO: Maybe there's some Linux-specific initialize function for dynamic libraries?
+			return true;
 		}
 
 		/*
@@ -45,7 +59,7 @@ namespace Platform
 		*/
 		FORCE_INLINE NO_DISCARD void *const RESTRICT GetSymbol(const char *const RESTRICT name) NOEXCEPT
 		{
-			return nullptr;
+			return dlsym(_Handle, name);
 		}
 
 		/*
@@ -53,8 +67,17 @@ namespace Platform
 		*/
 		FORCE_INLINE void Unload() NOEXCEPT
 		{
-
+			if (_Handle)
+			{
+				dlclose(_Handle);
+				_Handle = nullptr;
+			}
 		}
+
+	private:
+
+		//The handle.
+		void *RESTRICT _Handle{ nullptr };
 
 	};
 

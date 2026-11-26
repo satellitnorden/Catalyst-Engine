@@ -899,6 +899,60 @@ RESTRICTED VulkanShaderModule *const RESTRICT VulkanInterface::CreateShaderModul
 }
 
 /*
+*	Recreates the swapchain.
+*/
+void VulkanInterface::RecreateSwapchain() NOEXCEPT
+{
+	//Wait for the device to become idle.
+	_VulkanLogicalDevice.WaitIdle();
+
+	//Cache the old swapchain image views.
+	const DynamicArray<VkImageView> old_swapchain_image_views{ _VulkanSwapchain.GetSwapchainImageViews() };
+
+	//Release the swapchain.
+	_VulkanSwapchain.Release();
+
+	//Initialize the swapchain again.
+	_VulkanSwapchain.Initialize();
+
+	//Cache the new swapchain image views.
+	const DynamicArray<VkImageView> new_swapchain_image_views{ _VulkanSwapchain.GetSwapchainImageViews() };
+
+	//Recreate any framebuffer that was pointing to the old swapchain image views.
+	{
+		SCOPED_LOCK(_VulkanFramebuffersLock);
+
+		for (VulkanFramebuffer *const RESTRICT framebuffer : _VulkanFramebuffers)
+		{
+			bool needs_to_recreate{ false };
+
+			VulkanFramebufferCreationParameters parameters{ framebuffer->GetParameters() };
+
+			for (VkImageView &framebuffer_attachment : parameters._Attachments)
+			{
+				for (uint64 swapchain_image_view_index{ 0 }; swapchain_image_view_index < old_swapchain_image_views.Size(); ++swapchain_image_view_index)
+				{
+					if (framebuffer_attachment == old_swapchain_image_views[swapchain_image_view_index])
+					{
+						framebuffer_attachment = new_swapchain_image_views[swapchain_image_view_index];
+
+						needs_to_recreate = true;
+
+						break;
+					}
+				}
+			}
+
+			if (needs_to_recreate)
+			{
+				framebuffer->Release();
+				framebuffer->Initialize(parameters);
+			}
+		}
+	}
+}
+
+/*
 *	Create the Vulkan memory allocator.
 */
 void VulkanInterface::CreateVulkanMemoryAllocator() NOEXCEPT

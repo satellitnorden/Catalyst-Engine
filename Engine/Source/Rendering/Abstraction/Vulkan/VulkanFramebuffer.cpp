@@ -10,6 +10,9 @@
 */
 void VulkanFramebuffer::Initialize(const VulkanFramebufferCreationParameters &parameters) NOEXCEPT
 {
+	//Set the parameters.
+	_Parameters = parameters;
+
 	//Create the framebuffer create info.
 	VkFramebufferCreateInfo framebufferCreateInfo;
 	CreateFramebufferCreateInfo(framebufferCreateInfo, parameters);
@@ -36,8 +39,8 @@ void VulkanFramebuffer::CreateFramebufferCreateInfo(VkFramebufferCreateInfo &fra
 	framebufferCreateInfo.pNext = nullptr;
 	framebufferCreateInfo.flags = 0;
 	framebufferCreateInfo.renderPass = parameters._RenderPass;
-	framebufferCreateInfo.attachmentCount = parameters._AttachmentCount;
-	framebufferCreateInfo.pAttachments = parameters._Attachments;
+	framebufferCreateInfo.attachmentCount = static_cast<uint32_t>(parameters._Attachments.Size());
+	framebufferCreateInfo.pAttachments = parameters._Attachments.Data();
 	framebufferCreateInfo.width = parameters._Extent.width;
 	framebufferCreateInfo.height = parameters._Extent.height;
 	framebufferCreateInfo.layers = parameters._NumberOfLayers;

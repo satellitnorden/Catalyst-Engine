@@ -2,6 +2,10 @@
 //Header file.
 #include <Platform/File/BinaryInputFile.h>
 
+//Core.
+#include <Core/General/Print.h>
+#include <Core/General/StaticString.h>
+
 //STD.
 #include <fstream>
 
@@ -40,16 +44,60 @@ namespace Platform
 		//Construct the implementation.
 		new (implementation) BinaryInputFileImplementation();
 
-		//Open the file stream.
-		implementation->_FileStream.open(file_path, std::ios::in | std::ios::binary);
-
-		//Determine the size.
-		if (implementation->_FileStream.is_open())
+		//Try multiple times to open the file from different sources.
+		for (uint8 try_index{ 0 }; try_index < 2; ++try_index)
 		{
-			implementation->_FileStream.seekg(0, std::ios::end);
-			implementation->_Size = implementation->_FileStream.tellg();
-			implementation->_FileStream.clear();
-			implementation->_FileStream.seekg(0, std::ios::beg);
+			//Store the file path and manipulate it based on the try index.
+			StaticString<MAXIMUM_FILE_PATH_LENGTH> _file_path;
+			
+			switch (try_index)
+			{
+				case 0:
+				{
+					//Just try the file path as provided.
+					SNPRINTF(_file_path.Data(), _file_path.Size(), "%s", file_path);
+
+					break;
+				}
+
+				case 1:
+				{
+					//Try and see if the file lies directly together with the executable.
+					StaticString<MAXIMUM_FILE_PATH_LENGTH> file_name;
+					SNPRINTF(file_name.Data(), file_name.Size(), "%s", file_path);
+					File::RemoveDirectory(file_name.Data());
+
+					StaticString<MAXIMUM_FILE_PATH_LENGTH> directory_path;
+
+					if (CatalystPlatform::GetExecutableDirectorypath(&directory_path))
+					{
+						SNPRINTF(_file_path.Data(), _file_path.Size(), "%s/%s", directory_path.Data(), file_name.Data());
+					}
+
+					break;
+				}
+
+				default:
+				{
+					ASSERT(false, "Invalid case!");
+
+					break;
+				}
+			}
+
+			//Open the file stream.
+			implementation->_FileStream.open(_file_path.Data(), std::ios::in | std::ios::binary);
+
+			//Determine the size.
+			if (implementation->_FileStream.is_open())
+			{
+				implementation->_FileStream.seekg(0, std::ios::end);
+				implementation->_Size = implementation->_FileStream.tellg();
+				implementation->_FileStream.clear();
+				implementation->_FileStream.seekg(0, std::ios::beg);
+
+				break;
+			}
 		}
 
 		//Set the file path.

@@ -1,4 +1,4 @@
-#if defined(CATALYST_PLATFORM_LINUX)
+#if defined(CATALYST_PLATFORM_LINUX) && !defined(AUDIO_PLUGIN_CLAP) && !defined(AUDIO_PLUGIN_VST3)
 //Header file.
 #include <Platform/Core/Main.h>
 

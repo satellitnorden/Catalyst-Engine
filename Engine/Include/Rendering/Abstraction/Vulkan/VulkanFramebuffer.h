@@ -14,6 +14,14 @@ class VulkanFramebuffer final
 public:
 
 	/*
+	*	Returns the parameters.
+	*/
+	FORCE_INLINE NO_DISCARD const VulkanFramebufferCreationParameters &GetParameters() const NOEXCEPT
+	{
+		return _Parameters;
+	}
+
+	/*
 	*	Returns the underlying Vulkan framebuffer.
 	*/
 	const VkFramebuffer& Get() const NOEXCEPT { return _VulkanFramebuffer; }
@@ -29,6 +37,9 @@ public:
 	void Release() NOEXCEPT;
 
 private:
+
+	//The parameters.
+	VulkanFramebufferCreationParameters _Parameters;
 
 	//The underlying Vulkan framebuffer.
 	VkFramebuffer _VulkanFramebuffer;

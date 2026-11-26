@@ -328,6 +328,11 @@ public:
 	*/
 	RESTRICTED VulkanShaderModule *const RESTRICT CreateShaderModule(const void* const shaderData, const uint64 shaderDataSize, const VkShaderStageFlagBits stage) NOEXCEPT;
 
+	/*
+	*	Recreates the swapchain.
+	*/
+	void RecreateSwapchain() NOEXCEPT;
+
 private:
 
 	//The Vulkan instance.

@@ -38,137 +38,140 @@ void InputSystem::Initialize() NOEXCEPT
 #endif
 
 	//Register the callbacks.
-	Platform::WindowManager::AddKeyboardButtonDownCallback
-	(
-		Platform::WindowManager::GetMasterWindow(),
-		[](const KeyboardButton keyboard_button, void *const RESTRICT user_data)
-		{
-			(*static_cast<KeyboardState *const RESTRICT>(user_data))[keyboard_button] = ButtonState::PRESSED;
-			InputSystem::Instance->_LastUpdatedInputDeviceType = InputDeviceType::KEYBOARD;
-		},
-		&_InputState._KeyboardState
-	);
-	Platform::WindowManager::AddKeyboardButtonUpCallback
-	(
-		Platform::WindowManager::GetMasterWindow(),
-		[](const KeyboardButton keyboard_button, void *const RESTRICT user_data)
-		{
-			(*static_cast<KeyboardState *const RESTRICT>(user_data))[keyboard_button] = ButtonState::RELEASED;
-			InputSystem::Instance->_LastUpdatedInputDeviceType = InputDeviceType::KEYBOARD;
-		},
-		&_InputState._KeyboardState
-	);
-	Platform::WindowManager::AddMouseMoveCallback
-	(
-		Platform::WindowManager::GetMasterWindow(),
-		[](const Vector2<float32> position, void *const RESTRICT user_data)
-		{
-			MouseState *const RESTRICT mouse_state{ static_cast<MouseState *const RESTRICT>(user_data) };
-			
-			mouse_state->_CurrentX = position._X;
-			mouse_state->_CurrentY = position._Y;
-
-			mouse_state->_DeltaX = mouse_state->_CurrentX - mouse_state->_PreviousX;
-			mouse_state->_DeltaY = mouse_state->_CurrentY - mouse_state->_PreviousY;
-
-			InputSystem::Instance->_LastUpdatedInputDeviceType = InputDeviceType::MOUSE;
-		},
-		&_InputState._MouseState
-	);
-	Platform::WindowManager::AddMouseButtonDownCallback
-	(
-		Platform::WindowManager::GetMasterWindow(),
-		[](const MouseButton mouse_button, void *const RESTRICT user_data)
-		{
-			MouseState *const RESTRICT mouse_state{ static_cast<MouseState *const RESTRICT>(user_data) };
-
-			switch (mouse_button)
+	if (Platform::WindowManager::GetMasterWindow() != Platform::INVALID_WINDOW_HANDLE)
+	{
+		Platform::WindowManager::AddKeyboardButtonDownCallback
+		(
+			Platform::WindowManager::GetMasterWindow(),
+			[](const KeyboardButton keyboard_button, void *const RESTRICT user_data)
 			{
-				case MouseButton::LEFT:
-				{
-					mouse_state->_Left = ButtonState::PRESSED;
-
-					break;
-				}
-
-				case MouseButton::MIDDLE:
-				{
-					mouse_state->_ScrollWheel = ButtonState::PRESSED;
-
-					break;
-				}
-
-				case MouseButton::RIGHT:
-				{
-					mouse_state->_Right = ButtonState::PRESSED;
-
-					break;
-				}
-
-				default:
-				{
-					ASSERT(false, "Invalid case!");
-
-					break;
-				}
-			}
-
-			InputSystem::Instance->_LastUpdatedInputDeviceType = InputDeviceType::MOUSE;
-		},
-		&_InputState._MouseState
-	);
-	Platform::WindowManager::AddMouseButtonUpCallback
-	(
-		Platform::WindowManager::GetMasterWindow(),
-		[](const MouseButton mouse_button, void *const RESTRICT user_data)
-		{
-			MouseState *const RESTRICT mouse_state{ static_cast<MouseState *const RESTRICT>(user_data) };
-
-			switch (mouse_button)
+				(*static_cast<KeyboardState *const RESTRICT>(user_data))[keyboard_button] = ButtonState::PRESSED;
+				InputSystem::Instance->_LastUpdatedInputDeviceType = InputDeviceType::KEYBOARD;
+			},
+			&_InputState._KeyboardState
+		);
+		Platform::WindowManager::AddKeyboardButtonUpCallback
+		(
+			Platform::WindowManager::GetMasterWindow(),
+			[](const KeyboardButton keyboard_button, void *const RESTRICT user_data)
 			{
-				case MouseButton::LEFT:
-				{
-					mouse_state->_Left = ButtonState::RELEASED;
+				(*static_cast<KeyboardState *const RESTRICT>(user_data))[keyboard_button] = ButtonState::RELEASED;
+				InputSystem::Instance->_LastUpdatedInputDeviceType = InputDeviceType::KEYBOARD;
+			},
+			&_InputState._KeyboardState
+		);
+		Platform::WindowManager::AddMouseMoveCallback
+		(
+			Platform::WindowManager::GetMasterWindow(),
+			[](const Vector2<float32> position, void *const RESTRICT user_data)
+			{
+				MouseState *const RESTRICT mouse_state{ static_cast<MouseState *const RESTRICT>(user_data) };
+				
+				mouse_state->_CurrentX = position._X;
+				mouse_state->_CurrentY = position._Y;
 
-					break;
+				mouse_state->_DeltaX = mouse_state->_CurrentX - mouse_state->_PreviousX;
+				mouse_state->_DeltaY = mouse_state->_CurrentY - mouse_state->_PreviousY;
+
+				InputSystem::Instance->_LastUpdatedInputDeviceType = InputDeviceType::MOUSE;
+			},
+			&_InputState._MouseState
+		);
+		Platform::WindowManager::AddMouseButtonDownCallback
+		(
+			Platform::WindowManager::GetMasterWindow(),
+			[](const MouseButton mouse_button, void *const RESTRICT user_data)
+			{
+				MouseState *const RESTRICT mouse_state{ static_cast<MouseState *const RESTRICT>(user_data) };
+
+				switch (mouse_button)
+				{
+					case MouseButton::LEFT:
+					{
+						mouse_state->_Left = ButtonState::PRESSED;
+
+						break;
+					}
+
+					case MouseButton::MIDDLE:
+					{
+						mouse_state->_ScrollWheel = ButtonState::PRESSED;
+
+						break;
+					}
+
+					case MouseButton::RIGHT:
+					{
+						mouse_state->_Right = ButtonState::PRESSED;
+
+						break;
+					}
+
+					default:
+					{
+						ASSERT(false, "Invalid case!");
+
+						break;
+					}
 				}
 
-				case MouseButton::MIDDLE:
-				{
-					mouse_state->_ScrollWheel = ButtonState::RELEASED;
+				InputSystem::Instance->_LastUpdatedInputDeviceType = InputDeviceType::MOUSE;
+			},
+			&_InputState._MouseState
+		);
+		Platform::WindowManager::AddMouseButtonUpCallback
+		(
+			Platform::WindowManager::GetMasterWindow(),
+			[](const MouseButton mouse_button, void *const RESTRICT user_data)
+			{
+				MouseState *const RESTRICT mouse_state{ static_cast<MouseState *const RESTRICT>(user_data) };
 
-					break;
+				switch (mouse_button)
+				{
+					case MouseButton::LEFT:
+					{
+						mouse_state->_Left = ButtonState::RELEASED;
+
+						break;
+					}
+
+					case MouseButton::MIDDLE:
+					{
+						mouse_state->_ScrollWheel = ButtonState::RELEASED;
+
+						break;
+					}
+
+					case MouseButton::RIGHT:
+					{
+						mouse_state->_Right = ButtonState::RELEASED;
+
+						break;
+					}
+
+					default:
+					{
+						ASSERT(false, "Invalid case!");
+
+						break;
+					}
 				}
 
-				case MouseButton::RIGHT:
-				{
-					mouse_state->_Right = ButtonState::RELEASED;
-
-					break;
-				}
-
-				default:
-				{
-					ASSERT(false, "Invalid case!");
-
-					break;
-				}
-			}
-
-			InputSystem::Instance->_LastUpdatedInputDeviceType = InputDeviceType::MOUSE;
-		},
-		&_InputState._MouseState
-	);
-	Platform::WindowManager::AddMouseScrollWheelCallback
-	(
-		Platform::WindowManager::GetMasterWindow(),
-		[](const int8 step, void *const RESTRICT user_data)
-		{
-			static_cast<MouseState *const RESTRICT>(user_data)->_ScrollWheelStep += step;
-			InputSystem::Instance->_LastUpdatedInputDeviceType = InputDeviceType::MOUSE;
-		},
-		&_InputState._MouseState
-	);
+				InputSystem::Instance->_LastUpdatedInputDeviceType = InputDeviceType::MOUSE;
+			},
+			&_InputState._MouseState
+		);
+		Platform::WindowManager::AddMouseScrollWheelCallback
+		(
+			Platform::WindowManager::GetMasterWindow(),
+			[](const int8 step, void *const RESTRICT user_data)
+			{
+				static_cast<MouseState *const RESTRICT>(user_data)->_ScrollWheelStep += step;
+				InputSystem::Instance->_LastUpdatedInputDeviceType = InputDeviceType::MOUSE;
+			},
+			&_InputState._MouseState
+		);
+	}
 }
 
 /*

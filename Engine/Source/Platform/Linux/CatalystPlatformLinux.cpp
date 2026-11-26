@@ -4,6 +4,14 @@
 
 //Core.
 #include <Core/Essential/CatalystEssential.h>
+#include <Core/General/StaticString.h>
+#include <Core/General/Print.h>
+
+//File.
+#include <File/Core/File.h>
+
+//Third party.
+#include <dlfcn.h>
 
 //STD.
 #include <cstdarg>
@@ -57,9 +65,19 @@ void CatalystPlatform::Terminate() NOEXCEPT
 /*
 *	Returns the directory path of the current executable.
 */
-NO_DISCARD const char *const RESTRICT CatalystPlatform::GetExecutableDirectorypath() NOEXCEPT
+NO_DISCARD bool CatalystPlatform::GetExecutableDirectorypath(StaticString<MAXIMUM_FILE_PATH_LENGTH> *const RESTRICT result) NOEXCEPT
 {
-	return nullptr;
+	Dl_info info;
+
+	if (dladdr((void*)GetExecutableDirectorypath, &info) == 0)
+	{
+        return false;
+    }
+
+	SNPRINTF(result->Data(), result->Size(), "%s", info.dli_fname);
+	File::RemoveFileFromPath(result->Data());
+
+	return true;
 }
 
 /*
