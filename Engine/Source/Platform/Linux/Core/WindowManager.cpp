@@ -122,6 +122,14 @@ namespace Platform
 	}
 
 	/*
+	*	Returns the backend of the given window.
+	*/
+	NO_DISCARD WindowManager::Backend WindowManager::GetBackend(const WindowHandle window) NOEXCEPT
+	{
+		return static_cast<WindowData *const RESTRICT>(window)->_Parameters._Backend;
+	}
+
+	/*
 	*	Returns a platform native window handle for the given window.
 	*	Not all platforms may return a valid handle here, as the concept of a "window" may differ between platforms.
 	*/

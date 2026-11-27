@@ -6,6 +6,7 @@
 //Platform.
 #include <Platform/Core/WindowManager.h>
 #include <Platform/Platforms/Linux/Internal/Wayland/WaylandWindowData.h>
+#include <Platform/Platforms/Linux/Internal/X11/X11WindowData.h>
 
 /*
 *	Window data class definition.
@@ -20,6 +21,9 @@ public:
 
 	//The Wayland window data.
 	WaylandWindowData _WaylandWindowData;
+
+	//The X11 window data.
+	X11WindowData _X11WindowData;
 
 	//The final resolution.
 	Resolution _FinalResolution;

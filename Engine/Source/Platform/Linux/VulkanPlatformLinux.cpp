@@ -12,6 +12,7 @@ void VulkanPlatform::RequiredInstanceExtensions(DynamicArray<const char *const R
 {
 	output->Emplace(VK_KHR_SURFACE_EXTENSION_NAME);
 	output->Emplace(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
+	output->Emplace(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
 
 #if VULKAN_DEBUGGING
 	output->Emplace(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);

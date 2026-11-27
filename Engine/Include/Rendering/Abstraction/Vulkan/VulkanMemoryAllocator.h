@@ -6,6 +6,7 @@
 
 //Third party.
 #include <Vulkan/Volk/volk.h>
+#define VMA_VULKAN_HEADERS_ALREADY_INCLUDED
 #include <vma/vk_mem_alloc.h>
 
 //The Vulkan memory allocator.

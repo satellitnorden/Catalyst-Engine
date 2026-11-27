@@ -1,3 +1,4 @@
+#include "Platform/Core/WindowManager.h"
 #if defined(AUDIO_PLUGIN)
 //Header file.
 #include <Audio/Plugins/Editor/PluginWindow.h>
@@ -22,6 +23,7 @@ namespace Audio
 		//Create the plugin window.
 		Platform::WindowManager::CreateParameters parameters;
 
+		parameters._Backend = Platform::WindowManager::Backend::X11;
 		parameters._Title = AudioPluginGlue::GetName();
 		parameters._Resolution = resolution;
 		parameters._Parent = parent_window;

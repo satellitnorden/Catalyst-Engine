@@ -18,6 +18,9 @@
 //Third party.
 #include <Vulkan/Volk/volk.h>
 
+//Undefine some stuff leaking out of the Volk header.
+#undef Always
+
 #if defined(CATALYST_PLATFORM_WINDOWS)
 //Need the undefines!
 #include <Platform/Platforms/Windows/CatalystPlatformWindows.h>
@@ -32,7 +35,6 @@
 	#define VULKAN_DEBUGGING (0)
 #endif
 
-#if VULKAN_DEBUGGING
 /*
 *	Given a VkResult, return a string.
 */
@@ -42,13 +44,6 @@ static void PrintResultAndBreak(const char *const RESTRICT function, const VkRes
 
 	switch (result)
 	{
-		default:
-		{
-			ASSERT(false, "Could not find a VkResult case for this result");
-
-			break;
-		}
-
 		case VK_ERROR_DEVICE_LOST:
 		{
 			ASSERT(false, "Result was VK_ERROR_DEVICE_LOST.");
@@ -146,14 +141,20 @@ static void PrintResultAndBreak(const char *const RESTRICT function, const VkRes
 
 			break;
 		}
+
+		default:
+		{
+			ASSERT(false, "Could not find a VkResult case for this result");
+
+			break;
+		}
 	}
 }
-#endif
 
 /*
 *	Checks the result of a Vulkan function call and takes appropriate measures if it fails.
 */
-#if VULKAN_DEBUGGING
+#if !defined(CATALYST_CONFIGURATION_FINAL)
 	#define VULKAN_ERROR_CHECK(function) { const VkResult result = function; if (result != VK_SUCCESS) PrintResultAndBreak(#function, result); }
 #else
 	#define VULKAN_ERROR_CHECK(function) function

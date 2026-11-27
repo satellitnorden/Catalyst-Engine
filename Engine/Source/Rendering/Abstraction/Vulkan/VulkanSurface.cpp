@@ -45,15 +45,49 @@ void VulkanSurface::Initialize() NOEXCEPT
 #endif
 
 #if defined(CATALYST_PLATFORM_LINUX)
-	VkWaylandSurfaceCreateInfoKHR surface_create_info;
+	switch (Platform::WindowManager::GetBackend(Platform::WindowManager::GetMasterWindow()))
+	{
+		case Platform::WindowManager::Backend::WAYLAND:
+		{
+			VkWaylandSurfaceCreateInfoKHR surface_create_info;
 
-	surface_create_info.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
-	surface_create_info.pNext = nullptr;
-	surface_create_info.flags = 0;
-	surface_create_info.display = static_cast<wl_display*>(Platform::WindowManager::GetDisplayHandle(Platform::WindowManager::GetMasterWindow()));
-	surface_create_info.surface = static_cast<wl_surface*>(Platform::WindowManager::GetSurfaceHandle(Platform::WindowManager::GetMasterWindow()));
+			surface_create_info.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
+			surface_create_info.pNext = nullptr;
+			surface_create_info.flags = 0;
+			surface_create_info.display = static_cast<wl_display*>(Platform::WindowManager::GetDisplayHandle(Platform::WindowManager::GetMasterWindow()));
+			surface_create_info.surface = static_cast<wl_surface*>(Platform::WindowManager::GetSurfaceHandle(Platform::WindowManager::GetMasterWindow()));
 
-	VULKAN_ERROR_CHECK(vkCreateWaylandSurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &surface_create_info, nullptr, &_VulkanSurface));
+			VULKAN_ERROR_CHECK(vkCreateWaylandSurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &surface_create_info, nullptr, &_VulkanSurface));
+
+			break;
+		}
+
+		case Platform::WindowManager::Backend::X11:
+		{
+			VkXlibSurfaceCreateInfoKHR surface_create_info;
+
+			surface_create_info.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
+			surface_create_info.pNext = nullptr;
+			surface_create_info.flags = 0;
+			surface_create_info.dpy = static_cast<Display *const RESTRICT>(Platform::WindowManager::GetDisplayHandle(Platform::WindowManager::GetMasterWindow()));
+			
+			const Platform::PlatformNativeWindowHandle window{ Platform::WindowManager::GetWindowHandle(Platform::WindowManager::GetMasterWindow()) };
+
+			Memory::Copy(&surface_create_info.window, &window, sizeof(Window));
+		
+			VULKAN_ERROR_CHECK(vkCreateXlibSurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &surface_create_info, nullptr, &_VulkanSurface));
+
+			break;
+		}
+
+		default:
+		{
+			ASSERT(false, "Invalid case!");
+
+			break;
+		}
+	}
+	
 #endif
 }
 

@@ -111,6 +111,11 @@ namespace Platform
 		static NO_DISCARD WindowHandle Create(const CreateParameters &parameters) NOEXCEPT;
 
 		/*
+		*	Returns the backend of the given window.
+		*/
+		static NO_DISCARD Backend GetBackend(const WindowHandle window) NOEXCEPT;
+
+		/*
 		*	Returns a platform native window handle for the given window.
 		*	Not all platforms may return a valid handle here, as the concept of a "window" may differ between platforms.
 		*/

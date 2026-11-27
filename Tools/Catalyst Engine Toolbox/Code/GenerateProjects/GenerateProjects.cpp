@@ -240,6 +240,7 @@ void AddPreprocessorDefinitions(const ProjectSettings &project_settings, const c
 #if defined(PLATFORM_LINUX)
 	preprocessor_definitions->emplace_back("CATALYST_PLATFORM_LINUX");
 	preprocessor_definitions->emplace_back("VK_USE_PLATFORM_WAYLAND_KHR");
+	preprocessor_definitions->emplace_back("VK_USE_PLATFORM_XLIB_KHR");
 	preprocessor_definitions->emplace_back("__LINUX_ALSA__");
 	preprocessor_definitions->emplace_back("__LINUX_PULSE__");
 #endif
