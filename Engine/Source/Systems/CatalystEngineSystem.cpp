@@ -80,6 +80,18 @@ void CatalystEngineSystem::Initialize(const CatalystProjectConfiguration &initia
 		//Set up the parameters.
 		Platform::WindowManager::CreateParameters parameters;
 
+#if defined(CATALYST_PLATFORM_WINDOWS)
+		parameters._Backend = Platform::WindowManager::Backend::WIN32;
+#elif defined(CATALYST_PLATFORM_LINUX)
+	#if defined(AUDIO_PLUGIN)
+		parameters._Backend = Platform::WindowManager::Backend::X11;
+	#else
+		parameters._Backend = Platform::WindowManager::Backend::WAYLAND;
+	#endif
+#else
+	#error "Unknown platform!"
+#endif
+
 		//Figure out the title.
 #if defined(CATALYST_EDITOR)
 		SNPRINTF(parameters._Title.Data(), parameters._Title.Size(), "Catalyst Editor - %s", CatalystEngineSystem::Instance->GetProjectConfiguration()->_GeneralConfiguration._ProjectName.Data());

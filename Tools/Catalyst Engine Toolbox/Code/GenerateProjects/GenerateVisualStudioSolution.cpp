@@ -6,6 +6,9 @@
 #include <Core/MurmurHash.h>
 #include <Core/Utilities.h>
 
+//Generate projects.
+#include <GenerateProjects/GenerateCopyDynamicLibraries.h>
+
 //Platform.
 #include <Platform/PlatformWin64.h>
 
@@ -24,7 +27,7 @@ std::string GetConfigurationPlatformConditionString(const std::string &configura
 /*
 *	Generates!
 */
-void GenerateVisualStudioSolution::Generate(GenerateProjectParameters parameters)
+void GenerateVisualStudioSolution::Generate(const ProjectSettings &project_settings, GenerateProjectParameters parameters)
 {
     //Generate the GUID's.
     const std::string solution_guid{ PlatformWin64::GenerateGUID() };
@@ -38,6 +41,9 @@ void GenerateVisualStudioSolution::Generate(GenerateProjectParameters parameters
 
     //Generate the solution file.
     GenerateSolutionFile(parameters, solution_guid, project_guid);
+
+    //Copy the dynamic libraries.
+    GenerateCopyDynamicLibraries::Generate(project_settings, parameters, true, nullptr);
 }
 
 /*

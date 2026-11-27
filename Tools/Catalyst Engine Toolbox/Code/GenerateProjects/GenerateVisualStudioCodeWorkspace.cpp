@@ -7,6 +7,7 @@
 #if VISUAL_STUDIO_CODE_WORKSPACE_SUPPORTED
 //Generate projects.
 #include <GenerateProjects/GenerateCMake.h>
+#include <GenerateProjects/GenerateCopyDynamicLibraries.h>
 
 //Third party.
 #include <ThirdParty/json.hpp>
@@ -18,7 +19,7 @@
 /*
 *	Generates!
 */
-void GenerateVisualStudioCodeWorkspace::Generate(const GenerateProjectParameters &parameters)
+void GenerateVisualStudioCodeWorkspace::Generate(const ProjectSettings &project_settings, const GenerateProjectParameters &parameters)
 {
     //Ensure the directories exists.
     std::filesystem::create_directories(parameters._DirectoryPath);
@@ -44,6 +45,9 @@ void GenerateVisualStudioCodeWorkspace::Generate(const GenerateProjectParameters
 
     //Generate the 'launch.json' file.
     GenerateLaunchFile(parameters);
+
+    //Copy the dynamic libraries.
+    GenerateCopyDynamicLibraries::Generate(project_settings, parameters, false, "Build");
 }
 
 /*
@@ -81,7 +85,13 @@ void GenerateVisualStudioCodeWorkspace::GenerateCodeWorkspaceFile(const Generate
         nlohmann::ordered_json &settings_entry{ JSON["settings"] };
 
         //Add the configuration provider.
+    #if defined(PLATFORM_Win64)
         settings_entry["C_Cpp.default.configurationProvider"] = "ms-vscode.cmake-tools";
+    #elif defined(PLATFORM_LINUX)
+        settings_entry["clangd.arguments"].emplace_back("--compile-commands-dir=${workspaceFolder}/Build");
+    #else
+        #errror "Unknown platform!";
+    #endif
 
         //Set debug options.
         settings_entry["debug.allowBreakpointsEverywhere"] = true;
@@ -201,6 +211,7 @@ void GenerateVisualStudioCodeWorkspace::GenerateExtensionsFile(const GeneratePro
 
     #if defined(PLATFORM_LINUX)
         recommendations_entry.emplace_back("vadimcn.vscode-lldb");
+        recommendations_entry.emplace_back("llvm-vs-code-extensions.vscode-clangd");
     #endif
     }
     

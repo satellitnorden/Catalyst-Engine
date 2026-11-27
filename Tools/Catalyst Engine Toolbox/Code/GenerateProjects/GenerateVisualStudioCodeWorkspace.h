@@ -9,6 +9,9 @@
 //Generate projects.
 #include <GenerateProjects/GenerateProjectParameters.h>
 
+//Project settings.
+#include <ProjectSettings/ProjectSettings.h>
+
 class GenerateVisualStudioCodeWorkspace
 {
 
@@ -17,7 +20,7 @@ public:
 	/*
 	*	Generates!
 	*/
-	static void Generate(const GenerateProjectParameters &parameters);
+	static void Generate(const ProjectSettings &project_settings, const GenerateProjectParameters &parameters);
 
 private:
 

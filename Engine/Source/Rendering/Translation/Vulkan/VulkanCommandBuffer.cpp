@@ -316,7 +316,7 @@ void CommandBuffer::ClearColorImage(const OpaqueHandle image) NOEXCEPT
 	//Actually clear the image.
 	{
 		VkClearColorValue clear_value;
-		memset(&clear_value, 0, sizeof(VkClearColorValue));
+		Memory::Set(&clear_value, 0, sizeof(VkClearColorValue));
 
 		VkImageSubresourceRange range;
 
@@ -421,7 +421,7 @@ void CommandBuffer::ClearColorImage(const OpaqueHandle image) NOEXCEPT
 			//Actually clear the image.
 			{
 				VkClearColorValue clear_value;
-				memset(&clear_value, 0, sizeof(VkClearColorValue));
+				Memory::Set(&clear_value, 0, sizeof(VkClearColorValue));
 
 				VkImageSubresourceRange range;
 

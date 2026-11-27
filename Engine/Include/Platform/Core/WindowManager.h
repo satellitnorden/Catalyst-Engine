@@ -33,6 +33,23 @@ namespace Platform
 
 	public:
 
+		//Enumeration covering all backends.
+		enum class Backend : uint8
+		{
+		#if defined(CATALYST_PLATFORM_WINDOWS)
+			WIN32,
+
+			DEFAULT = WIN32
+		#elif defined(CATALYST_PLATFORM_LINUX)
+			WAYLAND,
+			X11,
+
+			DEFAULT = WAYLAND
+		#else
+			#error "Unknown platform!"
+		#endif
+		};
+
 		/*
 		*	Initializes the window manager.
 		*/
@@ -56,6 +73,9 @@ namespace Platform
 		{
 
 		public:
+
+			//The backend.
+			Backend _Backend{ Backend::DEFAULT };
 
 			//The title.
 			StaticString<128> _Title;

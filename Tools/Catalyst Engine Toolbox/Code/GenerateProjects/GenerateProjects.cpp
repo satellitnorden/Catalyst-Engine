@@ -436,6 +436,7 @@ void AddLibraryIncludes(const ProjectSettings &project_settings, const char *con
 	library_includes->emplace_back("pulse-simple.a");
 	library_includes->emplace_back("asound.a");
 	library_includes->emplace_back("wayland-client.a");
+	library_includes->emplace_back("X11.a");
 #endif
 
 	//Add special library includes.
@@ -867,7 +868,7 @@ void GenerateDefaultProjects(const ProjectSettings &project_settings)
 	//Generate the CLion project.
 	{
 		parameters._DirectoryPath = CLionDirectory();
-		GenerateCLion::Generate(parameters);
+		GenerateCLion::Generate(project_settings, parameters);
 	}
 
 	//Generate the CMake file.
@@ -879,76 +880,14 @@ void GenerateDefaultProjects(const ProjectSettings &project_settings)
 	//Generate the visual studio code workspace.
 	{
 		parameters._DirectoryPath = VisualStudioCodeWorkspaceDirectory();
-		GenerateVisualStudioCodeWorkspace::Generate(parameters);
-
-		//Remember the error code for filesystem functions.
-		std::error_code error_code;
-
-		//Create the directories for the different configurations.
-		for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
-		{
-			std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("/Build/") + Utilities::RemoveSpaces(configuration._Name)).c_str(), error_code); CHECK_ERROR_CODE();
-		}
-
-		//Copy assimp-vc143-mt.dll.
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Debug/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Build/Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Debug/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Build/DebugEditor")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Profile/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Build/Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Profile/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Build/ProfileEditor")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Final/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Build/Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-
-		if (project_settings._AddStaticBuilds)
-		{
-			std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Debug/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Build/DebugStatic")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Profile/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Build/ProfileStatic")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		}
-
-		//Copy onnxruntime.dll.
-		if (project_settings._IncludeONNXRuntimeLibrary)
-		{
-			for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
-			{
-				std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/onnxruntime.dll", std::string(parameters._DirectoryPath + std::string("/Build/") + Utilities::RemoveSpaces(configuration._Name)).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			}
-		}
+		GenerateVisualStudioCodeWorkspace::Generate(project_settings, parameters);
 	}
 
 	//Generate the visual studio solution.
 #if defined(VISUAL_STUDIO_SOLUTION_SUPPORTED)
 	{
 		parameters._DirectoryPath = VisualStudioSolutionDirectory();
-		GenerateVisualStudioSolution::Generate(parameters);
-
-		//Remember the error code for filesystem functions.
-		std::error_code error_code;
-
-		//Create the directories for the different configurations.
-		for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
-		{
-			std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("/") + configuration._Name).c_str(), error_code); CHECK_ERROR_CODE();
-		}
-
-		//Copy assimp-vc143-mt.dll.
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Debug/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Debug/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Debug Editor")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Profile/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Profile/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Profile Editor")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Final/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-
-		if (project_settings._AddStaticBuilds)
-		{
-			std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Debug/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Debug Static")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Profile/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Profile Static")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		}
-
-		//Copy onnxruntime.dll.
-		if (project_settings._IncludeONNXRuntimeLibrary)
-		{
-			for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
-			{
-				std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/onnxruntime.dll", std::string(parameters._DirectoryPath + std::string("/") + configuration._Name).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			}
-		}
+		GenerateVisualStudioSolution::Generate(project_settings, parameters);
 	}
 #endif
 }
@@ -1143,41 +1082,19 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 	{
 		parameters._DirectoryPath = GenerateAudioPlugin::CMakeDirectory(audio_plugin);
 		GenerateCMake::Generate(parameters);
+	}
 
-		//Remember the error code for filesystem functions.
-		std::error_code error_code;
-
-		//Create the directories for the different configurations.
-		for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
-		{
-			std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("/") + Utilities::RemoveSpaces(configuration._Name)).c_str(), error_code); CHECK_ERROR_CODE();
-		}
-
-		//Copy assimp-vc143-mt.dll.
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Debug/assimp.dll", std::string(parameters._DirectoryPath + std::string("/StandaloneDebug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Profile/assimp.dll", std::string(parameters._DirectoryPath + std::string("/StandaloneProfile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Final/assimp.dll", std::string(parameters._DirectoryPath + std::string("/StandaloneFinal")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+	//Generate the CLion project.
+	{
+		parameters._DirectoryPath = GenerateAudioPlugin::CLionDirectory(audio_plugin);
+		GenerateCLion::Generate(project_settings, parameters);
 	}
 
 #if VISUAL_STUDIO_CODE_WORKSPACE_SUPPORTED
 	//Generate the visual studio code workspace.
 	{
 		parameters._DirectoryPath = GenerateAudioPlugin::VisualStudioCodeWorkspaceDirectory(audio_plugin);
-		GenerateVisualStudioCodeWorkspace::Generate(parameters);
-
-		//Remember the error code for filesystem functions.
-		std::error_code error_code;
-
-		//Create the directories for the different configurations.
-		for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
-		{
-			std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("/Build/") + Utilities::RemoveSpaces(configuration._Name)).c_str(), error_code); CHECK_ERROR_CODE();
-		}
-
-		//Copy assimp-vc143-mt.dll.
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Debug/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Build/StandaloneDebug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Profile/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Build/StandaloneProfile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Final/assimp.dll", std::string(parameters._DirectoryPath + std::string("/Build/StandaloneFinal")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
+		GenerateVisualStudioCodeWorkspace::Generate(project_settings, parameters);
 	}
 #endif
 
@@ -1185,30 +1102,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 #if defined(VISUAL_STUDIO_SOLUTION_SUPPORTED)
 	{
 		parameters._DirectoryPath = GenerateAudioPlugin::VisualStudioSolutionDirectory(audio_plugin);
-		GenerateVisualStudioSolution::Generate(parameters);
-
-		//Remember the error code for filesystem functions.
-		std::error_code error_code;
-
-		//Create the directories for the different configurations.
-		for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
-		{
-			std::filesystem::create_directories(std::string(parameters._DirectoryPath + std::string("/") + configuration._Name).c_str(), error_code); CHECK_ERROR_CODE();
-		}
-
-		//Copy assimp-vc143-mt.dll.
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Debug/assimp.dll", std::string(GenerateAudioPlugin::VisualStudioSolutionDirectory(audio_plugin) + std::string("/Standalone Debug")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Profile/assimp.dll", std::string(GenerateAudioPlugin::VisualStudioSolutionDirectory(audio_plugin) + std::string("/Standalone Profile")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-		std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Win64/Dynamic/Final/assimp.dll", std::string(GenerateAudioPlugin::VisualStudioSolutionDirectory(audio_plugin) + std::string("/Standalone Final")).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-
-		//Copy onnxruntime.dll.
-		if (project_settings._IncludeONNXRuntimeLibrary)
-		{
-			for (const GenerateProjectParameters::Configuration &configuration : parameters._Configurations)
-			{
-				std::filesystem::copy("../../Catalyst-Engine/Engine/Libraries/Dynamic/onnxruntime.dll", std::string(parameters._DirectoryPath + std::string("/") + configuration._Name).c_str(), std::filesystem::copy_options::overwrite_existing, error_code); CHECK_ERROR_CODE();
-			}
-		}
+		GenerateVisualStudioSolution::Generate(project_settings, parameters);
 	}
 #endif
 }
@@ -1266,7 +1160,7 @@ void GenerateProjects::Clean(const ProjectSettings &project_settings)
 	//Remember the error code for filesystem functions.
 	std::error_code error_code;
 
-	//Remove (almost) all files in the directory.
+	//Remove all file in the generated directory.
 	if (std::filesystem::exists("Win64"))
 	{
 		std::filesystem::remove_all("Win64", error_code); CHECK_ERROR_CODE()
@@ -1277,6 +1171,11 @@ void GenerateProjects::Clean(const ProjectSettings &project_settings)
 		if (std::filesystem::exists(GenerateAudioPlugin::CMakeDirectory(audio_plugin)))
 		{
 			std::filesystem::remove_all(GenerateAudioPlugin::CMakeDirectory(audio_plugin), error_code); CHECK_ERROR_CODE()
+		}
+
+		if (std::filesystem::exists(GenerateAudioPlugin::CLionDirectory(audio_plugin)))
+		{
+			std::filesystem::remove_all(GenerateAudioPlugin::CLionDirectory(audio_plugin), error_code); CHECK_ERROR_CODE()
 		}
 
 		if (std::filesystem::exists(GenerateAudioPlugin::VisualStudioSolutionDirectory(audio_plugin)))

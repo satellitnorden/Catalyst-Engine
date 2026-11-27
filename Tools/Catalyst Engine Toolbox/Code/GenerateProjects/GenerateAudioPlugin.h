@@ -36,6 +36,14 @@ public:
 	}
 
 	/*
+	*	Returns the CLion directory for the given audio plugin.
+	*/
+	static std::string CLionDirectory(const ProjectSettings::AudioPlugin &audio_plugin)
+	{
+		return audio_plugin._NameNoSpaces + "/CLion";
+	}
+
+	/*
 	*	Returns the visual studio solution directory for the given audio plugin.
 	*/
 	static std::string VisualStudioSolutionDirectory(const ProjectSettings::AudioPlugin &audio_plugin)

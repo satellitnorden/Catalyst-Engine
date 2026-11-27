@@ -11,6 +11,9 @@
 //Generate projects.
 #include <GenerateProjects/GenerateProjectParameters.h>
 
+//Project settings.
+#include <ProjectSettings/ProjectSettings.h>
+
 class GenerateVisualStudioSolution
 {
 
@@ -19,7 +22,7 @@ public:
 	/*
 	*	Generates!
 	*/
-	static void Generate(GenerateProjectParameters parameters);
+	static void Generate(const ProjectSettings &project_settings, GenerateProjectParameters parameters);
 
 private:
 
