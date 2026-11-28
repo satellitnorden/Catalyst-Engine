@@ -45,6 +45,9 @@ public:
 		//Denotes whether or not to apply optimizations.
 		bool _ApplyOptimizations;
 
+		//Denotes whether or not to generate debug information.
+		bool _GenerateDebugInformation;
+
 		//Denotes whether or not to use debug libraries.
 		bool _UseDebugLibraries;
 

@@ -738,6 +738,7 @@ void GenerateDefaultProjects(const ProjectSettings &project_settings)
 		configuration._Type = GenerateProjectParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._ApplyOptimizations = false;
+		configuration._GenerateDebugInformation = true;
 		configuration._UseDebugLibraries = true;
 		configuration._RuntimeLibrary = "MultiThreadedDebug";
 		configuration._SubSystem = "Windows";
@@ -753,6 +754,7 @@ void GenerateDefaultProjects(const ProjectSettings &project_settings)
 		configuration._Type = GenerateProjectParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._ApplyOptimizations = false;
+		configuration._GenerateDebugInformation = true;
 		configuration._UseDebugLibraries = true;
 		configuration._RuntimeLibrary = "MultiThreadedDebug";
 		configuration._SubSystem = "Windows";
@@ -768,6 +770,7 @@ void GenerateDefaultProjects(const ProjectSettings &project_settings)
 		configuration._Type = GenerateProjectParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._ApplyOptimizations = true;
+		configuration._GenerateDebugInformation = true;
 		configuration._UseDebugLibraries = false;
 		configuration._RuntimeLibrary = "MultiThreaded";
 		configuration._SubSystem = "Windows";
@@ -783,6 +786,7 @@ void GenerateDefaultProjects(const ProjectSettings &project_settings)
 		configuration._Type = GenerateProjectParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._ApplyOptimizations = true;
+		configuration._GenerateDebugInformation = true;
 		configuration._UseDebugLibraries = false;
 		configuration._RuntimeLibrary = "MultiThreaded";
 		configuration._SubSystem = "Windows";
@@ -798,6 +802,7 @@ void GenerateDefaultProjects(const ProjectSettings &project_settings)
 		configuration._Type = GenerateProjectParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._ApplyOptimizations = true;
+		configuration._GenerateDebugInformation = false;
 		configuration._UseDebugLibraries = false;
 		configuration._RuntimeLibrary = "MultiThreaded";
 		configuration._SubSystem = "Windows";
@@ -815,6 +820,7 @@ void GenerateDefaultProjects(const ProjectSettings &project_settings)
 			configuration._Type = GenerateProjectParameters::Configuration::Type::STATIC_LIBRARY;
 			configuration._TargetFileExtension = ".lib";
 			configuration._ApplyOptimizations = false;
+			configuration._GenerateDebugInformation = true;
 			configuration._UseDebugLibraries = true;
 			configuration._RuntimeLibrary = "MultiThreadedDebug";
 			configuration._SubSystem = "Windows";
@@ -830,6 +836,7 @@ void GenerateDefaultProjects(const ProjectSettings &project_settings)
 			configuration._Type = GenerateProjectParameters::Configuration::Type::STATIC_LIBRARY;
 			configuration._TargetFileExtension = ".lib";
 			configuration._ApplyOptimizations = true;
+			configuration._GenerateDebugInformation = true;
 			configuration._UseDebugLibraries = false;
 			configuration._RuntimeLibrary = "MultiThreaded";
 			configuration._SubSystem = "Windows";
@@ -845,6 +852,7 @@ void GenerateDefaultProjects(const ProjectSettings &project_settings)
 			configuration._Type = GenerateProjectParameters::Configuration::Type::STATIC_LIBRARY;
 			configuration._TargetFileExtension = ".lib";
 			configuration._ApplyOptimizations = true;
+			configuration._GenerateDebugInformation = false;
 			configuration._UseDebugLibraries = false;
 			configuration._RuntimeLibrary = "MultiThreaded";
 			configuration._SubSystem = "Windows";
@@ -910,6 +918,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		configuration._Type = GenerateProjectParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._ApplyOptimizations = false;
+		configuration._GenerateDebugInformation = true;
 		configuration._UseDebugLibraries = true;
 		configuration._RuntimeLibrary = "MultiThreadedDebug";
 		configuration._SubSystem = "Windows";
@@ -927,6 +936,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		configuration._Type = GenerateProjectParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._ApplyOptimizations = true;
+		configuration._GenerateDebugInformation = true;
 		configuration._UseDebugLibraries = false;
 		configuration._RuntimeLibrary = "MultiThreaded";
 		configuration._SubSystem = "Windows";
@@ -944,6 +954,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		configuration._Type = GenerateProjectParameters::Configuration::Type::APPLICATION;
 		configuration._TargetFileExtension = ".exe";
 		configuration._ApplyOptimizations = true;
+		configuration._GenerateDebugInformation = false;
 		configuration._UseDebugLibraries = false;
 		configuration._RuntimeLibrary = "MultiThreaded";
 		configuration._SubSystem = "Windows";
@@ -961,6 +972,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		configuration._Type = GenerateProjectParameters::Configuration::Type::DYNAMIC_LIBRARY;
 		configuration._TargetFileExtension = ".clap";
 		configuration._ApplyOptimizations = false;
+		configuration._GenerateDebugInformation = true;
 		configuration._UseDebugLibraries = true;
 		configuration._RuntimeLibrary = "MultiThreadedDebug";
 		configuration._SubSystem = "Windows";
@@ -978,6 +990,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		configuration._Type = GenerateProjectParameters::Configuration::Type::DYNAMIC_LIBRARY;
 		configuration._TargetFileExtension = ".clap";
 		configuration._ApplyOptimizations = true;
+		configuration._GenerateDebugInformation = false;
 		configuration._UseDebugLibraries = false;
 		configuration._RuntimeLibrary = "MultiThreaded";
 		configuration._SubSystem = "Windows";
@@ -995,6 +1008,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		configuration._Type = GenerateProjectParameters::Configuration::Type::DYNAMIC_LIBRARY;
 		configuration._TargetFileExtension = ".vst3";
 		configuration._ApplyOptimizations = false;
+		configuration._GenerateDebugInformation = true;
 		configuration._UseDebugLibraries = true;
 		configuration._RuntimeLibrary = "MultiThreadedDebug";
 		configuration._SubSystem = "Windows";
@@ -1012,6 +1026,7 @@ void GenerateAudioPluginProjects(const ProjectSettings &project_settings, const 
 		configuration._Type = GenerateProjectParameters::Configuration::Type::DYNAMIC_LIBRARY;
 		configuration._TargetFileExtension = ".vst3";
 		configuration._ApplyOptimizations = true;
+		configuration._GenerateDebugInformation = false;
 		configuration._UseDebugLibraries = false;
 		configuration._RuntimeLibrary = "MultiThreaded";
 		configuration._SubSystem = "Windows";

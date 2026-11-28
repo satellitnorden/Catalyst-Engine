@@ -277,8 +277,22 @@ void GenerateCMake::Generate(const GenerateProjectParameters &parameters)
         file << "\t# Set flags." << std::endl;
         file << "\ttarget_compile_options(" << Utilities::RemoveSpaces(configuration._Name) << " PRIVATE" << std::endl;
 
-        //Always generate debug information.
-        file << "\t\t-g" << std::endl;
+        //Generate debug information.
+        if (configuration._GenerateDebugInformation)
+        {
+            file << "\t\t-g" << std::endl;
+        }
+
+        //Aply optimizations.
+        if (configuration._ApplyOptimizations)
+        {
+            file << "\t\t-O3" << std::endl;
+        }
+
+        else
+        {
+            file << "\t\t-O0" << std::endl;
+        }
 
         //Always support AVX2 instructions.
         file << "\t\t-mavx2" << std::endl;
