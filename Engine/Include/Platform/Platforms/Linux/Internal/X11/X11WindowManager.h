@@ -1,6 +1,7 @@
 #pragma once
 
 //Core.
+#include "Platform/Platforms/Linux/Internal/X11/X11WindowData.h"
 #include <Core/Essential/CatalystEssential.h>
 
 //Concurrency.
@@ -75,9 +76,23 @@ public:
 		}
 
 		//Create the window.
-		const Window window
+		Window window{ None };
+		Any<X11WindowData::X11_OPEN_GL_CONTEXT_SIZE> open_gl_context;
+		bool supports_open_gl{ false };
+
+		if (parameters._SupportOpenGL)
 		{
-			XCreateWindow
+			window = TryCreateOpenGLWindow(parameters, parent, &open_gl_context);
+
+			if (window != None)
+			{
+				supports_open_gl = true;
+			}
+		}
+
+		if (window == None)
+		{
+			window = XCreateWindow
 			(
 				_Context._Display,
 				parent,
@@ -91,8 +106,8 @@ public:
 				CopyFromParent,
 				0,
 				nullptr
-			)
-		};
+			);
+		}
 
 		if (window == None)
 		{
@@ -117,8 +132,14 @@ public:
 		//Set the window.
 		window_data->_X11WindowData._Window = window;
 
+		//set the OpenGL context.
+		window_data->_X11WindowData._OpenGLContext = open_gl_context;
+
 		//Set the final resolution.
 		window_data->_FinalResolution = parameters._Resolution;
+
+		//Set whether or now this window supports OpenGL.
+		window_data->_SupportsOpenGL = supports_open_gl;
 
 		//Add the window data.
 		{
@@ -163,24 +184,12 @@ public:
 	/*
 	*	Prepares OpenGL for the given window.
 	*/
-	void PrepareOpenGL(const Platform::WindowHandle window) NOEXCEPT
-	{
-	#if defined(CATALYST_HAS_OPEN_GL)
-		//Cache the window data.
-		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
-	#endif
-	}
+	void PrepareOpenGL(const Platform::WindowHandle window) NOEXCEPT;
 
 	/*
 	*	Finalizes OpenGL for the given window.
 	*/
-	void FinalizeOpenGL(const Platform::WindowHandle window) NOEXCEPT
-	{
-	#if defined(CATALYST_HAS_OPEN_GL)
-		//Cache the window data.
-		WindowData *const RESTRICT window_data{ static_cast<WindowData *const RESTRICT>(window) };
-	#endif
-	}
+	void FinalizeOpenGL(const Platform::WindowHandle window) NOEXCEPT;
 
     /*
 	*	Destroys the given window.
@@ -281,5 +290,15 @@ private:
 		Memory::Copy(&result, &window, sizeof(Window));
 		return result;
 	}
+
+	/*
+	*	Tries to create an OpenGL window.
+	*/
+	NO_DISCARD Window TryCreateOpenGLWindow
+	(
+		const Platform::WindowManager::CreateParameters &parameters,
+		const Window parent,
+		Any<X11WindowData::X11_OPEN_GL_CONTEXT_SIZE> *const RESTRICT open_gl_context
+	) NOEXCEPT;
 
 };
