@@ -12,6 +12,6 @@ class X11WindowData final
 public:
 
     //The window.
-    X11::Window _Window;
+    Window _Window;
 
 };

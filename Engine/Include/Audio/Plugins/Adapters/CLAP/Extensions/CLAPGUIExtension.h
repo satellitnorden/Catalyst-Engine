@@ -24,7 +24,7 @@ namespace CLAPGUIExtension
 		#if defined(CATALYST_PLATFORM_WINDOWS)
 			return std::strcmp(api, CLAP_WINDOW_API_WIN32) == 0 && !is_floating;
 		#elif defined(CATALYST_PLATFORM_LINUX)
-			return std::strcmp(api, CLAP_WINDOW_API_WAYLAND) == 0 && is_floating;
+			return std::strcmp(api, CLAP_WINDOW_API_X11) == 0 && !is_floating;
 		#else
 			#error "Unknown platform!"
 		#endif
@@ -44,8 +44,8 @@ namespace CLAPGUIExtension
 			*api = CLAP_WINDOW_API_WIN32;
 			*is_floating = false;
 		#elif defined(CATALYST_PLATFORM_LINUX)
-			*api = CLAP_WINDOW_API_WAYLAND;
-			*is_floating = true;
+			*api = CLAP_WINDOW_API_X11;
+			*is_floating = false;
 		#else
 			#error "Unknown platform!"
 		#endif
@@ -145,7 +145,17 @@ namespace CLAPGUIExtension
 		CLAPPluginData *const RESTRICT plugin_data{ static_cast<CLAPPluginData *const RESTRICT>(plugin->plugin_data) };
 
 		//Create the editor.
+	#if defined(CATALYST_PLATFORM_WINDOWS)
 		plugin_data->_Editor.CreateEditor(window->win32);
+	#elif defined(CATALYST_PLATFORM_LINUX)
+		{
+			void *RESTRICT _window;
+			Memory::Copy(&_window, &window->x11, sizeof(clap_xwnd));
+			plugin_data->_Editor.CreateEditor(_window);
+		}
+	#else
+		#error "Unknown platform!"
+	#endif
 
 		//Return success for now.
 		return true;

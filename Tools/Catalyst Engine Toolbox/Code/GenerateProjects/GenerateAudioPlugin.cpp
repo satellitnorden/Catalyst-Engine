@@ -223,8 +223,10 @@ void GenerateAudioPlugin::GenerateFiles(const ProjectSettings &project_settings,
 		file << "\tPLUGIN_EDITOR.Initialize(&PLUGIN);" << std::endl;
 		file << "#if defined(CATALYST_PLATFORM_WINDOWS)" << std::endl;
 		file << "\tPLUGIN_EDITOR.CreateEditor(Platform::WindowManager::GetWindowHandle(Platform::WindowManager::GetMasterWindow()));" << std::endl;
+		file << "#elif defined(CATALYST_PLATFORM_LINUX)" << std::endl;
+		file << "\tPLUGIN_EDITOR.CreateEditor(Platform::WindowManager::GetWindowHandle(Platform::WindowManager::GetMasterWindow()));" << std::endl;
 		file << "#else" << std::endl;
-		file << "\tPLUGIN_EDITOR.CreateEditor(nullptr);" << std::endl;
+		file << "\t#error \"Unknown platform!\"" << std::endl;
 		file << "#endif" << std::endl;
 		file << std::endl;
 

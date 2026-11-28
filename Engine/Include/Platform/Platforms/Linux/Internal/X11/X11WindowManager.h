@@ -14,7 +14,6 @@
 
 //Rendering.
 #include <Rendering/Abstraction/OpenGL/OpenGL.h>
-#include <X11/Xlib.h>
 
 class X11WindowManager final
 {
@@ -67,13 +66,21 @@ public:
 			return Platform::INVALID_WINDOW_HANDLE;
 		}
 
-		//Create the window.
-		const X11::Window window
+		//Determine the parent.
+		Window parent{ _Context._RootWindow };
+
+		if (parameters._Parent != Platform::INVALID_WINDOW_HANDLE)
 		{
-			X11::XCreateWindow
+			parent = HandleToWindow(parameters._Parent);
+		}
+
+		//Create the window.
+		const Window window
+		{
+			XCreateWindow
 			(
 				_Context._Display,
-				_Context._RootWindow,
+				parent,
 				0,
 				0,
 				parameters._Resolution._Width,
@@ -93,13 +100,13 @@ public:
 		}
 
 		//Set the title.
-		X11::XStoreName(_Context._Display, window, parameters._Title.Data());
+		XStoreName(_Context._Display, window, parameters._Title.Data());
 
 		//Show the window.
-		X11::XMapWindow(_Context._Display, window);
+		XMapWindow(_Context._Display, window);
 
 		//Flush the display.
-		X11::XFlush(_Context._Display);
+		XFlush(_Context._Display);
 
 		//Allocate the window data.
 		WindowData *const RESTRICT window_data{ new WindowData() };
@@ -130,7 +137,7 @@ public:
 	NO_DISCARD Platform::PlatformNativeWindowHandle GetWindowHandle(const Platform::WindowHandle window) NOEXCEPT
 	{
 		Platform::PlatformNativeWindowHandle result;
-		Memory::Copy(&result, &static_cast<WindowData *const RESTRICT>(window)->_X11WindowData._Window, sizeof(X11::Window));
+		Memory::Copy(&result, &static_cast<WindowData *const RESTRICT>(window)->_X11WindowData._Window, sizeof(Window));
 		return result;
 	}
 
@@ -204,13 +211,13 @@ private:
 		bool _Initialized{ false };
 
 		//The display.
-		X11::Display *_Display{ nullptr };
+		Display *_Display{ nullptr };
 
 		//The default screen.
 		int32 _DefaulScreen{ INT32_MAXIMUM };
 
 		//The root window.
-		X11::Window _RootWindow{ None };
+		Window _RootWindow{ None };
 
 	};
 
@@ -235,7 +242,7 @@ private:
 		}
 
 		//Try to open the display.
-		_Context._Display = X11::XOpenDisplay(nullptr);
+		_Context._Display = XOpenDisplay(nullptr);
 
 		if (!_Context._Display)
 		{
@@ -243,16 +250,36 @@ private:
 		}
 
 		//Retrieve the default screen.
-		_Context._DefaulScreen = X11::XDefaultScreen(_Context._Display);
+		_Context._DefaulScreen = XDefaultScreen(_Context._Display);
 
 		//Retrieve the root window.
-		_Context._RootWindow = X11::XRootWindow(_Context._Display, _Context._DefaulScreen);
+		_Context._RootWindow = XRootWindow(_Context._Display, _Context._DefaulScreen);
 
 		//The context is now initialized.
 		_Context._Initialized = true;
 
 		//Return success!
 		return true;
+	}
+
+	/*
+	*	Converts an X11 window to a handle.
+	*/
+	FORCE_INLINE NO_DISCARD Platform::PlatformNativeWindowHandle WindowToHandle(const Window window) NOEXCEPT
+	{
+		Platform::PlatformNativeWindowHandle result;
+		Memory::Copy(&result, &window, sizeof(Window));
+		return result;
+	}
+
+	/*
+	*	Converts a handle to an X11 window.
+	*/
+	FORCE_INLINE NO_DISCARD Window HandleToWindow(const Platform::PlatformNativeWindowHandle window) NOEXCEPT
+	{
+		Window result;
+		Memory::Copy(&result, &window, sizeof(Window));
+		return result;
 	}
 
 };

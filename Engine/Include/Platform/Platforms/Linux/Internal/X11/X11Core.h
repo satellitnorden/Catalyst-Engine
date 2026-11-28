@@ -4,7 +4,8 @@
 #include <Core/Essential/CatalystEssential.h>
 
 //Third party.
-namespace X11
-{
-	#include <X11/Xlib.h>
-}
+#include <X11/Xlib.h>
+#if defined(CATALYST_HAS_OPEN_GL)
+	//#include <GL/glx.h>
+	//#include <GL/glxext.h>
+#endif
